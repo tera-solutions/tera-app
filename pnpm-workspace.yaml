@@ -1,0 +1,32 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'services/*'
+allowBuilds:
+  esbuild: false
+
+catalog:
+  "@hookform/resolvers": "^3.9.1"
+  "@types/lodash": "^4.17.24"
+  "@types/react": "19.2.2"
+
+  # Utilities
+  axios: "^1.14.0"
+  lodash: "^4.17.23"
+
+  # State Management & Form
+  mobx: "6.15.0"
+  mobx-persist-store: "1.1.8"
+  mobx-react: "9.2.1"
+  mobx-react-lite: "4.1.1"
+  moment: "^2.30.1"
+  # React Ecosystem (Dùng cho cả Web và Mobile)
+  react: "19.2.4"
+  react-dom: "19.2.4"
+  react-hook-form: "7.72.0"
+  socket.io-client: "^2.5.0"
+  typescript: "^5.9.2"
+  yup: "^1.4.0"
+
+  # Validation
+  zod: "^4.3.6"

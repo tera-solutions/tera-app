@@ -1,0 +1,55 @@
+{
+  "name": "tera-app",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "fnb": "pnpm --filter @tera/fnb start",
+    "fnb:android": "pnpm --filter @tera/fnb android",
+    "fnb:ios": "pnpm --filter @tera/fnb ios",
+    "hana": "pnpm --filter @tera/hana start",
+    "hana:android": "pnpm --filter @tera/hana android",
+    "hana:ios": "pnpm --filter @tera/hana ios",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,scss,md}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,scss,md}\"",
+    "turbo:format": "turbo run format",
+    "lint": "turbo run lint",
+    "check-types": "turbo run check-types",
+    "clean": "rm -rf node_modules dist .turbo pnpm-lock.yaml",
+    "reinstall": "pnpm run clean && pnpm install"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
+    "axios": "^1.14.0",
+    "lodash": "^4.17.23",
+    "mobx": "6.15.0",
+    "mobx-persist-store": "1.1.8",
+    "mobx-react": "9.2.1",
+    "mobx-react-lite": "4.1.1",
+    "moment": "^2.30.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hook-form": "7.72.0",
+    "socket.io-client": "^2.5.0",
+    "yup": "^1.4.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.24",
+    "@types/react": "19.2.2",
+    "dlv": "^1.1.3",
+    "eslint": "^9.39.1",
+    "lilconfig": "^3.1.3",
+    "object-hash": "^3.0.0",
+    "prettier": "^3.7.4",
+    "turbo": "^2.8.20",
+    "typescript": "^5.9.2"
+  },
+  "overrides": {
+    "whatwg-encoding": "^3.1.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "pnpm@10.33.0"
+}

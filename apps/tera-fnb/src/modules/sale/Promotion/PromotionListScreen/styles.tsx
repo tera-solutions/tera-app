@@ -1,0 +1,96 @@
+import { FONT_FAMILY } from '@common/constants/typography';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
+
+export const styles = StyleSheet.create({
+  containerFull: {
+    overflow: 'scroll',
+    height: Platform.OS === 'web' ? height - 10 : '100%',
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  // Header
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  titleText: { fontSize: 18, fontWeight: '700', color: '#1F2937' },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    margin: 10,
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  searchIcon: { marginRight: 8 },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    backgroundColor: 'translate',
+    borderWidth: 0,
+    height: 40,
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 10,
+    marginBottom: 5,
+  },
+  tabButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    backgroundColor: '#E5E7EB',
+  },
+  activeTab: { backgroundColor: '#3B82F6' },
+  tabText: { fontSize: 14, color: '#4B5563' },
+  activeTabText: { color: '#FFFFFF', fontWeight: '600' },
+  listContent: { paddingHorizontal: 10, paddingBottom: 80 },
+  itemContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#FFFFFF',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  itemDetails: { flex: 3 },
+  itemName: { fontSize: 16, fontWeight: '600', color: '#1F2937' },
+  itemValue: { fontSize: 14, color: '#4B5563', marginTop: 4 },
+  itemType: { fontSize: 13, color: '#9CA3AF' },
+  itemStatus: { flex: 1, alignItems: 'flex-end', justifyContent: 'center' },
+  statusTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 15,
+    marginBottom: 5,
+  },
+  statusText: { fontSize: 12, fontFamily: FONT_FAMILY.Medium },
+  itemId: { fontSize: 12, color: '#9CA3AF' },
+  fabButton: {
+    position: 'absolute',
+    width: 56,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    right: 20,
+    bottom: 20,
+    backgroundColor: '#3B82F6',
+    borderRadius: 28,
+    elevation: 8,
+  },
+});
