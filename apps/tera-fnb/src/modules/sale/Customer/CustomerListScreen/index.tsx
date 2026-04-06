@@ -1,5 +1,5 @@
-import { useStores } from '@common/hooks/useStores';
-import { formatNumber } from '@common/utils';
+import { useStates } from '@hooks/useStates';
+import { formatNumber } from '@tera/common/utils';
 import DrawerFilter from '@components/domain/DrawerFilter';
 import { SearchInput } from '@components/ui';
 import { Loading } from '@components/ui/Loading';
@@ -37,7 +37,7 @@ const CustomerListScreen: React.FC = () => {
 
   const {
     generalStore: { isSuper },
-  } = useStores();
+  } = useStates();
 
   const { lastUpdate, totalCount } = useCustomer();
 

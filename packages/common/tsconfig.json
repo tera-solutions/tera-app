@@ -1,0 +1,9 @@
+{
+  "extends": "@tera/typescript-config/react-library.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "strictNullChecks": true
+  },
+  "include": ["src", "../../apps/tera-fnb/src/hooks/useStates.ts"],
+  "exclude": ["node_modules", "dist"]
+}

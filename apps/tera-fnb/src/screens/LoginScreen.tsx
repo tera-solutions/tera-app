@@ -8,8 +8,8 @@ import {
 } from 'react-native';
 import { Text } from 'react-native-paper';
 
-import colors from '@common/constants/colors';
-import { useStores } from '@common/hooks/useStores';
+import colors from '@tera/common/constants/colors';
+import { useStates } from '@hooks/useStates';
 import { Button, InputPassword, SelectBox, TextInput } from '@components/ui';
 import { useLogin } from '@services/auth.service';
 import { syncManager } from '@services/sync/SyncManager';
@@ -22,7 +22,7 @@ const LoginScreen = observer(() => {
   const queryClient = useQueryClient();
   const {
     generalStore: { device },
-  } = useStores();
+  } = useStates();
   const [refreshing, setRefreshing] = useState(false);
 
   const {

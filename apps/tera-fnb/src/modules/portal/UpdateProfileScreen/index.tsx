@@ -7,14 +7,14 @@ import { Icon } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
-import { useStores } from '@common/hooks/useStores';
+import { useStates } from '@hooks/useStates';
 import { useUpdateProfile } from '@services/user.service';
 import { styles } from './styles';
 
 const UpdateProfileScreen: React.FC = () => {
   const {
     authStore: { user },
-  } = useStores();
+  } = useStates();
   const router = useRouter();
   const { mutate: onUpdateProfile, isPending } = useUpdateProfile(() => {
     router.back();

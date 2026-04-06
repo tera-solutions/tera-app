@@ -7,7 +7,7 @@ import { Icon } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
-import { useStores } from '@common/hooks/useStores';
+import { useStates } from '@hooks/useStates';
 import { useUpdateBusiness } from '@services/business.service';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
@@ -18,7 +18,7 @@ console.log(">>> FILE ShopInfoScreen ĐÃ ĐƯỢC LOAD VÀO BỘ NHỚ");
 const ShopInfoScreen: React.FC = () => {
   const {
     uiStore: { business_info },
-  } = useStores();
+  } = useStates();
   const router = useRouter();
   const queryClient = useQueryClient();
 

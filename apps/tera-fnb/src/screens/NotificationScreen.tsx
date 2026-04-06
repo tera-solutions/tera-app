@@ -1,4 +1,4 @@
-import { useStores } from '@hooks/useStores';
+import { useStates } from '@hooks/useStates';
 import { observer } from 'mobx-react-lite';
 import { StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,7 +9,7 @@ import { Button } from 'react-native-paper';
 const NotificationScreen = observer(() => {
   const {
     authStore: { user, authenticated },
-  } = useStores();
+  } = useStates();
   const router = useRouter();
 
   return (

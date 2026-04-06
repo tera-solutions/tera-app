@@ -1,0 +1,18 @@
+{
+  "name": "@tera/typescript-config",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./react-library.json",
+    "./base.json": {
+      "default": "./base.json"
+    },
+    "./react-library.json": {
+      "default": "./react-library.json"
+    }
+  },
+  "files": [
+    "base.json",
+    "react-library.json"
+  ]
+}

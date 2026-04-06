@@ -6,15 +6,15 @@ import { Icon } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Imports từ project của anh
-import { useStores } from '@common/hooks/useStores';
-import colors from '@constants/colors';
+import { useStates } from '@hooks/useStates';
+import colors from '@tera/common/constants/colors';
 
 const ICON_SIZE = 24;
 
 const TabLayout = observer(() => {
   const {
     generalStore: { isOffline },
-  } = useStores();
+  } = useStates();
 
   const insets = useSafeAreaInsets();
 

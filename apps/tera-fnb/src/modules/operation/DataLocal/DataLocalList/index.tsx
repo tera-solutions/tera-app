@@ -1,4 +1,4 @@
-import { formatNumber } from '@common/utils';
+import { formatNumber } from '@tera/common/utils';
 import { Loading } from '@components/ui/Loading';
 import BusinessLocationService from '@databases/business_locations/service';
 import CustomerService from '@databases/customer/service';

@@ -1,4 +1,4 @@
-import { useStores } from '@common/hooks/useStores';
+import { useStates } from '@hooks/useStates';
 import { useLogout } from '@services/auth.service';
 import { MoreStyles } from '@styles/MoreStyles';
 import { observer } from 'mobx-react-lite';
@@ -173,7 +173,7 @@ const NUM_COLUMNS = 4;
 const MoreAppScreen = observer(() => {
   const {
     authStore: { user, clear },
-  } = useStores();
+  } = useStates();
   const insets = useSafeAreaInsets();
 
   const { mutate: onLogout, isPending } = useLogout();

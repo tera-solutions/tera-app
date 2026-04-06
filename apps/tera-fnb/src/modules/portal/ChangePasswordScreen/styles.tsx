@@ -1,4 +1,4 @@
-import colors from '@common/constants/colors';
+import colors from '@tera/common/constants/colors';
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 
 const { width, height } = Dimensions.get('window');

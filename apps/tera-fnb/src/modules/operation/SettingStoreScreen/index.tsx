@@ -1,5 +1,5 @@
-import { useStores } from '@common/hooks/useStores';
-import { formatNumber } from '@common/utils';
+import { useStates } from '@hooks/useStates';
+import { formatNumber } from '@tera/common/utils';
 import { useBusinessLocation } from '@databases/business_locations/hook/useBusinessLocation';
 import { Href, useNavigation, useRouter } from 'expo-router';
 import React from 'react';
@@ -43,7 +43,7 @@ const SettingItem: React.FC<SettingItemProps> = ({
 const SettingStoreScreen: React.FC = () => {
   const {
     uiStore: { limit_location },
-  } = useStores();
+  } = useStates();
   const router = useRouter();
   const navigation = useNavigation();
 

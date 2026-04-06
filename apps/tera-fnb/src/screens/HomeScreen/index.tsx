@@ -1,6 +1,6 @@
-import colors from '@constants/colors';
-import { FONT_FAMILY } from '@constants/typography';
-import { useStores } from '@hooks/useStores';
+import colors from '@tera/common/constants/colors';
+import { FONT_FAMILY } from '@tera/common/constants/typography';
+import { useStates } from '@hooks/useStates';
 import NetInfo from '@react-native-community/netinfo';
 import FeatureList from '@screens/HomeScreen/FeatureList';
 import { observer } from 'mobx-react-lite';
@@ -51,7 +51,7 @@ const HomeScreen = observer(() => {
   const {
     authStore: { user },
     uiStore: { business_info },
-  } = useStores();
+  } = useStates();
   const router = useRouter();
   const { count } = useSyncQueue();
   const insets = useSafeAreaInsets();

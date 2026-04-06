@@ -1,5 +1,5 @@
-import colors from '@common/constants/colors';
-import { FONT_FAMILY } from '@common/constants/typography';
+import colors from '@tera/common/constants/colors';
+import { FONT_FAMILY } from '@tera/common/constants/typography';
 import { Dimensions, Platform, StyleSheet } from 'react-native';
 
 const { width, height } = Dimensions.get('window');

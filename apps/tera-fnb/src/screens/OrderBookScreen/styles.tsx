@@ -1,4 +1,4 @@
-import { FONT_FAMILY } from '@common/constants/typography';
+import { FONT_FAMILY } from '@tera/common/constants/typography';
 import { Dimensions, StyleSheet } from 'react-native';
 
 const { width, height } = Dimensions.get('window');

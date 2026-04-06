@@ -2,14 +2,14 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
 
-import { SocketProvider } from '@common/provider/SocketProvider';
-import { useStores } from '@hooks/useStores';
+import { SocketProvider } from '@provider/SocketProvider';
+import { useStates } from '@hooks/useStates';
 import { syncManager } from '@services/sync/SyncManager';
 
 const RootNavigator = observer(() => {
   const {
     authStore: { authenticated, user },
-  } = useStores();
+  } = useStates();
   const segments: any = useSegments();
   const router = useRouter();
 

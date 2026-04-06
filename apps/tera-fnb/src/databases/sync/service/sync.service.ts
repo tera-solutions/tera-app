@@ -3,13 +3,13 @@ import {
   ISyncType,
   SpecificTables,
   SyncStatus,
-} from '@common/interfaces';
-import { handleClearApp } from '@common/utils/helper';
+} from '@tera/common/interfaces';
+import { handleClearApp } from '@tera/common/utils/helper';
 import BusinessLocationService from '@databases/business_locations/service';
 import CustomerService from '@databases/customer/service';
 import DB from '@databases/database'; // Giả định là IndexDB wrapper
 import { SyncAPI } from '@services/api/SyncAPI';
-import { rootStore } from '@stores/index';
+import { rootStore } from 'src/states/index';
 import moment from 'moment';
 import GeneralService from '../../general/service';
 import SyncQueueService from '../../sync_queues/service';

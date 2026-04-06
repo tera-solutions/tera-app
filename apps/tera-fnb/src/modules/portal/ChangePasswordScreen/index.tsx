@@ -7,7 +7,7 @@ import { Icon } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
-import { useStores } from '@common/hooks/useStores';
+import { useStates } from '@hooks/useStates';
 import { useChangePassword } from '@services/user.service';
 
 import { useRouter } from 'expo-router';
@@ -17,7 +17,7 @@ import { styles } from './styles';
 const ChangePasswordScreen: React.FC = () => {
   const {
     authStore: { user },
-  } = useStores();
+  } = useStates();
   const router = useRouter();
 
   const { mutate: onChangePassword, isPending } = useChangePassword();

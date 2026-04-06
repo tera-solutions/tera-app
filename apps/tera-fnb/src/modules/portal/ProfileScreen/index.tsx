@@ -1,5 +1,5 @@
-import { useStores } from '@common/hooks/useStores';
-import { formatDate } from '@common/utils';
+import { useStates } from '@hooks/useStates';
+import { formatDate } from '@tera/common/utils';
 import { Loading } from '@components/ui/Loading';
 import { ScreenLoader } from '@components/ui/ScreenLoader';
 import { useLogout } from '@services/auth.service';
@@ -41,7 +41,7 @@ console.log('>>> FILE ProfileScreen ĐÃ ĐƯỢC LOAD VÀO BỘ NHỚ');
 const ProfileScreen = observer(() => {
   const {
     authStore: { user },
-  } = useStores();
+  } = useStates();
   const queryClient = useQueryClient();
 
   const insets = useSafeAreaInsets();

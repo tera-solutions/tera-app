@@ -1,4 +1,4 @@
-import colors from '@common/constants/colors';
+import colors from '@tera/common/constants/colors';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {

@@ -1,4 +1,4 @@
-import colors from '@common/constants/colors';
+import colors from '@tera/common/constants/colors';
 import FloatButtonModal, {
   floatStyles,
 } from '@components/shared/FloatButtonModal';

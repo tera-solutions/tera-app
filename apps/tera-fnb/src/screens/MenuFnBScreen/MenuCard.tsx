@@ -1,4 +1,4 @@
-import { formatNumber } from '@common/utils';
+import { formatNumber } from '@tera/common/utils';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';

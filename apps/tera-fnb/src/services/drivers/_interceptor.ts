@@ -1,4 +1,4 @@
-import { rootStore } from '@stores/index';
+import { rootStore } from 'src/states/index';
 import _ from 'lodash';
 
 export const _requestHeader = (config: any) => {

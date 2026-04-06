@@ -1,4 +1,4 @@
-import colors from '@common/constants/colors';
+import colors from '@tera/common/constants/colors';
 import { Dimensions, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 

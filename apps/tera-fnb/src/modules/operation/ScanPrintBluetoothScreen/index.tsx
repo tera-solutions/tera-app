@@ -1,8 +1,8 @@
-import { useStores } from '@common/hooks/useStores';
+import { useStates } from '@hooks/useStates';
 import { Loading } from '@components/ui/Loading';
 import { useGetBusiness } from '@services/business.service';
 import { useBluetooth } from '@services/print_bluetooth.service';
-import { PrintDeviceType } from '@stores/_interface';
+import { PrintDeviceType } from 'src/states/_interface';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -43,7 +43,7 @@ const SettingItem: React.FC<SettingItemProps> = ({
 const ScanPrintBluetoothScreen: React.FC = () => {
   const {
     printStore: { setDevice, setConnection },
-  } = useStores();
+  } = useStates();
   const router = useRouter();
   useGetBusiness();
 

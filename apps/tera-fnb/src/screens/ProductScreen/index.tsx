@@ -1,4 +1,4 @@
-import colors from '@common/constants/colors';
+import colors from '@tera/common/constants/colors';
 import { TextInput } from '@components/ui';
 import { SaleStyles } from '@styles/SaleStyles';
 import { useRouter } from 'expo-router';

@@ -1,4 +1,4 @@
-import { useStores } from '@common/hooks/useStores';
+import { useStates } from '@hooks/useStates';
 import { useLogout } from '@services/auth.service';
 import { useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
@@ -156,7 +156,7 @@ const NUM_COLUMNS = 4;
 const MoreFnBApp = observer(() => {
   const {
     authStore: { user, clear },
-  } = useStores();
+  } = useStates();
   const insets = useSafeAreaInsets();
   const router = useRouter();
 

@@ -1,4 +1,4 @@
-import { formatNumber } from '@common/utils';
+import { formatNumber } from '@tera/common/utils';
 import { TextInput } from '@components/ui';
 import React, { useEffect, useRef, useState } from 'react';
 import {

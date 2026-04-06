@@ -1,6 +1,6 @@
-import { PRINT_CONNECTION } from '@common/constants';
-import colors from '@common/constants/colors';
-import { useStores } from '@common/hooks/useStores';
+import { PRINT_CONNECTION } from '@tera/common/constants';
+import colors from '@tera/common/constants/colors';
+import { useStates } from '@hooks/useStates';
 import { Switch } from '@components/ui/Switch';
 import { useGetBusiness } from '@services/business.service';
 import { Href, useRouter } from 'expo-router';
@@ -67,7 +67,7 @@ const SettingItemSwitch: React.FC<SettingItemProps> = ({
 const SettingPrintScreen = observer(() => {
   const {
     printStore: { device, connection },
-  } = useStores();
+  } = useStates();
   const router = useRouter();
   useGetBusiness();
 

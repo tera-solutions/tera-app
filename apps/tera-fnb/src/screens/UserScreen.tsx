@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 
-import { useStores } from '@hooks/useStores';
+import { useStates } from '@hooks/useStates';
 import { useLogout } from '@services/auth.service';
 import { useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
@@ -9,7 +9,7 @@ import { observer } from 'mobx-react-lite';
 const LoginScreen = observer(() => {
   const {
     authStore: { user, clear },
-  } = useStores();
+  } = useStates();
   const router = useRouter();
   const { mutate: onLogout, isPending } = useLogout();
 

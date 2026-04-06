@@ -3,20 +3,20 @@ import {
   ISyncType,
   SpecificTables,
   SyncStatus,
-} from '@common/interfaces';
+} from '@tera/common/interfaces';
 import BusinessLocationService from '@databases/business_locations/service/index.native';
 import DB from '@databases/database';
 import { synchronize } from '@nozbe/watermelondb/sync';
 import { SyncAPI } from '@services/api/SyncAPI';
 import moment from 'moment';
 
-import { handleClearApp } from '@common/utils/helper';
+import { handleClearApp } from '@tera/common/utils/helper';
 import CustomerService from '@databases/customer/service/index.native';
 import GeneralService from '@databases/general/service/index.native';
 import SyncQueueService from '@databases/sync_queues/service/index.native';
 import TableVersionService from '@databases/table_version/service/index.native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { rootStore } from '@stores/index';
+import { rootStore } from 'src/states/index';
 
 interface TableChanges {
   created: any[];

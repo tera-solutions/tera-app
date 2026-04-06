@@ -9,8 +9,8 @@ import IconSale from '@assets/icons/ic_sale.svg';
 import IconShipping from '@assets/icons/ic_shipping.svg';
 import IconWarehouse from '@assets/icons/ic_warehouse.svg';
 import IconWork from '@assets/icons/ic_work.svg';
-import { FONT_FAMILY } from '@common/constants/typography';
-import colors from '@constants/colors';
+import { FONT_FAMILY } from '@tera/common/constants/typography';
+import colors from '@tera/common/constants/colors';
 import { Href, useRouter } from 'expo-router';
 
 interface SvgIconProps {

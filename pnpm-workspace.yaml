@@ -9,8 +9,9 @@ allowBuilds:
 catalog:
   "@hookform/resolvers": "3.10.0"
   "@types/lodash": "4.17.24"
-  # Phải khớp với React bản 19.1.x
+  # Phải khớp với React bản 19.1.0
   "@types/react": "19.1.0" 
+  "@types/react-native": "0.73.0"
 
   # Utilities
   axios: "1.14.0"

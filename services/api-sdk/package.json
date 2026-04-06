@@ -1,0 +1,21 @@
+{
+  "name": "@tera/api",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./*": "./src/*.tsx"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "generate:component": "turbo gen react-component",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@tera/eslint-config": "workspace:*",
+    "@tera/typescript-config": "workspace:*",
+    "@types/react": "catalog:"
+  },
+  "dependencies": {
+    "react": "catalog:"
+  }
+}
