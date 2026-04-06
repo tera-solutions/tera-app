@@ -19,20 +19,20 @@
     "reinstall": "pnpm run clean && pnpm install"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.9.1",
-    "axios": "^1.14.0",
-    "lodash": "^4.17.23",
-    "mobx": "6.15.0",
-    "mobx-persist-store": "1.1.8",
-    "mobx-react": "9.2.1",
-    "mobx-react-lite": "4.1.1",
-    "moment": "^2.30.1",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "react-hook-form": "7.72.0",
-    "socket.io-client": "^2.5.0",
-    "yup": "^1.4.0",
-    "zod": "^4.3.6"
+    "@hookform/resolvers": "catalog:default",
+    "axios": "catalog:default",
+    "lodash": "catalog:default",
+    "mobx": "catalog:default",
+    "mobx-persist-store": "catalog:default",
+    "mobx-react": "catalog:default",
+    "mobx-react-lite": "catalog:default",
+    "moment": "catalog:default",
+    "react": "catalog:default",
+    "react-dom": "catalog:default",
+    "react-hook-form": "catalog:default",
+    "socket.io-client": "catalog:default",
+    "yup": "catalog:default",
+    "zod": "catalog:default"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",
@@ -50,6 +50,9 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "peerDependencies": {
+    "react": "catalog:default"
   },
   "packageManager": "pnpm@10.33.0"
 }
