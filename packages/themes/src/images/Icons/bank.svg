@@ -1,0 +1,14 @@
+<svg
+  viewBox="0 0 34 34"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  style="stroke: inherit;"
+  preserveAspectRatio="xMidYMid meet"
+>
+  <path
+    d="M17 33V18.3333M23.6667 33V18.3333M10.3333 33V18.3333M1 11.6667L17 1L33 11.6667M30.3333 33V14.0356C25.9889 13.3539 21.5358 13 17 13C12.4642 13 8.01105 13.3539 3.66667 14.0356V33M1 33H33M17 7.66667H17.0133V7.68H17V7.66667Z"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  ></path>
+</svg>

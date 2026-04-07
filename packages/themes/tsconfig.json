@@ -1,0 +1,22 @@
+{
+  "extends": "../typescript-config/react-library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"],
+      "@/*": ["src/*"]
+    },
+    "types": ["vite/client"],
+    "strictNullChecks": false,
+    "noEmit": true,
+    "noImplicitAny": false,
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "checkJs": false
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

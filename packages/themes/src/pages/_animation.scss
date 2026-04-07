@@ -1,0 +1,8 @@
+.button_hover {
+  transition: ease all 0.5s;
+
+  &:hover {
+    transition: ease all 0.5s;
+    transform: translateY(-4px);
+  }
+}

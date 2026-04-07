@@ -1,0 +1,128 @@
+.board {
+  .title-status {
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+  }
+  .title-total {
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+  }
+  .button {
+    display: flex;
+    padding: 3px 10px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    color: #fff;
+    font-family: Roboto;
+
+    &-l {
+      padding-block: 7px;
+    }
+
+    &-group {
+      border-radius: 5px;
+      overflow: hidden;
+      .button {
+        border-radius: 0px;
+      }
+    }
+  }
+  .table {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow:
+      0px 2px 2px 0px rgba(0, 0, 0, 0.1),
+      0px -2px 2px 0px rgba(0, 0, 0, 0.03);
+  }
+
+  .icon {
+    width: 26px;
+    height: 26px;
+    background: #76a9fa;
+    padding: 6px;
+    border-radius: 100%;
+    color: white;
+    cursor: pointer;
+  }
+
+  &-tab {
+    &__container {
+      padding-block: 7px;
+      margin-bottom: 0;
+    }
+    &__item {
+      padding: 0 0 5px 0;
+      border-bottom: 1px;
+      font-weight: 400;
+      border-bottom: 1px solid transparent;
+      &.board-tab__item--active {
+        color: #1c64f2;
+        border-color: #1c64f2 !important;
+      }
+    }
+  }
+  .following-button {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    background-color: white;
+    border-radius: 100%;
+    color: #1c64f2;
+    outline: 1px dashed #e5e7eb;
+    cursor: pointer;
+
+    &:hover {
+      outline-color: #1c64f2;
+    }
+  }
+
+  &-scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  &-scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  &-table-item {
+    tbody {
+      tr {
+        border-bottom: 1px solid #f3f4f6;
+        cursor: pointer;
+
+        &:hover {
+          box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        td {
+          padding: 10px 0;
+        }
+      }
+    }
+  }
+}
+
+.following-button {
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  background-color: white;
+  border-radius: 100%;
+  color: #1c64f2;
+  outline: 1px dashed #e5e7eb;
+  cursor: pointer;
+
+  &:hover {
+    outline-color: #1c64f2;
+  }
+}

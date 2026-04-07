@@ -2,11 +2,15 @@
   "extends": "@tera/typescript-config/react-library.json",
   "compilerOptions": {
     "outDir": "dist",
-    "strictNullChecks": true
-  },
-  "paths": {
-    "@tera/commons/*": ["../commons/*"],
-    "@tera/assets/*": ["../assets/*"]
+    "strictNullChecks": true,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@tera/commons/*": ["../commons/*"],
+      "@tera/assets/*": ["../assets/*"],
+      "@tera/components/*": ["./src/*"],
+      "tailwind-merge.config": ["./src/tailwind-merge.config"]
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

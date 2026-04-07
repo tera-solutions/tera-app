@@ -1,0 +1,132 @@
+{
+  "groupMenu": [
+    {
+      "id": "r5",
+      "title": "Mua hàng",
+      "path": "/purchase/supplier/list",
+      "icon": "menu5",
+      "key": "purchase",
+      "code": "purchase",
+      "permission": "purchase"
+    }
+  ],
+  "parentGroup": [
+    {
+      "id": 17,
+      "title": "Nhà cung cấp",
+      "key": "purchase-supplier",
+      "parentKey": "purchase"
+    },
+    {
+      "id": 18,
+      "title": "Đơn hàng",
+      "key": "purchase-order",
+      "parentKey": "purchase"
+    },
+    {
+      "id": 20,
+      "title": "Chương trình",
+      "key": "purchase-program",
+      "parentKey": "purchase"
+    },
+    {
+      "id": 21,
+      "title": "Báo cáo",
+      "key": "purchase-report",
+      "parentKey": "purchase"
+    }
+  ],
+  "parentMenu": [
+    {
+      "id": 64,
+      "title": "Nhà cung cấp",
+      "path": "/purchase/supplier/list",
+      "icon": "building-office-2",
+      "key": "supplier",
+      "parentKey": "purchase",
+      "parentGroupKey": "purchase-supplier",
+      "permission": "purchase_supplier_view_supplier_list"
+    },
+    {
+      "id": 65,
+      "title": "Nhà cung cấp tiềm năng",
+      "path": "/purchase/supplier-lead/feature-in-development",
+      "icon": "custom-building-bolt",
+      "key": "supplier-lead",
+      "parentKey": "purchase",
+      "parentGroupKey": "purchase-supplier",
+      "permission": ""
+    },
+    {
+      "id": 66,
+      "title": "Liên hệ",
+      "path": "/purchase/contact-supplier/feature-in-development",
+      "icon": "phone",
+      "key": "contact-supplier",
+      "parentKey": "purchase",
+      "parentGroupKey": "purchase-supplier",
+      "permission": ""
+    },
+    {
+      "id": 67,
+      "title": "Sản phẩm tiềm năng",
+      "path": "/purchase/product-lead/feature-in-development",
+      "icon": "custom-cart-shopping-bolt",
+      "key": "product-lead",
+      "parentKey": "purchase",
+      "parentGroupKey": "purchase-supplier",
+      "permission": ""
+    },
+    {
+      "id": 120,
+      "title": "Yêu cầu mua hàng",
+      "path": "/purchase/purchase-request/list",
+      "icon": "rocket-launch",
+      "key": "purchase-request",
+      "parentKey": "purchase",
+      "parentGroupKey": "purchase-order",
+      "permission": "purchase_purchase_view_purchase_request_list"
+    },
+    {
+      "id": 68,
+      "title": "Đơn mua hàng",
+      "path": "/purchase/purchase-management/list",
+      "icon": "shopping-cart",
+      "key": "purchase-management",
+      "parentKey": "purchase",
+      "parentGroupKey": "purchase-order",
+      "permission": "purchase_purchase_view_purchase_order_list"
+    },
+    {
+      "id": 69,
+      "title": "Đơn trả hàng mua",
+      "path": "/purchase/purchase-return/list",
+      "icon": "arrow-uturn-left",
+      "key": "purchase-return",
+      "parentKey": "purchase",
+      "parentGroupKey": "purchase-order",
+      "permission": "purchase_purchase_view_purchase_order_return_list"
+    },
+    {
+      "id": 72,
+      "title": "Kanban chiến dịch",
+      "path": "/purchase/kanban-campaign/feature-in-development",
+      "icon": "custom-bar-vertical",
+      "key": "kanban-campaign",
+      "parentKey": "purchase",
+      "parentGroupKey": "purchase-program",
+      "permission": ""
+    },
+    {
+      "id": 73,
+      "title": "Mua hàng",
+      "path": "/purchase/purchase-report/list",
+      "icon": "chart-pie",
+      "key": "purchase-report",
+      "parentKey": "purchase",
+      "parentGroupKey": "purchase-report",
+      "permission": "purchase_report_view_purchase_report_list"
+    }
+  ],
+  "subMenu": []
+}

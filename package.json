@@ -10,6 +10,8 @@
     "hana": "pnpm --filter @tera/hana start",
     "hana:android": "pnpm --filter @tera/hana android",
     "hana:ios": "pnpm --filter @tera/hana ios",
+    "admin": "pnpm --filter @tera/admin dev",
+    "admin:build": "pnpm --filter @tera/admin build",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,scss,md}\" --ignore-path .gitignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,scss,md}\"",
     "turbo:format": "turbo run format",

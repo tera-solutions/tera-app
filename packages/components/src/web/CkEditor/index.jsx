@@ -1,0 +1,814 @@
+import juice from "juice";
+import { useEffect } from "react";
+import MyUploadAdapter from "./MyUploadAdapter";
+import { addFigureStyle, convertElements } from "./_utils";
+import "./ckditor_style.scss";
+
+const styles = `<styles>
+.table .ck-table-resized {
+  table-layout: fixed;
+}
+/* @ckeditor/ckeditor5-table/theme/tablecolumnresize.css */
+.table table {
+  overflow: hidden;
+}
+/* @ckeditor/ckeditor5-table/theme/tablecolumnresize.css */
+.table td,
+.table th {
+  overflow-wrap: break-word;
+  position: relative;
+}
+/* @ckeditor/ckeditor5-table/theme/tablecaption.css */
+.table > figcaption {
+  display: table-caption;
+  caption-side: top;
+  word-break: break-word;
+  text-align: center;
+  color: #333333;
+  background-color: #F9F9F9;
+  padding: 0.6em;
+  font-size: 0.75em;
+  outline-offset: -1px;
+}
+/* @ckeditor/ckeditor5-table/theme/table.css */
+.table {
+  margin: 0.9em auto;
+  display: table;
+}
+/* @ckeditor/ckeditor5-table/theme/table.css */
+.table table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  height: 100%;
+  border: 1px double #B3B3B3;
+}
+/* @ckeditor/ckeditor5-table/theme/table.css */
+.table table td,
+.table table th {
+  min-width: 2em;
+  padding: 0.4em;
+  border: 1px solid #BFBFBF;
+}
+/* @ckeditor/ckeditor5-table/theme/table.css */
+.table table th {
+  font-weight: bold;
+  background: hsla(0, 0%, 0%, 5%);
+}
+/* @ckeditor/ckeditor5-table/theme/table.css */
+[dir='rtl'] .table th {
+  text-align: right;
+}
+/* @ckeditor/ckeditor5-table/theme/table.css */
+[dir='ltr'] .table th {
+  text-align: left;
+}
+/* @ckeditor/ckeditor5-page-break/theme/pagebreak.css */
+.page-break {
+  position: relative;
+  clear: both;
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* @ckeditor/ckeditor5-page-break/theme/pagebreak.css */
+.page-break::after {
+  content: '';
+  position: absolute;
+  border-bottom: 2px dashed #C4C4C4;
+  width: 100%;
+}
+/* @ckeditor/ckeditor5-page-break/theme/pagebreak.css */
+.page-break__label {
+  position: relative;
+  z-index: 1;
+  padding: 0.3em 0.6em;
+  display: block;
+  text-transform: uppercase;
+  border: 1px solid #C4C4C4;
+  border-radius: 2px;
+  font-family: Helvetica, Arial, Tahoma, Verdana, Sans-Serif;
+  font-size: 0.75em;
+  font-weight: bold;
+  color: #333333;
+  background: #FFFFFF;
+  box-shadow: 2px 2px 1px hsla(0, 0%, 0%, 0.15);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.todo-list {
+  list-style: none;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.todo-list li {
+  position: relative;
+  margin-bottom: 5px;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.todo-list li .todo-list {
+  margin-top: 5px;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.todo-list .todo-list__label > input {
+  -webkit-appearance: none;
+  display: inline-block;
+  position: relative;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  border: 0;
+  left: -25px;
+  margin-right: -15px;
+  right: 0;
+  margin-left: 0;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+[dir='rtl'] .todo-list .todo-list__label > input {
+  left: 0;
+  margin-right: 0;
+  right: -25px;
+  margin-left: -15px;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.todo-list .todo-list__label > input::before {
+  display: block;
+  position: absolute;
+  box-sizing: border-box;
+  content: '';
+  width: 100%;
+  height: 100%;
+  border: 1px solid #333333;
+  border-radius: 2px;
+  transition: 250ms ease-in-out box-shadow;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.todo-list .todo-list__label > input::after {
+  display: block;
+  position: absolute;
+  box-sizing: content-box;
+  pointer-events: none;
+  content: '';
+  left: calc(16px / 3);
+  top: calc(16px / 5.3);
+  width: calc(16px / 5.3);
+  height: calc(16px / 2.6);
+  border-style: solid;
+  border-color: transparent;
+  border-width: 0 calc(16px / 8) calc(16px / 8) 0;
+  transform: rotate(45deg);
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.todo-list .todo-list__label > input[checked]::before {
+  background: #59A67E;
+  border-color: #59A67E;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.todo-list .todo-list__label > input[checked]::after {
+  border-color: #FFFFFF;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.todo-list .todo-list__label .todo-list__label__description {
+  vertical-align: middle;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+
+.todo-list
+  .todo-list__label.todo-list__label_without-description
+  input[type='checkbox'] {
+  position: absolute;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.ck-editor__editable .todo-list .todo-list__label > input,
+.ck-editor__editable
+  .todo-list
+  .todo-list__label
+  > span[contenteditable='false']
+  > input {
+  cursor: pointer;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.ck-editor__editable .todo-list .todo-list__label > input:hover::before,
+.ck-editor__editable
+  .todo-list
+  .todo-list__label
+  > span[contenteditable='false']
+  > input:hover::before {
+  box-shadow: 0 0 0 5px hsla(0, 0%, 0%, 0.1);
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.ck-editor__editable
+  .todo-list
+  .todo-list__label
+  > span[contenteditable='false']
+  > input {
+  -webkit-appearance: none;
+  display: inline-block;
+  position: relative;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  border: 0;
+  left: -25px;
+  margin-right: -15px;
+  right: 0;
+  margin-left: 0;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.ck-editor__editable[dir='rtl']
+  .todo-list
+  .todo-list__label
+  > span[contenteditable='false']
+  > input {
+  left: 0;
+  margin-right: 0;
+  right: -25px;
+  margin-left: -15px;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.ck-editor__editable
+  .todo-list
+  .todo-list__label
+  > span[contenteditable='false']
+  > input::before {
+  display: block;
+  position: absolute;
+  box-sizing: border-box;
+  content: '';
+  width: 100%;
+  height: 100%;
+  border: 1px solid #333333;
+  border-radius: 2px;
+  transition: 250ms ease-in-out box-shadow;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.ck-editor__editable
+  .todo-list
+  .todo-list__label
+  > span[contenteditable='false']
+  > input::after {
+  display: block;
+  position: absolute;
+  box-sizing: content-box;
+  pointer-events: none;
+  content: '';
+  left: calc(16px / 3);
+  top: calc(16px / 5.3);
+  width: calc(16px / 5.3);
+  height: calc(16px / 2.6);
+  border-style: solid;
+  border-color: transparent;
+  border-width: 0 calc(16px / 8) calc(16px / 8) 0;
+  transform: rotate(45deg);
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.ck-editor__editable
+  .todo-list
+  .todo-list__label
+  > span[contenteditable='false']
+  > input[checked]::before {
+  background: #59A67E;
+  border-color: #59A67E;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.ck-editor__editable
+  .todo-list
+  .todo-list__label
+  > span[contenteditable='false']
+  > input[checked]::after {
+  border-color: #FFFFFF;
+}
+/* @ckeditor/ckeditor5-list/theme/todolist.css */
+.ck-editor__editable
+  .todo-list
+  .todo-list__label.todo-list__label_without-description
+  input[type='checkbox'] {
+  position: absolute;
+}
+/* @ckeditor/ckeditor5-media-embed/theme/mediaembed.css */
+.media {
+  clear: both;
+  margin: 0.9em 0;
+  display: block;
+  min-width: 15em;
+}
+/* @ckeditor/ckeditor5-image/theme/imageresize.css */
+img.image_resized {
+  height: auto;
+}
+/* @ckeditor/ckeditor5-image/theme/imageresize.css */
+.image.image_resized {
+  max-width: 100%;
+  display: block;
+  box-sizing: border-box;
+}
+/* @ckeditor/ckeditor5-image/theme/imageresize.css */
+.image.image_resized img {
+  width: 100%;
+}
+/* @ckeditor/ckeditor5-image/theme/imageresize.css */
+.image.image_resized > figcaption {
+  display: block;
+}
+/* @ckeditor/ckeditor5-image/theme/image.css */
+.image {
+  display: table;
+  clear: both;
+  text-align: center;
+  margin: 0.9em auto;
+  min-width: 50px;
+}
+/* @ckeditor/ckeditor5-image/theme/image.css */
+.image img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  min-width: 100%;
+  height: auto;
+}
+/* @ckeditor/ckeditor5-image/theme/image.css */
+.image-inline {
+  /*
+     * Normally, the .image-inline would have "display: inline-block" and "img { width: 100% }" (to follow the wrapper while resizing).;
+     * Unfortunately, together with "srcset", it gets automatically stretched up to the width of the editing root.
+     * This strange behavior does not happen with inline-flex.
+     */
+  display: inline-flex;
+  max-width: 100%;
+  align-items: flex-start;
+}
+/* @ckeditor/ckeditor5-image/theme/image.css */
+.image-inline picture {
+  display: flex;
+}
+/* @ckeditor/ckeditor5-image/theme/image.css */
+.image-inline picture,
+.image-inline img {
+  flex-grow: 1;
+  flex-shrink: 1;
+  max-width: 100%;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+ol {
+  list-style-type: decimal;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+ol ol {
+  list-style-type: lower-latin;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+ol ol ol {
+  list-style-type: lower-roman;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+ol ol ol ol {
+  list-style-type: upper-latin;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+ol ol ol ol ol {
+  list-style-type: upper-roman;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+ul {
+  list-style-type: disc;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+ul ul {
+  list-style-type: circle;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+ul ul ul {
+  list-style-type: square;
+}
+/* @ckeditor/ckeditor5-list/theme/list.css */
+ul ul ul ul {
+  list-style-type: square;
+}
+/* @ckeditor/ckeditor5-image/theme/imagecaption.css */
+.image > figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  word-break: break-word;
+  color: #333333;
+  background-color: #F9F9F9;
+  padding: 0.6em;
+  font-size: 0.75em;
+  outline-offset: -1px;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.image-style-block-align-left,
+.image-style-block-align-right {
+  max-width: calc(100% - 1.5em);
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.image-style-align-left,
+.image-style-align-right {
+  clear: none;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.image-style-side {
+  float: right;
+  margin-left: 1.5em;
+  max-width: 50%;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.image-style-align-left {
+  float: left;
+  margin-right: 1.5em;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.image-style-align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.image-style-align-right {
+  float: right;
+  margin-left: 1.5em;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.image-style-block-align-right {
+  margin-right: 0;
+  margin-left: auto;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.image-style-block-align-left {
+  margin-left: 0;
+  margin-right: auto;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+p + .image-style-align-left,
+p + .image-style-align-right,
+p + .image-style-side {
+  margin-top: 0;
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.image-inline.image-style-align-left,
+.image-inline.image-style-align-right {
+  margin-top: calc(1.5em / 2);
+  margin-bottom: calc(1.5em / 2);
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.image-inline.image-style-align-left {
+  margin-right: calc(1.5em / 2);
+}
+/* @ckeditor/ckeditor5-image/theme/imagestyle.css */
+.image-inline.image-style-align-right {
+  margin-left: calc(1.5em / 2);
+}
+/* @ckeditor/ckeditor5-highlight/theme/highlight.css */
+.marker-yellow {
+  background-color: #F5E819;
+}
+/* @ckeditor/ckeditor5-highlight/theme/highlight.css */
+.marker-green {
+  background-color: #63F563;
+}
+/* @ckeditor/ckeditor5-highlight/theme/highlight.css */
+.marker-pink {
+  background-color: #FA69E2;
+}
+/* @ckeditor/ckeditor5-highlight/theme/highlight.css */
+.marker-blue {
+  background-color: #3FA9F5;
+}
+/* @ckeditor/ckeditor5-highlight/theme/highlight.css */
+.pen-red {
+  color: #FF4040;
+  background-color: transparent;
+}
+/* @ckeditor/ckeditor5-highlight/theme/highlight.css */
+.pen-green {
+  color: #1EFF1E;
+  background-color: transparent;
+}
+/* @ckeditor/ckeditor5-block-quote/theme/blockquote.css */
+blockquote {
+  overflow: hidden;
+  padding-right: 1.5em;
+  padding-left: 1.5em;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+  border-left: solid 5px #CCCCCC;
+}
+/* @ckeditor/ckeditor5-block-quote/theme/blockquote.css */
+blockquote {
+  border-left: 0;
+  border-right: solid 5px #CCCCCC;
+}
+/* @ckeditor/ckeditor5-basic-styles/theme/code.css */
+code {
+  background-color: rgba(200, 200, 200, 0.3);
+  padding: 0.15em;
+  border-radius: 2px;
+}
+/* @ckeditor/ckeditor5-font/theme/fontsize.css */
+.text-tiny {
+  font-size: 0.7em;
+}
+/* @ckeditor/ckeditor5-font/theme/fontsize.css */
+.text-small {
+  font-size: 0.85em;
+}
+/* @ckeditor/ckeditor5-font/theme/fontsize.css */
+.text-big {
+  font-size: 1.4em;
+  line-height: 1.4em;
+}
+/* @ckeditor/ckeditor5-font/theme/fontsize.css */
+.text-huge {
+  font-size: 1.8em;
+  line-height: 1.8em;
+}
+/* @ckeditor/ckeditor5-mention/theme/mention.css */
+.mention {
+  background: rgba(255, 85, 85, 0.1);
+  color: #FF5555;
+}
+/* @ckeditor/ckeditor5-horizontal-line/theme/horizontalline.css */
+hr {
+  margin: 15px 0;
+  height: 4px;
+  background: #D9D9D9;
+  border: 0;
+}
+/* @ckeditor/ckeditor5-code-block/theme/codeblock.css */
+pre {
+  padding: 1em;
+  color: #343434;
+  background: rgba(200, 200, 200, 0.3);
+  border: 1px solid #C4C4C4;
+  border-radius: 2px;
+  text-align: left;
+  direction: ltr;
+  tab-size: 4;
+  white-space: pre-wrap;
+  font-style: normal;
+  min-width: 200px;
+}
+/* @ckeditor/ckeditor5-code-block/theme/codeblock.css */
+pre code {
+  background: unset;
+  padding: 0;
+  border-radius: 0;
+}
+@media print {
+  /* @ckeditor/ckeditor5-page-break/theme/pagebreak.css */
+  .page-break {
+    padding: 0;
+  }
+  /* @ckeditor/ckeditor5-page-break/theme/pagebreak.css */
+  .page-break::after {
+    display: none;
+  }
+}
+
+</styles>`;
+
+export const convertTagName = (data) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(data, "text/html");
+
+  const addStyleToElements = (elements) => {
+    convertElements({
+      elements,
+      targetElement: "figure",
+      callback: addFigureStyle,
+    });
+    convertElements({
+      elements,
+      targetElement: "mark",
+      outputElement: "span",
+    });
+  };
+  addStyleToElements(doc);
+  return doc.body.innerHTML;
+};
+
+export const convertClassNameToInlineStyle = (data) => {
+  const html = `
+  <html>
+  <head>
+    <style>${styles}</style>
+  </head>
+  <body>
+   ${convertTagName(data)}
+  </body>
+</html>
+`;
+
+  return juice(html);
+};
+
+const CkEditor = (props) => {
+  const { editorCallback, onChange, readOnly } = props;
+
+  const triggerChangedValue = (editor) => {
+    editor.model.document.on("change:data", () => {
+      onChange && onChange(editor.getData());
+    });
+  };
+
+  useEffect(() => {
+    let mainEditor;
+    try {
+      ClassicEditor.create(document.querySelector("#editor"), {
+        toolbar: {
+          items: [
+            "heading",
+            "|",
+            "bold",
+            "italic",
+            "fontColor",
+            "fontSize",
+            "fontFamily",
+            "fontBackgroundColor",
+            "highlight",
+            "link",
+            "alignment",
+            "bulletedList",
+            "numberedList",
+            "|",
+            "outdent",
+            "indent",
+            "|",
+            "imageUpload",
+            "blockQuote",
+            "insertTable",
+            "mediaEmbed",
+            "codeBlock",
+            "htmlEmbed",
+            "pageBreak",
+            "specialCharacters",
+            "restrictedEditingException",
+            "code",
+            "|",
+            "undo",
+            "redo",
+          ],
+          shouldNotGroupWhenFull: true,
+        },
+        language: "vi",
+        image: {
+          styles: ["alignLeft", "alignCenter", "alignRight"],
+          resizeUnit: "px",
+          resizeOptions: [
+            {
+              name: "resizeImage:original",
+              label: "Original",
+              value: null,
+            },
+          ],
+          toolbar: [
+            "imageTextAlternative",
+            "|",
+            "imageStyle:alignLeft",
+            "imageStyle:alignCenter",
+            "imageStyle:alignRight",
+            "|",
+            "linkImage",
+            // 'resizeImage',
+          ],
+        },
+        table: {
+          contentToolbar: ["tableColumn", "tableRow", "mergeTableCells"],
+        },
+        mediaEmbed: {
+          previewsInData: true,
+        },
+        licenseKey: "",
+        fontBackgroundColor: {
+          colors: [
+            { color: "#FFFFFF", label: "White" },
+            { color: "#B3B3B3", label: "Gray" },
+            { color: "#343434", label: "Black" },
+            { color: "rgba(200, 200, 200, 0.3)", label: "Transparent Gray" },
+            { color: "#59A67E", label: "Light Green" },
+            { color: "#FF0000", label: "Red " },
+            { color: "#0000FF", label: "Blue " },
+            { color: "#FFA500", label: "Orange " },
+          ],
+        },
+        fontColor: {
+          colors: [
+            {
+              color: "#000000",
+              label: "Black",
+            },
+            {
+              color: "#4d4d4d",
+              label: "Dim grey",
+            },
+            {
+              color: "#999999",
+              label: "Grey",
+            },
+            {
+              color: "#E6E6E6",
+              label: "Light grey",
+            },
+            {
+              color: "#E6E6E6",
+              label: "White",
+            },
+            {
+              color: "#E64D4D",
+              label: "Red",
+            },
+            {
+              color: "#E6994D",
+              label: "Orange",
+            },
+            {
+              color: "#E6E64D",
+              label: "Yellow",
+            },
+            {
+              color: "#99E64D",
+              label: "Light green",
+            },
+            {
+              color: "#4DE64D",
+              label: "Green",
+            },
+            {
+              color: "#4DE699",
+              label: "Aquamarine",
+            },
+            {
+              color: "#4DE6E6",
+              label: "Turquoise",
+            },
+            {
+              color: "#4D99E6",
+              label: "Light blue",
+            },
+            {
+              color: "#4D4DE6",
+              label: "Blue",
+            },
+            {
+              color: "#994DE6",
+              label: "Purple",
+            },
+            {
+              color: "#0095D9",
+              label: "Main color",
+            },
+          ],
+        },
+      })
+        .then((editor) => {
+          editorCallback && editorCallback?.(editor);
+          const EditorState = editor;
+          mainEditor = editor;
+          EditorState.plugins.get("FileRepository").createUploadAdapter = (
+            loader,
+          ) => {
+            return new MyUploadAdapter(loader);
+          };
+
+          triggerChangedValue(editor);
+
+          if (readOnly) {
+            editor.isReadOnly = true;
+            const toolbarElement = editor.ui.view.toolbar.element;
+            toolbarElement.style.display = "none";
+          }
+          window.editor = EditorState;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } catch (err) {
+      console.error(err);
+    }
+    return () => {
+      mainEditor?.destroy?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (props.data && window.editor && !window?.editor?.getData?.()) {
+      window?.editor?.setData?.(props.data);
+    }
+  }, [props]);
+
+  useEffect(() => {
+    if (props.data && window.editor) {
+      window?.editor?.setData?.(props.data);
+    }
+  }, [props?.data]);
+
+  // useEffect(() => {
+  //   window?.editor?.getData && props.onChange(window?.editor?.getData());
+  // }, [window?.editor?.getData()]);
+
+  return <textarea id="editor">{props.data}</textarea>;
+};
+
+export default CkEditor;

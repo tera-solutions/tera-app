@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    "./*": "./src/*.tsx"
+    "./*": "./src/*.tsx",
+    "./images/*": "./src/images/*",
+    "./icons/*": "./src/icons/*",
+    "./fonts/*": "./src/fonts/*"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",

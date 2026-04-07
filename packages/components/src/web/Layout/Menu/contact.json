@@ -1,0 +1,196 @@
+{
+  "groupMenu": [
+    {
+      "id": "r3",
+      "title": "CSKH",
+      "path": "/customer-care/consulting-ticket/list",
+      "icon": "menu3",
+      "key": "customer-care",
+      "code": "cs",
+      "permission": "cs"
+    }
+  ],
+  "parentGroup": [
+    {
+      "id": 11,
+      "title": "CSKH",
+      "key": "customer-care-activity",
+      "parentKey": "customer-care"
+    },
+    {
+      "id": 12,
+      "title": "Chat",
+      "key": "customer-care",
+      "parentKey": "customer-care"
+    },
+    {
+      "id": 13,
+      "title": "Báo cáo",
+      "key": "customer-care-report",
+      "parentKey": "customer-care"
+    }
+  ],
+  "parentMenu": [
+    {
+      "id": 39,
+      "title": "Thẻ tư vấn",
+      "path": "/customer-care/consulting-ticket/list",
+      "icon": "swatch",
+      "key": "consulting-ticket",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care-activity",
+      "permission": "cs_care_view_consulting_ticket_list"
+    },
+    {
+      "id": 40,
+      "title": "Nhiệm vụ",
+      "path": "/customer-care/task",
+      "icon": "check-badge",
+      "key": "task",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care-activity",
+      "permission": "cs_care_view_task_list"
+    },
+    {
+      "id": 41,
+      "title": "Lịch hẹn",
+      "path": "/customer-care/appointment",
+      "icon": "list-bullet",
+      "key": "appointment",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care-activity",
+      "permission": "cs_care_view_appointment_list"
+    },
+    {
+      "id": 42,
+      "title": "Cuộc gọi",
+      "path": "/customer-care/call",
+      "icon": "phone",
+      "key": "call",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care-activity",
+      "permission": "cs_care_view_call_list"
+    },
+    {
+      "id": 44,
+      "title": "Bảo hành",
+      "path": "/customer-care/guarantee/feature-in-development",
+      "icon": "check-circle",
+      "key": "guarantee",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care-activity",
+      "permission": ""
+    },
+    {
+      "id": 43,
+      "title": "Bàn giao công việc",
+      "path": "/customer-care/change-implementer",
+      "icon": "newspaper",
+      "key": "change-implementer",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care-activity",
+      "permission": "cs_care_view_change_implementer_list"
+    },
+    {
+      "id": 45,
+      "title": "Tổng đài ảo",
+      "path": "/customer-care/virtual-switchboard/feature-in-development",
+      "icon": "phone",
+      "key": "virtual-switchboard",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care",
+      "permission": ""
+    },
+    {
+      "id": 47,
+      "title": "Dịch vụ Zalo OA",
+      "path": "/customer-care/zalo-oa/feature-in-development",
+      "icon": "custom-zalo-oa",
+      "key": "zalo-oa",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care",
+      "permission": ""
+    },
+    {
+      "id": 48,
+      "title": "Mesenger Chat",
+      "path": "/customer-care/messenger-chat/feature-in-development",
+      "icon": "custom-messenger-chat",
+      "key": "messenger-chat",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care",
+      "permission": ""
+    },
+    {
+      "id": 49,
+      "title": "Zalo Chat",
+      "path": "/customer-care/zalo-chat/feature-in-development",
+      "icon": "custom-zalo",
+      "key": "zalo-chat",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care",
+      "permission": ""
+    },
+    {
+      "id": 50,
+      "title": "Shopee Chat",
+      "path": "/customer-care/shopee-chat/feature-in-development",
+      "icon": "custom-shopee",
+      "key": "shopee -chat",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care",
+      "permission": ""
+    },
+    {
+      "id": 51,
+      "title": "Lazada chat",
+      "path": "/customer-care/lazada-chat/feature-in-development",
+      "icon": "custom-lazada",
+      "key": "lazada-chat",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care",
+      "permission": ""
+    },
+    {
+      "id": 52,
+      "title": "Instagram",
+      "path": "/customer-care/instagram/feature-in-development",
+      "icon": "custom-instagram",
+      "key": "instagram",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care",
+      "permission": ""
+    },
+    {
+      "id": 53,
+      "title": "Chat live",
+      "path": "/customer-care/chat-live/feature-in-development",
+      "icon": "custom-chat-live",
+      "key": "chat-live",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care",
+      "permission": ""
+    },
+    {
+      "id": 54,
+      "title": "Hoạt động",
+      "path": "/customer-care/activity-report/list",
+      "icon": "custom-chart-pie-check",
+      "key": "activity-report",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care-report",
+      "permission": "cs_report_view_activity_report_list"
+    },
+    {
+      "id": 55,
+      "title": "Thẻ tư vấn",
+      "path": "/customer-care/consultation-ticket-report/list",
+      "icon": "custom-chart-pie-tag",
+      "key": "consultation-ticket-report",
+      "parentKey": "customer-care",
+      "parentGroupKey": "customer-care-report",
+      "permission": "cs_report_view_consulting_ticket_report_list"
+    }
+  ],
+  "subMenu": []
+}

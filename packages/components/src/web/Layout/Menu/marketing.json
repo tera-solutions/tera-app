@@ -1,0 +1,177 @@
+{
+  "groupMenu": [
+    {
+      "id": "r2",
+      "title": "Marketing",
+      "path": "/marketing/campaign-management",
+      "icon": "menu2",
+      "key": "marketing",
+      "code": "mkt",
+      "permission": "mkt"
+    }
+  ],
+  "parentGroup": [
+    {
+      "id": 7,
+      "title": "Cơ hội",
+      "key": "marketing-opportunity",
+      "parentKey": "marketing"
+    },
+    {
+      "id": 8,
+      "title": "Marketing",
+      "key": "marketing-marketing",
+      "parentKey": "marketing"
+    },
+    {
+      "id": 9,
+      "title": "Báo cáo",
+      "key": "marketing-report",
+      "parentKey": "marketing"
+    }
+  ],
+  "parentMenu": [
+    {
+      "id": 26,
+      "title": "Chiến dịch",
+      "path": "/marketing/campaign-management",
+      "icon": "rectangle-stack",
+      "key": "campaign-management",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-opportunity",
+      "permission": "mkt_opportunity_view_campaign_list"
+    },
+    {
+      "id": 27,
+      "title": "Tiềm năng",
+      "path": "/marketing/lead-management",
+      "icon": "star",
+      "key": "lead-management",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-opportunity",
+      "permission": "mkt_opportunity_view_lead_list"
+    },
+    {
+      "id": 28,
+      "title": "Cơ hội",
+      "path": "/marketing/opportunity-management",
+      "icon": "heart",
+      "key": "opportunity-management",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-opportunity",
+      "permission": "mkt_opportunity_view_opportunity_list"
+    },
+    {
+      "id": 27,
+      "title": "Backlog",
+      "path": "/marketing/backlog",
+      "icon": "custom-bar-vertical",
+      "key": "backlog",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-opportunity",
+      "permission": "mkt_opportunity_view_campaign_list"
+    },
+
+    {
+      "id": 29,
+      "title": "Thống kê",
+      "path": "/marketing/email-marketing-statistic",
+      "icon": "circle-stack",
+      "key": "email-marketing-statistic",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-marketing",
+      "permission": "mkt_marketing_view_email_marketing_statistic"
+    },
+    {
+      "id": 30,
+      "title": "SMS markerting",
+      "path": "/marketing/sms-markerting/feature-in-development",
+      "icon": "chat-bubble-oval-left-ellipsis",
+      "key": "sms-markerting",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-marketing",
+      "permission": ""
+    },
+    {
+      "id": 31,
+      "title": "Zalo marketing",
+      "path": "/marketing/zalo-markerting/feature-in-development",
+      "icon": "custom-zalo",
+      "key": "zalo-markerting",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-marketing",
+      "permission": ""
+    },
+    {
+      "id": 32,
+      "title": "Facebook marketing",
+      "path": "/marketing/facebook-markerting/feature-in-development",
+      "icon": "custom-facebook",
+      "key": "facebook-markerting",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-marketing",
+      "permission": ""
+    },
+    {
+      "id": 33,
+      "title": "Google Ads",
+      "path": "/marketing/google-ads/feature-in-development",
+      "icon": "custom-google-ads",
+      "key": "google-ads",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-marketing",
+      "permission": ""
+    },
+    {
+      "id": 34,
+      "title": "Facebook Ads",
+      "path": "/marketing/facebook-ads/feature-in-development",
+      "icon": "custom-facebook-ads",
+      "key": "facebook-ads",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-marketing",
+      "permission": ""
+    },
+    {
+      "id": 35,
+      "title": "Công cụ lập kế hoạch",
+      "path": "/marketing/planning-tool/feature-in-development",
+      "icon": "puzzle-piece",
+      "key": "planning-tool",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-marketing",
+      "permission": ""
+    },
+    {
+      "id": 36,
+      "title": "Phân tích BI",
+      "path": "/marketing/bi-analysis/feature-in-development",
+      "icon": "rss",
+      "key": "bi-analysis",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-marketing",
+      "permission": ""
+    },
+    {
+      "id": 37,
+      "title": "Cơ hội",
+      "path": "/marketing/opportunity-report/list",
+      "icon": "custom-chart-pie-heart",
+      "key": "opportunity-report",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-report",
+      "permission": "mkt_report_view_opportunity_report_list"
+    },
+    {
+      "id": 38,
+      "title": "Chiến dịch",
+      "path": "/marketing/campaign-report/list",
+      "icon": "custom-chart-pie-stack",
+      "key": "campaign-report",
+      "parentKey": "marketing",
+      "parentGroupKey": "marketing-report",
+      "permission": "mkt_report_view_campaign_report_list"
+    }
+  ],
+  "subMenu": []
+}

@@ -1,0 +1,506 @@
+{
+  "groupMenu": [
+    {
+      "id": "r1",
+      "code": "sale",
+      "title": "Bán hàng",
+      "path": "/sale/customer/list",
+      "icon": "menu16",
+      "key": "sale",
+      "permission": "sale"
+    }
+  ],
+  "parentGroup": [
+    {
+      "id": 1,
+      "title": "Khách hàng",
+      "key": "sale-customer",
+      "parentKey": "sale"
+    },
+    {
+      "id": 2,
+      "title": "Đơn hàng",
+      "key": "sale-order",
+      "parentKey": "sale"
+    },
+    {
+      "id": 37,
+      "title": "Bán lẻ",
+      "key": "sale-pos",
+      "parentKey": "sale"
+    },
+    {
+      "id": 3,
+      "title": "Tính hợp khác",
+      "key": "sale-integrate",
+      "parentKey": "sale"
+    },
+    {
+      "id": 4,
+      "title": "Chương trình",
+      "key": "sale-program",
+      "parentKey": "sale"
+    },
+    {
+      "id": 5,
+      "title": "Báo cáo",
+      "key": "sale-report",
+      "parentKey": "sale"
+    }
+  ],
+  "parentMenu": [
+    {
+      "id": 1,
+      "title": "Quản lý khách hàng",
+      "path": "/sale/customer/list",
+      "icon": "user-group",
+      "key": "customer",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-customer",
+      "permission": "sale_customer_view_customer_list"
+    },
+    {
+      "id": 2,
+      "title": "Khách hàng tiềm năng",
+      "path": "/sale/customer-lead/feature-in-development",
+      "icon": "star",
+      "key": "customer-lead",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-customer",
+      "permission": ""
+    },
+    {
+      "id": 3,
+      "title": "Liên hệ",
+      "path": "/sale/contact/list",
+      "icon": "phone",
+      "key": "contact",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-customer",
+      "permission": "sale_customer_view_contact_list"
+    },
+    {
+      "id": 4,
+      "title": "Báo giá",
+      "path": "/sale/price-quotation/list",
+      "icon": "currency-dollar",
+      "key": "price-quotation",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-order",
+      "permission": "sale_sale_view_quotation_list"
+    },
+    {
+      "id": 5,
+      "title": "Đơn bán hàng",
+      "path": "/sale/sale-order/list",
+      "icon": "truck",
+      "key": "sale-order",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-order",
+      "permission": "sale_sale_view_sale_order_list"
+    },
+    {
+      "id": 7,
+      "title": "Đơn trả hàng bán",
+      "path": "/sale/sale-order-return/list",
+      "icon": "arrow-uturn-left",
+      "key": "sale-order-return",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-order",
+      "permission": "sale_sale_view_sale_order_return_list"
+    },
+    {
+      "id": 6,
+      "title": "Hợp đồng bán",
+      "path": "/sale/order-contract/feature-in-development",
+      "icon": "building-storefront",
+      "key": "order-contract",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-order",
+      "permission": ""
+    },
+
+    {
+      "id": 16,
+      "title": "Quản lý máy bán hàng",
+      "path": "/sale/sale-pos/feature-in-development",
+      "icon": "rocket-launch",
+      "key": "sale-pos",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-pos",
+      "permission": ""
+    },
+    {
+      "id": 16,
+      "title": "Kiot Việt",
+      "path": "/sale/kiot-viet/feature-in-development",
+      "icon": "custom-kiot-viet",
+      "key": "kiot-viet",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-pos",
+      "permission": ""
+    },
+    {
+      "id": 17,
+      "title": "Sapo",
+      "path": "/sale/sapo/feature-in-development",
+      "icon": "custom-sapo",
+      "key": "sapo",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-pos",
+      "permission": ""
+    },
+    {
+      "id": 18,
+      "title": "Pancake",
+      "path": "/sale/pancake/feature-in-development",
+      "icon": "custom-pancake",
+      "key": "pancake",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-pos",
+      "permission": ""
+    },
+    {
+      "id": 19,
+      "title": "Tpos",
+      "path": "/sale/tpos/feature-in-development",
+      "icon": "custom-tpos",
+      "key": "tpos",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-pos",
+      "permission": ""
+    },
+    {
+      "id": 20,
+      "title": "Nhanh.vn",
+      "path": "/sale/nhanhvn/feature-in-development",
+      "icon": "custom-nhanh-vn",
+      "key": "nhanhvn",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-pos",
+      "permission": ""
+    },
+    {
+      "id": 10,
+      "title": "Shopee",
+      "path": "/sale/shopee/config",
+      "icon": "custom-shopee",
+      "key": "shopee",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-integrate",
+      "permission": ""
+    },
+    {
+      "id": 11,
+      "title": "Lazada",
+      "path": "/sale/lazada",
+      "icon": "custom-lazada",
+      "key": "lazada",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-integrate",
+      "permission": ""
+    },
+    {
+      "id": 12,
+      "title": "Tiki",
+      "path": "/sale/tiki",
+      "icon": "custom-tiki",
+      "key": "tiki",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-integrate",
+      "permission": ""
+    },
+    {
+      "id": 13,
+      "title": "Sendo",
+      "path": "/sale/sendo",
+      "icon": "custom-sendo",
+      "key": "sendo",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-integrate",
+      "permission": ""
+    },
+    {
+      "id": 14,
+      "title": "Tiktok Shop",
+      "path": "/sale/tiktok",
+      "icon": "custom-tiktok",
+      "key": "tiktok",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-integrate",
+      "permission": ""
+    },
+    {
+      "id": 15,
+      "title": "Facebook Shop",
+      "path": "/sale/facebook/feature-in-development",
+      "icon": "custom-facebook",
+      "key": "facebook",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-integrate",
+      "permission": ""
+    },
+    {
+      "id": 21,
+      "title": "Ưu đãi - khuyến mãi",
+      "path": "/sale/discount/feature-in-development",
+      "icon": "sparkles",
+      "key": "discount",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-program",
+      "permission": ""
+    },
+    {
+      "id": 22,
+      "title": "Tích điểm",
+      "path": "/sale/accumulate-points/feature-in-development",
+      "icon": "check-circle",
+      "key": "accumulate-points",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-program",
+      "permission": ""
+    },
+    {
+      "id": 24,
+      "title": "Chiến dịch kaban",
+      "path": "/sale/kanban-campaign/feature-in-development",
+      "icon": "custom-bar-vertical",
+      "key": "kanban-campaign",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-program",
+      "permission": ""
+    },
+    {
+      "id": 25,
+      "title": "Bán hàng",
+      "path": "/sale/sell-report/list",
+      "icon": "chart-pie",
+      "key": "sell-report",
+      "parentKey": "sale",
+      "parentGroupKey": "sale-report",
+      "permission": "sale_report_view_sale_report_list"
+    }
+  ],
+  "subMenu": [
+    {
+      "id": 1,
+      "name": "Tổng quan",
+      "icon": "briefcase",
+      "path": "/sale/shopee/general",
+      "status": "active",
+      "code": "s1",
+      "parentKey": "shopee",
+      "activeKeys": "general"
+    },
+    {
+      "id": 2,
+      "name": "Cấu hình",
+      "icon": "briefcase",
+      "path": "/sale/shopee/config",
+      "status": "active",
+      "code": "s2",
+      "parentKey": "shopee",
+      "activeKeys": "config"
+    },
+    {
+      "id": 1022,
+      "name": "Đơn hàng",
+      "icon": "briefcase",
+      "path": "/sale/shopee/order/list",
+      "status": "active",
+      "code": "s100",
+      "parentKey": "shopee",
+      "activeKeys": "order"
+    },
+    {
+      "id": 3,
+      "name": "Sản phẩm",
+      "icon": "briefcase",
+      "path": "/sale/shopee/products",
+      "status": "active",
+      "code": "s3",
+      "parentKey": "shopee",
+      "activeKeys": "products"
+    },
+    {
+      "id": 4,
+      "name": "Sản phẩm Shopee",
+      "icon": "briefcase",
+      "path": "/sale/shopee/products-shopee",
+      "status": "active",
+      "code": "s4",
+      "parentKey": "shopee",
+      "activeKeys": "products-shopee"
+    },
+    {
+      "id": 5,
+      "name": "Tổng quan",
+      "icon": "briefcase",
+      "path": "/sale/lazada",
+      "status": "active",
+      "code": "s1",
+      "parentKey": "lazada",
+      "activeKeys": ""
+    },
+    {
+      "id": 6,
+      "name": "Cấu hình",
+      "icon": "briefcase",
+      "path": "/sale/lazada/config",
+      "status": "active",
+      "code": "s2",
+      "parentKey": "lazada",
+      "activeKeys": "config"
+    },
+    {
+      "id": 7,
+      "name": "Sản phẩm",
+      "icon": "briefcase",
+      "path": "/sale/lazada/products",
+      "status": "active",
+      "code": "s3",
+      "parentKey": "lazada",
+      "activeKeys": "products"
+    },
+    {
+      "id": 8,
+      "name": "Sản phẩm Lazada",
+      "icon": "briefcase",
+      "path": "/sale/lazada/products-lazada",
+      "status": "active",
+      "code": "s4",
+      "parentKey": "lazada",
+      "activeKeys": "products-lazada"
+    },
+    {
+      "id": 9,
+      "name": "Tổng quan",
+      "icon": "briefcase",
+      "path": "/sale/tiktok",
+      "status": "active",
+      "code": "s1",
+      "parentKey": "tiktok",
+      "activeKeys": ""
+    },
+    {
+      "id": 10,
+      "name": "Cấu hình",
+      "icon": "briefcase",
+      "path": "/sale/tiktok/config",
+      "status": "active",
+      "code": "s2",
+      "parentKey": "tiktok",
+      "activeKeys": "config"
+    },
+    {
+      "id": 1111,
+      "name": "Đơn hàng",
+      "icon": "briefcase",
+      "path": "/sale/tiktok/order/list",
+      "status": "active",
+      "code": "s100",
+      "parentKey": "tiktok",
+      "activeKeys": "order"
+    },
+    {
+      "id": 11,
+      "name": "Sản phẩm",
+      "icon": "briefcase",
+      "path": "/sale/tiktok/products",
+      "status": "active",
+      "code": "s3",
+      "parentKey": "tiktok",
+      "activeKeys": "products"
+    },
+    {
+      "id": 12,
+      "name": "Sản phẩm Tiktok",
+      "icon": "briefcase",
+      "path": "/sale/tiktok/products-tiktok",
+      "status": "active",
+      "code": "s4",
+      "parentKey": "tiktok",
+      "activeKeys": "products-tiktok"
+    },
+    {
+      "id": 13,
+      "name": "Tổng quan",
+      "icon": "briefcase",
+      "path": "/sale/sendo",
+      "status": "active",
+      "code": "s1",
+      "parentKey": "sendo",
+      "activeKeys": ""
+    },
+    {
+      "id": 14,
+      "name": "Cấu hình",
+      "icon": "briefcase",
+      "path": "/sale/sendo/config",
+      "status": "active",
+      "code": "s2",
+      "parentKey": "sendo",
+      "activeKeys": "config"
+    },
+    {
+      "id": 15,
+      "name": "Sản phẩm",
+      "icon": "briefcase",
+      "path": "/sale/sendo/products",
+      "status": "active",
+      "code": "s3",
+      "parentKey": "sendo",
+      "activeKeys": "products"
+    },
+    {
+      "id": 16,
+      "name": "Sản phẩm Sendo",
+      "icon": "briefcase",
+      "path": "/sale/sendo/products-sendo",
+      "status": "active",
+      "code": "s4",
+      "parentKey": "sendo",
+      "activeKeys": "products-sendo"
+    },
+    {
+      "id": 13,
+      "name": "Tổng quan",
+      "icon": "briefcase",
+      "path": "/sale/tiki",
+      "status": "active",
+      "code": "s1",
+      "parentKey": "tiki",
+      "activeKeys": ""
+    },
+    {
+      "id": 14,
+      "name": "Cấu hình",
+      "icon": "briefcase",
+      "path": "/sale/tiki/config",
+      "status": "active",
+      "code": "s2",
+      "parentKey": "tiki",
+      "activeKeys": "config"
+    },
+    {
+      "id": 15,
+      "name": "Sản phẩm",
+      "icon": "briefcase",
+      "path": "/sale/tiki/products",
+      "status": "active",
+      "code": "s3",
+      "parentKey": "tiki",
+      "activeKeys": "products"
+    },
+    {
+      "id": 16,
+      "name": "Sản phẩm Tiki",
+      "icon": "briefcase",
+      "path": "/sale/tiki/products-tiki",
+      "status": "active",
+      "code": "s4",
+      "parentKey": "tiki",
+      "activeKeys": "products-tiki"
+    }
+  ]
+}

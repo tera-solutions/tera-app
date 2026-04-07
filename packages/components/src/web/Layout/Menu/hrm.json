@@ -1,0 +1,126 @@
+{
+  "groupMenu": [
+    {
+      "id": "r11",
+      "title": "Nhân sự",
+      "path": "/hrm/employee/list",
+      "icon": "menu12",
+      "key": "hrm",
+      "code": "hr",
+      "permission": "hr"
+    }
+  ],
+  "parentGroup": [
+    {
+      "id": 31,
+      "title": "Nhân sự",
+      "key": "hrm",
+      "parentKey": "hrm"
+    },
+    {
+      "id": 40,
+      "title": "Văn bản",
+      "key": "document",
+      "parentKey": "hrm"
+    },
+    {
+      "id": 32,
+      "title": "Báo cáo",
+      "key": "hrm-report",
+      "parentKey": "hrm"
+    }
+  ],
+  "parentMenu": [
+    {
+      "id": 107,
+      "title": "Nhân viên",
+      "path": "/hrm/employee/list",
+      "icon": "archive-box",
+      "key": "employee",
+      "parentKey": "hrm",
+      "parentGroupKey": "hrm",
+      "permission": "hr_hr_create_employee"
+    },
+    {
+      "id": 108,
+      "title": "Phòng ban",
+      "path": "/hrm/department/feature-in-development",
+      "icon": "building-office",
+      "key": "department",
+      "parentKey": "hrm",
+      "parentGroupKey": "hrm",
+      "permission": ""
+    },
+    {
+      "id": 109,
+      "title": "Sơ đồ tổ chức",
+      "path": "/hrm/organizational-chart/feature-in-development",
+      "icon": "share",
+      "key": "organizational-chart",
+      "parentKey": "hrm",
+      "parentGroupKey": "hrm",
+      "permission": ""
+    },
+    {
+      "id": 110,
+      "title": "KPI hiệu suất",
+      "path": "/hrm/kpi/feature-in-development",
+      "icon": "chart-bar",
+      "key": "kpi",
+      "parentKey": "hrm",
+      "parentGroupKey": "hrm",
+      "permission": ""
+    },
+    {
+      "id": 211,
+      "title": "Quản lý văn bản",
+      "path": "/hrm/document-1/feature-in-development",
+      "icon": "chart-bar",
+      "key": "document-1",
+      "parentKey": "hrm",
+      "parentGroupKey": "document",
+      "permission": ""
+    },
+    {
+      "id": 212,
+      "title": "Nhóm văn bản",
+      "path": "/hrm/document-2/feature-in-development",
+      "icon": "chart-bar",
+      "key": "document-2",
+      "parentKey": "hrm",
+      "parentGroupKey": "document",
+      "permission": ""
+    },
+    {
+      "id": 213,
+      "title": "Loại văn bản",
+      "path": "/hrm/document-3/feature-in-development",
+      "icon": "chart-bar",
+      "key": "document-3",
+      "parentKey": "hrm",
+      "parentGroupKey": "document",
+      "permission": ""
+    },
+    {
+      "id": 214,
+      "title": "Kiểu văn bản",
+      "path": "/hrm/document-4/feature-in-development",
+      "icon": "chart-bar",
+      "key": "document-4",
+      "parentKey": "hrm",
+      "parentGroupKey": "document",
+      "permission": ""
+    },
+    {
+      "id": 111,
+      "title": "Báo cáo",
+      "path": "/hrm/report/feature-in-development",
+      "icon": "chart-pie",
+      "key": "report",
+      "parentKey": "hrm",
+      "parentGroupKey": "hrm-report",
+      "permission": ""
+    }
+  ],
+  "subMenu": []
+}

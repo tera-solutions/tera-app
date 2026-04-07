@@ -1,0 +1,146 @@
+{
+  "groupMenu": [
+    {
+      "id": "r4",
+      "title": "Kho",
+      "path": "/warehouse/product-management/list",
+      "icon": "menu4",
+      "key": "warehouse",
+      "code": "wh",
+      "permission": "wh"
+    }
+  ],
+  "parentGroup": [
+    {
+      "id": 14,
+      "title": "Sản phẩm",
+      "key": "warehouse-product",
+      "parentKey": "warehouse"
+    },
+    {
+      "id": 15,
+      "title": "Kho",
+      "key": "warehouse",
+      "parentKey": "warehouse"
+    },
+    {
+      "id": 16,
+      "title": "Báo cáo",
+      "key": "warehouse-report",
+      "parentKey": "warehouse"
+    }
+  ],
+  "parentMenu": [
+    {
+      "id": 56,
+      "title": "Sản phẩm",
+      "path": "/warehouse/product-management/list",
+      "icon": "shopping-bag",
+      "key": "product-management",
+      "parentKey": "warehouse",
+      "parentGroupKey": "warehouse-product",
+      "permission": "wh_product_view_product_list"
+    },
+    {
+      "id": 57,
+      "title": "Danh mục",
+      "path": "/warehouse/category/list",
+      "icon": "square-3-stack-3d",
+      "key": "category",
+      "parentKey": "warehouse",
+      "parentGroupKey": "warehouse-product",
+      "permission": "wh_product_view_category_list"
+    },
+    {
+      "id": 58,
+      "title": "Nhãn hiệu",
+      "path": "/warehouse/brand/list",
+      "icon": "tag",
+      "key": "brand",
+      "parentKey": "warehouse",
+      "parentGroupKey": "warehouse-product",
+      "permission": "wh_product_view_brand_list"
+    },
+    {
+      "id": 59,
+      "title": "Đơn vị",
+      "path": "/warehouse/unit/list",
+      "icon": "square-2-stack",
+      "key": "unit",
+      "parentKey": "warehouse",
+      "parentGroupKey": "warehouse-product",
+      "permission": "wh_product_view_unit_list"
+    },
+    {
+      "id": 60,
+      "title": "Kiểm hàng xuất kho",
+      "path": "warehouse/outbound-inspection/list",
+      "icon": "arrow-up-right",
+      "key": "outbound-inspection",
+      "parentKey": "warehouse",
+      "parentGroupKey": "warehouse",
+      "permission": "wh_warehouse_view_outbound_inspection_list"
+    },
+    {
+      "id": 61,
+      "title": "Kiểm hàng nhập kho",
+      "path": "warehouse/inbound-inspection/list",
+      "icon": "arrow-down-left",
+      "key": "inbound-inspection",
+      "parentKey": "warehouse",
+      "parentGroupKey": "warehouse",
+      "permission": "wh_warehouse_view_inbound_inspection_list"
+    },
+    {
+      "id": 62,
+      "title": "Chuyển kho",
+      "path": "warehouse/transfer-stock/list",
+      "icon": "arrows-right-left",
+      "key": "transfer-stock",
+      "parentKey": "warehouse",
+      "parentGroupKey": "warehouse",
+      "permission": "wh_warehouse_view_warehouse_transfer_list"
+    },
+    {
+      "id": 63,
+      "title": "Thiết lập kho",
+      "path": "warehouse/dashboard-stock/list",
+      "icon": "cog-8-tooth",
+      "key": "dashboard-stock",
+      "parentKey": "warehouse",
+      "parentGroupKey": "warehouse",
+      "permission": "wh_warehouse_view_warehouse_list"
+    },
+    {
+      "id": 64,
+      "title": "Tồn kho",
+      "path": "/warehouse/inventory-report/list",
+      "icon": "chart-pie",
+      "key": "inventory-report",
+      "parentKey": "warehouse",
+      "parentGroupKey": "warehouse-report",
+      "permission": "wh_report_view_stock_report_list"
+    },
+    {
+      "id": 65,
+      "title": "Dự báo tồn kho",
+      "path": "/warehouse/inventory-forecast/list",
+      "icon": "chart-bar",
+      "key": "inventory-forecast",
+      "parentKey": "warehouse",
+      "parentGroupKey": "warehouse-report",
+      "permission": "wh_warehouse_view_warehouse_forecast"
+    },
+    {
+      "id": 66,
+      "title": "Tồn nhập xuất kho",
+      "path": "/warehouse/inventory-in-out/list",
+      "icon": "cube-transparent",
+      "key": "inventory-in-out",
+      "parentKey": "warehouse",
+      "parentGroupKey": "warehouse-report",
+      "permission": "wh_warehouse_view_warehouse_stock_in_out"
+    }
+  ],
+  "subMenu": []
+}

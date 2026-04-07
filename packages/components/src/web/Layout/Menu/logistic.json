@@ -1,0 +1,254 @@
+{
+  "groupMenu": [
+    {
+      "id": "r6",
+      "title": "Vận chuyển",
+      "path": "/transport/delivery-sell",
+      "icon": "menu7",
+      "key": "transport",
+      "code": "log",
+      "permission": "log"
+    }
+  ],
+  "parentGroup": [
+    {
+      "id": 22,
+      "title": "Giao hàng",
+      "key": "transport-import-export",
+      "parentKey": "transport"
+    },
+    {
+      "id": 23,
+      "title": "Đơn vị vận chuyển",
+      "key": "transport-unit",
+      "parentKey": "transport"
+    },
+    {
+      "id": 40,
+      "title": "Yêu cầu vật liệu",
+      "key": "equipment-request",
+      "parentKey": "transport"
+    },
+    {
+      "id": 41,
+      "title": "Quản lý thiết bị",
+      "key": "equipment-management",
+      "parentKey": "transport"
+    },
+    {
+      "id": 42,
+      "title": "Quản lý vật tư",
+      "key": "material-management",
+      "parentKey": "transport"
+    },
+    {
+      "id": 24,
+      "title": "Báo cáo",
+      "key": "transport-report",
+      "parentKey": "transport"
+    }
+  ],
+  "parentMenu": [
+    {
+      "id": 74,
+      "title": "Giao hàng xuất kho",
+      "path": "/transport/delivery-sell",
+      "icon": "custom-trunc-export",
+      "key": "delivery-sell",
+      "parentKey": "transport",
+      "parentGroupKey": "transport-import-export",
+      "permission": "log_delivery_view_outbound_delivery_list"
+    },
+    {
+      "id": 75,
+      "title": "Giao hàng nhập kho",
+      "path": "/transport/delivery-purchase",
+      "icon": "custom-trunc-import",
+      "key": "delivery-purchase",
+      "parentKey": "transport",
+      "parentGroupKey": "transport-import-export",
+      "permission": "log_delivery_view_inbound_delivery_list"
+    },
+    {
+      "id": 78,
+      "title": "Đơn vị vận chuyển",
+      "path": "/transport/delivery-company",
+      "icon": "custom-cart-bag",
+      "key": "delivery-company",
+      "parentKey": "transport",
+      "parentGroupKey": "transport-unit",
+      "permission": "log_dc_view_dc_list"
+    },
+    {
+      "id": 76,
+      "title": "Giao hàng tiết kiệm - GHTK",
+      "path": "/transport/ghtk",
+      "icon": "custom-ghtk",
+      "key": "ghtk",
+      "parentKey": "transport",
+      "parentGroupKey": "transport-unit",
+      "permission": ""
+    },
+    {
+      "id": 77,
+      "title": "Giao hàng nhanh - GHN",
+      "path": "/transport/ghn",
+      "icon": "custom-ghn",
+      "key": "ghn",
+      "parentKey": "transport",
+      "parentGroupKey": "transport-unit",
+      "permission": ""
+    },
+    {
+      "id": 79,
+      "title": "Ahamove",
+      "path": "/transport/ahamove/feature-in-development",
+      "icon": "custom-ahamove",
+      "key": "ahamove",
+      "parentKey": "transport",
+      "parentGroupKey": "transport-unit",
+      "permission": ""
+    },
+    {
+      "id": 80,
+      "title": "J&T Express",
+      "path": "/transport/jt-express/feature-in-development",
+      "icon": "custom-jt-express",
+      "key": "jt-express",
+      "parentKey": "transport",
+      "parentGroupKey": "transport-unit",
+      "permission": ""
+    },
+    {
+      "id": 81,
+      "title": "J&T",
+      "path": "/transport/jt/feature-in-development",
+      "icon": "custom-jt",
+      "key": "jt",
+      "parentKey": "transport",
+      "parentGroupKey": "transport-unit",
+      "permission": ""
+    },
+    {
+      "id": 82,
+      "title": "VNPost - EMS",
+      "path": "/transport/vn-post/feature-in-development",
+      "icon": "custom-vn-post",
+      "key": "vn-post",
+      "parentKey": "transport",
+      "parentGroupKey": "transport-unit",
+      "permission": ""
+    },
+    {
+      "id": 121,
+      "title": "Vietel Post",
+      "path": "/transport/vietel-post/list",
+      "icon": "custom-vietel-post",
+      "key": "vietel-post",
+      "parentKey": "transport",
+      "parentGroupKey": "transport-unit",
+      "permission": ""
+    },
+    {
+      "id": 200,
+      "title": "Yêu cầu mua hàng",
+      "path": "/transport/purchase-request/feature-in-development",
+      "icon": "chart-pie",
+      "key": "purchase-request",
+      "parentKey": "transport",
+      "parentGroupKey": "equipment-request",
+      "permission": ""
+    },
+    {
+      "id": 201,
+      "title": "Danh sách thiết bị",
+      "path": "/transport/equipment-list/feature-in-development",
+      "icon": "chart-pie",
+      "key": "equipment-list",
+      "parentKey": "transport",
+      "parentGroupKey": "equipment-management",
+      "permission": ""
+    },
+    {
+      "id": 202,
+      "title": "Nhóm thiết bị",
+      "path": "/transport/equipment-group/feature-in-development",
+      "icon": "chart-pie",
+      "key": "equipment-group",
+      "parentKey": "transport",
+      "parentGroupKey": "equipment-management",
+      "permission": ""
+    },
+    {
+      "id": 203,
+      "title": "Điều động",
+      "path": "/transport/equipment-mobilization/feature-in-development",
+      "icon": "chart-pie",
+      "key": "equipment-mobilization",
+      "parentKey": "transport",
+      "parentGroupKey": "equipment-management",
+      "permission": ""
+    },
+    {
+      "id": 204,
+      "title": "Sửa chữa",
+      "path": "/transport/equipment-repair/feature-in-development",
+      "icon": "chart-pie",
+      "key": "equipment-repair",
+      "parentKey": "transport",
+      "parentGroupKey": "equipment-management",
+      "permission": ""
+    },
+    {
+      "id": 205,
+      "title": "Danh sách vật tư",
+      "path": "/transport/material-list/feature-in-development",
+      "icon": "chart-pie",
+      "key": "material-list",
+      "parentKey": "transport",
+      "parentGroupKey": "material-management",
+      "permission": ""
+    },
+    {
+      "id": 206,
+      "title": "Nhóm vật tư",
+      "path": "/transport/material-group/feature-in-development",
+      "icon": "chart-pie",
+      "key": "material-group",
+      "parentKey": "transport",
+      "parentGroupKey": "material-management",
+      "permission": ""
+    },
+    {
+      "id": 207,
+      "title": "Điều động",
+      "path": "/transport/material-mobilization/feature-in-development",
+      "icon": "chart-pie",
+      "key": "material-mobilization",
+      "parentKey": "transport",
+      "parentGroupKey": "material-management",
+      "permission": ""
+    },
+    {
+      "id": 208,
+      "title": "Báo cáo",
+      "path": "/transport/material-report/feature-in-development",
+      "icon": "chart-pie",
+      "key": "material-report",
+      "parentKey": "transport",
+      "parentGroupKey": "material-management",
+      "permission": ""
+    },
+    {
+      "id": 122,
+      "title": "Báo cáo",
+      "path": "/transport/report/feature-in-development",
+      "icon": "chart-pie",
+      "key": "report",
+      "parentKey": "transport",
+      "parentGroupKey": "transport-report",
+      "permission": ""
+    }
+  ],
+  "subMenu": []
+}

@@ -1,0 +1,78 @@
+[
+  {
+    "code": "hrm_table_config",
+    "class_name": "",
+    "layout": "",
+    "status": "active",
+    "column_configs": [
+      {
+        "concatenated_code": "hrm_employee_group_list_view_employee_group_list_view_group_employee_code",
+        "code": "code",
+        "title": "Mã nhóm",
+        "type": "text",
+        "key": "code",
+        "status": "active",
+        "editable": true,
+        "class_name": "",
+        "align": "left",
+        "hide_tablet": 0,
+        "hide_tablet_lg": 0,
+        "show_desktop": 1,
+        "show_mobile": 1,
+        "unit": "px",
+        "width": 200
+      },
+      {
+        "concatenated_code": "hrm_employee_group_list_view_employee_group_list_view_group_employee_name",
+        "code": "name",
+        "title": "Tên nhóm",
+        "type": "text",
+        "key": "name",
+        "status": "active",
+        "editable": true,
+        "class_name": "",
+        "align": "left",
+        "hide_tablet": 0,
+        "hide_tablet_lg": 0,
+        "show_desktop": 1,
+        "show_mobile": 0,
+        "unit": "px",
+        "width": 150
+      },
+      {
+        "concatenated_code": "hrm_employee_group_list_view_employee_group_list_view_group_employee_status",
+        "code": "status",
+        "title": "Trạng thái",
+        "type": "text",
+        "key": "status",
+        "status": "active",
+        "editable": true,
+        "class_name": "",
+        "align": "center",
+        "hide_tablet": 1,
+        "hide_tablet_lg": 0,
+        "show_desktop": 1,
+        "show_mobile": 0,
+        "unit": "px",
+        "width": 150
+      },
+      {
+        "concatenated_code": "hrm_employee_group_list_view_employee_group_list_view_group_employee_employees_count",
+        "code": "employees_count",
+        "title": "Số lượng",
+        "type": "text",
+        "key": "employees_count",
+        "status": "active",
+        "editable": false,
+        "class_name": "",
+        "align": "center",
+        "hide_tablet": 1,
+        "hide_tablet_lg": 1,
+        "show_desktop": 1,
+        "show_mobile": 0,
+        "unit": "px",
+        "width": 150
+      }
+    ]
+  }
+]

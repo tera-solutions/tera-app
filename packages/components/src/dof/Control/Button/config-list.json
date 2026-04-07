@@ -1,0 +1,14 @@
+{
+  "list": [
+    {
+      "ïd": 1,
+      "order": 1,
+      "title": "Thêm mới",
+      "status": "active",
+      "value": "taomoi1",
+      "class_name": "btn-primary",
+      "icon": "plus-circle",
+      "code": "employee_list_create"
+    }
+  ]
+}

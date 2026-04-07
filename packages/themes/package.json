@@ -1,0 +1,28 @@
+{
+  "name": "@tera/themes",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./src/theme.scss",
+    "./images": "./src/images/*",
+    "./fonts": "./src/fonts/*",
+    "./theme.scss": "./src/theme.scss",
+    "./main.css": "./src/main.css"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "generate:component": "turbo gen react-component",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.2.2",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.2.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.8",
+    "sass-embedded": "^1.98.0",
+    "typescript": "catalog:"
+  }
+}

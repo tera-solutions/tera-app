@@ -1,0 +1,32 @@
+@import 'tailwindcss';
+@import './theme.scss';
+
+@source "../../common/src/**/*.{ts,tsx}";
+
+@theme {
+  --radius-xsm: 3px;
+
+  --shadow-xsm: 0px 2px 2px 0px rgba(17, 24, 39, 0.1);
+  --shadow-smd: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+
+  /* Cú pháp chuẩn cho font-size đi kèm line-height */
+  --text-xss: 0.625rem;
+  --text-xss--line-height: 0.75rem; 
+
+  --text-xxs: 0.813rem;
+  --text-xxs--line-height: 0.983rem;
+
+  --color-gray-800: #1f2229;
+
+  --breakpoint-xmd: 960px;
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
