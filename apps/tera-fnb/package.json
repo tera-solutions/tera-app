@@ -17,11 +17,11 @@
   "dependencies": {
     "@tera/api": "workspace:*",
     "@tera/assets": "workspace:*",
-    "@tera/common": "workspace:*",
+    "@tera/commons": "workspace:*",
     "@tera/components": "workspace:*",
     "@tera/databases": "workspace:*",
     "@tera/features": "workspace:*",
-    "@tera/store": "workspace:*",
+    "@tera/stores": "workspace:*",
     "@expo/vector-icons": "15.0.3",
     "@hookform/resolvers": "catalog:",
     "@nozbe/watermelondb": "^0.28.0",

@@ -1,4 +1,4 @@
-import colors from '@tera/common/constants/colors';
+import colors from '@tera/commons/constants/colors';
 import { Loading } from '@components/ui/Loading';
 import { useBluetooth } from '@services/print_bluetooth.service';
 import { observer } from 'mobx-react-lite';

@@ -8,7 +8,7 @@ import { PaperProvider } from 'react-native-paper';
 import { registerTranslation } from 'react-native-paper-dates';
 import Toast from 'react-native-toast-message';
 
-import { viLocale } from '@tera/common/constants/common';
+import { viLocale } from '@tera/commons/constants/common';
 import { DatabaseProvider } from '@provider/DatabaseProvider';
 import { Splash } from '@components/ui/Splash';
 import RootApp from '@screens/Root';

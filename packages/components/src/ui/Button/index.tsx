@@ -1,4 +1,4 @@
-import colors from '@tera/common/constants/colors';
+import colors from '@tera/commons/constants/colors';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Button as ButtonPaper, ButtonProps } from 'react-native-paper';

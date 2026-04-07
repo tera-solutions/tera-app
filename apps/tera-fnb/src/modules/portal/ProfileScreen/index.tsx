@@ -1,5 +1,5 @@
 import { useStates } from '@hooks/useStates';
-import { formatDate } from '@tera/common/utils';
+import { formatDate } from '@tera/commons/utils';
 import { Loading } from '@components/ui/Loading';
 import { ScreenLoader } from '@components/ui/ScreenLoader';
 import { useLogout } from '@services/auth.service';

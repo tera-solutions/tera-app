@@ -1,0 +1,26 @@
+{
+  "name": "@tera/commons",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./constants": "./src/constants/index.ts",
+    "./hooks": "./src/hooks/index.ts",
+    "./interfaces": "./src/interfaces/index.ts",
+    "./utils": "./src/utils/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "generate:component": "turbo gen react-component",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@tera/eslint-config": "workspace:*",
+    "@tera/typescript-config": "workspace:*",
+    "@types/react": "catalog:"
+  },
+  "dependencies": {
+    "react": "catalog:"
+  }
+}

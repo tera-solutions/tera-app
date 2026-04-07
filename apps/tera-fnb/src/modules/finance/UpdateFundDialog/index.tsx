@@ -1,4 +1,4 @@
-import { formatNumber } from '@tera/common/utils';
+import { formatNumber } from '@tera/commons/utils';
 import { TextInput } from '@components/ui';
 import React, { useEffect, useState } from 'react';
 import { Alert, Modal, Text, TouchableOpacity, View } from 'react-native';

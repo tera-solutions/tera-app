@@ -1,6 +1,6 @@
-import colors from '@tera/common/constants/colors';
-import { FONT_FAMILY } from '@tera/common/constants/typography';
-import { formatNumber } from '@tera/common/utils';
+import colors from '@tera/commons/constants/colors';
+import { FONT_FAMILY } from '@tera/commons/constants/typography';
+import { formatNumber } from '@tera/commons/utils';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,

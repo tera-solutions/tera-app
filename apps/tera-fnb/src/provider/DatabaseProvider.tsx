@@ -11,7 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { Alert } from 'react-native';
-import { getDataStorage } from '@tera/common/utils';
+import { getDataStorage } from '@tera/commons/utils';
 import { useStates } from '../hooks/useStates';
 
 interface IDatabaseContext {
@@ -91,7 +91,6 @@ export function DatabaseProvider({
         await DB.initConnection();
         await rootStore.generalStore.fetchSettingsFromLocal();
         await rootStore.uiStore.fetchBusinessFromLocal();
-        await rootStore.authStore.fetchUserFromLocal();
         // await DB.syncDataFromServer();
         console.log('✅ Database IndexedDB Is Ready!!');
         setIsReady(true);

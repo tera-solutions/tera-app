@@ -1,5 +1,5 @@
-import { PRINT_CONNECTION } from '@tera/common/constants';
-import colors from '@tera/common/constants/colors';
+import { PRINT_CONNECTION } from '@tera/commons/constants';
+import colors from '@tera/commons/constants/colors';
 import { useStates } from '@hooks/useStates';
 import { Switch } from '@components/ui/Switch';
 import { useGetBusiness } from '@services/business.service';

@@ -1,5 +1,5 @@
-import colors from '@tera/common/constants/colors';
-import { formatNumber } from '@tera/common/utils';
+import colors from '@tera/commons/constants/colors';
+import { formatNumber } from '@tera/commons/utils';
 import { TextInput } from '@components/ui';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';

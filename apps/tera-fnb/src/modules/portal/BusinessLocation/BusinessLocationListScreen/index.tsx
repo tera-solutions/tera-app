@@ -1,5 +1,5 @@
 import { useStates } from '@hooks/useStates';
-import { formatNumber } from '@tera/common/utils';
+import { formatNumber } from '@tera/commons/utils';
 import DrawerFilter from '@components/domain/DrawerFilter';
 import { SearchInput } from '@components/ui';
 import { Loading } from '@components/ui/Loading';

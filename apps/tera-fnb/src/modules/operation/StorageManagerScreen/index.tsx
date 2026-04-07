@@ -1,4 +1,4 @@
-import { formatNumber } from '@tera/common/utils';
+import { formatNumber } from '@tera/commons/utils';
 import DB from '@databases/database';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';

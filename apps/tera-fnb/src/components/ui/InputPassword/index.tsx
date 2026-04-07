@@ -1,4 +1,4 @@
-import colors from '@tera/common/constants/colors';
+import colors from '@tera/commons/constants/colors';
 import React from 'react';
 import { TextInput as RNTextInput, StyleSheet } from 'react-native';
 import { TextInput as InputPaper, TextInputProps } from 'react-native-paper';

@@ -1,4 +1,4 @@
-import colors from '@tera/common/constants/colors';
+import colors from '@tera/commons/constants/colors';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ActivityIndicator, ActivityIndicatorProps } from 'react-native-paper';

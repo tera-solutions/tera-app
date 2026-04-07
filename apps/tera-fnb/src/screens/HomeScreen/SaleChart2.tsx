@@ -1,4 +1,4 @@
-import colors from '@tera/common/constants/colors';
+import colors from '@tera/commons/constants/colors';
 import React from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';

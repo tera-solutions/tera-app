@@ -5,7 +5,7 @@
     "strictNullChecks": true
   },
   "paths": {
-    "@tera/common/*": ["../common/*"],
+    "@tera/commons/*": ["../commons/*"],
     "@tera/assets/*": ["../assets/*"]
   },
   "include": ["src"],

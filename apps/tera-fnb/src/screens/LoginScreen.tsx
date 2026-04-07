@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Text } from 'react-native-paper';
 
-import colors from '@tera/common/constants/colors';
+import colors from '@tera/commons/constants/colors';
 import { useStates } from '@hooks/useStates';
 import { Button, InputPassword, SelectBox, TextInput } from '@components/ui';
 import { useLogin } from '@services/auth.service';

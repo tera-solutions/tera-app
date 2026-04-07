@@ -1,5 +1,5 @@
 import { useStates } from '@hooks/useStates';
-import { formatNumber } from '@tera/common/utils';
+import { formatNumber } from '@tera/commons/utils';
 import { useBusinessLocation } from '@databases/business_locations/hook/useBusinessLocation';
 import { Href, useNavigation, useRouter } from 'expo-router';
 import React from 'react';

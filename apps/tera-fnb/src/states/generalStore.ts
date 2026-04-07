@@ -1,4 +1,4 @@
-import { appVersion } from '@tera/common/constants/common';
+import { appVersion } from '@tera/commons/constants/common';
 import GeneralService from '@databases/general/service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { makeAutoObservable, runInAction } from 'mobx';

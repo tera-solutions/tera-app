@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Imports từ project của anh
 import { useStates } from '@hooks/useStates';
-import colors from '@tera/common/constants/colors';
+import colors from '@tera/commons/constants/colors';
 
 const ICON_SIZE = 24;
 

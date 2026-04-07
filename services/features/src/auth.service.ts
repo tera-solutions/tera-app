@@ -1,5 +1,5 @@
 import { useStates } from '@hooks/useStates';
-import { handleClearApp } from '@tera/common/utils/helper';
+import { handleClearApp } from '@tera/commons/utils/helper';
 import GeneralService from '@databases/general/service';
 import { useTableVersion } from '@databases/table_version/hook/useTableVersion';
 import TableVersionService from '@databases/table_version/service';

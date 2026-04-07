@@ -14,7 +14,7 @@
     "@tera/eslint-config": "workspace:*",
     "@tera/typescript-config": "workspace:*",
     "@tera/assets": "workspace:*",
-    "@tera/common": "workspace:*",
+    "@tera/commons": "workspace:*",
     "@types/react": "catalog:"
   },
   "dependencies": {

@@ -1,5 +1,5 @@
 import { useStates } from '@hooks/useStates';
-import { delay } from '@tera/common/utils';
+import { delay } from '@tera/commons/utils';
 import GeneralService from '@databases/general/service';
 import { useTableVersion } from '@databases/table_version/hook/useTableVersion';
 import { BusinessAPI } from '@services/api/BusinessAPI';

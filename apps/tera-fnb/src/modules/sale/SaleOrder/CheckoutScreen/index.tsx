@@ -1,5 +1,5 @@
-import colors from '@tera/common/constants/colors';
-import { formatNumber } from '@tera/common/utils';
+import colors from '@tera/commons/constants/colors';
+import { formatNumber } from '@tera/commons/utils';
 import CalculatorDialog from '@components/shared/CalculatorDialog';
 import { TextInput } from '@components/ui';
 import SelectProductDialog from '@modules/logistic/Product/SelectProductDialog';

@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = function (api) {
   api.cache(true);
   return {
@@ -10,8 +12,13 @@ module.exports = function (api) {
           extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
           alias: {
             '@app': './src/app',
-            '@tera/common': '../../packages/common/src',
-            '@tera/store': '../../services/store/src',
+            '@tera/commons': path.resolve(__dirname, '../../packages/commons/src'),
+            '@tera/components': path.resolve(__dirname, '../../packages/components/src'),
+            '@tera/assets': path.resolve(__dirname, '../../packages/assets/src'),
+            '@tera/databases': path.resolve(__dirname, '../../services/databases/src'),
+            '@tera/api': path.resolve(__dirname, '../../services/api/src'),
+            '@tera/features': path.resolve(__dirname, '../../services/features/src'),
+            '@tera/stores': path.resolve(__dirname, '../../services/stores/src'),
             '@components': './src/components',
             '@types': './src/types',
             '@hooks': './src/hooks',

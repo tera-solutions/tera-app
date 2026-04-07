@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { endpointSocket } from '@tera/common/constants/common';
+import { endpointSocket } from '@tera/commons/constants/common';
 
 // src/types/socket.types.ts
 export interface ServerToClientEvents {

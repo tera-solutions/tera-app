@@ -3,14 +3,14 @@ import {
   ISyncType,
   SpecificTables,
   SyncStatus,
-} from '@tera/common/interfaces';
+} from '@tera/commons/interfaces';
 import BusinessLocationService from '@databases/business_locations/service/index.native';
 import DB from '@databases/database';
 import { synchronize } from '@nozbe/watermelondb/sync';
 import { SyncAPI } from '@services/api/SyncAPI';
 import moment from 'moment';
 
-import { handleClearApp } from '@tera/common/utils/helper';
+import { handleClearApp } from '@tera/commons/utils/helper';
 import CustomerService from '@databases/customer/service/index.native';
 import GeneralService from '@databases/general/service/index.native';
 import SyncQueueService from '@databases/sync_queues/service/index.native';
@@ -318,7 +318,6 @@ export const syncDataFromServer = async (
         }
         rootStore.generalStore.fetchSettingsFromLocal();
         rootStore.uiStore.fetchBusinessFromLocal();
-        rootStore.authStore.fetchUserFromLocal();
       })
       .catch(async (err: any) => {
         const errorMessage = err?.message || 'Unknown Error';

@@ -4,7 +4,7 @@ import {
   ISyncType,
   SpecificTables,
   SyncStatus,
-} from '@tera/common/interfaces/index';
+} from '@tera/commons/interfaces/index';
 import {
   pushDataToServer,
   syncDataFromServer,

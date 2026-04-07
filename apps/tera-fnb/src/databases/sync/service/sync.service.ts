@@ -3,8 +3,8 @@ import {
   ISyncType,
   SpecificTables,
   SyncStatus,
-} from '@tera/common/interfaces';
-import { handleClearApp } from '@tera/common/utils/helper';
+} from '@tera/commons/interfaces';
+import { handleClearApp } from '@tera/commons/utils/helper';
 import BusinessLocationService from '@databases/business_locations/service';
 import CustomerService from '@databases/customer/service';
 import DB from '@databases/database'; // Giả định là IndexDB wrapper
@@ -225,7 +225,6 @@ export const syncDataFromServer = async (
 
     // Update Stores
     rootStore.generalStore.fetchSettingsFromLocal();
-    rootStore.authStore.fetchUserFromLocal();
   } catch (error) {
     console.error('SYNC FROM SERVER WEB ERROR:', error);
   }
