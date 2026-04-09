@@ -1,4 +1,4 @@
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import Detail from "@tera/components/shared/Mail/containers/Detail";
 import Sidebar from "@tera/components/shared/Mail/containers/Sidebar";
 import Content from "@tera/components/shared/Mail/containers/List";

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { messageError } from "@tera/commons/constants/message";
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import { Button, Modal, Spin, notification } from "tera-dls";
 import QuickViewApi from "./_api";
 import Opportunity from "./components/Opportunity";

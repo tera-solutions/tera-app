@@ -1,7 +1,7 @@
-import { useMutationLegacy } from "@tera/common/hooks/tanstack";
+import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 
-import Template from "@tera/common/components/Template";
-import { AuthApi } from "@tera/api/auth";
+import Template from "@tera/components/web/Template";
+import { AuthApi } from "@tera/api/auth/auth";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import backgroundRightLogin from "@tera/themes/images/uiNew/bg-right-login.png";

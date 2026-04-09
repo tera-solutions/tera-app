@@ -1,10 +1,10 @@
-import { useMutationLegacy } from "@tera/common/hooks/tanstack";
+import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 
-import Template from "@tera/common/components/Template";
-import { REGEX } from "@tera/common/constants/common";
-import InputPassword from "@tera/common/dof/Control/InputPassword";
-import FormTera, { FormTeraItem } from "@tera/common/dof/FormTera";
-import { AuthApi } from "@tera/api/auth";
+import Template from "@tera/components/web/Template";
+import { REGEX } from "@tera/commons/constants/common";
+import InputPassword from "@tera/components/dof/Control/InputPassword";
+import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+import { AuthApi } from "@tera/api/auth/auth";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";

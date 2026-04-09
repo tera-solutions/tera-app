@@ -1,14 +1,11 @@
-import { rootStore } from '@states/index';
+import { rootStore } from '@tera/stores';
 import _ from 'lodash';
 
 export const _requestHeader = (config: any) => {
   const newConfig = config;
-  const authToken = rootStore.authStore.token;
-  const deviceCode = rootStore.generalStore.device;
-  // const locationId = rootStore.commonStore.location_id;
-  // const stockId = rootStore.commonStore.stock_id;
-  const businessId = rootStore.uiStore.business_info.id;
-  // const module = rootStore.commonStore.module;
+  const authToken = rootStore.globalStore.token;
+  const deviceCode = rootStore.globalStore.device;
+  const businessId = rootStore.globalStore.business_id;
 
   const headers: any = {};
 
@@ -17,21 +14,9 @@ export const _requestHeader = (config: any) => {
       headers['device-code'] = deviceCode;
     }
 
-    // if (locationId) {
-    //   headers['location-id'] = locationId;
-    // }
-
-    // if (stockId) {
-    //   headers['stock-id'] = stockId;
-    // }
-
     if (businessId) {
       headers['business-id'] = businessId;
     }
-
-    // if (businessId) {
-    //   headers['module'] = module;
-    // }
 
     if (authToken) {
       headers.authorization = `Bearer ${authToken}`;
@@ -73,12 +58,13 @@ export const _requestError = (err: any) => {
   const message =
     _.get(err, 'data.msg') || _.get(err, 'response.data.error.message');
   const status = _.get(err, 'data.code') || _.get(err, 'response.status');
-  status;
   if (status === 403) {
-    console.error('Không có quyền hệ thống 403');
+    // window.localStorage.clear();
+    // window.location.href = "/403";
   }
   if (status === 401) {
-    console.error('Không có quyền hệ thống 401');
+    window.localStorage.clear();
+    window.location.href = '/401';
   }
   const error = err || {};
   if (typeof message === 'string') {

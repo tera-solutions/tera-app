@@ -21,24 +21,25 @@
     "reinstall": "pnpm run clean && pnpm install"
   },
   "dependencies": {
-    "@hookform/resolvers": "catalog:default",
-    "axios": "catalog:default",
-    "lodash": "catalog:default",
-    "mobx": "catalog:default",
-    "mobx-persist-store": "catalog:default",
-    "mobx-react": "catalog:default",
-    "mobx-react-lite": "catalog:default",
-    "moment": "catalog:default",
-    "react": "catalog:default",
-    "react-dom": "catalog:default",
-    "react-hook-form": "catalog:default",
-    "socket.io-client": "catalog:default",
-    "yup": "catalog:default",
-    "zod": "catalog:default"
+    "@hookform/resolvers": "catalog:",
+    "axios": "catalog:",
+    "lodash": "catalog:",
+    "mobx": "catalog:",
+    "mobx-persist-store": "catalog:",
+    "mobx-react": "catalog:",
+    "mobx-react-lite": "catalog:",
+    "moment": "catalog:",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hook-form": "catalog:",
+    "socket.io-client": "catalog:",
+    "yup": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",
-    "@types/react": "19.2.2",
+    "@types/react": "19.1.0",
+    "@types/react-dom": "19.1.0",
     "dlv": "^1.1.3",
     "eslint": "^9.39.1",
     "lilconfig": "^3.1.3",
@@ -48,13 +49,16 @@
     "typescript": "^5.9.2"
   },
   "overrides": {
-    "whatwg-encoding": "^3.1.1"
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "@types/react": "19.1.0",
+    "@types/react-dom": "19.1.0"
   },
   "engines": {
     "node": ">=18"
   },
   "peerDependencies": {
-    "react": "catalog:default"
+    "react": "catalog:"
   },
   "packageManager": "pnpm@10.33.0"
 }

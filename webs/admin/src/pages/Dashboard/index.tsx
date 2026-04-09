@@ -1,4 +1,3 @@
-import HorizontalBarChart from "@tera/components/web/Chart/BarChart/HorizontalBarChart";
 import DefaultImage from "@tera/components/web/DefaultImage";
 import Icon from "@tera/components/web/Icon";
 import {
@@ -8,8 +7,6 @@ import {
   TITLE_CLASS_NAME,
 } from "@tera/commons/constants/common";
 import TableTera from "@tera/components/dof/TableTera";
-import { PRODUCT_LIST_URL } from "pages/Product/List/url";
-import { SETTING_STORE_URL } from "pages/SettingStore/url";
 import { useNavigate } from "react-router-dom";
 import ImageNonVerified from "@tera/themes/images/pages/dashboard/non-verified.png";
 import ImageLevel1 from "@tera/themes/images/pages/package/level-1.png";
@@ -163,34 +160,6 @@ const Dashboard = () => {
                 <p className="text-xs text-gray-500">dd/mm/yyyy - dd/mm/yyyy</p>
               </div>
             </div>
-
-            <HorizontalBarChart
-              defaultLabelMaxLength={30}
-              data={{
-                labels: [
-                  "01/01/2025",
-                  "01/02/2025",
-                  "01/03/2025",
-                  "01/04/2025",
-                  "01/05/2025",
-                ],
-                datasets: [
-                  {
-                    data: [100, 200, 300, 400, 500],
-                    backgroundColor: ["#76A9FA"],
-                    borderColor: ["#76A9FA"],
-                    barThickness: 50,
-                  },
-                ],
-              }}
-              chartClassName="!h-[300px]"
-              defaultShowTickLength={15}
-              plugins={{
-                legend: {
-                  display: false,
-                },
-              }}
-            />
           </Col>
         </Row>
         <Row className="grid-cols-4 gap-x-8">
@@ -209,7 +178,6 @@ const Dashboard = () => {
             </Col>
             <Col
               className="p-6 rounded-md bg-blue-100 h-max flex flex-col items-center gap-3 cursor-pointer"
-              onClick={() => navigate(PRODUCT_LIST_URL.create.path)}
             >
               <p className="font-light text-main text-2xl">
                 Thêm sản phẩm mới{" "}
@@ -218,7 +186,6 @@ const Dashboard = () => {
             </Col>
             <Col
               className="p-6 rounded-md bg-blue-100 h-max flex flex-col items-center gap-3 cursor-pointer"
-              onClick={() => navigate(SETTING_STORE_URL.list.path)}
             >
               <p className="font-light text-main text-2xl">Cài đặt cửa hàng</p>
               <Icon.IconStore />

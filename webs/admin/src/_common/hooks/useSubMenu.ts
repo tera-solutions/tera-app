@@ -1,7 +1,7 @@
 import { systemSubMenu } from "../components/Layout/Menu/menus";
 import { mergeArrayObjectByKeyDependOnNewArray } from "tera-dls";
-import { useStores } from "_common/hooks/useStores";
 import { useMemo } from "react";
+import { useStates } from "_common/hooks/useStates";
 
 // Import các file menu JSON từ path của bạn
 import admin from "_common/components/Layout/Menu/admin.json";
@@ -19,10 +19,10 @@ interface UseSubMenuProps {
   active?: string;
 }
 
-const useSubMenu = ({ active }: UseSubMenuProps) => {
+const useSubMenu = ({ active }: UseSubMenuProps = {}) => {
   const {
     commonStore: { activeMenu },
-  } = useStores();
+  } = useStates();
 
   // 2. Logic lấy sub menu từ file JSON hiện tại
   const getSubMenuFromJson = (targetParentKey: string) =>

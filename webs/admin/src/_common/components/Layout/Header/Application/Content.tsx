@@ -2,10 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import DefaultImage from "@tera/components/web/DefaultImage";
 import Icons from "@tera/components/web/Icons";
 import { TypeIcon } from "@tera/components/web/Icons/interface";
-import { useStores } from "_common/hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import { CryptoJSAesEncrypt } from "@tera/commons/utils/hashHelper";
 import { observer } from "mobx-react-lite";
 import { Row, Spin, Tooltip, updateQueryParams } from "tera-dls";
+import { useStates } from "_common/hooks/useStates";
 
 export const modules = [
   {
@@ -103,7 +104,9 @@ export const modules = [
 function Content({ onClickViewMore }) {
   const {
     commonStore: { business },
-    authStore: { user, access_id },
+  } = useStates();
+  const {
+    globalStore: { user, access_id },
   } = useStores();
 
   const handleRedirectLink = (link) => {

@@ -1,12 +1,12 @@
-import { useMutationLegacy } from "@tera/common/hooks/tanstack";
+import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 
-import Template from "@tera/common/components/Template";
-import { useStores } from "hooks/useStores";
-import useCountDown from "@tera/common/hooks/useCountDown";
-import { CryptoJSAesEncrypt } from "@tera/common/utils/hashHelper";
+import Template from "@tera/components/web/Template";
+import { useStores } from "@tera/stores/useStores";
+import useCountDown from "@tera/commons/hooks/useCountDown";
+import { CryptoJSAesEncrypt } from "@tera/commons/utils/hashHelper";
 import classNames from "classnames";
 import moment from "moment";
-import { AuthApi } from "@tera/api/auth";
+import { AuthApi } from "@tera/api/auth/auth";
 import { useState } from "react";
 import OtpInput from "react-otp-input";
 import { useNavigate, useParams } from "react-router-dom";
@@ -37,7 +37,7 @@ const inputStyle = {
 };
 
 const Otp = () => {
-  const { authStore } = useStores();
+  const { globalStore } = useStores();
   const { id } = useParams();
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
@@ -63,7 +63,7 @@ const Otp = () => {
         window.open(`${params?.callback}${queryParams}`, "_self");
       } else {
         window.open(
-          `${authStore?.redirect_url}/auth/check-auth${queryParams}`,
+          `${globalStore?.redirect_url}/auth/check-auth${queryParams}`,
           "_self",
         );
       }

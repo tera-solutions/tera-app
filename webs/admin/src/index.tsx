@@ -1,7 +1,6 @@
 import {
   QueryClient,
   QueryClientProvider,
-  useQueryClient,
 } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import { TeraProvider } from "tera-dls";

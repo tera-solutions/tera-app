@@ -5,16 +5,15 @@ import { useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { AuthApi } from "@tera/api";
 
-import { useStores } from "_common/hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 
-import ModalWorkflowDefault from "@tera/components/web/ModalWorkflowDefault";
 import { Routers } from "./routers";
 
 const basename = document.querySelector("base")?.getAttribute("href") ?? "/";
 
 const Root = observer(() => {
   const {
-    authStore,
+    globalStore,
   } = useStores();
 
   const [isWorkflowDefault, setIsWorkflowDefault] = useState<boolean>(false);
@@ -25,7 +24,7 @@ const Root = observer(() => {
     queryFn: AuthApi.getDeviceCode, // Khai báo tường minh
     staleTime: 300000,
     onSuccess: (data) => {
-      authStore.setInitData(data);
+      globalStore.setInitData(data);
     },
   });
 
@@ -34,9 +33,9 @@ const Root = observer(() => {
     queryKey: ["get_profile"],
     queryFn: AuthApi.getProfile, // Khai báo tường minh
     staleTime: 300000,
-    enabled: !!authStore.token,
+    enabled: !!globalStore.token,
     onSuccess: (res) => {
-      authStore.updateUser({ user: res?.data });
+      globalStore.updateUser({ user: res?.data });
       if (
         res?.data?.is_workflow_default === null &&
         res?.data?.type === "owner"
@@ -49,12 +48,6 @@ const Root = observer(() => {
   return (
     <BrowserRouter basename={basename}>
       <Routers />
-      {isWorkflowDefault && (
-        <ModalWorkflowDefault
-          open={isWorkflowDefault}
-          onClose={() => setIsWorkflowDefault(false)}
-        />
-      )}
     </BrowserRouter>
   );
 });

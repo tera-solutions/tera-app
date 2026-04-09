@@ -1,5 +1,5 @@
 import NoData from "@tera/components/web/NoData";
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useRef, useState } from "react";
 import customTwMerge from "tailwind-merge.config";

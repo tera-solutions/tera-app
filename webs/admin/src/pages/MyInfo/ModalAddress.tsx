@@ -7,7 +7,7 @@ import Input from "@tera/components/dof/Control/Input";
 import Select from "@tera/components/dof/Control/Select";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
-import useConfirm from "@tera/states/hooks/useConfirm";
+import useConfirm from "_common/hooks/useConfirm";
 import { useForm } from "react-hook-form";
 import { Spin } from "tera-dls";
 

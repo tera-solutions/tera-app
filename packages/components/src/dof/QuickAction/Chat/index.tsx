@@ -1,4 +1,4 @@
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import ChatProvider from "@tera/components/shared/Chat/ChatProvider";
 import LeftBar from "@tera/components/shared/Chat/containers/LeftBar";
 import MessageBoard from "@tera/components/shared/Chat/containers/MessageBoard";
@@ -8,7 +8,7 @@ import { Col, Row } from "tera-dls";
 
 function Chat() {
   const {
-    authStore: { user },
+    globalStore: { user },
   } = useStores();
   return (
     <ChatProvider user={toJS(user)}>

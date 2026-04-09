@@ -1,10 +1,10 @@
-import { useMutationLegacy } from "@tera/common/hooks/tanstack";
+import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import backgroundImage from "@tera/themes/images/uiNew/bg-form.png";
 import { Spin, notification } from "tera-dls";
-import { AuthApi } from "@tera/api/auth";
+import { AuthApi } from "@tera/api/auth/auth";
 import Fail from "./Fail";
 import Success from "./Success";
 

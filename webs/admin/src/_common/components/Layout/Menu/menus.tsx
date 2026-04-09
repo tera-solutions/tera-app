@@ -38,9 +38,6 @@ import {
 } from "./url";
 import { IMenu, TypeMoreMenu } from "./interface";
 import { IRouteProps } from "@tera/commons/interfaces/router";
-import ConfigPrint from "@tera/commons/system/ConfigPrint";
-import DetailConfigPrint from "@tera/commons/system/ConfigPrint/containers/TemplateTab/Detail";
-import DetailPrintType from "@tera/commons/system/ConfigPrint/containers/PrintTypeTab/Detail";
 
 export const dashboardMenu: IMenu = {
   title: "Trang chủ",
@@ -212,20 +209,4 @@ export const moreMenu: TypeMoreMenu[] = [
   },
 ];
 
-export const ConfigPrintRouter: IRouteProps[] = [
-  {
-    key: CONFIG_PRINT_URL.list.key,
-    path: CONFIG_PRINT_URL.list.shortenUrl,
-    component: <ConfigPrint />,
-  },
-  {
-    key: CONFIG_PRINT_URL.detailTemplate.key,
-    path: CONFIG_PRINT_URL.detailTemplate.shortenUrl,
-    component: <DetailConfigPrint />,
-  },
-  {
-    key: CONFIG_PRINT_URL.detailPrintType.key,
-    path: CONFIG_PRINT_URL.detailPrintType.shortenUrl,
-    component: <DetailPrintType />,
-  },
-];
+export const ConfigPrintRouter: IRouteProps[] = [];

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import NoData from "@tera/components/web/NoData";
 import { messageError } from "@tera/commons/constants/message";
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import { DETAIL_TYPE } from "@tera/commons/hooks/useQuickView";
 import { Button, Modal, Spin, notification } from "tera-dls";
 import QuickViewApi from "./_api";

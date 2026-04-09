@@ -6,7 +6,7 @@ import DatePicker from "@tera/components/dof/Control/DatePicker";
 import Search from "@tera/components/dof/Control/Search";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import { usePermission } from "_common/hooks/usePermission";
-import { IPagination } from "_common/interface";
+import { IPagination } from "@tera/commons/interfaces";
 import { getTimeRender } from "@tera/commons/utils";
 import { groupBy } from "lodash";
 import { observer } from "mobx-react-lite";

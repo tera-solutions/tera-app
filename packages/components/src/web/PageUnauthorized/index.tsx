@@ -1,4 +1,4 @@
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import PageError from "@tera/themes/images/uiNew/page-error.png";
 import { ArrowLongLeftSolid, Button } from "tera-dls";
 
@@ -8,7 +8,7 @@ interface PageUnauthorizedProps {
 
 function PageUnauthorized({ onClickLogin }: PageUnauthorizedProps) {
   const {
-    authStore: { auth_url },
+    globalStore: { auth_url },
   } = useStores();
 
   return (

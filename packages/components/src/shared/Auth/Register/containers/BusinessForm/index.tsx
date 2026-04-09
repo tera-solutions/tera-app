@@ -1,13 +1,13 @@
-import { useMutationLegacy } from "@tera/common/hooks/tanstack";
+import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 
-import { REGEX } from "@tera/common/constants/common";
-import Input from "@tera/common/dof/Control/Input";
-import FormTera, { FormTeraItem } from "@tera/common/dof/FormTera";
-import SelectJobTitle from "@tera/common/dof/Select/ObjectType/SelectJobTitle";
-import SelectPaymentMethod from "@tera/common/dof/Select/ObjectType/SelectPaymentMethod";
-import SelectPosition from "@tera/common/dof/Select/ObjectType/SelectPosition";
-import SelectScalesType from "@tera/common/dof/Select/ObjectType/SelectScalesType";
-import { AuthApi } from "@tera/api/auth";
+import { REGEX } from "@tera/commons/constants/common";
+import Input from "@tera/components/dof/Control/Input";
+import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+import SelectJobTitle from "@tera/components/dof/Select/ObjectType/SelectJobTitle";
+import SelectPaymentMethod from "@tera/components/dof/Select/ObjectType/SelectPaymentMethod";
+import SelectPosition from "@tera/components/dof/Select/ObjectType/SelectPosition";
+import SelectScalesType from "@tera/components/dof/Select/ObjectType/SelectScalesType";
+import { AuthApi } from "@tera/api/auth/auth";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Button, notification } from "tera-dls";

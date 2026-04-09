@@ -19,7 +19,6 @@ import {
 } from "tera-dls";
 import HeaderModalMoreView from "./Header";
 import NotificationApi from "./_api";
-import ErrorToast from "@tera/components/web/ToastCustom/ErrorsToast";
 
 interface IPropUserNotification {
   handleModal: () => void;

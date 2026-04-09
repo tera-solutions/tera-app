@@ -1,10 +1,11 @@
 import Icons from "@tera/components/web/Icons";
-import { useStores } from "_common/hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { Link } from "react-router-dom";
 import { IMenu } from "./interface";
+import { useStates } from "_common/hooks/useStates";
 
 export interface MoreMenuProps {
   menus?: any;
@@ -12,7 +13,7 @@ export interface MoreMenuProps {
 const MoreMenu: React.FC<MoreMenuProps> = observer(({ menus }) => {
   const {
     commonStore: { activeMenu, openMenuMore, setActiveMenu },
-  } = useStores();
+  } = useStates();
 
   const menuClasses = classNames(
     "fixed z-40 w-full bg-white flex gap-12 items-center transition-all ",

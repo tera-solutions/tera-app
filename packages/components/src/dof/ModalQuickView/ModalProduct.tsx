@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import { useEffect } from "react";
 import { Button, Modal, Spin, notification } from "tera-dls";
 import QuickViewApi from "./_api";

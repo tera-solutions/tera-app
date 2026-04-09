@@ -3,7 +3,7 @@ import ActionCUD, {
   TTypeButton,
 } from "@tera/components/web/TableColumnCustom/ActionCUD";
 import { portalEndpoint } from "@tera/api/_endpoint";
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import { usePermission } from "@tera/states/hooks";
 import { IFileUpload } from "_common/interface";
 import Axios from "axios";
@@ -111,7 +111,7 @@ function UploadFiles({
   ...props
 }: UploadFilesProps) {
   const {
-    authStore: { token: tokenModule, device: deviceModule },
+    globalStore: { token: tokenModule, device: deviceModule },
     globalStore: { token: tokenGlobal, device: deviceGlobal },
   } = useStores();
   const authToken = tokenGlobal || tokenModule;
@@ -184,8 +184,8 @@ function UploadFiles({
     form.append("secure_code", "tera");
 
     try {
-      // const authToken = rootStore.authStore.token;
-      // const deviceCode = rootStore.authStore.device;
+      // const authToken = rootStore.globalStore.token;
+      // const deviceCode = rootStore.globalStore.device;
       const result = await Axios({
         method: "POST",
         url: `${portalEndpoint}/file/upload`,
@@ -232,8 +232,8 @@ function UploadFiles({
   const _handleDownload = async (file) => {
     if (!file) return;
     try {
-      // const authToken = rootStore.authStore.token;
-      // const deviceCode = rootStore.authStore.device;
+      // const authToken = rootStore.globalStore.token;
+      // const deviceCode = rootStore.globalStore.device;
       const result = await Axios({
         method: "GET",
         url: `${portalEndpoint}/file/download/${file?.id}?object_id=${object_id}`,

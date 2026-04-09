@@ -1,5 +1,5 @@
 import { adminEndpoint } from "@tera/api/_endpoint";
-import api from "@tera/states/drivers";
+import api from "@tera/api/drivers";
 import { filterField } from "@tera/commons/utils";
 
 const SelectWrapperEndpoint = `${adminEndpoint}/administrator/page-api`;

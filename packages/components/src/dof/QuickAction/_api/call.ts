@@ -1,5 +1,5 @@
 import { endpoint } from "@tera/api/_endpoint";
-import api from "@tera/states/drivers";
+import api from "@tera/api/drivers";
 
 const CallEndpoint = `${endpoint}/customer-service/call`;
 

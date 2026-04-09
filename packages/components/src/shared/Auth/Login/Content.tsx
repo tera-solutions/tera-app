@@ -1,9 +1,9 @@
-import { useMutationLegacy } from "@tera/common/hooks/tanstack";
+import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 import { yupResolver } from "@hookform/resolvers/yup";
 // import { useGoogleLogin } from '@react-oauth/google';
 
-import Template from "@tera/common/components/Template";
-import { CryptoJSAesEncrypt } from "@tera/common/utils/hashHelper";
+import Template from "@tera/components/web/Template";
+import { CryptoJSAesEncrypt } from "@tera/commons/utils/hashHelper";
 import { throttle } from "lodash";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -26,8 +26,8 @@ import {
   updateQueryParams,
 } from "tera-dls";
 import * as yup from "yup";
-import { AuthApi } from "@tera/api/auth";
-import { useStores } from "hooks/useStores";
+import { AuthApi } from "@tera/api/auth/auth";
+import { useStores } from "@tera/stores/useStores";
 
 const schema = yup.object().shape({
   username: yup.string().required("Vui lòng nhập tài khoản").trim(),
@@ -45,13 +45,13 @@ const Content = () => {
     mode: "onChange",
   });
   const {
-    authStore: { updateUser, updateAccessId },
+    globalStore: { updateUser, updateAccessId },
   } = useStores();
 
   const [visible, setVisible] = useState<boolean>(false);
   const [errorAnimation, setErrorAnimation] = useState<boolean>(false);
 
-  // const { authStore } = useStores();
+  // const { globalStore } = useStores();
 
   const navigate = useNavigate();
   // const location = useLocation();
@@ -103,13 +103,13 @@ const Content = () => {
         //   // window.open(`${params?.callback}${queryParams}`, '_self');
         //   // console.log('params?.callback', params?.callback);
         // } else {
-        //   console.log('authStore?.redirect_url', authStore?.redirect_url);
+        //   console.log('globalStore?.redirect_url', globalStore?.redirect_url);
         //   navigate(
-        //     `${authStore?.redirect_url}/auth/check-auth${queryParams}`,
+        //     `${globalStore?.redirect_url}/auth/check-auth${queryParams}`,
         //   );
 
         //   // window.open(
-        //   //   `${authStore?.redirect_url}/auth/check-auth${queryParams}`,
+        //   //   `${globalStore?.redirect_url}/auth/check-auth${queryParams}`,
         //   //   '_self',
         //   // );
         // }

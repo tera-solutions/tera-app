@@ -1,10 +1,10 @@
-export const endpoint = `${import.meta.env.VITE_TERA_API}/crm/api`;
+export const endpoint = `${import.meta.env.VITE_TERA_API}/api`;
 
-export const portalEndpoint = `${import.meta.env.VITE_TERA_API}/portal/api`;
+export const portalEndpoint = `${import.meta.env.VITE_TERA_API}/api/portal`;
 
-export const authEndpoint = `${import.meta.env.VITE_TERA_API}/auth/api`;
+export const authEndpoint = `${import.meta.env.VITE_TERA_API}/api/auth`;
 
-export const adminEndpoint = `${import.meta.env.VITE_TERA_API}/admin/api`;
+export const adminEndpoint = `${import.meta.env.VITE_TERA_API}/api/admin`;
 
 export const webApi = `${import.meta.env.VITE_TERA_WEB_API}/api`;
 

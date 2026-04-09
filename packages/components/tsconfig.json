@@ -9,6 +9,8 @@
       "@tera/commons/*": ["../commons/*"],
       "@tera/assets/*": ["../assets/*"],
       "@tera/components/*": ["./src/*"],
+      "@tera/stores/*": ["./src/*"],
+      "@tera/api/*": ["./src/*"],
       "tailwind-merge.config": ["./src/tailwind-merge.config"]
     }
   },

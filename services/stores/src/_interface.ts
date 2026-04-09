@@ -1,8 +1,9 @@
-export interface IAuthStore {
+export interface IGlobalStore {
   device: string;
   authenticated: boolean;
   user: any;
   token: string;
+  business_id: string;
   general: any;
   logo: string;
   auth_url: string;

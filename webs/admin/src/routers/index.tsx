@@ -1,20 +1,20 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import BasicLayout from "@tera/components/web/Layout/BasicLayout";
-import UnAuthLayout from "@tera/components/web/Layout/UnAuthLayout";
 import PageNotfound from "@tera/components/web/PageNotfound";
 import PageNotPermission from "@tera/components/web/PageNotPermission";
 import PageUnauthorized from "@tera/components/web/PageUnauthorized";
 
-import ForgotPasswordPage from "@tera/components/shared/Auth/ForgotPassword";
-import RegisterPage from "@tera/components/shared/Auth/Register";
+import ForgotPasswordPage from "pages/Auth/ForgotPassword";
+import RegisterPage from "pages/Auth/Register";
+import LoginPage from "pages/Auth/Login";
 
 import Dashboard from "pages/Dashboard";
 
 import CheckAuth from "routers/CheckAuth";
 import MiddlewareRouter from "routers/MiddlewareRouter";
 
-import LoginPage from "@tera/components/shared/Auth/Login";
+import BasicLayout from "_common/components/Layout/BasicLayout";
+import UnAuthLayout from "_common/components/Layout/UnAuthLayout";
 
 export const Routers = () => {
   return (

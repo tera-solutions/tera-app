@@ -1,19 +1,15 @@
 import {
-  // Placement,
   autoUpdate,
   flip,
   offset,
   shift,
   useFloating,
 } from "@floating-ui/react-dom";
-import { CHAT_URL } from "@tera/components/shared/Chat/url";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import {
   BellOutlined,
-  ChatBubbleOvalLeftEllipsisOutlined,
-  EnvelopeOutlined,
   PhoneOutlined,
 } from "tera-dls";
 import Application from "./Application";
@@ -46,16 +42,6 @@ const Header = () => {
     <div
       className="cursor-pointer"
       onClick={() => {
-        navigate(CHAT_URL);
-      }}
-      ref={refs.setReference}
-    >
-      <ChatBubbleOvalLeftEllipsisOutlined className="w-6 h-6" />
-    </div>,
-    <EnvelopeOutlined onClick={() => navigate("/mail")} className="w-6 h-6" />,
-    <div
-      className="cursor-pointer"
-      onClick={() => {
         setOpenNotification(true);
       }}
       ref={refs.setReference}
@@ -70,16 +56,6 @@ const Header = () => {
         <li>
           <Application />
         </li>
-        {/* {listIcon &&
-          listIcon.map((item, key) => (
-            <Badge
-              key={key}
-              count={10}
-              className="w-[15px] h-[15px] bg-red-400 text-white text-[8px] p-0"
-            >
-              <li className="text-gray-500">{item}</li>
-            </Badge>
-          ))} */}
         <li>
           <User />
         </li>

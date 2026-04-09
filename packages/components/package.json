@@ -11,13 +11,18 @@
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {
-    "@tera/eslint-config": "workspace:*",
-    "@tera/typescript-config": "workspace:*",
+    "@tera/api": "workspace:*",
     "@tera/assets": "workspace:*",
     "@tera/commons": "workspace:*",
+    "@tera/eslint-config": "workspace:*",
+    "@tera/stores": "workspace:*",
+    "@tera/typescript-config": "workspace:*",
     "@types/react": "catalog:"
   },
   "dependencies": {
-    "react": "catalog:"
+    "chart.js": "^4.5.1",
+    "chartjs-plugin-datalabels": "^2.2.0",
+    "react": "catalog:",
+    "react-chartjs-2": "^5.3.1"
   }
 }

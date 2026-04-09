@@ -1,16 +1,13 @@
 import { useQueryLegacy, useMutationLegacy } from "@tera/commons/hooks/tanstack";
 import { useQueryClient } from "@tanstack/react-query";
-import ErrorToast from "@tera/components/web/ToastCustom/ErrorsToast";
 import { REGEX } from "@tera/commons/constants/common";
 import Input from "@tera/components/dof/Control/Input";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
-import SelectDepartment from "@tera/components/dof/Select/ObjectType/SelectDepartment";
-import SelectJobTitle from "@tera/components/dof/Select/ObjectType/SelectJobTitle";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Modal, notification, Spin } from "tera-dls";
 import { UserApi } from "./api";
-import useConfirm from "@tera/states/hooks/useConfirm";
+import useConfirm from "_common/hooks/useConfirm";
 import { messageWarning } from "@tera/commons/constants/message";
 import { tw } from "tailwind-merge.config";
 
@@ -137,12 +134,6 @@ function ModalUpdateInformation({
             ]}
           >
             <Input maxLength={20} />
-          </FormTeraItem>
-          <FormTeraItem name={"job_title"} label="Chức danh">
-            <SelectJobTitle />
-          </FormTeraItem>
-          <FormTeraItem name={"department"} label="Phòng ban/ Bộ phận">
-            <SelectDepartment />
           </FormTeraItem>
         </FormTera>
       </Spin>

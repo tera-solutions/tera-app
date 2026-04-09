@@ -1,6 +1,6 @@
 import { systemSubMenu } from "../components/Layout/Menu/menus";
 import { mergeArrayObjectByKeyDependOnNewArray } from "tera-dls";
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import { useMemo } from "react";
 import { ModuleType } from "@tera/commons/interfaces/router";
 

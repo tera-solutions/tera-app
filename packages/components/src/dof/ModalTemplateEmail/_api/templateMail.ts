@@ -1,5 +1,5 @@
 import { adminEndpoint } from "@tera/api/_endpoint";
-import api from "@tera/states/drivers";
+import api from "@tera/api/drivers";
 
 const TemplateMailEndpoint = `${adminEndpoint}/administrator/mail-template`;
 const TemplateMailApi = {

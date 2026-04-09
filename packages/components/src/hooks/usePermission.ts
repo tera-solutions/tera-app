@@ -2,7 +2,7 @@ import { useStores } from "./useStores";
 
 export function usePermission() {
   const {
-    authStore: { role, permissions, modules, epics },
+    globalStore: { role, permissions, modules, epics },
     globalStore: { role: globalRole, permissions: globalPermission },
   } = useStores();
 

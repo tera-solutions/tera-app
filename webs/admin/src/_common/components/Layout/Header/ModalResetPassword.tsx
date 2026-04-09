@@ -8,7 +8,7 @@ import {
 } from "@tera/commons/constants/message";
 import InputPassword from "@tera/components/dof/Control/InputPassword";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
-import useConfirm from "@tera/states/hooks/useConfirm";
+import useConfirm from "_common/hooks/useConfirm";
 import { useForm } from "react-hook-form";
 import { Modal, notification, Spin } from "tera-dls";
 import { UserApi } from "./api";

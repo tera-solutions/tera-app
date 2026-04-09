@@ -1,4 +1,4 @@
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import { useParams } from "react-router-dom";
 import { ISetQuickAction } from "@tera/states/stores/interface";
 

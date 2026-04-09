@@ -1,7 +1,7 @@
-import { useMutationLegacy } from "@tera/common/hooks/tanstack";
+import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 import { useEffect, useRef } from "react";
 // redux
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 // component
 import backgroundImage from "@tera/themes/images/uiNew/bg-form.png";
 import vector1 from "@tera/themes/images/uiNew/vector1.png";
@@ -16,7 +16,7 @@ import {
 // import { Pagination } from 'swiper';
 
 import { useLocation, useNavigate } from "react-router-dom";
-import { AuthApi } from "@tera/api/auth";
+import { AuthApi } from "@tera/api/auth/auth";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -42,7 +42,7 @@ const swiperArray = [
 const CheckAuthPage = () => {
   const navigate = useNavigate();
   const {
-    authStore: { logo, auth_url, updateUser },
+    globalStore: { logo, auth_url, updateUser },
   } = useStores();
   const location = useLocation();
   const params: { [key: string]: any } = getQueryParams(location.search);

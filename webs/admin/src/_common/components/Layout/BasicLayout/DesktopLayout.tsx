@@ -13,11 +13,7 @@ function BasicLayout({ module }: { module?: ModuleType }) {
   return (
     <>
       <div id="basic-layout" className="w-full">
-        <InlineMenuV2
-          isExpand={isExpand}
-          onChangeSize={setIsExpand}
-          module={module}
-        />
+        <InlineMenuV2 isExpand={isExpand} onChangeSize={setIsExpand} />
         <div
           className={`flex flex-col flex-1 w-full h-full transition-all min-h-screen ${
             isExpand ? "xmd:pl-[225px]" : "xmd:pl-[50px]"

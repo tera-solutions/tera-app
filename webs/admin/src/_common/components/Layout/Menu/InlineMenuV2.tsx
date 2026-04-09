@@ -12,10 +12,11 @@ import Logo from "@tera/themes/images/Icons/LogoTera.svg?react";
 import { Bars3BottomRightOutlined, Collapse, Icon, Tooltip } from "tera-dls";
 import useSubMenu from "_common/hooks/useSubMenu";
 import { usePermission } from "_common/hooks/usePermission";
-import { useStores } from "_common/hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 
 // Import các file menu JSON
 import admin from "_common/components/Layout/Menu/admin.json";
+import { useStates } from "_common/hooks/useStates";
 
 import { IMenu } from "./interface";
 
@@ -29,7 +30,7 @@ const InlineMenuV2: React.FC<InlineMenuProps> = observer(
   ({ isExpand, containerClassName, onChangeSize }) => {
     const {
       commonStore: { activeMenu: activeGroupKey },
-    } = useStores();
+    } = useStates();
     const { hasPage } = usePermission();
     const location = useLocation();
     const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { OBJECT_KEY_CRM } from "@tera/commons/constants/object-key";
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import customTwMerge from "tailwind-merge.config";

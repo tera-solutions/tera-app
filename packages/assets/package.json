@@ -6,19 +6,29 @@
     "./*": "./src/*.tsx",
     "./images/*": "./src/images/*",
     "./icons/*": "./src/icons/*",
-    "./fonts/*": "./src/fonts/*"
+    "./fonts/*": "./src/fonts/*",
+    "./styles/*": "./src/styles/*",
+    "./theme.scss": "./src/styles/theme.scss",
+    "./main.css": "./src/styles/main.css"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
     "generate:component": "turbo gen react-component",
     "check-types": "tsc --noEmit"
   },
+  "dependencies": {
+    "react": "catalog:",
+    "@tailwindcss/postcss": "^4.2.2",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.2.2"
+  },
   "devDependencies": {
     "@tera/eslint-config": "workspace:*",
     "@tera/typescript-config": "workspace:*",
-    "@types/react": "catalog:"
-  },
-  "dependencies": {
-    "react": "catalog:"
+    "@types/react": "catalog:",
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.8",
+    "sass-embedded": "^1.98.0",
+    "typescript": "catalog:"
   }
 }

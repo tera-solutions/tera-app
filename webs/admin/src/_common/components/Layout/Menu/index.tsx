@@ -1,34 +1,32 @@
-import useClickOutside from "@tera/components/web/Flow/useClickOutside";
 import Icons from "@tera/components/web/Icons";
-import { useStores } from "_common/hooks/useStores";
-import useGroupMenu from "@tera/commons/hooks/useGroupMenu";
+import { useStores } from "@tera/stores/useStores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "@tera/assets/icons/LogoTera.svg?react";
 import { Bars3Outlined } from "tera-dls";
-import { ModuleType } from "@tera/commons/interfaces/router";
+import useGroupMenu from "_common/hooks/useGroupMenu";
+import useClickOutside from "_common/hooks/useClickOutside";
+import { useStates } from "_common/hooks/useStates";
 
 import Header from "../Header";
-import UserCompany from "../Header/UserCompany";
 import DrawerMenu from "./DrawerMenu";
 import MoreMenu from "./MoreMenu";
 import { IMenu } from "./interface";
 
 export interface MenuProps {
   isExpand?: boolean;
-  module?: ModuleType;
 }
 
 const MenuComponent: React.FC<MenuProps> = observer(
-  ({ isExpand, module }: MenuProps) => {
+  ({ isExpand }: MenuProps) => {
     const location = useLocation();
     const {
       commonStore: { activeMenu, openMenuMore, setActiveMenu, setOpenMenuMore },
-    } = useStores();
+    } = useStates();
 
-    const menus = useGroupMenu({ module });
+    const menus = useGroupMenu();
     const [openDrawerMenu, setOpenDrawerMenu] = useState<boolean>(false);
     const updateActiveMenu = () => {
       const splitUrl = location?.pathname?.split("/");
@@ -94,7 +92,6 @@ const MenuComponent: React.FC<MenuProps> = observer(
           } transition-all fixed top-0 right-0 z-[49] px-2.5 h-[45px]  flex items-center justify-between bg-white border-b border-gray-200 text-xxs left-0`}
           style={{ boxShadow: "0px 2px 2px 0px rgba(0, 0, 0, 0.05)" }}
         >
-          <UserCompany />
           <div className="flex items-center gap-x-4 xmd:hidden">
             <Bars3Outlined
               className="text-blue-800 w-7 h-7 cursor-pointer"

@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { createContext, useMemo } from "react";
 //import { useQuery } from '@tanstack/react-query';
 import { IMenu } from "../Menu/interface";
-import menu from "../Menu/sale.json";
+import menu from "../Menu/admin.json";
 import QuickAction from "@tera/components/dof/QuickAction";
 import { useParams } from "react-router-dom";
 import classNames from "classnames";

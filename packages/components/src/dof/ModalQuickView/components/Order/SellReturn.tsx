@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import CustomTag from "@tera/components/web/CustomTag";
 import HoverQuickView from "@tera/components/web/HoverQuickView";
 import { DATE_FORMAT } from "@tera/commons/constants/common";
-import { useStores } from "hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import useQuickView from "@tera/states/hooks/useQuickView";
 import { toJS } from "mobx";
 import { useMemo } from "react";
@@ -17,7 +17,7 @@ const SellReturn = ({ dataDetail }) => {
   const children = dataDetail?.children || [];
   const parent = dataDetail?.parent || {};
   const {
-    authStore: { user },
+    globalStore: { user },
     globalStore: { user: globalUser },
   } = useStores();
   const currentUser = globalUser || user;

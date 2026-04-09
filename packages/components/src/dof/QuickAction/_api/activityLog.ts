@@ -1,5 +1,5 @@
 import { portalEndpoint } from "@tera/api/_endpoint";
-import api from "@tera/states/drivers";
+import api from "@tera/api/drivers";
 
 const ActivityLogEndPoint = `${portalEndpoint}/activity-log`;
 

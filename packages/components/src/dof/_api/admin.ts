@@ -1,6 +1,6 @@
 import { adminEndpoint } from "@tera/api/_endpoint";
-import { parserParamsArray } from "@tera/commons/utils";
-import api from "@tera/states/drivers";
+import { parserParamsArray } from "@tera/commons/utils/utils";
+import api from "@tera/api/drivers";
 
 const AdministratorEndpoint = `${adminEndpoint}/administrator`;
 

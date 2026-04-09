@@ -1,4 +1,4 @@
-import Footer from "@tera/common/components/Login/Footer";
+import Footer from "@tera/components/web/Login/Footer";
 import { useNavigate } from "react-router-dom";
 import backgroundNotification from "@tera/themes/images/uiNew/bg-notification.png";
 import ErrorIcon from "@tera/themes/images/uiNew/error-icon.png";

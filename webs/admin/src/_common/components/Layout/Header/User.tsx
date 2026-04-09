@@ -1,19 +1,22 @@
 import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 
 import DefaultImage from "@tera/components/web/DefaultImage";
-import { useStores } from "_common/hooks/useStores";
+import { useStores } from "@tera/stores/useStores";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { AuthApi } from "@tera/api";
 import IconExit from "@tera/themes/images/Icons/IconExit.svg?react";
+import { useStates } from "_common/hooks/useStates";
 import { EnvelopeOutlined, Popover, notification } from "tera-dls";
 import ModalResetPassword from "./ModalResetPassword";
 import ModalUpdateInformation from "./ModalUpdateInformation";
 
 const User = observer(() => {
   const {
-    authStore: { user, clear },
     commonStore: { clear: clearCRM },
+  } = useStates();
+  const {
+    globalStore: { user, clear },
   } = useStores();
 
   const [modalResetPassword, setModalResetPassword] = useState<boolean>(false);

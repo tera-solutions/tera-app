@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     server: {
-      port: 3001,
+      port: 3000,
       strictPort: true,
       fs: {
         allow: [".."],
@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
         styles: path.resolve(__dirname, "./src/styles/"),
         routers: path.resolve(__dirname, "./src/routers/"),
         states: path.resolve(__dirname, "./src/states/"),
-        hooks: path.resolve(__dirname, "./src/hooks/"),
+        _common: path.resolve(__dirname, "./src/_common/"),
         "@tera/commons": path.resolve(__dirname, "../../packages/commons/src"),
         "@tera/components": path.resolve(
           __dirname,
@@ -64,8 +64,7 @@ export default defineConfig(({ mode }) => {
         "react-chartjs-2",
         "chart.js",
         "mobx-persist-store",
-        "react",
-        "react-dom",
+        "react"
       ],
       exclude: ["tera-dls"],
     },

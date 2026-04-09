@@ -1,4 +1,4 @@
-import api from "@tera/states/drivers";
+import api from "@tera/api/drivers";
 import { adminEndpoint } from "@tera/api/_endpoint";
 
 const FormConfigEndpoint = `${adminEndpoint}/administrator/form-data`;

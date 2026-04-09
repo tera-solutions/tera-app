@@ -1,9 +1,9 @@
-import { useStores } from "./useStores";
+import { useStates } from "./useStates";
 
 export function usePermission() {
   const {
     authStore: { role, permissions, modules, epics },
-  } = useStores();
+  } = useStates();
 
   const checkRole = () => {
     // try {

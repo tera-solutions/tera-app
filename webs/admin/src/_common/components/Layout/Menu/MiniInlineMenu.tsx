@@ -1,6 +1,5 @@
 import Icons from "@tera/components/web/Icons";
-import { useStores } from "_common/hooks/useStores";
-import useSubMenu from "@tera/commons/hooks/useSubMenu";
+import { useStores } from "@tera/stores/useStores";
 import classNames from "classnames";
 import { groupBy } from "lodash";
 import { observer } from "mobx-react-lite";
@@ -9,8 +8,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeftOutlined, Collapse, Icon, XMarkSolid } from "tera-dls";
 import { IMenu } from "./interface";
 import admin from "./admin.json";
+import useSubMenu from "_common/hooks/useSubMenu";
 import useGroupMenu from "_common/hooks/useGroupMenu";
 import { usePermission } from "_common/hooks/usePermission";
+import { useStates } from "_common/hooks/useStates";
 
 export interface MiniInlineMenuProps {
   onClose: (e?) => void;
@@ -19,7 +20,7 @@ const MiniInlineMenu: React.FC<MiniInlineMenuProps> = observer(
   ({ onClose }) => {
     const {
       commonStore: { activeMenu: activeGroupKey },
-    } = useStores();
+    } = useStates();
     const [activeGroupDraft, setActiveGroupDraft] = useState<string>(null);
     const location = useLocation();
     const navigate = useNavigate();
