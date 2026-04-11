@@ -1,0 +1,276 @@
+{
+  "groupMenu": [
+    {
+      "id": "r1",
+      "code": "warehouse",
+      "title": "Kinh doanh",
+      "path": "/product/list",
+      "icon": "menu5",
+      "key": "product",
+      "permission": "warehouse"
+    },
+    {
+      "id": "r3",
+      "code": "package",
+      "title": "Dịch vụ",
+      "path": "/package/list",
+      "icon": "menu16",
+      "key": "package",
+      "permission": "cs"
+    },
+     {
+      "id": "r4",
+      "code": "withdraw",
+      "title": "Tài chính",
+      "path": "/withdraw",
+      "icon": "menu13",
+      "key": "withdraw",
+      "permission": "cs"
+    },
+     {
+      "id": "r5",
+      "code": "support-ticket",
+      "title": "CSKH",
+      "path": "/support-ticket",
+      "icon": "menu3",
+      "key": "support-ticket",
+      "permission": "cs"
+    },
+         {
+      "id": "r6",
+      "code": "setting-store",
+      "title": "Thiết lập",
+      "path": "/setting-store",
+      "icon": "menu14",
+      "key": "setting-store",
+      "permission": "cs"
+    }
+  ],
+  "parentGroup": [
+    {
+      "id": 1,
+      "title": "Kinh doanh & kho",
+      "key": "group-product",
+      "parentKey": "product"
+    },
+    {
+      "id": 2,
+      "title": "Dịch vụ & Gói",
+      "key": "group-service",
+      "parentKey": "dashboard"
+    },
+    {
+      "id": 3,
+      "title": "Tài chính & Đối soát",
+      "key": "group-finance",
+      "parentKey": "dashboard"
+    },
+    {
+      "id": 4,
+      "title": "Chăm sóc khách hàng",
+      "key": "group-cs",
+      "parentKey": "support-ticket"
+    },
+    {
+      "id": 5,
+      "title": "Thiết lập hệ thống",
+      "key": "group-setting",
+      "parentKey": "setting-store"
+    }
+  ],
+  "parentMenu": [
+    {
+      "id": 1,
+      "title": "Các sản phẩm",
+      "icon": "briefcase",
+      "path": "/product/list",
+      "status": "active",
+      "code": "p1",
+      "parentKey": "product",
+      "parentGroupKey": "group-product",
+      "activeKeys": "list"
+    },
+    {
+      "id": 2,
+      "title": "Đánh giá sản phẩm",
+      "icon": "briefcase",
+      "path": "/product/review",
+      "status": "active",
+      "code": "p2",
+      "parentKey": "product",
+      "parentGroupKey": "group-product",
+      "activeKeys": "review"
+    },
+    {
+      "id": 3,
+      "title": "Kho sản phẩm",
+      "path": "/warehouse",
+      "icon": "briefcase",
+      "key": "warehouse",
+      "parentKey": "product",
+      "parentGroupKey": "group-product",
+      "permission": ""
+    },
+    {
+      "id": 4,
+      "title": "Đơn hàng",
+      "path": "/order",
+      "icon": "shopping-cart",
+      "key": "order",
+      "parentKey": "product",
+      "parentGroupKey": "group-product",
+      "permission": ""
+    },
+    {
+      "id": 5,
+      "title": "Pos",
+      "path": "",
+      "icon": "shopping-bag",
+      "key": "shopping-bag",
+      "parentKey": "product",
+      "parentGroupKey": "group-product",
+      "permission": ""
+    },
+    {
+      "id": 6,
+      "title": "Gói cửa hàng",
+      "path": "/package/list",
+      "icon": "CubeOutlined",
+      "key": "package",
+      "parentKey": "package",
+      "parentGroupKey": "group-service",
+      "permission": ""
+    },
+    {
+      "id": 7,
+      "title": "Gói quảng cáo",
+      "path": "/advertising-package/list",
+      "icon": "PuzzlePieceOutlined",
+      "key": "advertising-package",
+      "parentKey": "package",
+      "parentGroupKey": "group-service",
+      "permission": ""
+    },
+    {
+      "id": 8,
+      "title": "Hệ thống liên kết",
+      "path": "/link-system",
+      "icon": "LinkOutlined",
+      "key": "link-system",
+      "parentKey": "package",
+      "parentGroupKey": "group-service",
+      "permission": ""
+    },
+    {
+      "id": 9,
+      "title": "Rút tiền",
+      "path": "/withdraw",
+      "icon": "CurrencyDollarOutlined",
+      "key": "withdraw",
+      "parentKey": "withdraw",
+      "parentGroupKey": "group-finance",
+      "permission": ""
+    },
+    {
+      "id": 10,
+      "title": "Hoá đơn",
+      "path": "/invoice",
+      "icon": "DocumentTextOutlined",
+      "key": "invoice",
+      "parentKey": "withdraw",
+      "parentGroupKey": "group-finance",
+      "permission": ""
+    },
+    {
+      "id": 14,
+      "title": "Lịch sử thanh toán",
+      "path": "/payment-history",
+      "icon": "DocumentTextOutlined",
+      "key": "payment-history",
+      "parentKey": "withdraw",
+      "parentGroupKey": "group-finance",
+      "permission": ""
+    },
+    {
+      "id": 15,
+      "title": "Lịch sử hoa hồng",
+      "path": "/commission-history",
+      "icon": "DocumentChartBarOutlined",
+      "key": "commission-history",
+      "parentKey": "withdraw",
+      "parentGroupKey": "group-finance",
+      "permission": ""
+    },
+        {
+      "id": 16,
+      "title": "Hỗ trợ khách hàng",
+      "path": "/support-ticket",
+      "icon": "SwatchOutlined",
+      "key": "support-ticket",
+      "parentKey": "support-ticket",
+      "parentGroupKey": "group-cs",
+      "permission": ""
+    },
+    {
+      "id": 17,
+      "title": "Hỏi đáp sản phẩm",
+      "path": "/product-q&a",
+      "icon": "QuestionMarkCircleOutlined",
+      "key": "product-q&a",
+      "parentKey": "support-ticket",
+      "parentGroupKey": "group-cs",
+      "permission": ""
+    },
+    {
+      "id": 13,
+      "title": "Yêu cầu hoàn tiền",
+      "path": "/refund-request",
+      "icon": "HashtagOutlined",
+      "key": "refund-request",
+      "parentKey": "support-ticket",
+      "parentGroupKey": "group-cs",
+      "permission": ""
+    },
+    {
+      "id": 11,
+      "title": "Cài đặt cửa hàng",
+      "path": "/setting-store",
+      "icon": "Cog6ToothOutlined",
+      "key": "setting-store",
+      "parentKey": "setting-store",
+      "parentGroupKey": "group-setting",
+      "permission": ""
+    },
+    {
+      "id": 12,
+      "title": "Phiếu mua hàng",
+      "path": "/shopping-voucher",
+      "icon": "TagOutlined",
+      "key": "shopping-voucher",
+      "parentKey": "setting-store",
+      "parentGroupKey": "group-setting",
+      "permission": ""
+    },
+    {
+      "id": 18,
+      "title": "Tệp đã tải lên",
+      "path": "/file-uploaded",
+      "icon": "FolderOpenOutlined",
+      "key": "file-uploaded",
+      "parentKey": "setting-store",
+      "parentGroupKey": "group-setting",
+      "permission": ""
+    },
+    {
+      "id": 19,
+      "title": "Thay đổi mật khẩu",
+      "path": "/change-password",
+      "icon": "KeyOutlined",
+      "key": "change-password",
+      "parentKey": "setting-store",
+      "parentGroupKey": "group-setting",
+      "permission": ""
+    }
+  ],
+  "subMenu": []
+}

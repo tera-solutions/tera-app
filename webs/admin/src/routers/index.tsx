@@ -23,12 +23,15 @@ export const Routers = () => {
         path="/"
         element={
           <MiddlewareRouter>
-            <BasicLayout module="eshop" />
+            <BasicLayout />
           </MiddlewareRouter>
         }
       >
         <Route index element={<Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/student/list" element={<Dashboard />} />
+        <Route path="/teacher/list" element={<Dashboard />} />
+        <Route path="/course/list" element={<Dashboard />} />
       </Route>
 
       <Route

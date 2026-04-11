@@ -1,9 +1,9 @@
-import { useStates } from "./useStates";
+import { useStores } from "@tera/stores/useStores";
 
 export function usePermission() {
   const {
-    authStore: { role, permissions, modules, epics },
-  } = useStates();
+    globalStore: { role, permissions, modules, epics },
+  } = useStores();
 
   const checkRole = () => {
     // try {

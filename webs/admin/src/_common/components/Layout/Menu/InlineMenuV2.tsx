@@ -12,7 +12,6 @@ import Logo from "@tera/themes/images/Icons/LogoTera.svg?react";
 import { Bars3BottomRightOutlined, Collapse, Icon, Tooltip } from "tera-dls";
 import useSubMenu from "_common/hooks/useSubMenu";
 import { usePermission } from "_common/hooks/usePermission";
-import { useStores } from "@tera/stores/useStores";
 
 // Import các file menu JSON
 import admin from "_common/components/Layout/Menu/admin.json";
@@ -236,9 +235,9 @@ const InlineMenuV2: React.FC<InlineMenuProps> = observer(
                       <Collapse
                         accordion
                         activeKey={collapseActiveKey ? [collapseActiveKey] : []}
-                        containerClassName="flex flex-col gap-2.5 w-full"
+                        containerClassName="flex flex-col w-full"
                         headingClassName={classNames(
-                          "p-2.5 bg-transparent border-none !rounded-e-full text-gray-200 focus:ring-0 hover:bg-white/10",
+                          "p-2.5 bg-transparent border-none !rounded-e-full text-gray-200 focus:ring-0 hover:bg-white/10 p-2",
                           { "p-0 !rounded-none justify-center": !isExpand },
                         )}
                         activeClassName="bg-white/25 text-gray-200"

@@ -1,0 +1,3 @@
+@import "@tera/assets/styles/main.css";
+
+@source "./**/*.{ts,tsx}";
