@@ -1,0 +1,16 @@
+{
+  "extends": "@tera/typescript-config/react-library.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "strictNullChecks": true,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@tera/commons/*": ["../..packages/commons/*"],
+      "@tera/api/*": ["../api/*"],
+      "@tera/stores/*": ["../stores/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

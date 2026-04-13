@@ -22,7 +22,7 @@
     "@tera/assets": "workspace:*",
     "@tera/commons": "workspace:*",
     "@tera/components": "workspace:*",
-    "@tera/features": "workspace:*",
+    "@tera/modules": "workspace:*",
     "@tera/stores": "workspace:*",
     "@tera/themes": "workspace:*",
     "@types/react-router-dom": "^5.3.3",

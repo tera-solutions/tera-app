@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
         "@tera/themes": path.resolve(__dirname, "../../packages/themes/src"),
         "@tera/stores": path.resolve(__dirname, "../../services/stores/src"),
         "@tera/api": path.resolve(__dirname, "../../services/api/src"),
-        "@tera/features": path.resolve(
+        "@tera/modules": path.resolve(
           __dirname,
           "../../services/features/src",
         ),

@@ -1,0 +1,36 @@
+import { endpoint } from "~/_endpoint";
+import api from "~/drivers";
+import {
+  CreatePayload,
+  DeletePayload,
+  DetailPayload,
+  ListPayload,
+  UpdatePayload,
+} from "~/_interface";
+
+export const ScheduleConflictAPI = {
+  getList: async ({ params }: ListPayload) =>
+    await api
+      .get(`${endpoint}/scheduling/schedule-conflict/list`, params)
+      .then((r) => r.data),
+
+  getDetail: async ({ id }: DetailPayload) =>
+    await api
+      .get(`${endpoint}/scheduling/schedule-conflict/detail/${id}`)
+      .then((r) => r.data),
+
+  create: async ({ params }: CreatePayload) =>
+    await api
+      .post(`${endpoint}/scheduling/schedule-conflict/create`, params)
+      .then((r) => r.data),
+
+  update: async ({ id, params }: UpdatePayload) =>
+    await api
+      .put(`${endpoint}/scheduling/schedule-conflict/update/${id}`, params)
+      .then((r) => r.data),
+
+  delete: async ({ id }: DeletePayload) =>
+    await api
+      .delete(`${endpoint}/scheduling/schedule-conflict/delete/${id}`)
+      .then((r) => r.data),
+};

@@ -6,6 +6,9 @@
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
+      "~/_interface": ["./src/_interface.ts"],
+      "~/_endpoint": ["./src/_endpoint.ts"],
+      "~/drivers": ["./src/drivers/index.ts"],
       "@tera/stores/*": ["../stores/*"],
     }
   },

@@ -20,7 +20,7 @@
     "@tera/commons": "workspace:*",
     "@tera/components": "workspace:*",
     "@tera/databases": "workspace:*",
-    "@tera/features": "workspace:*",
+    "@tera/modules": "workspace:*",
     "@tera/stores": "workspace:*",
     "@expo/vector-icons": "15.0.3",
     "@hookform/resolvers": "catalog:",

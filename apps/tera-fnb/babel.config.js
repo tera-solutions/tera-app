@@ -17,7 +17,7 @@ module.exports = function (api) {
             '@tera/assets': path.resolve(__dirname, '../../packages/assets/src'),
             '@tera/databases': path.resolve(__dirname, '../../services/databases/src'),
             '@tera/api': path.resolve(__dirname, '../../services/api/src'),
-            '@tera/features': path.resolve(__dirname, '../../services/features/src'),
+            '@tera/modules': path.resolve(__dirname, '../../services/features/src'),
             '@tera/stores': path.resolve(__dirname, '../../services/stores/src'),
             '@components': './src/components',
             '@types': './src/types',

@@ -6,7 +6,7 @@ import {
   detailPayload,
   listPayload,
   updatePayload,
-} from '../_interface';
+} from '../_interface.ts';
 
 export const CustomerAPI = {
   getList: async ({ params }: listPayload) =>

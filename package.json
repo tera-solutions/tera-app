@@ -24,7 +24,11 @@
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
     "clean": "rm -rf node_modules dist .turbo pnpm-lock.yaml",
-    "reinstall": "pnpm run clean && pnpm install"
+    "reinstall": "pnpm run clean && pnpm install",
+    "gen": "node tools/generators/cli.js",
+    "gen:api": "node tools/generators/gen.api.js",
+    "gen:service": "node tools/generators/gen.service.js",
+    "gen:all": "node tools/generators/gen.all.js"
   },
   "dependencies": {
     "@hookform/resolvers": "catalog:",
