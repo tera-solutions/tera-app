@@ -1,5 +1,5 @@
-import { authEndpoint } from "../_endpoint";
-import api from "../drivers";
+import { authEndpoint } from "@tera/api/_endpoint";
+import api from "@tera/api/drivers";
 
 export const AuthApi = {
   getDeviceCode: async () =>

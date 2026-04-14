@@ -4,7 +4,7 @@ import PaginationCustom from "@tera/components/web/PaginationCustom";
 import ActionCUD from "@tera/components/web/TableColumnCustom/ActionCUD";
 import ErrorToast from "@tera/components/web/ToastCustom/ErrorsToast";
 import { messageError } from "@tera/commons/constants/message";
-import { IPagination } from "_common/interface";
+import { IPagination } from "@tera/commons/interfaces";
 import moment from "moment";
 import { Key, useState } from "react";
 import {

@@ -1,6 +1,6 @@
 import { checkFileType } from "@tera/commons/utils";
 import { Modal } from "tera-dls";
-import NoData from "../../components/NoData";
+import NoData from "../../web/NoPermission";
 
 function ModalPreview({ handleClose, open, file }) {
   const renderLayout = () => {

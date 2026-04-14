@@ -15,7 +15,8 @@
       "@tera/themes/*": ["../../packages/themes/src/*"],
       "@tera/stores/*": ["../../services/stores/src/*"],
       "@tera/api/*": ["../../services/api/src/*"],
-      "@tera/modules/*": ["../../services/features/src/*"],
+      "@tera/modules": ["../../services/modules/src/index"],
+      "@tera/modules/*": ["../../services/modules/src/*"],
       "tailwind-merge.config": ["src/tailwind-merge.config.ts"],
       "~/*": ["./*"],
       "@/*": ["src/*"],
@@ -24,11 +25,11 @@
     "jsx": "react-jsx",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
     "allowSyntheticDefaultImports": true,
+    "emitDeclarationOnly": true,
     "esModuleInterop": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
@@ -37,8 +38,16 @@
     "noUnusedParameters": false,
     "skipLibCheck": true,
     "allowJs": true,
-    "checkJs": false
+    "checkJs": false,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "incremental": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"],
+  "references": [
+    { "path": "../../services/modules" },
+    { "path": "../../packages/components" },
+  ],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "../../packages/commons/src/hooks/usePermission.ts"],
   "exclude": ["node_modules", "dist"]
 }

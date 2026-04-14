@@ -51,3 +51,11 @@ export const useEvaluationDelete = () => {
     },
   });
 };
+
+export const EvaluationService = {
+  useEvaluationList,
+  useEvaluationDetail,
+  useEvaluationCreate,
+  useEvaluationUpdate,
+  useEvaluationDelete,
+};

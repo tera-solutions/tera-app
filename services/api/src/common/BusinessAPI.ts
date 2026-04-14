@@ -1,5 +1,5 @@
 import { endpointPortal } from '@tera/commons/constants/common';
-import api from '@services/drivers';
+import api from '@services/@tera/api/drivers';
 
 export const BusinessAPI = {
   getBusiness: async () =>

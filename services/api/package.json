@@ -4,6 +4,7 @@
   "private": true,
   "exports": {
     ".": "./src/index.ts",
+    "./drivers": "./src/drivers.ts",
     "./*": "./src/*.ts"
   },
   "scripts": {
@@ -15,7 +16,8 @@
     "@tera/eslint-config": "workspace:*",
     "@tera/typescript-config": "workspace:*",
     "@tera/stores": "workspace:*",
-    "@types/react": "catalog:"
+    "@types/react": "catalog:",
+    "typescript": "catalog:"
   },
   "dependencies": {
     "react": "catalog:"

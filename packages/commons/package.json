@@ -17,11 +17,12 @@
   },
   "devDependencies": {
     "@tera/eslint-config": "workspace:*",
+    "@tera/stores": "workspace:*",
     "@tera/typescript-config": "workspace:*",
-    "@types/react": "catalog:"
+    "@types/react": "catalog:",
+    "crypto-js": "^4.2.0"
   },
   "dependencies": {
-    "crypto-js": "^4.2.0",
     "react": "catalog:"
   }
 }

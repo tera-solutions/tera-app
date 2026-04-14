@@ -51,3 +51,11 @@ export const useClassRoomDelete = () => {
     },
   });
 };
+
+export const ClassRoomService = {
+  useClassRoomList,
+  useClassRoomDetail,
+  useClassRoomCreate,
+  useClassRoomUpdate,
+  useClassRoomDelete,
+};

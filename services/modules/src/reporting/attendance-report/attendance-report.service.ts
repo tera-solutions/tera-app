@@ -51,3 +51,11 @@ export const useAttendanceReportDelete = () => {
     },
   });
 };
+
+export const AttendanceReportService = {
+  useAttendanceReportList,
+  useAttendanceReportDetail,
+  useAttendanceReportCreate,
+  useAttendanceReportUpdate,
+  useAttendanceReportDelete,
+};

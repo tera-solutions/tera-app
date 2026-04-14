@@ -51,3 +51,11 @@ export const useRefundDelete = () => {
     },
   });
 };
+
+export const RefundService = {
+  useRefundList,
+  useRefundDetail,
+  useRefundCreate,
+  useRefundUpdate,
+  useRefundDelete,
+};

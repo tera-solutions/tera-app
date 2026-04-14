@@ -14,7 +14,7 @@ import Mail from "./Mail";
 import Mission from "./Mission";
 import { dataMenu } from "./_constant";
 import { classTabs } from "./common";
-import { usePermission } from "@tera/states/hooks";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import NoPermission from "@tera/components/web/NoPermission";
 import { QUICK_ACTION_PERMISSION_KEY } from "@tera/commons/constants/permission";
 

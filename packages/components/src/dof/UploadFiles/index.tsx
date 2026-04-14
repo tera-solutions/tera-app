@@ -4,12 +4,12 @@ import ActionCUD, {
 } from "@tera/components/web/TableColumnCustom/ActionCUD";
 import { portalEndpoint } from "@tera/api/_endpoint";
 import { useStores } from "@tera/stores/useStores";
-import { usePermission } from "@tera/states/hooks";
-import { IFileUpload } from "_common/interface";
+import { usePermission } from "@tera/commons/hooks/usePermission";
+import { IFileUpload } from "@tera/commons/interfaces";
 import Axios from "axios";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useRef, useState } from "react";
-import IconCloud from "@tera/themes/images/Icons/cloud-arrow-up.svg?react";
+import IconCloud from "@tera/assets/icons/cloud-arrow-up.svg?react";
 import customTwMerge from "tailwind-merge.config";
 import {
   Button,

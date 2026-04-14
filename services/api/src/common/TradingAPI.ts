@@ -1,4 +1,4 @@
-import api from '../drivers';
+import api from '@tera/api/drivers';
 
 const TradingAPiEndpoint = `https://api.trading.ungdung79.com/api`;
 

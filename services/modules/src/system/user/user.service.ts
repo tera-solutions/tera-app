@@ -51,3 +51,11 @@ export const useUserDelete = () => {
     },
   });
 };
+
+export const UserService = {
+  useUserList,
+  useUserDetail,
+  useUserCreate,
+  useUserUpdate,
+  useUserDelete,
+};

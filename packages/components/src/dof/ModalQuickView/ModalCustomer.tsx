@@ -6,7 +6,7 @@ import QuickViewApi from "./_api";
 import Customer from "./components/Customer";
 import { messageError } from "@tera/commons/constants/message";
 import { ModalQuickViewProps } from "./interfaces";
-import { usePermission } from "@tera/states/hooks";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 
 const ModalCustomer = ({
   open,

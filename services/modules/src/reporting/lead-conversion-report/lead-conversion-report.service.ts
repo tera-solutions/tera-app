@@ -51,3 +51,11 @@ export const useLeadConversionReportDelete = () => {
     },
   });
 };
+
+export const LeadConversionReportService = {
+  useLeadConversionReportList,
+  useLeadConversionReportDetail,
+  useLeadConversionReportCreate,
+  useLeadConversionReportUpdate,
+  useLeadConversionReportDelete,
+};

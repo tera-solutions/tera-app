@@ -51,3 +51,11 @@ export const useLessonDelete = () => {
     },
   });
 };
+
+export const LessonService = {
+  useLessonList,
+  useLessonDetail,
+  useLessonCreate,
+  useLessonUpdate,
+  useLessonDelete,
+};

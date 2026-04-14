@@ -51,3 +51,11 @@ export const useInvoiceDelete = () => {
     },
   });
 };
+
+export const InvoiceService = {
+  useInvoiceList,
+  useInvoiceDetail,
+  useInvoiceCreate,
+  useInvoiceUpdate,
+  useInvoiceDelete,
+};

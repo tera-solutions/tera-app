@@ -51,3 +51,11 @@ export const useStaffDelete = () => {
     },
   });
 };
+
+export const StaffService = {
+  useStaffList,
+  useStaffDetail,
+  useStaffCreate,
+  useStaffUpdate,
+  useStaffDelete,
+};

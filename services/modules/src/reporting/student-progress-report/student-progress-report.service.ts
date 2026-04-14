@@ -51,3 +51,11 @@ export const useStudentProgressReportDelete = () => {
     },
   });
 };
+
+export const StudentProgressReportService = {
+  useStudentProgressReportList,
+  useStudentProgressReportDetail,
+  useStudentProgressReportCreate,
+  useStudentProgressReportUpdate,
+  useStudentProgressReportDelete,
+};

@@ -1,13 +1,13 @@
 module.exports = ({ Entity, entity, domain }) => `
-import { endpoint } from "~/_endpoint";
-import api from "~/drivers";
+import { endpoint } from "@tera/api/_endpoint";
+import api from "@tera/api/drivers";
 import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
   ListPayload,
   UpdatePayload,
-} from "~/_interface";
+} from "@tera/api/_interface";
 
 export const ${Entity}API = {
   getList: async ({ params }: ListPayload) =>

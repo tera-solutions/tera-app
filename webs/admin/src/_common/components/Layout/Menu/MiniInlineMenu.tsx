@@ -10,7 +10,7 @@ import { IMenu } from "./interface";
 import admin from "./admin.json";
 import useSubMenu from "_common/hooks/useSubMenu";
 import useGroupMenu from "_common/hooks/useGroupMenu";
-import { usePermission } from "_common/hooks/usePermission";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { useStates } from "_common/hooks/useStates";
 
 export interface MiniInlineMenuProps {

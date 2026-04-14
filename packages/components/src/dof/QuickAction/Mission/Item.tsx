@@ -5,7 +5,7 @@ import { DropdownRef, Tag, useHover } from "tera-dls";
 import { generateObjectContent } from "../common";
 import Description from "../components/Description";
 import DropdownAction from "../components/DropdownAction";
-import { usePermission } from "@tera/states/hooks";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { ACTIVITY_TASK_URL } from "@tera/components/shared/Activity/containers/Task/url";
 import { StatusTaskActivity } from "@tera/components/shared/Activity/constants";
 import { QUICK_ACTION_PERMISSION_KEY } from "@tera/commons/constants/permission";

@@ -1,14 +1,19 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
-import { StudentAPI } from "@tera/api/education/student/student.api";
 import { ListPayload, DetailPayload, CreatePayload, UpdatePayload, DeletePayload } from "@tera/api/_interface";
+import { StudentAPI } from "@tera/api";
 
 // QUERY
 export const useStudentList = (payload: ListPayload) => {
   return useQueryAdapter({
     queryKey: ["student", "list", payload.params],
-    queryFn: () => StudentAPI.getList(payload),
+    queryFn:async () => {
+      console.log("======= queryFn =====")
+      const result = await StudentAPI.getList(payload);
+      console.log("result", result)
+      return result
+    },
     keepPreviousData: true,
   });
 };
@@ -50,4 +55,12 @@ export const useStudentDelete = () => {
       queryClient.invalidateQueries({ queryKey: ["student", "list"] });
     },
   });
+};
+
+export const StudentService = {
+  useStudentList,
+  useStudentDetail,
+  useStudentCreate,
+  useStudentUpdate,
+  useStudentDelete,
 };

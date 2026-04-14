@@ -1,10 +1,5 @@
 {
-  "extends": "@tera/typescript-config/react-library.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "strictNullChecks": true,
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
     "paths": {
       "@tera/commons/*": ["../commons/*"],
       "@tera/assets/*": ["../assets/*"],
@@ -12,7 +7,24 @@
       "@tera/stores/*": ["./src/*"],
       "@tera/api/*": ["./src/*"],
       "tailwind-merge.config": ["./src/tailwind-merge.config"]
-    }
+    },
+    "composite": true,
+    "incremental": true,
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowJs": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

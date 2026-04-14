@@ -1,17 +1,27 @@
 {
-  "extends": "@tera/typescript-config/react-library.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "strictNullChecks": true,
+    "paths": {
+      "@tera/api/*": ["./src/*"],
+      "@tera/stores/*": ["../stores/*"]
+    },
+    "composite": true,
+    "incremental": true,
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
-    "paths": {
-      "~/_interface": ["./src/_interface.ts"],
-      "~/_endpoint": ["./src/_endpoint.ts"],
-      "~/drivers": ["./src/drivers/index.ts"],
-      "@tera/stores/*": ["../stores/*"],
-    }
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowJs": true
   },
-  "include": ["src"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

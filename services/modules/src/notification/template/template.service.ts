@@ -51,3 +51,11 @@ export const useTemplateDelete = () => {
     },
   });
 };
+
+export const TemplateService = {
+  useTemplateList,
+  useTemplateDetail,
+  useTemplateCreate,
+  useTemplateUpdate,
+  useTemplateDelete,
+};

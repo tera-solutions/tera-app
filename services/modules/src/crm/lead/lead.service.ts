@@ -51,3 +51,11 @@ export const useLeadDelete = () => {
     },
   });
 };
+
+export const LeadService = {
+  useLeadList,
+  useLeadDetail,
+  useLeadCreate,
+  useLeadUpdate,
+  useLeadDelete,
+};

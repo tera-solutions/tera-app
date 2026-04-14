@@ -51,3 +51,11 @@ export const usePaymentDelete = () => {
     },
   });
 };
+
+export const PaymentService = {
+  usePaymentList,
+  usePaymentDetail,
+  usePaymentCreate,
+  usePaymentUpdate,
+  usePaymentDelete,
+};

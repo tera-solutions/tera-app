@@ -51,3 +51,11 @@ export const useEnrollmentDelete = () => {
     },
   });
 };
+
+export const EnrollmentService = {
+  useEnrollmentList,
+  useEnrollmentDetail,
+  useEnrollmentCreate,
+  useEnrollmentUpdate,
+  useEnrollmentDelete,
+};

@@ -13,7 +13,7 @@ import {
 import DefaultImage from "../../components/DefaultImage";
 import FormComment, { FormCommentFunctionProps } from "./FormComment";
 import CommentApi from "./_api";
-import { usePermission } from "@tera/states/hooks";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { QUICK_ACTION_PERMISSION_KEY } from "@tera/commons/constants/permission";
 
 function CommentItem({ item, object_id, onRefetch, onOpenChild }) {

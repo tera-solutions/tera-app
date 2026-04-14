@@ -51,3 +51,11 @@ export const useBusinessDelete = () => {
     },
   });
 };
+
+export const BusinessService = {
+  useBusinessList,
+  useBusinessDetail,
+  useBusinessCreate,
+  useBusinessUpdate,
+  useBusinessDelete,
+};

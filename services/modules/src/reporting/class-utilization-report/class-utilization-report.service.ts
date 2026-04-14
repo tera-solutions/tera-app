@@ -51,3 +51,11 @@ export const useClassUtilizationReportDelete = () => {
     },
   });
 };
+
+export const ClassUtilizationReportService = {
+  useClassUtilizationReportList,
+  useClassUtilizationReportDetail,
+  useClassUtilizationReportCreate,
+  useClassUtilizationReportUpdate,
+  useClassUtilizationReportDelete,
+};

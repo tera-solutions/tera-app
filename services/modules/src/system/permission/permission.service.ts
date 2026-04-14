@@ -51,3 +51,11 @@ export const usePermissionDelete = () => {
     },
   });
 };
+
+export const PermissionService = {
+  usePermissionList,
+  usePermissionDetail,
+  usePermissionCreate,
+  usePermissionUpdate,
+  usePermissionDelete,
+};

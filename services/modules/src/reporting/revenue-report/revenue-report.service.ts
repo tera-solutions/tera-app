@@ -51,3 +51,11 @@ export const useRevenueReportDelete = () => {
     },
   });
 };
+
+export const RevenueReportService = {
+  useRevenueReportList,
+  useRevenueReportDetail,
+  useRevenueReportCreate,
+  useRevenueReportUpdate,
+  useRevenueReportDelete,
+};

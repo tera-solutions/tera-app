@@ -51,3 +51,11 @@ export const useAuthDelete = () => {
     },
   });
 };
+
+export const AuthService = {
+  useAuthList,
+  useAuthDetail,
+  useAuthCreate,
+  useAuthUpdate,
+  useAuthDelete,
+};

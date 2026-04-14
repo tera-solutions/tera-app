@@ -51,3 +51,11 @@ export const useSettingDelete = () => {
     },
   });
 };
+
+export const SettingService = {
+  useSettingList,
+  useSettingDetail,
+  useSettingCreate,
+  useSettingUpdate,
+  useSettingDelete,
+};

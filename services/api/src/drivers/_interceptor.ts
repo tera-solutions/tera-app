@@ -38,9 +38,11 @@ export const _requestHeader = (config: any) => {
 
 export const _requestResponse = (response: any) => {
   const status = _.get(response, 'data.code');
+
   if (status === 200) {
-    const message = _.get(response, 'data.message');
+    const message = _.get(response, 'data.msg');
     let data = _.get(response, 'data');
+
     if (!_.isEmpty(message)) {
       data = { ...data, message: '' };
       return {
@@ -48,6 +50,7 @@ export const _requestResponse = (response: any) => {
         data,
       };
     }
+
     return response;
   }
 
@@ -67,10 +70,12 @@ export const _requestError = (err: any) => {
     window.location.href = '/401';
   }
   const error = err || {};
+
   if (typeof message === 'string') {
     error.message = message;
   } else {
     error.message = 'Lỗi hệ thống! Vui lòng kiểm tra lại mạng internet của máy!';
   }
+
   throw error;
 };

@@ -51,3 +51,11 @@ export const useAuditDelete = () => {
     },
   });
 };
+
+export const AuditService = {
+  useAuditList,
+  useAuditDetail,
+  useAuditCreate,
+  useAuditUpdate,
+  useAuditDelete,
+};

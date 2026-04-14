@@ -51,3 +51,11 @@ export const useDiscountDelete = () => {
     },
   });
 };
+
+export const DiscountService = {
+  useDiscountList,
+  useDiscountDetail,
+  useDiscountCreate,
+  useDiscountUpdate,
+  useDiscountDelete,
+};

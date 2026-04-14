@@ -51,3 +51,11 @@ export const useTeacherPerformanceReportDelete = () => {
     },
   });
 };
+
+export const TeacherPerformanceReportService = {
+  useTeacherPerformanceReportList,
+  useTeacherPerformanceReportDetail,
+  useTeacherPerformanceReportCreate,
+  useTeacherPerformanceReportUpdate,
+  useTeacherPerformanceReportDelete,
+};

@@ -9,7 +9,8 @@
     "gen": "node src/generators/cli.js",
     "gen:api": "node src/generators/gen.api.js",
     "gen:service": "node src/generators/gen.service.js",
-    "gen:all": "node src/generators/gen.all.js"
+    "gen:all": "node src/generators/gen.all.js",
+    "gen:index": "node src/generators/gen.index.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1"

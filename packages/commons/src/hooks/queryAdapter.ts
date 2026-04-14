@@ -56,6 +56,7 @@ export function useQueryAdapter<
   }
 
   const query = useQuery<TQueryFnData, TError, TData>(v5Options);
+  console.log("query", query)
 
   // ==========================
   // lifecycle bridge (fix double trigger)

@@ -51,3 +51,11 @@ export const useAttendanceDelete = () => {
     },
   });
 };
+
+export const AttendanceService = {
+  useAttendanceList,
+  useAttendanceDetail,
+  useAttendanceCreate,
+  useAttendanceUpdate,
+  useAttendanceDelete,
+};

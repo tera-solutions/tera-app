@@ -51,3 +51,11 @@ export const useCourseDelete = () => {
     },
   });
 };
+
+export const CourseService = {
+  useCourseList,
+  useCourseDetail,
+  useCourseCreate,
+  useCourseUpdate,
+  useCourseDelete,
+};

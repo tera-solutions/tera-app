@@ -51,3 +51,11 @@ export const useParentDelete = () => {
     },
   });
 };
+
+export const ParentService = {
+  useParentList,
+  useParentDetail,
+  useParentCreate,
+  useParentUpdate,
+  useParentDelete,
+};

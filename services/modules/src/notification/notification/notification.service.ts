@@ -51,3 +51,11 @@ export const useNotificationDelete = () => {
     },
   });
 };
+
+export const NotificationService = {
+  useNotificationList,
+  useNotificationDetail,
+  useNotificationCreate,
+  useNotificationUpdate,
+  useNotificationDelete,
+};

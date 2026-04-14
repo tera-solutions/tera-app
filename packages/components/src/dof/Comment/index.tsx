@@ -2,7 +2,7 @@ import { useQueryLegacy, useMutationLegacy } from "@tera/commons/hooks/tanstack"
 
 import ErrorToast from "@tera/components/web/ToastCustom/ErrorsToast";
 import { QUICK_ACTION_PERMISSION_KEY } from "@tera/commons/constants/permission";
-import { usePermission } from "@tera/states/hooks";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDownSolid, Spin, notification } from "tera-dls";
 import CommentItem from "./CommentItem";

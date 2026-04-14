@@ -51,4 +51,12 @@ export const use${Entity}Delete = () => {
     },
   });
 };
+
+export const ${Entity}Service = {
+  use${Entity}List,
+  use${Entity}Detail,
+  use${Entity}Create,
+  use${Entity}Update,
+  use${Entity}Delete,
+};
 `;

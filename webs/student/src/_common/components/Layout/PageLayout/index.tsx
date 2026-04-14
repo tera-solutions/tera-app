@@ -1,5 +1,5 @@
 import NoPermission from "@tera/components/web/NoPermission";
-import { usePermission } from "_common/hooks/usePermission";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { observer } from "mobx-react-lite";
 import { createContext, useMemo } from "react";
 //import { useQuery } from '@tanstack/react-query';

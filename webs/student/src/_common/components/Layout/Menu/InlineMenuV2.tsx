@@ -11,7 +11,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Logo from "@tera/themes/images/Icons/LogoTera.svg?react";
 import { Bars3BottomRightOutlined, Collapse, Icon, Tooltip } from "tera-dls";
 import useSubMenu from "_common/hooks/useSubMenu";
-import { usePermission } from "_common/hooks/usePermission";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { useStores } from "@tera/stores/useStores";
 
 // Import các file menu JSON

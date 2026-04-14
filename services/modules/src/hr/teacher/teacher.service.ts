@@ -51,3 +51,11 @@ export const useTeacherDelete = () => {
     },
   });
 };
+
+export const TeacherService = {
+  useTeacherList,
+  useTeacherDetail,
+  useTeacherCreate,
+  useTeacherUpdate,
+  useTeacherDelete,
+};

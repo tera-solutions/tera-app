@@ -1,5 +1,5 @@
 import { EmployeeText } from "@tera/components/web/TableColumnCustom/EmployeeText";
-import { usePermission } from "@tera/states/hooks";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DropdownRef, Tag, useHover } from "tera-dls";

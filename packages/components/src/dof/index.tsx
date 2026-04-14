@@ -1,9 +1,7 @@
-export { default as Comment } from "./Comment";
 export { default as ConfigurationTable } from "./ConfigurationTable";
 export { default as CrmProvider } from "./CrmProvider";
 export { default as FormTera } from "./FormTera";
 export { default as hrmProvider } from "./hrmProvider";
-export { default as ModalTemplateEmail } from "./ModalTemplateEmail";
 export { default as QuickAction } from "./QuickAction";
 export { default as SelectWrapper } from "./SelectWrapper";
 export { default as TableTera } from "./TableTera";

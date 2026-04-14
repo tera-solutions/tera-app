@@ -5,7 +5,7 @@ import { messageValidate } from "@tera/commons/constants/message";
 import DatePicker from "@tera/components/dof/Control/DatePicker";
 import Search from "@tera/components/dof/Control/Search";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
-import { usePermission } from "_common/hooks/usePermission";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { IPagination } from "@tera/commons/interfaces";
 import { getTimeRender } from "@tera/commons/utils";
 import { groupBy } from "lodash";

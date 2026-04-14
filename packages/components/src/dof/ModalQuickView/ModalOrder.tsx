@@ -13,7 +13,7 @@ import SellReturn from "./components/Order/SellReturn";
 import NoData from "@tera/components/web/NoData";
 import { messageError } from "@tera/commons/constants/message";
 import { ModalQuickViewProps } from "./interfaces";
-import { usePermission } from "@tera/states/hooks";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import PurchaseRequest from "./components/Order/PurchaseRequest";
 
 const ModalOrder = ({

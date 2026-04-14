@@ -51,3 +51,11 @@ export const useWalletTransactionDelete = () => {
     },
   });
 };
+
+export const WalletTransactionService = {
+  useWalletTransactionList,
+  useWalletTransactionDetail,
+  useWalletTransactionCreate,
+  useWalletTransactionUpdate,
+  useWalletTransactionDelete,
+};

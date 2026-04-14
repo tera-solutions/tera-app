@@ -1,5 +1,5 @@
 import usePageConfig from "@tera/commons/hooks/usePageConfig";
-import { usePermission } from "@tera/states/hooks";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { memo } from "react";
 import { ButtonProps, Button as ButtonTera, Icon } from "tera-dls";
 import configList from "./config-list.json";

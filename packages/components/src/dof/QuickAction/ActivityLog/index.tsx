@@ -13,7 +13,7 @@ import { CalendarDaysOutlined, Spin } from "tera-dls";
 import ActivityLogApi from "../_api/activityLog";
 import { ACTION_TYPE_OPTIONS } from "../common";
 import Item from "./Item";
-import { usePermission } from "@tera/states/hooks";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { QUICK_ACTION_PERMISSION_KEY } from "@tera/commons/constants/permission";
 type ActivityLogProps = {
   object_type: string;

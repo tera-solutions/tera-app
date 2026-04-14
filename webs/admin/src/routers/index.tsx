@@ -15,6 +15,7 @@ import MiddlewareRouter from "routers/MiddlewareRouter";
 
 import BasicLayout from "_common/components/Layout/BasicLayout";
 import UnAuthLayout from "_common/components/Layout/UnAuthLayout";
+import StudentListPage from "pages/education/student/StudentListPage";
 
 export const Routers = () => {
   return (
@@ -29,7 +30,7 @@ export const Routers = () => {
       >
         <Route index element={<Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/student/list" element={<Dashboard />} />
+        <Route path="/student/list" element={<StudentListPage />} />
         <Route path="/teacher/list" element={<Dashboard />} />
         <Route path="/course/list" element={<Dashboard />} />
       </Route>

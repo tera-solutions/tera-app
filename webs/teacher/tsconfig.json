@@ -15,7 +15,7 @@
       "@tera/themes/*": ["../../packages/themes/src/*"],
       "@tera/stores/*": ["../../services/stores/src/*"],
       "@tera/api/*": ["../../services/api/src/*"],
-      "@tera/modules/*": ["../../services/features/src/*"],
+      "@tera/modules/*": ["../../services/modules/src/*"],
       "tailwind-merge.config": ["src/tailwind-merge.config.ts"],
       "~/*": ["./*"],
       "@/*": ["src/*"],

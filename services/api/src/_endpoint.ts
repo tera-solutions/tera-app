@@ -1,4 +1,4 @@
-export const endpoint = `${import.meta.env.VITE_TERA_API}/api`;
+export const endpoint = `${import.meta.env.VITE_TERA_API}/v1`;
 
 export const portalEndpoint = `${import.meta.env.VITE_TERA_API}/api/portal`;
 

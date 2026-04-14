@@ -51,3 +51,11 @@ export const useStudentLevelDelete = () => {
     },
   });
 };
+
+export const StudentLevelService = {
+  useStudentLevelList,
+  useStudentLevelDetail,
+  useStudentLevelCreate,
+  useStudentLevelUpdate,
+  useStudentLevelDelete,
+};

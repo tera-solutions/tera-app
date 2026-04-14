@@ -6,7 +6,7 @@ import QuickViewApi from "./_api";
 
 import { messageError } from "@tera/commons/constants/message";
 import { ModalQuickViewProps } from "./interfaces";
-import { usePermission } from "@tera/states/hooks";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { PRODUCT_PERMISSION_KEY } from "@tera/commons/constants/permission";
 import NormalProduct from "./components/Product/NormalProduct";
 import VariantProduct from "./components/Product/VariantProduct";

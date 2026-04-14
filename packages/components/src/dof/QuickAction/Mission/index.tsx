@@ -10,7 +10,7 @@ import SearchSort from "../components/SearchSort";
 import Item from "./Item";
 import CreateFormByConsultingTicket from "./containers/CreateFormByConsultingTicket";
 import CreateFormByCustomer from "./containers/CreateFormByCustomer";
-import { usePermission } from "@tera/states/hooks";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import TaskApi from "@tera/components/shared/Activity/containers/Task/_api";
 import { QUICK_ACTION_PERMISSION_KEY } from "@tera/commons/constants/permission";
 

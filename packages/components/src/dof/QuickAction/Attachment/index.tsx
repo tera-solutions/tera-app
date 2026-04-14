@@ -7,7 +7,7 @@ import useConfirm from "@tera/states/hooks/useConfirm";
 import { useEffect, useState } from "react";
 import { notification } from "tera-dls";
 import AttachmentApi from "../_api/attachment";
-import { usePermission } from "@tera/states/hooks";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { QUICK_ACTION_PERMISSION_KEY } from "@tera/commons/constants/permission";
 
 function Attachment({ object_type, object_id }) {

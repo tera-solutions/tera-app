@@ -1,12 +1,12 @@
 import { endpointPortal } from '@tera/commons/constants/common';
-import api from '@services/drivers';
+import api from '@services/@tera/api/drivers';
 import {
   createPayload,
   deletePayload,
   detailPayload,
   listPayload,
   updatePayload,
-} from '../_interface.ts';
+} from '@tera/api/_interface.ts';
 
 export const BusinessLocationAPI = {
   getList: async ({ params }: listPayload) =>

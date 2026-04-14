@@ -51,3 +51,11 @@ export const useDebtDelete = () => {
     },
   });
 };
+
+export const DebtService = {
+  useDebtList,
+  useDebtDetail,
+  useDebtCreate,
+  useDebtUpdate,
+  useDebtDelete,
+};

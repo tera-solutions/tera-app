@@ -1,5 +1,5 @@
-import { adminEndpoint } from "../_endpoint";
-import api from "../drivers";
+import { adminEndpoint } from "@tera/api/_endpoint";
+import api from "@tera/api/drivers";
 
 const adminUrl = `${adminEndpoint}/administrator`;
 

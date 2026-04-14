@@ -1,7 +1,7 @@
 import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 import { useQueries } from "@tanstack/react-query";
 import { BUTTON_KEY } from "@tera/commons/constants/permission";
-import { usePermission } from "_common/hooks/usePermission";
+import { usePermission } from "@tera/commons/hooks/usePermission";
 import { getTimeRender } from "@tera/commons/utils";
 import { groupBy } from "lodash";
 import { observer } from "mobx-react-lite";

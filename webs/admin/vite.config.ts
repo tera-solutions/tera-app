@@ -39,7 +39,7 @@ export default defineConfig(({ mode }) => {
         "@tera/api": path.resolve(__dirname, "../../services/api/src"),
         "@tera/modules": path.resolve(
           __dirname,
-          "../../services/features/src",
+          "../../services/modules/src",
         ),
         "tailwind-merge.config": path.resolve(
           __dirname,

@@ -51,3 +51,11 @@ export const useRoleDelete = () => {
     },
   });
 };
+
+export const RoleService = {
+  useRoleList,
+  useRoleDetail,
+  useRoleCreate,
+  useRoleUpdate,
+  useRoleDelete,
+};
