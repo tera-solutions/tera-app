@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const { toPascal, writeFile } = require("../core/utils");
 const apiTemplate = require("../core/template.api");
 const serviceTemplate = require("../core/template.service");
@@ -16,7 +17,7 @@ module.exports = function (domain, entity, options) {
   const Entity = toPascal(entity);
 
   // ===== API =====
-  if (options.api) {
+  if (options?.api) {
     const apiContent = apiTemplate({
       Entity,
       entity,
@@ -25,8 +26,14 @@ module.exports = function (domain, entity, options) {
 
     const apiPath = path.join(
       process.cwd(),
-      `../../services/api/src/${domain}/${entity}/${entity}.api.ts`
+      `../../services/api/src/${domain}/${entity}/${entity}.api.ts`,
     );
+
+    // nếu file tồn tại và không force → skip
+    if (fs.existsSync(apiPath) && !options?.force) {
+      console.warn(`⚠️  Skip (exists): ${apiPath}`);
+      return;
+    }
 
     writeFile(apiPath, apiContent);
     console.log("✅ API:", apiPath);
@@ -42,8 +49,14 @@ module.exports = function (domain, entity, options) {
 
     const servicePath = path.join(
       process.cwd(),
-      `../../services/modules/src/${domain}/${entity}/${entity}.service.ts`
+      `../../services/modules/src/${domain}/${entity}/${entity}.service.ts`,
     );
+
+    // nếu file tồn tại và không force → skip
+    if (fs.existsSync(servicePath) && !options?.force) {
+      console.warn(`⚠️  Skip (exists): ${servicePath}`);
+      return;
+    }
 
     writeFile(servicePath, serviceContent);
     console.log("✅ SERVICE:", servicePath);
