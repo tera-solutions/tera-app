@@ -1,3 +1,4 @@
+
 import { endpoint } from "@tera/api/_endpoint";
 import api from "@tera/api/drivers";
 import {
@@ -9,15 +10,10 @@ import {
 } from "@tera/api/_interface";
 
 export const StudentAPI = {
-  getList: async ({ params }: ListPayload) => {
-      console.log("======= getList =====")
-
-    const res = await api
+  getList: async ({ params }: ListPayload) =>
+    await api
       .get(`${endpoint}/edu/student/list`, params)
-      .then((result) => result.data);
-    console.log("res", res);
-    return res;
-  },
+      .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
     await api

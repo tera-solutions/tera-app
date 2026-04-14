@@ -8,12 +8,7 @@ import { StudentAPI } from "@tera/api";
 export const useStudentList = (payload: ListPayload) => {
   return useQueryAdapter({
     queryKey: ["student", "list", payload.params],
-    queryFn:async () => {
-      console.log("======= queryFn =====")
-      const result = await StudentAPI.getList(payload);
-      console.log("result", result)
-      return result
-    },
+    queryFn: () => StudentAPI.getList(payload),
     keepPreviousData: true,
   });
 };

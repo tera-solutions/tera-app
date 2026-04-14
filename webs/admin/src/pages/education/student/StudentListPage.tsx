@@ -33,9 +33,6 @@ const StudentListPage = () => {
 
   const { data, isPending } = StudentService.useStudentList(params);
 
-  console.log("isPending", isPending)
-  console.log("data", data)
-
   const itemsAction = (item): DropdownItem[] => {
     return [
       {
@@ -60,29 +57,27 @@ const StudentListPage = () => {
 
   const columns = [
     {
-      title: "Tên mẫu in",
-      dataIndex: "title",
-      key: "title",
+      title: "Code",
+      dataIndex: "code",
+      key: "code",
     },
     {
-      title: "Loại mẫu in",
-      dataIndex: "print_type",
-      key: "print_type",
-      render: (data) => <p className="line-clamp-2">{data?.title}</p>,
+      title: "Tên học viên",
+      dataIndex: "name",
+      key: "name",
     },
     {
-      title: "Thứ tự",
-      dataIndex: "item_prev_order",
-      key: "item_prev_order",
+      title: "Cấp độ",
+      dataIndex: "level",
+      key: "level",
     },
     {
-      title: "Hiển thị",
-      dataIndex: "display",
-      key: "display",
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
     },
     {
       title: "",
-      width: 80,
       render: (record: any) => (
         <ActionDropdown dropdownItems={itemsAction(record)} trigger="click" />
       ),
