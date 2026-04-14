@@ -1,3 +1,4 @@
+
 import { endpoint } from "~/_endpoint";
 import api from "~/drivers";
 import {
@@ -11,26 +12,26 @@ import {
 export const WalletTransactionAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
-      .get(`${endpoint}/wallet/wallet-transaction/list`, params)
-      .then((r) => r.data),
+      .get(`${endpoint}/fin/wallet-transaction/list`, params)
+      .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
     await api
-      .get(`${endpoint}/wallet/wallet-transaction/detail/${id}`)
-      .then((r) => r.data),
+      .get(`${endpoint}/fin/wallet-transaction/detail/${id}`)
+      .then((result) => result.data),
 
   create: async ({ params }: CreatePayload) =>
     await api
-      .post(`${endpoint}/wallet/wallet-transaction/create`, params)
-      .then((r) => r.data),
+      .post(`${endpoint}/fin/wallet-transaction/create`, params)
+      .then((result) => result.data),
 
   update: async ({ id, params }: UpdatePayload) =>
     await api
-      .put(`${endpoint}/wallet/wallet-transaction/update/${id}`, params)
-      .then((r) => r.data),
+      .put(`${endpoint}/fin/wallet-transaction/update/${id}`, params)
+      .then((result) => result.data),
 
   delete: async ({ id }: DeletePayload) =>
     await api
-      .delete(`${endpoint}/wallet/wallet-transaction/delete/${id}`)
-      .then((r) => r.data),
+      .delete(`${endpoint}/fin/wallet-transaction/delete/${id}`)
+      .then((result) => result.data),
 };

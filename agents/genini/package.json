@@ -1,0 +1,20 @@
+{
+  "name": "@tera/gemini",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "generate:component": "turbo gen react-component",
+    "check-types": "tsc --noEmit",
+    "gen": "node src/generators/cli.js",
+    "gen:api": "node src/generators/gen.api.js",
+    "gen:service": "node src/generators/gen.service.js",
+    "gen:all": "node src/generators/gen.all.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

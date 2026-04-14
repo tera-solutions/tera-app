@@ -1,3 +1,4 @@
+
 import { endpoint } from "~/_endpoint";
 import api from "~/drivers";
 import {
@@ -11,26 +12,26 @@ import {
 export const NotificationAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
-      .get(`${endpoint}/notification/notification/list`, params)
-      .then((r) => r.data),
+      .get(`${endpoint}/sys/notification/list`, params)
+      .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
     await api
-      .get(`${endpoint}/notification/notification/detail/${id}`)
-      .then((r) => r.data),
+      .get(`${endpoint}/sys/notification/detail/${id}`)
+      .then((result) => result.data),
 
   create: async ({ params }: CreatePayload) =>
     await api
-      .post(`${endpoint}/notification/notification/create`, params)
-      .then((r) => r.data),
+      .post(`${endpoint}/sys/notification/create`, params)
+      .then((result) => result.data),
 
   update: async ({ id, params }: UpdatePayload) =>
     await api
-      .put(`${endpoint}/notification/notification/update/${id}`, params)
-      .then((r) => r.data),
+      .put(`${endpoint}/sys/notification/update/${id}`, params)
+      .then((result) => result.data),
 
   delete: async ({ id }: DeletePayload) =>
     await api
-      .delete(`${endpoint}/notification/notification/delete/${id}`)
-      .then((r) => r.data),
+      .delete(`${endpoint}/sys/notification/delete/${id}`)
+      .then((result) => result.data),
 };

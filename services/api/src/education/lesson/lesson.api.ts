@@ -1,3 +1,4 @@
+
 import { endpoint } from "~/_endpoint";
 import api from "~/drivers";
 import {
@@ -11,26 +12,26 @@ import {
 export const LessonAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
-      .get(`${endpoint}/education/lesson/list`, params)
-      .then((r) => r.data),
+      .get(`${endpoint}/edu/lesson/list`, params)
+      .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
     await api
-      .get(`${endpoint}/education/lesson/detail/${id}`)
-      .then((r) => r.data),
+      .get(`${endpoint}/edu/lesson/detail/${id}`)
+      .then((result) => result.data),
 
   create: async ({ params }: CreatePayload) =>
     await api
-      .post(`${endpoint}/education/lesson/create`, params)
-      .then((r) => r.data),
+      .post(`${endpoint}/edu/lesson/create`, params)
+      .then((result) => result.data),
 
   update: async ({ id, params }: UpdatePayload) =>
     await api
-      .put(`${endpoint}/education/lesson/update/${id}`, params)
-      .then((r) => r.data),
+      .put(`${endpoint}/edu/lesson/update/${id}`, params)
+      .then((result) => result.data),
 
   delete: async ({ id }: DeletePayload) =>
     await api
-      .delete(`${endpoint}/education/lesson/delete/${id}`)
-      .then((r) => r.data),
+      .delete(`${endpoint}/edu/lesson/delete/${id}`)
+      .then((result) => result.data),
 };

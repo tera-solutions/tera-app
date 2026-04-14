@@ -1,3 +1,4 @@
+
 import { endpoint } from "~/_endpoint";
 import api from "~/drivers";
 import {
@@ -11,26 +12,26 @@ import {
 export const StudentProgressReportAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
-      .get(`${endpoint}/reporting/student-progress-report/list`, params)
-      .then((r) => r.data),
+      .get(`${endpoint}/report/student-progress-report/list`, params)
+      .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
     await api
-      .get(`${endpoint}/reporting/student-progress-report/detail/${id}`)
-      .then((r) => r.data),
+      .get(`${endpoint}/report/student-progress-report/detail/${id}`)
+      .then((result) => result.data),
 
   create: async ({ params }: CreatePayload) =>
     await api
-      .post(`${endpoint}/reporting/student-progress-report/create`, params)
-      .then((r) => r.data),
+      .post(`${endpoint}/report/student-progress-report/create`, params)
+      .then((result) => result.data),
 
   update: async ({ id, params }: UpdatePayload) =>
     await api
-      .put(`${endpoint}/reporting/student-progress-report/update/${id}`, params)
-      .then((r) => r.data),
+      .put(`${endpoint}/report/student-progress-report/update/${id}`, params)
+      .then((result) => result.data),
 
   delete: async ({ id }: DeletePayload) =>
     await api
-      .delete(`${endpoint}/reporting/student-progress-report/delete/${id}`)
-      .then((r) => r.data),
+      .delete(`${endpoint}/report/student-progress-report/delete/${id}`)
+      .then((result) => result.data),
 };

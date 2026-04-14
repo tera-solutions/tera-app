@@ -1,3 +1,4 @@
+
 import { endpoint } from "~/_endpoint";
 import api from "~/drivers";
 import {
@@ -12,25 +13,25 @@ export const ParentAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
       .get(`${endpoint}/crm/parent/list`, params)
-      .then((r) => r.data),
+      .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
     await api
       .get(`${endpoint}/crm/parent/detail/${id}`)
-      .then((r) => r.data),
+      .then((result) => result.data),
 
   create: async ({ params }: CreatePayload) =>
     await api
       .post(`${endpoint}/crm/parent/create`, params)
-      .then((r) => r.data),
+      .then((result) => result.data),
 
   update: async ({ id, params }: UpdatePayload) =>
     await api
       .put(`${endpoint}/crm/parent/update/${id}`, params)
-      .then((r) => r.data),
+      .then((result) => result.data),
 
   delete: async ({ id }: DeletePayload) =>
     await api
       .delete(`${endpoint}/crm/parent/delete/${id}`)
-      .then((r) => r.data),
+      .then((result) => result.data),
 };

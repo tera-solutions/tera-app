@@ -1,3 +1,4 @@
+
 import { endpoint } from "~/_endpoint";
 import api from "~/drivers";
 import {
@@ -10,17 +11,27 @@ import {
 
 export const BusinessAPI = {
   getList: async ({ params }: ListPayload) =>
-    await api.get(`${endpoint}/system/business/list`, params).then(r => r.data),
+    await api
+      .get(`${endpoint}/system/business/list`, params)
+      .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
-    await api.get(`${endpoint}/system/business/detail/${id}`).then(r => r.data),
+    await api
+      .get(`${endpoint}/system/business/detail/${id}`)
+      .then((result) => result.data),
 
   create: async ({ params }: CreatePayload) =>
-    await api.post(`${endpoint}/system/business/create`, params).then(r => r.data),
+    await api
+      .post(`${endpoint}/system/business/create`, params)
+      .then((result) => result.data),
 
   update: async ({ id, params }: UpdatePayload) =>
-    await api.put(`${endpoint}/system/business/update/${id}`, params).then(r => r.data),
+    await api
+      .put(`${endpoint}/system/business/update/${id}`, params)
+      .then((result) => result.data),
 
   delete: async ({ id }: DeletePayload) =>
-    await api.delete(`${endpoint}/system/business/delete/${id}`).then(r => r.data),
+    await api
+      .delete(`${endpoint}/system/business/delete/${id}`)
+      .then((result) => result.data),
 };

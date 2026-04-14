@@ -1,3 +1,4 @@
+
 import { endpoint } from "~/_endpoint";
 import api from "~/drivers";
 import {
@@ -11,26 +12,26 @@ import {
 export const InvoiceAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
-      .get(`${endpoint}/finance/invoice/list`, params)
-      .then((r) => r.data),
+      .get(`${endpoint}/fin/invoice/list`, params)
+      .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
     await api
-      .get(`${endpoint}/finance/invoice/detail/${id}`)
-      .then((r) => r.data),
+      .get(`${endpoint}/fin/invoice/detail/${id}`)
+      .then((result) => result.data),
 
   create: async ({ params }: CreatePayload) =>
     await api
-      .post(`${endpoint}/finance/invoice/create`, params)
-      .then((r) => r.data),
+      .post(`${endpoint}/fin/invoice/create`, params)
+      .then((result) => result.data),
 
   update: async ({ id, params }: UpdatePayload) =>
     await api
-      .put(`${endpoint}/finance/invoice/update/${id}`, params)
-      .then((r) => r.data),
+      .put(`${endpoint}/fin/invoice/update/${id}`, params)
+      .then((result) => result.data),
 
   delete: async ({ id }: DeletePayload) =>
     await api
-      .delete(`${endpoint}/finance/invoice/delete/${id}`)
-      .then((r) => r.data),
+      .delete(`${endpoint}/fin/invoice/delete/${id}`)
+      .then((result) => result.data),
 };
