@@ -1,0 +1,11 @@
+{
+  "welcome": "Chào mừng đến với Hana English",
+  "common": {
+    "save": "Lưu",
+    "cancel": "Hủy"
+  },
+  "lms": {
+    "course_name": "Tên khóa học",
+    "student_count": "Số lượng học viên"
+  }
+}

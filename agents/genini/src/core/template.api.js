@@ -5,6 +5,7 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
+  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -33,6 +34,11 @@ export const ${Entity}API = {
   delete: async ({ id }: DeletePayload) =>
     await api
       .delete(\`\${endpoint}/${domain}/${entity}/delete/\${id}\`)
+      .then((result) => result.data),
+  
+  export: async ({ params }: ExportPayload) =>
+    await api
+      .post(\`\${endpoint}/${domain}/${entity}/export\`)
       .then((result) => result.data),
 };
 `;

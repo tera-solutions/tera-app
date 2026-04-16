@@ -53,6 +53,12 @@ export const PAGE_KEY = {
   MANAGE_PAGE_LIST_VIEW_DETAIL: "hrm_manage_page_list_view_detail",
   COLUMN_CONFIG_LIST_VIEW: "hrm_column_config_list_view",
   MANAGE_PAGE_CONTROL_CONFIG: "hrm_manage_page_control_config",
+
+  STUDENT_LIST_VIEW: "edu_student_list_view",
+  STUDENT_DETAIL_VIEW: "edu_student_detail_view",
+  STUDENT_CREATE_VIEW: "edu_student_create_view",
+  STUDENT_UPDATE_VIEW: "edu_student_update_view",
+  STUDENT_DELETE_VIEW: "edu_student_delete_view",
 };
 
 export const TABLE_KEY = {

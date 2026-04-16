@@ -18,6 +18,7 @@
   "devDependencies": {
     "@tera/eslint-config": "workspace:*",
     "@tera/stores": "workspace:*",
+    "@tera/components": "workspace:*",
     "@tera/typescript-config": "workspace:*",
     "@types/react": "catalog:",
     "crypto-js": "^4.2.0"

@@ -65,6 +65,11 @@ export interface DeletePayload {
   id: string | number;
 }
 
+export interface ExportPayload<T = any> {
+  params: T;
+}
+
+
 // ==========================
 // FILTER SYSTEM (ADVANCED QUERY)
 // ==========================

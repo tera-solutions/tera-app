@@ -8,6 +8,7 @@ import { TeraProvider } from "tera-dls";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import "tera-dls/index.css";
+import "./i18n";
 import "./main.css";
 
 import CrmProvider from "@tera/components/dof/CrmProvider";

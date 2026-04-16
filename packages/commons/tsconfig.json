@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "paths": {
-      "@tera/stores/*": ["../../services/stores/src/*"]
+      "@tera/stores/*": ["../../services/stores/src/*"],
+      "@tera/components/*": ["../../services/components/src/*"]
     },
     "composite": true,
     "incremental": true,

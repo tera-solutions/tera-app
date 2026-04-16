@@ -1,90 +1,29 @@
-import { useQueryClient } from "@tanstack/react-query";
-import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdown";
-import useConfirm from "_common/hooks/useConfirm";
-import classNames from "classnames";
 import { useState } from "react";
-import {
-  ArrowDownTrayOutlined,
-  Button,
-  Col,
-  DropdownItem,
-  FunnelOutlined,
-  PaginationProps,
-  PlusCircleOutlined,
-  Row,
-  Tag,
-  Tooltip,
-} from "tera-dls";
 import { useNavigate } from "react-router-dom";
-import { StudentService } from "@tera/modules";
-import { TableTera } from "@tera/components/dof";
+import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
+import { Button, PlusCircleOutlined } from "tera-dls";
 
-const classNameButton = classNames("cursor-pointer", "w-4 h-4");
-const classNameDownload = classNames(classNameButton);
+import { StudentService } from "@tera/modules";
+
+import HeaderSearch from "@tera/components/web/HeaderViewList/HeaderSearch";
+import HeaderViewList from "@tera/components/web/HeaderViewList";
+
+import { BUTTON_KEY } from "@tera/commons/constants/permission";
+import { STUDENT_PAGE_URL } from "@tera/commons/constants/url";
+
+import StudentTable from "./containers/StudentTable";
+import StudentFilter from "./containers/StudentFilter";
 
 const StudentListPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const confirm = useConfirm();
-  const [params, setParams] = useState<any>({});
-  const [isOpenFilter, setIsOpenFilter] = useState<boolean>(false);
-  const [isOpenForm, setIsOpenForm] = useState<boolean>(false);
-  const [itemClick, setItemClick] = useState<any>(null);
   const queryClient = useQueryClient();
 
-  const { data, isPending } = StudentService.useStudentList(params);
+  const [params, setParams] = useState<any>({});
+  const [isFilter, setIsFilter] = useState<boolean>(false);
+  const { mutate: onExport } = StudentService.useStudentExport();
 
-  const itemsAction = (item): DropdownItem[] => {
-    return [
-      {
-        key: 1,
-        label: "Xem",
-        onClick: () => {},
-      },
-      {
-        key: 2,
-        label: "Sửa",
-        onClick: () => {
-          setItemClick(item);
-          setIsOpenForm(true);
-        },
-      },
-      {
-        key: 3,
-        label: <span className="text-red-500">Xóa</span>,
-      },
-    ];
-  };
-
-  const columns = [
-    {
-      title: "Code",
-      dataIndex: "code",
-      key: "code",
-    },
-    {
-      title: "Tên học viên",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Cấp độ",
-      dataIndex: "level",
-      key: "level",
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-    },
-    {
-      title: "",
-      render: (record: any) => (
-        <ActionDropdown dropdownItems={itemsAction(record)} trigger="click" />
-      ),
-    },
-  ];
-
-  // ----- Function -----
   const handleSearch = (value) => {
     setParams({ ...params, keyword: value?.keyword, page: 1 });
   };
@@ -95,55 +34,50 @@ const StudentListPage = () => {
   };
 
   const handleOpenFiler = () => {
-    setIsOpenFilter(true);
+    setIsFilter(true);
   };
 
-  const handleChangePage: PaginationProps["onChange"] = (page, pageSize) => {
-    const isDiffPageSize = params?.limit && pageSize !== Number(params?.limit);
-    setParams({
-      ...params,
-      page: isDiffPageSize ? 1 : page,
-      limit: pageSize,
-    });
+  const handleExport = (type: string) => {
+    onExport({ params: { ...params, type } });
   };
 
   return (
-    <>
-      <div className="flex items-center justify-end mx-5 mb-5">
-        <div className="flex gap-2.5">
+    <div className="p-2.5">
+      <HeaderViewList
+        title={t("student.title")}
+        onClickFilter={handleOpenFiler}
+        buttonCreatingKey={BUTTON_KEY.SALE_ORDER_LIST}
+        buttonAddRender={() => (
           <Button
-            type="alternative"
-            className="rounded-xsm px-2 py-1"
-            onClick={handleOpenFiler}
-          >
-            <FunnelOutlined className="w-5 h-5 text-gray-400 shrink-0" />
-          </Button>
-          <Button
-            onClick={() => setIsOpenForm(true)}
+            onClick={() => navigate(STUDENT_PAGE_URL.create.path)}
             className="rounded-xsm shrink-0 px-2 py-1"
           >
             <div className="flex items-center gap-1 shrink-0">
               <PlusCircleOutlined className="w-5 h-5" />
-              <span>Thêm mới</span>
+              <span>{t("button.create")}</span>
             </div>
           </Button>
-        </div>
-      </div>
-      <TableTera
-        rowKey={(record: any) => record.id}
-        columns={columns}
-        data={data?.data?.data || []}
-        loading={isPending}
-        pagination={{
-          onChange: handleChangePage,
-          total: data?.data?.total,
-          current: data?.data?.current_page,
-          pageSize: Number(data?.data?.per_page),
-          to: data?.data?.to,
-          from: data?.data?.from,
-        }}
-      />
-    </>
+        )}
+        dropdownItems={[
+          {
+            key: 1,
+            label: t("button.export_excel"),
+            onClick: () => handleExport("excel"),
+          },
+        ]}
+        actionLeftRender={<HeaderSearch onSearch={handleSearch} />}
+      >
+        <StudentTable params={params} setParams={setParams} />
+      </HeaderViewList>
+      {isFilter && (
+        <StudentFilter
+          open={isFilter}
+          onClose={() => setIsFilter(false)}
+          onFilter={handleFilter}
+          initialValue={params}
+        />
+      )}
+    </div>
   );
 };
 

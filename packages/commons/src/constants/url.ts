@@ -16,23 +16,23 @@ export const DASHBOARD_URL = {
 export const PURCHASE_REQUEST_URL = {
   list: {
     key: PURCHASE_REQUEST_PERMISSION_KEY.PURCHASE_REQUEST_LIST,
-    path: '/purchase/purchase-request/list',
-    shortenUrl: 'list',
+    path: "/purchase/purchase-request/list",
+    shortenUrl: "list",
   },
   create: {
     key: PURCHASE_REQUEST_PERMISSION_KEY.PURCHASE_REQUEST_CREATE,
-    path: '/purchase/purchase-request/create',
-    shortenUrl: 'create',
+    path: "/purchase/purchase-request/create",
+    shortenUrl: "create",
   },
   update: {
     key: PURCHASE_REQUEST_PERMISSION_KEY.PURCHASE_REQUEST_UPDATE,
-    path: '/purchase/purchase-request/update',
-    shortenUrl: 'update/:id',
+    path: "/purchase/purchase-request/update",
+    shortenUrl: "update/:id",
   },
   detail: {
     key: PURCHASE_REQUEST_PERMISSION_KEY.PURCHASE_REQUEST_DETAIL,
-    path: '/purchase/purchase-request/detail',
-    shortenUrl: 'detail/:id',
+    path: "/purchase/purchase-request/detail",
+    shortenUrl: "detail/:id",
   },
 };
 
@@ -123,6 +123,29 @@ export const CONFIG_PERMISSION_URL = {
   },
 };
 
+export const STUDENT_PAGE_URL = {
+  list: {
+    key: PAGE_KEY.STUDENT_LIST_VIEW,
+    path: "/student/list",
+    shortenUrl: "/student/list",
+  },
+  create: {
+    key: PAGE_KEY.STUDENT_CREATE_VIEW,
+    path: "/student/create",
+    shortenUrl: "/student/create",
+  },
+  view: {
+    key: PAGE_KEY.STUDENT_DETAIL_VIEW,
+    path: (id: string) => `/student/detail/${id}`,
+    shortenUrl: "/student/detail/:id",
+  },
+  update: {
+    key: PAGE_KEY.STUDENT_UPDATE_VIEW,
+    path: (id: string) => `/student/update/${id}`,
+    shortenUrl: "/student/update/:id",
+  },
+};
+
 export const MANAGE_PAGE_URL = {
   list: {
     key: PAGE_KEY.MANAGE_PAGE_LIST_VIEW,
@@ -141,7 +164,7 @@ export const MANAGE_PAGE_URL = {
   },
   tableConfig: {
     key: PAGE_KEY.MANAGE_PAGE_TABLE_CONFIG,
-    path: "/system/manage-page/table-config",
+    path: (id: string) => `/system/manage-page/table-config/${id}`,
     shortenUrl: "table-config/:id",
   },
   tableConfigDetail: {

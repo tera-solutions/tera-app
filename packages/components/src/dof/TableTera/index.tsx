@@ -46,7 +46,6 @@ const TableTera = (props: ITeraTableProps) => {
     wrapperClassName,
     ...restProps
   } = props;
-
   const mergePagination =
     typeof pagination === "boolean" || typeof pagination === "undefined"
       ? {}

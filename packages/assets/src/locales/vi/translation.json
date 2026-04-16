@@ -1,0 +1,24 @@
+{
+  "welcome": "Welcome to Hana English",
+  "common": {
+    "search_placeholder": "Tìm kiếm ...",
+    "error_message": "Lỗi bất thường! Vui lòng thử lại"
+  },
+  "button": {
+    "create": "Thêm mới",
+    "edit": "Sửa",
+    "view": "Xem",
+    "delete": "Xóa",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "export_excel": "Xuất Excel",
+    "clear_filter": "Hủy bộ lọc"
+  },
+  "student": {
+    "title": "DANH SÁCH HỌC VIÊN",
+    "code": "Mã HV",
+    "name": "Tên học viên",
+    "level": "Cấp độ",
+    "status": "Trạng thái"
+  }
+}
