@@ -1,8 +1,16 @@
 
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
-import { TeacherPerformanceReportAPI } from "@tera/api/reporting/teacher-performance-report/teacher-performance-report.api";
-import { ListPayload, DetailPayload, CreatePayload, UpdatePayload, DeletePayload } from "@tera/api/_interface";
+import { TeacherPerformanceReportAPI } from "@tera/api";
+import {
+  CreatePayload,
+  DeletePayload,
+  DetailPayload,
+  ExportPayload,
+  ListPayload,
+  UpdatePayload,
+} from "@tera/api/_interface";
 
 // QUERY
 export const useTeacherPerformanceReportList = (payload: ListPayload) => {
@@ -23,32 +31,60 @@ export const useTeacherPerformanceReportDetail = (payload: DetailPayload) => {
 
 // MUTATION
 export const useTeacherPerformanceReportCreate = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: CreatePayload) => TeacherPerformanceReportAPI.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teacher-performance-report", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
 export const useTeacherPerformanceReportUpdate = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: UpdatePayload) => TeacherPerformanceReportAPI.update(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teacher-performance-report", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
 export const useTeacherPerformanceReportDelete = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: DeletePayload) => TeacherPerformanceReportAPI.delete(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teacher-performance-report", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
+  });
+};
+
+export const useTeacherPerformanceReportExport = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: ExportPayload) => TeacherPerformanceReportAPI.export(payload),
+    onSuccess: (res) => {
+      if (res?.data?.link) {
+        window.open(res?.data?.link, "_blank");
+      }
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
@@ -58,4 +94,5 @@ export const TeacherPerformanceReportService = {
   useTeacherPerformanceReportCreate,
   useTeacherPerformanceReportUpdate,
   useTeacherPerformanceReportDelete,
+  useTeacherPerformanceReportExport
 };

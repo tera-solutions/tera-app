@@ -5,6 +5,7 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
+  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -33,5 +34,10 @@ export const LeadConversionReportAPI = {
   delete: async ({ id }: DeletePayload) =>
     await api
       .delete(`${endpoint}/report/lead-conversion-report/delete/${id}`)
+      .then((result) => result.data),
+  
+  export: async ({ params }: ExportPayload) =>
+    await api
+      .post(`${endpoint}/report/lead-conversion-report/export`, params)
       .then((result) => result.data),
 };

@@ -38,7 +38,7 @@ export const ${Entity}API = {
   
   export: async ({ params }: ExportPayload) =>
     await api
-      .post(\`\${endpoint}/${domain}/${entity}/export\`)
+      .post(\`\${endpoint}/${domain}/${entity}/export\`, params)
       .then((result) => result.data),
 };
 `;

@@ -35,7 +35,7 @@ export const StudentAPI = {
     await api
       .delete(`${endpoint}/edu/student/delete/${id}`)
       .then((result) => result.data),
-
+  
   export: async ({ params }: ExportPayload) =>
     await api
       .post(`${endpoint}/edu/student/export`, params)

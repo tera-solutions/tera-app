@@ -1,7 +1,8 @@
-module.exports = ({ Entity, entity, domain }) => `
+module.exports = ({ Entity, entity }) => `
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
-import { ${Entity}API } from "@tera/api/${domain}/${entity}/${entity}.api";
+import { ${Entity}API } from "@tera/api";
 import {
   CreatePayload,
   DeletePayload,

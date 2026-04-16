@@ -5,6 +5,7 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
+  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -33,5 +34,10 @@ export const EnrollmentAPI = {
   delete: async ({ id }: DeletePayload) =>
     await api
       .delete(`${endpoint}/crm/enrollment/delete/${id}`)
+      .then((result) => result.data),
+  
+  export: async ({ params }: ExportPayload) =>
+    await api
+      .post(`${endpoint}/crm/enrollment/export`, params)
       .then((result) => result.data),
 };

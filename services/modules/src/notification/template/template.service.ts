@@ -1,8 +1,16 @@
 
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
-import { TemplateAPI } from "@tera/api/notification/template/template.api";
-import { ListPayload, DetailPayload, CreatePayload, UpdatePayload, DeletePayload } from "@tera/api/_interface";
+import { TemplateAPI } from "@tera/api";
+import {
+  CreatePayload,
+  DeletePayload,
+  DetailPayload,
+  ExportPayload,
+  ListPayload,
+  UpdatePayload,
+} from "@tera/api/_interface";
 
 // QUERY
 export const useTemplateList = (payload: ListPayload) => {
@@ -23,32 +31,60 @@ export const useTemplateDetail = (payload: DetailPayload) => {
 
 // MUTATION
 export const useTemplateCreate = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: CreatePayload) => TemplateAPI.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["template", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
 export const useTemplateUpdate = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: UpdatePayload) => TemplateAPI.update(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["template", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
 export const useTemplateDelete = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: DeletePayload) => TemplateAPI.delete(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["template", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
+  });
+};
+
+export const useTemplateExport = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: ExportPayload) => TemplateAPI.export(payload),
+    onSuccess: (res) => {
+      if (res?.data?.link) {
+        window.open(res?.data?.link, "_blank");
+      }
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
@@ -58,4 +94,5 @@ export const TemplateService = {
   useTemplateCreate,
   useTemplateUpdate,
   useTemplateDelete,
+  useTemplateExport
 };

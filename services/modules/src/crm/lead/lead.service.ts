@@ -1,8 +1,16 @@
 
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
-import { LeadAPI } from "@tera/api/crm/lead/lead.api";
-import { ListPayload, DetailPayload, CreatePayload, UpdatePayload, DeletePayload } from "@tera/api/_interface";
+import { LeadAPI } from "@tera/api";
+import {
+  CreatePayload,
+  DeletePayload,
+  DetailPayload,
+  ExportPayload,
+  ListPayload,
+  UpdatePayload,
+} from "@tera/api/_interface";
 
 // QUERY
 export const useLeadList = (payload: ListPayload) => {
@@ -23,32 +31,60 @@ export const useLeadDetail = (payload: DetailPayload) => {
 
 // MUTATION
 export const useLeadCreate = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: CreatePayload) => LeadAPI.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lead", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
 export const useLeadUpdate = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: UpdatePayload) => LeadAPI.update(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lead", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
 export const useLeadDelete = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: DeletePayload) => LeadAPI.delete(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lead", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
+  });
+};
+
+export const useLeadExport = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: ExportPayload) => LeadAPI.export(payload),
+    onSuccess: (res) => {
+      if (res?.data?.link) {
+        window.open(res?.data?.link, "_blank");
+      }
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
@@ -58,4 +94,5 @@ export const LeadService = {
   useLeadCreate,
   useLeadUpdate,
   useLeadDelete,
+  useLeadExport
 };

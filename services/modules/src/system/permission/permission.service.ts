@@ -1,8 +1,16 @@
 
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
-import { PermissionAPI } from "@tera/api/system/permission/permission.api";
-import { ListPayload, DetailPayload, CreatePayload, UpdatePayload, DeletePayload } from "@tera/api/_interface";
+import { PermissionAPI } from "@tera/api";
+import {
+  CreatePayload,
+  DeletePayload,
+  DetailPayload,
+  ExportPayload,
+  ListPayload,
+  UpdatePayload,
+} from "@tera/api/_interface";
 
 // QUERY
 export const usePermissionList = (payload: ListPayload) => {
@@ -23,32 +31,60 @@ export const usePermissionDetail = (payload: DetailPayload) => {
 
 // MUTATION
 export const usePermissionCreate = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: CreatePayload) => PermissionAPI.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["permission", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
 export const usePermissionUpdate = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: UpdatePayload) => PermissionAPI.update(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["permission", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
 export const usePermissionDelete = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: DeletePayload) => PermissionAPI.delete(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["permission", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
+  });
+};
+
+export const usePermissionExport = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: ExportPayload) => PermissionAPI.export(payload),
+    onSuccess: (res) => {
+      if (res?.data?.link) {
+        window.open(res?.data?.link, "_blank");
+      }
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
@@ -58,4 +94,5 @@ export const PermissionService = {
   usePermissionCreate,
   usePermissionUpdate,
   usePermissionDelete,
+  usePermissionExport
 };

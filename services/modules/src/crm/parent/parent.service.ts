@@ -1,8 +1,16 @@
 
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
-import { ParentAPI } from "@tera/api/crm/parent/parent.api";
-import { ListPayload, DetailPayload, CreatePayload, UpdatePayload, DeletePayload } from "@tera/api/_interface";
+import { ParentAPI } from "@tera/api";
+import {
+  CreatePayload,
+  DeletePayload,
+  DetailPayload,
+  ExportPayload,
+  ListPayload,
+  UpdatePayload,
+} from "@tera/api/_interface";
 
 // QUERY
 export const useParentList = (payload: ListPayload) => {
@@ -23,32 +31,60 @@ export const useParentDetail = (payload: DetailPayload) => {
 
 // MUTATION
 export const useParentCreate = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: CreatePayload) => ParentAPI.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["parent", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
 export const useParentUpdate = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: UpdatePayload) => ParentAPI.update(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["parent", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
 export const useParentDelete = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: DeletePayload) => ParentAPI.delete(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["parent", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
+  });
+};
+
+export const useParentExport = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: ExportPayload) => ParentAPI.export(payload),
+    onSuccess: (res) => {
+      if (res?.data?.link) {
+        window.open(res?.data?.link, "_blank");
+      }
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
@@ -58,4 +94,5 @@ export const ParentService = {
   useParentCreate,
   useParentUpdate,
   useParentDelete,
+  useParentExport
 };

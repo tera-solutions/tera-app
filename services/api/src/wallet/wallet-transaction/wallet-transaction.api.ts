@@ -5,6 +5,7 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
+  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -33,5 +34,10 @@ export const WalletTransactionAPI = {
   delete: async ({ id }: DeletePayload) =>
     await api
       .delete(`${endpoint}/fin/wallet-transaction/delete/${id}`)
+      .then((result) => result.data),
+  
+  export: async ({ params }: ExportPayload) =>
+    await api
+      .post(`${endpoint}/fin/wallet-transaction/export`, params)
       .then((result) => result.data),
 };

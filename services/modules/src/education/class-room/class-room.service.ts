@@ -1,8 +1,16 @@
 
+import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
-import { ClassRoomAPI } from "@tera/api/education/class-room/class-room.api";
-import { ListPayload, DetailPayload, CreatePayload, UpdatePayload, DeletePayload } from "@tera/api/_interface";
+import { ClassRoomAPI } from "@tera/api";
+import {
+  CreatePayload,
+  DeletePayload,
+  DetailPayload,
+  ExportPayload,
+  ListPayload,
+  UpdatePayload,
+} from "@tera/api/_interface";
 
 // QUERY
 export const useClassRoomList = (payload: ListPayload) => {
@@ -23,32 +31,60 @@ export const useClassRoomDetail = (payload: DetailPayload) => {
 
 // MUTATION
 export const useClassRoomCreate = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: CreatePayload) => ClassRoomAPI.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
 export const useClassRoomUpdate = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: UpdatePayload) => ClassRoomAPI.update(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
 export const useClassRoomDelete = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: DeletePayload) => ClassRoomAPI.delete(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
     },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
+  });
+};
+
+export const useClassRoomExport = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: ExportPayload) => ClassRoomAPI.export(payload),
+    onSuccess: (res) => {
+      if (res?.data?.link) {
+        window.open(res?.data?.link, "_blank");
+      }
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    }
   });
 };
 
@@ -58,4 +94,5 @@ export const ClassRoomService = {
   useClassRoomCreate,
   useClassRoomUpdate,
   useClassRoomDelete,
+  useClassRoomExport
 };

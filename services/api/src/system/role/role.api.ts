@@ -5,6 +5,7 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
+  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -33,5 +34,10 @@ export const RoleAPI = {
   delete: async ({ id }: DeletePayload) =>
     await api
       .delete(`${endpoint}/system/role/delete/${id}`)
+      .then((result) => result.data),
+  
+  export: async ({ params }: ExportPayload) =>
+    await api
+      .post(`${endpoint}/system/role/export`, params)
       .then((result) => result.data),
 };
