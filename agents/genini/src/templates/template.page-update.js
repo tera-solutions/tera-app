@@ -39,7 +39,7 @@ const ${Entity}UpdatePage = observer(() => {
     ${Entity}Service.use${Entity}Detail({ id });
 
   const handleCloseConfirm = async () => {
-    if (await actionRef.current?.getIsDirty()) {
+    if (actionRef.current?.isDirty()) {
       confirm.warning({
         title: t("common.exit_title"),
         content: (

@@ -13,7 +13,7 @@ import {
 export const ${Entity}API = {
   getList: async ({ params }: ListPayload) =>
     await api
-      .get(\`\${endpoint}/${domain}/${entity}/list\`, params)
+      .get(\`\${endpoint}/${domain}/${entity}/list\`, {...params, ...params?.filters})
       .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>

@@ -38,7 +38,10 @@ const ${Entity}ListPage = () => {
         onClickFilter={() => setIsFilter(true)}
         buttonCreatingKey={BUTTON_KEY.${entity.toUpperCase()}_CREATE}
         buttonAddRender={() => (
-          <Button onClick={() => navigate(${ENTITY.toUpperCase()}_PAGE_URL.create.path)}>
+          <Button
+            onClick={() => navigate(${ENTITY.toUpperCase()}_PAGE_URL.create.path)}
+            className="rounded-xsm shrink-0 px-2 py-1"
+          >
             <PlusCircleOutlined />
             {t("button.create")}
           </Button>

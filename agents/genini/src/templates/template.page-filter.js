@@ -35,22 +35,25 @@ import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import { Input } from "@tera/components/dof/Control";
 
 /* Import: pages */
-import { I${Entity}Form } from "pages/${moduleName}/${ENTITY}/_interface";
+import { I${Entity} } from "pages/${moduleName}/${ENTITY}/_interface";
 
-const defaultValues: I${Entity}Form = {
+const defaultValues: I${Entity} = {
   ${genDefaultValues(fields)}
 };
 
 interface ${Entity}FilterProps {
   open: boolean;
-  initialValue: I${Entity}Form;
+  initialValue: I${Entity} & {
+    page: number;
+    pageSize: number;
+  };
   onClose: () => void;
-  onFilter: (value: I${Entity}Form) => void;
+  onFilter: (value: I${Entity}) => void;
 }
 
 const ${Entity}Filter = ({ open, onClose, onFilter, initialValue }: ${Entity}FilterProps) => {
   const { t } = useTranslation();
-  const form = useForm<I${Entity}Form>();
+  const form = useForm<I${Entity}>();
 
   useEffect(() => {
     form.reset(initialValue);
