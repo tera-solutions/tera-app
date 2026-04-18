@@ -93,6 +93,7 @@ export const useStudentDelete = () => {
 
 export const useStudentExport = () => {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: ExportPayload) => StudentAPI.export(payload),
     onSuccess: (res) => {

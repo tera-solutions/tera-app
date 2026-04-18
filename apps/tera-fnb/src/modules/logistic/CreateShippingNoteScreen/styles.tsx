@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
     fontSize: 16,
-    marginBottom: 10
+    marginBottom: 10,
   },
   inputAddress: {
     flexDirection: 'row',

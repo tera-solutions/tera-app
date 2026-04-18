@@ -1,5 +1,5 @@
-import { createContext } from 'react';
-import { CommonStore } from './commonStore';
+import { createContext } from "react";
+import { CommonStore } from "./commonStore";
 
 export class RootStore {
   commonStore: CommonStore;

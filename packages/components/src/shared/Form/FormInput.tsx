@@ -1,5 +1,5 @@
-import { TextInput } from '@components/ui';
-import { Controller, useFormContext } from 'react-hook-form';
+import { TextInput } from "@components/ui";
+import { Controller, useFormContext } from "react-hook-form";
 import {
   Button,
   InputAccessoryView,
@@ -9,7 +9,7 @@ import {
   StyleSheet,
   Text,
   View,
-} from 'react-native';
+} from "react-native";
 
 // --- Component Input Tùy chỉnh (dùng cho các trường thông tin) ---
 export interface FormInputProps {
@@ -51,14 +51,14 @@ export const FormInput: React.FC<FormInputProps> = ({
               <TextInput
                 inputAccessoryViewID={inputAccessoryViewID}
                 style={styles.textInput}
-                value={value ?? ''}
+                value={value ?? ""}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 placeholder={placeholder || `Nhập ${label.toLowerCase()}`}
                 placeholderTextColor="#9CA3AF"
                 {...rest}
               />
-              {(Platform.OS === 'ios' || Platform.OS === 'android') && (
+              {(Platform.OS === "ios" || Platform.OS === "android") && (
                 <InputAccessoryView nativeID={inputAccessoryViewID}>
                   <View style={styles.keyboardButton}>
                     <View />
@@ -86,47 +86,47 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: "#9CA3AF",
     marginBottom: 5,
   },
   inputValueWrapper: {
-    flexDirection: 'row',
-    alignContent: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignContent: "center",
+    justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: "#E5E7EB",
   },
   inputError: {
-    borderBottomColor: '#dd1515',
+    borderBottomColor: "#dd1515",
   },
   textInput: {
     flex: 1,
     fontSize: 16,
     paddingHorizontal: 0,
-    color: '#1F2937',
+    color: "#1F2937",
     borderWidth: 0,
-    backgroundColor: 'translate',
+    backgroundColor: "translate",
   },
   textError: {
-    color: '#dd1515',
+    color: "#dd1515",
     fontSize: 14,
     marginTop: 5,
   },
   keyboardLabel: {
-    color: '#9e9e9eff',
+    color: "#9e9e9eff",
     fontSize: 12,
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
-    textAlign: 'center',
+    textAlign: "center",
     zIndex: 9,
   },
   keyboardButton: {
-    position: 'relative',
-    flexDirection: 'row',
-    backgroundColor: '#f1f1f1',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    position: "relative",
+    flexDirection: "row",
+    backgroundColor: "#f1f1f1",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 2,
     paddingHorizontal: 10,
   },

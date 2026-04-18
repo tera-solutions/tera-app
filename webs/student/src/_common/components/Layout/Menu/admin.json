@@ -18,7 +18,7 @@
       "key": "package",
       "permission": "cs"
     },
-     {
+    {
       "id": "r4",
       "code": "withdraw",
       "title": "Tài chính",
@@ -27,7 +27,7 @@
       "key": "withdraw",
       "permission": "cs"
     },
-     {
+    {
       "id": "r5",
       "code": "support-ticket",
       "title": "CSKH",
@@ -36,7 +36,7 @@
       "key": "support-ticket",
       "permission": "cs"
     },
-         {
+    {
       "id": "r6",
       "code": "setting-store",
       "title": "Thiết lập",
@@ -201,7 +201,7 @@
       "parentGroupKey": "group-finance",
       "permission": ""
     },
-        {
+    {
       "id": 16,
       "title": "Hỗ trợ khách hàng",
       "path": "/support-ticket",

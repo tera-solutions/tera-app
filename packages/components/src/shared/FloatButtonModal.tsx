@@ -1,5 +1,5 @@
-import colors from '@tera/commons/constants/colors';
-import React, { useEffect, useRef, useState } from 'react';
+import colors from "@tera/commons/constants/colors";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -7,7 +7,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   View,
-} from 'react-native';
+} from "react-native";
 
 export interface IProps {
   visible: boolean;
@@ -16,7 +16,7 @@ export interface IProps {
   children?: React.ReactNode;
 }
 
-const { height, width } = Dimensions.get('window');
+const { height, width } = Dimensions.get("window");
 
 const FloatButtonModal = ({
   visible,
@@ -59,11 +59,11 @@ const FloatButtonModal = ({
   }, [displayContent, visible, slideAnim, slideUpValue]);
 
   const onCreatePOS = () => {
-    console.tron('onCreatePOS');
+    console.tron("onCreatePOS");
   };
 
   const onCreateOnline = () => {
-    console.tron('onCreateOnline');
+    console.tron("onCreateOnline");
   };
 
   if (!displayContent) {
@@ -100,28 +100,28 @@ const FloatButtonModal = ({
 export const floatStyles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'flex-end', // Căn bottom
-    alignItems: 'center',
+    justifyContent: "flex-end", // Căn bottom
+    alignItems: "center",
   },
   overlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)', // Nền mờ
+    backgroundColor: "rgba(0, 0, 0, 0.4)", // Nền mờ
   },
   modalContent: {
-    position: 'absolute',
+    position: "absolute",
     width: width,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     padding: 15,
   },
   modalView: {
-    backgroundColor: 'white',
-    width: '100%',
+    backgroundColor: "white",
+    width: "100%",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     paddingBottom: 30, // Khoảng cách cho thanh Home Indicator
@@ -129,11 +129,11 @@ export const floatStyles = StyleSheet.create({
   menuItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
   },
   textStyle: {
     fontSize: 16,
-    color: colors.textPrimary
+    color: colors.textPrimary,
   },
 });
 

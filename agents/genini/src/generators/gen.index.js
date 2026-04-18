@@ -5,11 +5,7 @@ const ROOT_MODULE = path.resolve(process.cwd(), "../../services/modules/src");
 const ROOT_API = path.resolve(process.cwd(), "../../services/api/src");
 
 function isValidFile(file) {
-  return (
-    file.endsWith(".ts") &&
-    !file.endsWith(".d.ts") &&
-    file !== "index.ts"
-  );
+  return file.endsWith(".ts") && !file.endsWith(".d.ts") && file !== "index.ts";
 }
 
 function generateIndex(dir) {

@@ -25,32 +25,34 @@ const LessonTable = ({ params, setParams }) => {
   const { mutate: onDelete, isPending: isDeleting } =
     LessonService.useLessonDelete();
 
-  const itemsAction = useCallback((item: IStudent): DropdownItem[] => [
-    {
-      key: "detail",
-      label: t("button.detail"),
-      onClick: () => navigate(LESSON_PAGE_URL.detail.path(item.id)),
-    },
-    {
-      key: "edit",
-      label: t("button.edit"),
-      onClick: () => navigate(LESSON_PAGE_URL.update.path(item.id)),
-    },
-    {
-      key: "delete",
-      label: <span className="text-red-500">{t("button.delete")}</span>,
-      onClick: () => {
-        confirm.warning({
-          title: t("common.delete_confirm_title"),
-          content: t("common.delete_confirm_question"),
-          onOk: () => onDelete({ id: item.id }),
-        });
+  const itemsAction = useCallback(
+    (item: IStudent): DropdownItem[] => [
+      {
+        key: "detail",
+        label: t("button.detail"),
+        onClick: () => navigate(LESSON_PAGE_URL.detail.path(item.id)),
       },
-    },
-  ], [t, navigate, confirm, onDelete]);
+      {
+        key: "edit",
+        label: t("button.edit"),
+        onClick: () => navigate(LESSON_PAGE_URL.update.path(item.id)),
+      },
+      {
+        key: "delete",
+        label: <span className="text-red-500">{t("button.delete")}</span>,
+        onClick: () => {
+          confirm.warning({
+            title: t("common.delete_confirm_title"),
+            content: t("common.delete_confirm_question"),
+            onOk: () => onDelete({ id: item.id }),
+          });
+        },
+      },
+    ],
+    [t, navigate, confirm, onDelete],
+  );
 
   const fields = [
-    
     {
       title: t("lesson.code"),
       dataIndex: "code",

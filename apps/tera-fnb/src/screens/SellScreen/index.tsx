@@ -36,7 +36,7 @@ const menuItems: MenuItem[] = [
     id: 'temporary_order',
     iconName: 'file-document-outline',
     label: 'Đơn lưu tạm',
-  }
+  },
 ];
 
 const SellScreen = () => {

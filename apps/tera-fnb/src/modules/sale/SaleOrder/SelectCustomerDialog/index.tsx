@@ -1,12 +1,6 @@
 import { TextInput } from '@components/ui';
 import React, { useState } from 'react';
-import {
-  FlatList,
-  Modal,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomerItem, { Customer } from './CustomerItem';

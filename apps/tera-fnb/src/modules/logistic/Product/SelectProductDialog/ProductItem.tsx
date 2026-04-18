@@ -38,10 +38,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
           <Text style={styles.selectionCountText}>1</Text>
         </View>
       )}
-      <Image
-        source={{ uri: product?.image }}
-        style={styles.imageProduct}
-      />
+      <Image source={{ uri: product?.image }} style={styles.imageProduct} />
     </View>
 
     <View style={styles.productInfo}>
@@ -52,9 +49,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
     </View>
 
     <View style={styles.productPricing}>
-      <Text style={styles.productPrice}>
-        {formatNumber(product.price)}
-      </Text>
+      <Text style={styles.productPrice}>{formatNumber(product.price)}</Text>
       <Text style={styles.productStock}>Còn: {product.stock}</Text>
     </View>
 

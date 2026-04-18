@@ -26,7 +26,10 @@ export const NotificationTemplateAPI = {
 
   update: async ({ id, params }: UpdatePayload) =>
     await api
-      .put(`${endpoint}/notification/notification-template/update/${id}`, params)
+      .put(
+        `${endpoint}/notification/notification-template/update/${id}`,
+        params,
+      )
       .then((r) => r.data),
 
   delete: async ({ id }: DeletePayload) =>

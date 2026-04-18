@@ -1,7 +1,7 @@
-import DB from '@databases/database.native';
-import { Q } from '@nozbe/watermelondb';
-import moment from 'moment';
-import TableVersion from '../models/table_version.native.';
+import DB from "@databases/database.native";
+import { Q } from "@nozbe/watermelondb";
+import moment from "moment";
+import TableVersion from "../models/table_version.native.";
 
 const TableVersionService = {
   /**
@@ -18,11 +18,11 @@ const TableVersionService = {
 
     if (oldVersion === version && !is_dirty) return;
 
-    const collection = DB.instance.get<TableVersion>('table_version_logs');
+    const collection = DB.instance.get<TableVersion>("table_version_logs");
 
     await DB.instance.write(async () => {
       const existing = await collection
-        .query(Q.where('table_name', table_name))
+        .query(Q.where("table_name", table_name))
         .fetch();
 
       if (existing.length > 0) {
@@ -30,7 +30,7 @@ const TableVersionService = {
           record.version = version;
           record.is_dirty = oldVersion === version ? 0 : 1;
           record._raw = Object.assign({}, record._raw, {
-            _status: 'synced',
+            _status: "synced",
           });
         });
       } else {
@@ -39,7 +39,7 @@ const TableVersionService = {
           record.version = version;
           record.is_dirty = 1;
           record._raw = Object.assign({}, record._raw, {
-            _status: 'synced',
+            _status: "synced",
           });
         });
       }
@@ -53,11 +53,11 @@ const TableVersionService = {
   ) => {
     if (!version) return;
     if (!last_sync_at) return;
-    const collection = DB.instance.get<TableVersion>('table_version_logs');
+    const collection = DB.instance.get<TableVersion>("table_version_logs");
 
     await DB.instance.write(async () => {
       const existing = await collection
-        .query(Q.where('table_name', table_name))
+        .query(Q.where("table_name", table_name))
         .fetch();
 
       if (existing.length > 0) {
@@ -66,7 +66,7 @@ const TableVersionService = {
           record.is_dirty = 0;
           record.last_sync_at = last_sync_at;
           record._raw = Object.assign({}, record._raw, {
-            _status: 'synced',
+            _status: "synced",
           });
         });
       }
@@ -77,16 +77,16 @@ const TableVersionService = {
    * GetValue: Tự động Parse dữ liệu khi lấy ra
    */
   getValue: async (table_name: string, version?: number): Promise<any> => {
-    const collection = DB.instance.get<TableVersion>('table_version_logs');
+    const collection = DB.instance.get<TableVersion>("table_version_logs");
 
     const conditions = [];
 
     if (table_name) {
-      conditions.push(Q.where('table_name', table_name));
+      conditions.push(Q.where("table_name", table_name));
     }
 
     if (version) {
-      conditions.push(Q.where('version', version));
+      conditions.push(Q.where("version", version));
     }
 
     const records = await collection.query(...conditions).fetch();
@@ -98,16 +98,16 @@ const TableVersionService = {
   },
 
   getData: async (table_name: string, version?: number): Promise<any> => {
-    const collection = DB.instance.get<TableVersion>('table_version_logs');
+    const collection = DB.instance.get<TableVersion>("table_version_logs");
 
     const conditions = [];
 
     if (table_name) {
-      conditions.push(Q.where('table_name', table_name));
+      conditions.push(Q.where("table_name", table_name));
     }
 
     if (version) {
-      conditions.push(Q.where('version', version));
+      conditions.push(Q.where("version", version));
     }
 
     const records = await collection.query(...conditions).fetch();
@@ -119,9 +119,9 @@ const TableVersionService = {
   },
 
   fetchAll: async () => {
-    const collection = DB.instance.get<TableVersion>('table_version_logs');
+    const collection = DB.instance.get<TableVersion>("table_version_logs");
     const records = await collection
-      .query([Q.sortBy('updated_at', Q.desc)])
+      .query([Q.sortBy("updated_at", Q.desc)])
       .unsafeFetchRaw();
 
     return records;
@@ -131,7 +131,7 @@ const TableVersionService = {
    * Lấy toàn bộ danh sách cấu hình (Observable cho UI)
    */
   observeTableVersions: () => {
-    const collection = DB.instance.get<TableVersion>('table_version_logs');
+    const collection = DB.instance.get<TableVersion>("table_version_logs");
     return collection.query().observe();
   },
 
@@ -139,11 +139,11 @@ const TableVersionService = {
    * Xóa một cấu hình theo Key
    */
   deleteByKey: async (table_name: string) => {
-    const collection = DB.instance.get<TableVersion>('table_version_logs');
+    const collection = DB.instance.get<TableVersion>("table_version_logs");
 
     await DB.instance.write(async () => {
       const records = await collection
-        .query(Q.where('table_name', table_name))
+        .query(Q.where("table_name", table_name))
         .fetch();
       const batches = records.map((record) =>
         record.prepareDestroyPermanently(),
@@ -161,14 +161,14 @@ const TableVersionService = {
     try {
       if (!DB.instance) return;
 
-      const collection = DB.instance.get<TableVersion>('table_version_logs');
+      const collection = DB.instance.get<TableVersion>("table_version_logs");
 
       // 1. Thu thập IDs để query một lần (Batch Query)
       const serverIds = dataTables.map((l) => String(l.id));
       if (serverIds.length === 0) return changesLocal;
 
       const [existingByServerId] = await Promise.all([
-        collection.query(Q.where('id', Q.oneOf(serverIds))).fetch(),
+        collection.query(Q.where("id", Q.oneOf(serverIds))).fetch(),
       ]);
 
       const existingMap = new Map(existingByServerId.map((r) => [r.id, r]));
@@ -179,7 +179,7 @@ const TableVersionService = {
         const existing = existingMap.get(serverId);
 
         const mapCommonFields: any = {
-          table_name: data.table_name ?? '',
+          table_name: data.table_name ?? "",
           version: data.version ?? 0,
           updated_at: moment(data.updated_at).unix() ?? moment().unix(),
           is_dirty: existing?.version !== data?.version ? 1 : 0,
@@ -197,7 +197,7 @@ const TableVersionService = {
         }
       }
 
-      console.tron('changesLocal Table version', changesLocal);
+      console.tron("changesLocal Table version", changesLocal);
 
       return changesLocal;
     } catch (error) {
@@ -216,13 +216,13 @@ const TableVersionService = {
     }>,
   ) => {
     try {
-      const collection = DB.instance.get<TableVersion>('table_version_logs');
+      const collection = DB.instance.get<TableVersion>("table_version_logs");
 
       await DB.instance.write(async () => {
         // 1. Fetch toàn bộ để map vào bộ nhớ
         const allTableNames = dataTables.map((p) => p.table_name);
         const existingProducts = await collection
-          .query(Q.where('table_name', Q.oneOf(allTableNames)))
+          .query(Q.where("table_name", Q.oneOf(allTableNames)))
           .fetch();
 
         const existingMap = new Map(
@@ -238,9 +238,9 @@ const TableVersionService = {
             // So sánh trực tiếp với giá trị đang có trong model record
             if (existingRecord.version !== data.version) {
               console.log(
-                '🔄 Trigger Update Version:',
+                "🔄 Trigger Update Version:",
                 data.table_name,
-                '->',
+                "->",
                 data.version,
               );
 
@@ -249,13 +249,13 @@ const TableVersionService = {
                   record.version = data.version;
                   record.is_dirty = 1;
                   record._raw = Object.assign({}, record._raw, {
-                    _status: 'synced',
+                    _status: "synced",
                   });
                 }),
               );
             }
           } else {
-            console.log('🆕 Trigger Create Version:', data.table_name);
+            console.log("🆕 Trigger Create Version:", data.table_name);
             operations.push(
               collection.prepareCreate((record) => {
                 record.table_name = data.table_name;
@@ -263,7 +263,7 @@ const TableVersionService = {
                 record.last_sync_at = 0;
                 record.is_dirty = 1;
                 record._raw = Object.assign({}, record._raw, {
-                  _status: 'synced',
+                  _status: "synced",
                 });
               }),
             );
@@ -274,12 +274,12 @@ const TableVersionService = {
         if (operations.length > 0) {
           await DB.instance.batch(...operations);
           console.log(
-            '✅ Batch update thành công, observer sẽ nhận được tín hiệu.',
+            "✅ Batch update thành công, observer sẽ nhận được tín hiệu.",
           );
         }
       });
     } catch (error) {
-      console.error('bulkUpdate Table Logs ERROR: ', error);
+      console.error("bulkUpdate Table Logs ERROR: ", error);
     }
   },
 };

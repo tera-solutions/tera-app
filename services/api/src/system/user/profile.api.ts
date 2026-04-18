@@ -10,17 +10,27 @@ import {
 
 export const ProfileAPI = {
   getList: async ({ params }: ListPayload) =>
-    await api.get(`${endpoint}/system/profile/list`, params).then(r => r.data),
+    await api
+      .get(`${endpoint}/system/profile/list`, params)
+      .then((r) => r.data),
 
   getDetail: async ({ id }: DetailPayload) =>
-    await api.get(`${endpoint}/system/profile/detail/${id}`).then(r => r.data),
+    await api
+      .get(`${endpoint}/system/profile/detail/${id}`)
+      .then((r) => r.data),
 
   create: async ({ params }: CreatePayload) =>
-    await api.post(`${endpoint}/system/profile/create`, params).then(r => r.data),
+    await api
+      .post(`${endpoint}/system/profile/create`, params)
+      .then((r) => r.data),
 
   update: async ({ id, params }: UpdatePayload) =>
-    await api.put(`${endpoint}/system/profile/update/${id}`, params).then(r => r.data),
+    await api
+      .put(`${endpoint}/system/profile/update/${id}`, params)
+      .then((r) => r.data),
 
   delete: async ({ id }: DeletePayload) =>
-    await api.delete(`${endpoint}/system/profile/delete/${id}`).then(r => r.data),
+    await api
+      .delete(`${endpoint}/system/profile/delete/${id}`)
+      .then((r) => r.data),
 };

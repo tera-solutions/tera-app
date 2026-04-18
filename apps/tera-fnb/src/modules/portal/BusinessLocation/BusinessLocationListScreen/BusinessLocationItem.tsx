@@ -88,7 +88,7 @@ const BusinessLocationItem: React.FC<{ item: BusinessLocation }> = ({
       <TouchableOpacity
         style={styles.locationItem}
         onPress={() => {
-          if(!item?.id) return;
+          if (!item?.id) return;
 
           router.push({
             pathname: '/portal/business-location/[id]',

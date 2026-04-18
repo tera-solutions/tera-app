@@ -171,10 +171,10 @@ export const MoreStyles = StyleSheet.create({
     height: ITEM_WIDTH * 1.1,
   },
   logoutButton: {
-    position: "absolute",
+    position: 'absolute',
     right: 10,
     top: 10,
     zIndex: 9,
-    alignItems: "center",
+    alignItems: 'center',
   },
 });

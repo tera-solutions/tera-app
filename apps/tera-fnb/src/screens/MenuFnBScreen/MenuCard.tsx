@@ -20,12 +20,14 @@ interface MenuCardProps {
 const MenuCard: React.FC<MenuCardProps> = ({ item, onPress }) => (
   <TouchableOpacity style={styles.menuCard} onPress={() => onPress(item)}>
     <Image
-      source={{ uri: item.imageUri }} 
+      source={{ uri: item.imageUri }}
       style={styles.itemImage}
       resizeMode="cover"
     />
     <View style={styles.itemInfo}>
-      <Text style={styles.itemName} numberOfLines={2}>{item.name}</Text>
+      <Text style={styles.itemName} numberOfLines={2}>
+        {item.name}
+      </Text>
       <Text style={styles.itemPrice}>{formatNumber(item.price)} VNĐ</Text>
     </View>
     {/* Nút thêm vào giỏ hàng nhanh */}

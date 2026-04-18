@@ -1,15 +1,15 @@
-import axios, { AxiosHeaderValue, HeadersDefaults } from 'axios';
-import _ from 'lodash';
-import qs from 'query-string';
+import axios, { AxiosHeaderValue, HeadersDefaults } from "axios";
+import _ from "lodash";
+import qs from "query-string";
 import {
   _requestError,
   _requestHeader,
   _requestResponse,
-} from './_interceptor';
+} from "./_interceptor";
 
 const instance = axios.create({
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 instance.interceptors.request.use(_requestHeader, (error) =>
@@ -26,18 +26,24 @@ instance.interceptors.response.use(
 const get = (endpoints?: any, params?: any, headers?: any) => {
   if (_.isEmpty(headers)) {
     return instance
-      .get(`${endpoints}${params ? `?${qs.stringify(params)}` : ''}`)
+      .get(`${endpoints}${params ? `?${qs.stringify(params)}` : ""}`)
       .then(_requestResponse)
       .catch(_requestError);
   }
   return instance
-    .get(`${endpoints}${params ? `?${qs.stringify(params)}` : ''}`, { timeout: 30000, ...headers })
+    .get(`${endpoints}${params ? `?${qs.stringify(params)}` : ""}`, {
+      timeout: 30000,
+      ...headers,
+    })
     .then(_requestResponse)
     .catch(_requestError);
 };
 
 const getAll = async (endpoints?: any, params?: any, headers?: any) => {
-  const { data: res } = await get(endpoints, params, { timeout: 30000, ...headers });
+  const { data: res } = await get(endpoints, params, {
+    timeout: 30000,
+    ...headers,
+  });
   const { limit, page, total } = res.metadata;
   const totalPage = Math.round(total / limit);
   const listRequests = [];
@@ -49,7 +55,7 @@ const getAll = async (endpoints?: any, params?: any, headers?: any) => {
     const result = await Promise.all(listRequests);
     const pages = _.orderBy(
       result.map(({ data }) => data),
-      'metadata.page',
+      "metadata.page",
     );
 
     pages.forEach((pageInfo) => {
@@ -98,10 +104,10 @@ const del = (endpoints?: any, params?: any) =>
     .catch(_requestError);
 
 const changeHeaders = (headers: any) => {
-  if (typeof headers === 'undefined') {
+  if (typeof headers === "undefined") {
     return;
   }
-  const defaultHeaders = _.get(instance, 'defaults.headers');
+  const defaultHeaders = _.get(instance, "defaults.headers");
   const cleanHeaders = _.omitBy(
     {
       ...defaultHeaders,

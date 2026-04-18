@@ -1,13 +1,13 @@
-import { DatePickerInput } from 'react-native-paper-dates';
+import { DatePickerInput } from "react-native-paper-dates";
 
-import moment from 'moment';
-import React, { useEffect } from 'react';
-import { Animated, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import moment from "moment";
+import React, { useEffect } from "react";
+import { Animated, StyleProp, StyleSheet, ViewStyle } from "react-native";
 
 export interface DateTimeProps {
   style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
   value: any;
-  editable?: boolean,
+  editable?: boolean;
   onChange?: (value?: string) => void;
 }
 
@@ -28,8 +28,8 @@ export const DateTime = ({
   const onConfirmSingle = React.useCallback(
     (value: any) => {
       setDate(value);
-      if (typeof onChange === 'function') {
-        onChange(moment(value).format('YYYY-MM-DD'));
+      if (typeof onChange === "function") {
+        onChange(moment(value).format("YYYY-MM-DD"));
       }
     },
     [setDate],
@@ -57,11 +57,11 @@ export const DateTime = ({
 
 const styles = StyleSheet.create({
   dateTimePicker: {
-    backgroundColor: 'white',
-    width: '100%',
+    backgroundColor: "white",
+    width: "100%",
     height: 50,
     fontSize: 16,
-    color: '#000',
+    color: "#000",
     padding: 0,
   },
 });

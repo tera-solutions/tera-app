@@ -1,6 +1,6 @@
-import { InputPassword } from '@components/ui';
-import { Controller, useFormContext } from 'react-hook-form';
-import { KeyboardTypeOptions, StyleSheet, Text, View } from 'react-native';
+import { InputPassword } from "@components/ui";
+import { Controller, useFormContext } from "react-hook-form";
+import { KeyboardTypeOptions, StyleSheet, Text, View } from "react-native";
 
 // --- Component Input Tùy chỉnh (dùng cho các trường thông tin) ---
 export interface FormInputPasswordProps {
@@ -38,7 +38,7 @@ export const FormInputPassword: React.FC<FormInputPasswordProps> = ({
             >
               <InputPassword
                 style={styles.textInput}
-                value={value ?? ''}
+                value={value ?? ""}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 placeholder={placeholder || `Nhập ${label.toLowerCase()}`}
@@ -64,29 +64,29 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: "#9CA3AF",
     marginBottom: 5,
   },
   inputValueWrapper: {
-    flexDirection: 'row',
-    alignContent: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignContent: "center",
+    justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: "#E5E7EB",
   },
   inputError: {
-    borderBottomColor: '#dd1515',
+    borderBottomColor: "#dd1515",
   },
   textInput: {
     flex: 1,
     fontSize: 16,
     paddingHorizontal: 0,
-    color: '#1F2937',
+    color: "#1F2937",
     borderWidth: 0,
-    backgroundColor: 'translate',
+    backgroundColor: "translate",
   },
   textError: {
-    color: '#dd1515',
+    color: "#dd1515",
     fontSize: 14,
     marginTop: 5,
   },

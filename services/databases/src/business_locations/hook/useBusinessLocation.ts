@@ -1,6 +1,6 @@
-import { SyncStatus } from '@tera/commons/interfaces';
-import DB from '@databases/database';
-import { useLiveQuery } from 'dexie-react-hooks';
+import { SyncStatus } from "@tera/commons/interfaces";
+import DB from "@databases/database";
+import { useLiveQuery } from "dexie-react-hooks";
 
 interface SyncStatus {
   hasPendingUpload: boolean;
@@ -20,19 +20,19 @@ export const useBusinessLocation = () => {
 
   const result = useLiveQuery(async () => {
     const unsyncedRecords = await DB.sync_queues
-      .where('table_name')
-      .equals('business_locations')
+      .where("table_name")
+      .equals("business_locations")
       .and((item) => {
-        return item.status === SyncStatus.QUEUED && item.action !== 'GET';
+        return item.status === SyncStatus.QUEUED && item.action !== "GET";
       })
       .toArray();
 
     const totalRecords = await DB.business_locations
-      .where('is_delete')
+      .where("is_delete")
       .equals(0)
       .toArray();
 
-    const lastUpdate = await DB.business_locations.orderBy('updated_at').last();
+    const lastUpdate = await DB.business_locations.orderBy("updated_at").last();
 
     return {
       hasPendingUpload: unsyncedRecords.length > 0,

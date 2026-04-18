@@ -35,5 +35,4 @@ export type ModuleType =
   | "marketing"
   | "operation"
   | "warehouse"
-  | "master"
-  ;
+  | "master";

@@ -8,10 +8,7 @@ import {
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import {
-  BellOutlined,
-  PhoneOutlined,
-} from "tera-dls";
+import { BellOutlined, PhoneOutlined } from "tera-dls";
 import Application from "./Application";
 import User from "./User";
 import ModalViewMoreNotification from "./UserNotification/ModalViewMoreNotification";

@@ -1,4 +1,7 @@
-import { useQueryLegacy, useMutationLegacy } from "@tera/commons/hooks/tanstack";
+import {
+  useQueryLegacy,
+  useMutationLegacy,
+} from "@tera/commons/hooks/tanstack";
 
 import NoData from "@tera/components/web/NoData";
 import ErrorToast from "@tera/components/web/ToastCustom/ErrorsToast";

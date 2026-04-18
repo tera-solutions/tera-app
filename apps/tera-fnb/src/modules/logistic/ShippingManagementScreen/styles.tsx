@@ -31,14 +31,14 @@ export const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
-    height: 40
+    height: 40,
   },
   tabButton: {
     paddingVertical: 5,
     paddingHorizontal: 12,
     borderRadius: 20,
     marginRight: 8,
-    height: 28
+    height: 28,
   },
   activeTab: { backgroundColor: '#E5E7EB' },
   tabText: { fontSize: 14, color: '#4B5563' },

@@ -10,14 +10,10 @@ import {
 
 export const JobRoleAPI = {
   getList: async ({ params }: ListPayload) =>
-    await api
-      .get(`${endpoint}/hr/job-role/list`, params)
-      .then((r) => r.data),
+    await api.get(`${endpoint}/hr/job-role/list`, params).then((r) => r.data),
 
   getDetail: async ({ id }: DetailPayload) =>
-    await api
-      .get(`${endpoint}/hr/job-role/detail/${id}`)
-      .then((r) => r.data),
+    await api.get(`${endpoint}/hr/job-role/detail/${id}`).then((r) => r.data),
 
   create: async ({ params }: CreatePayload) =>
     await api

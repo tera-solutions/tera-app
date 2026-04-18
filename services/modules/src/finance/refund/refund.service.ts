@@ -1,7 +1,9 @@
-
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
+import {
+  useQueryAdapter,
+  useMutationAdapter,
+} from "@tera/commons/hooks/queryAdapter";
 import { RefundAPI } from "@tera/api";
 import {
   CreatePayload,
@@ -40,7 +42,7 @@ export const useRefundCreate = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -54,7 +56,24 @@ export const useRefundUpdate = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
+  });
+};
+
+export const useUpsertRefund = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => {
+      if (payload?.id) return RefundAPI.update(payload);
+      return RefundAPI.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
   });
 };
 
@@ -68,7 +87,7 @@ export const useRefundDelete = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -84,7 +103,7 @@ export const useRefundExport = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -93,6 +112,7 @@ export const RefundService = {
   useRefundDetail,
   useRefundCreate,
   useRefundUpdate,
+  useUpsertRefund,
   useRefundDelete,
-  useRefundExport
+  useRefundExport,
 };

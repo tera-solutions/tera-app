@@ -22,10 +22,7 @@ export const FormDateTime: React.FC<FormDateTimeProps> = ({
       <Text style={styles.inputLabel}>{label}</Text>
       <Controller
         control={control}
-        render={({
-          field: { onChange, value },
-          fieldState: { error },
-        }) => (
+        render={({ field: { onChange, value }, fieldState: { error } }) => (
           <View>
             <View
               style={[styles.inputValueWrapper, !!error && styles.inputError]}

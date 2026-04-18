@@ -1,11 +1,11 @@
-import { appVersion, dbName } from '@tera/commons/constants/common';
-import appSchema from '@databases/appSchema';
-import BusinessLocation from '@databases/business_locations/models/business_locations';
-import ICustomer from '@databases/customer/models/customer';
-import Geneal from '@databases/general/models/general';
-import SyncQueue from '@databases/sync_queues/models/sync_queues';
-import TableVersion from '@databases/table_version/models/table_version';
-import Dexie, { Table } from 'dexie';
+import { appVersion, dbName } from "@tera/commons/constants/common";
+import appSchema from "@databases/appSchema";
+import BusinessLocation from "@databases/business_locations/models/business_locations";
+import ICustomer from "@databases/customer/models/customer";
+import Geneal from "@databases/general/models/general";
+import SyncQueue from "@databases/sync_queues/models/sync_queues";
+import TableVersion from "@databases/table_version/models/table_version";
+import Dexie, { Table } from "dexie";
 
 // database.ts
 class DatabaseService extends Dexie {
@@ -22,10 +22,10 @@ class DatabaseService extends Dexie {
   initConnection = () => {
     try {
       this.version(appVersion).stores(appSchema);
-      console.log('🌐 Web Mode: Database initConnection IndexDB');
+      console.log("🌐 Web Mode: Database initConnection IndexDB");
       return null;
     } catch (error) {
-      console.error('❌ Lỗi Web Module:', error);
+      console.error("❌ Lỗi Web Module:", error);
       return null;
     }
   };

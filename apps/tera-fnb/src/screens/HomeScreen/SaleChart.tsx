@@ -8,10 +8,10 @@ const data = {
     {
       data: [20, 45, 28, 80, 99, 43],
       color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // Màu sắc của đường
-      strokeWidth: 2 // độ dày của đường
-    }
+      strokeWidth: 2, // độ dày của đường
+    },
   ],
-  legend: ["Lượng truy cập (K)"] // chú thích
+  legend: ['Lượng truy cập (K)'], // chú thích
 };
 
 const chartConfig = {
@@ -21,8 +21,8 @@ const chartConfig = {
   decimalPlaces: 0, // số thập phân hiển thị
   color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
   style: {
-    borderRadius: 16
-  }
+    borderRadius: 16,
+  },
 };
 
 const SaleChart = () => (

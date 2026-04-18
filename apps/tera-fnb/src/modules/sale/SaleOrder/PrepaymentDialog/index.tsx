@@ -165,7 +165,7 @@ const PrepaymentDialog: React.FC<PrepaymentDialogProps> = ({
               value={paidAmount}
               onChangeText={handlePaidAmountChange}
               keyboardType="numeric"
-              returnKeyType='done'
+              returnKeyType="done"
               placeholder="0"
               onFocus={() => {
                 if (paidAmount === '0') setPaidAmount('');

@@ -12,9 +12,7 @@ import { Routers } from "./routers";
 const basename = document.querySelector("base")?.getAttribute("href") ?? "/";
 
 const Root = observer(() => {
-  const {
-    globalStore,
-  } = useStores();
+  const { globalStore } = useStores();
 
   const [isWorkflowDefault, setIsWorkflowDefault] = useState<boolean>(false);
 

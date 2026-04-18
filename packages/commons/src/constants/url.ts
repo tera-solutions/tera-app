@@ -272,7 +272,6 @@ export const FILE_MANAGEMENT_URL = {
 
 export const CART_URL = "/cart";
 
-
 export const LESSON_PAGE_URL = {
   list: {
     key: PAGE_KEY.LESSON_LIST_VIEW,

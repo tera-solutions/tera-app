@@ -13,10 +13,10 @@ import { Input } from "@tera/components/dof/Control";
 import { ILessonForm } from "pages/education/lesson/_interface";
 
 const defaultValues: ILessonForm = {
-      code: undefined,
-    name: undefined,
-    level: undefined,
-    status: undefined,
+  code: undefined,
+  name: undefined,
+  level: undefined,
+  status: undefined,
 };
 
 interface LessonFilterProps {
@@ -26,7 +26,12 @@ interface LessonFilterProps {
   onFilter: (value: ILessonForm) => void;
 }
 
-const LessonFilter = ({ open, onClose, onFilter, initialValue }: LessonFilterProps) => {
+const LessonFilter = ({
+  open,
+  onClose,
+  onFilter,
+  initialValue,
+}: LessonFilterProps) => {
   const { t } = useTranslation();
   const form = useForm<ILessonForm>();
 
@@ -36,7 +41,7 @@ const LessonFilter = ({ open, onClose, onFilter, initialValue }: LessonFilterPro
 
   const handleSubmit = form.handleSubmit((value) => {
     const data = Object.fromEntries(
-      Object.entries(value).map(([k, v]) => [k, v?.trim() || undefined])
+      Object.entries(value).map(([k, v]) => [k, v?.trim() || undefined]),
     );
 
     onFilter(data);
@@ -53,7 +58,6 @@ const LessonFilter = ({ open, onClose, onFilter, initialValue }: LessonFilterPro
     <Filter open={open} onClose={onClose} onFilter={handleSubmit}>
       <FormTera form={form} onSubmit={handleSubmit}>
         <Row className="grid gap-y-0">
-          
           <FormTeraItem label={t("lesson.code")} name="code">
             <Input placeholder={t("lesson.code")} />
           </FormTeraItem>

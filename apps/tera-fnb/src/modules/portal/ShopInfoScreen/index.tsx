@@ -13,7 +13,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { styles } from './styles';
 
-console.log(">>> FILE ShopInfoScreen ĐÃ ĐƯỢC LOAD VÀO BỘ NHỚ");
+console.log('>>> FILE ShopInfoScreen ĐÃ ĐƯỢC LOAD VÀO BỘ NHỚ');
 
 const ShopInfoScreen: React.FC = () => {
   const {

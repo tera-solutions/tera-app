@@ -39,9 +39,7 @@ export const GridItem: React.FC<GridItemProps> = ({ item, onPress }) => {
         <View style={[styles.iconBox, { backgroundColor: iconBgColor + '20' }]}>
           <Icon source={item.icon} size={28} color={item.color || '#333'} />
         </View>
-        <Text style={styles.gridText}>
-          {item.name}
-        </Text>
+        <Text style={styles.gridText}>{item.name}</Text>
         {item.isNew && (
           <View style={styles.newTag}>
             <Text style={styles.newText}>Mới</Text>
@@ -57,7 +55,7 @@ const styles = StyleSheet.create({
     width: ITEM_WIDTH,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingBottom: 10
+    paddingBottom: 10,
   },
   content: {
     alignItems: 'center',

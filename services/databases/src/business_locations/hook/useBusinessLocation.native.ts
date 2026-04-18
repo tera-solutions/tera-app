@@ -1,6 +1,6 @@
-import { Q } from '@nozbe/watermelondb';
-import { useEffect, useState } from 'react';
-import DB from '../../database';
+import { Q } from "@nozbe/watermelondb";
+import { useEffect, useState } from "react";
+import DB from "../../database";
 
 export const useBusinessLocation = () => {
   const [lastUpdate, setLastUpdate] = useState(Date.now());
@@ -9,16 +9,16 @@ export const useBusinessLocation = () => {
 
   useEffect(() => {
     // Quan sát toàn bộ bảng, sắp xếp theo thời gian mới nhất
-    const collection = DB.instance.get('business_locations');
+    const collection = DB.instance.get("business_locations");
     const countSubscription = collection
-      .query(Q.where('is_delete', false))
+      .query(Q.where("is_delete", false))
       .observeCount()
       .subscribe(setTotalCount);
 
     const checkUnsyncedStatus = async () => {
       try {
         const unsyncedCount = await collection
-          .query(Q.where('_status', Q.notEq('synced')))
+          .query(Q.where("_status", Q.notEq("synced")))
           .fetchCount();
         setHasUnsynced(unsyncedCount > 0);
       } catch (e) {
@@ -28,7 +28,7 @@ export const useBusinessLocation = () => {
 
     const changesSubscription = collection.changes.subscribe((records: any) => {
       console.tron(
-        'Table business_locations has changed (Update/Insert/Delete)',
+        "Table business_locations has changed (Update/Insert/Delete)",
       );
       setLastUpdate(Date.now());
       setTimeout(() => checkUnsyncedStatus(), 0);

@@ -64,7 +64,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
-    gap: 10
+    gap: 10,
   },
   infoLabel: {
     fontSize: 15,

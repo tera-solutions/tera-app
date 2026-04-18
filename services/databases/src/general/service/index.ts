@@ -1,5 +1,5 @@
-import { parseValue, stringifyValue } from '@tera/commons/utils';
-import DB from '../../database';
+import { parseValue, stringifyValue } from "@tera/commons/utils";
+import DB from "../../database";
 
 const GeneralService = {
   /**
@@ -15,7 +15,7 @@ const GeneralService = {
         version: version,
       });
     } catch (error) {
-      console.error('Dexie Upsert Error:', error);
+      console.error("Dexie Upsert Error:", error);
     }
   },
   fetchAll: async () => {
@@ -47,7 +47,7 @@ const GeneralService = {
       await DB.generals.delete(key);
       console.log(`Deleted item ${key} from generals`);
     } catch (error) {
-      console.error('Dexie Delete Error:', error);
+      console.error("Dexie Delete Error:", error);
     }
   },
 
@@ -59,12 +59,12 @@ const GeneralService = {
     };
 
     try {
-      const generalsTable = DB.table('generals');
+      const generalsTable = DB.table("generals");
 
       const keys = dataTables.map((d) => d.key.toString());
 
       const existingRecords = await generalsTable
-        .where('key')
+        .where("key")
         .anyOf(keys)
         .toArray();
 
@@ -92,10 +92,10 @@ const GeneralService = {
         }
       }
 
-      console.log('[General Web] mappingGeneral result:', changesLocal);
+      console.log("[General Web] mappingGeneral result:", changesLocal);
       return changesLocal;
     } catch (error) {
-      console.error('[General Web] mappingGeneral Error:', error);
+      console.error("[General Web] mappingGeneral Error:", error);
       return changesLocal;
     }
   },
@@ -131,7 +131,7 @@ const GeneralService = {
 
       return { success: true };
     } catch (error) {
-      console.error('Bulk update failed:', error);
+      console.error("Bulk update failed:", error);
       throw error;
     }
   },

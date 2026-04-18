@@ -1,5 +1,5 @@
-import React, { Suspense, lazy } from 'react';
-import { ScreenLoader } from '../ui/ScreenLoader';
+import React, { Suspense, lazy } from "react";
+import { ScreenLoader } from "../ui/ScreenLoader";
 import MyErrorBoundary from "./MyErrorBoundary";
 
 // Tách ra ngoài để không bị khởi tạo lại khi render

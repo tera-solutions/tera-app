@@ -61,7 +61,12 @@ export const styles = StyleSheet.create({
     zIndex: 10,
   },
   badgeText: { color: '#FFFFFF', fontSize: 10, fontWeight: 'bold' },
-  categoryText: { fontSize: 12, color: '#4B5563', marginTop: 5, textAlign: "center" },
+  categoryText: {
+    fontSize: 12,
+    color: '#4B5563',
+    marginTop: 5,
+    textAlign: 'center',
+  },
 
   // Tabs
   tabRow: {

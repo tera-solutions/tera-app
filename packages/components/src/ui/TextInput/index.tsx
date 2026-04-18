@@ -1,8 +1,8 @@
-import colors from '@tera/commons/constants/colors';
-import React from 'react';
-import { TextInput as RNTextInput, StyleSheet } from 'react-native';
-import { TextInput as InputPaper, TextInputProps } from 'react-native-paper';
-import { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
+import colors from "@tera/commons/constants/colors";
+import React from "react";
+import { TextInput as RNTextInput, StyleSheet } from "react-native";
+import { TextInput as InputPaper, TextInputProps } from "react-native-paper";
+import { IconSource } from "react-native-paper/lib/typescript/components/Icon";
 
 interface CustomTextInputProps extends TextInputProps {
   leftIcon?: IconSource;
@@ -74,6 +74,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     borderRightWidth: 1,
-    borderRightColor: '#000',
+    borderRightColor: "#000",
   },
 });

@@ -25,7 +25,7 @@ module.exports = function (domain, entity, options) {
 
     const apiPath = path.join(
       process.cwd(),
-      `services/api/src/${domain}/${entity}/${entity}.api.ts`
+      `services/api/src/${domain}/${entity}/${entity}.api.ts`,
     );
 
     writeFile(apiPath, apiContent);
@@ -42,7 +42,7 @@ module.exports = function (domain, entity, options) {
 
     const servicePath = path.join(
       process.cwd(),
-      `services/modules/src/${domain}/${entity}/${entity}.service.ts`
+      `services/modules/src/${domain}/${entity}/${entity}.service.ts`,
     );
 
     writeFile(servicePath, serviceContent);

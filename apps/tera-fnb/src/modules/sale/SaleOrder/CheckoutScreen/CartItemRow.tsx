@@ -11,7 +11,7 @@ export interface CartItem {
   price: number;
   quantity: number;
   image?: string;
-  subtotal?: number
+  subtotal?: number;
 }
 
 interface CartItemRowProps {

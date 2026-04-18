@@ -60,9 +60,9 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
   },
   balanceWrapper: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 10,
   },
   balanceText: {
@@ -72,7 +72,7 @@ export const styles = StyleSheet.create({
   },
   balanceValue: {
     fontSize: 22,
-    fontFamily:FONT_FAMILY.BOLD,
+    fontFamily: FONT_FAMILY.BOLD,
     color: '#142235ff',
   },
   cardRow: {

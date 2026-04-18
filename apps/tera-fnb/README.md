@@ -50,6 +50,7 @@ Join our community of developers creating universal apps.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
 
 ## IOS BLUETOOTH PERMISSION - Info.plist
+
 <key>NSBluetoothAlwaysUsageDescription</key>
 <string>Ứng dụng cần truy cập Bluetooth để tìm kiếm và kết nối máy in hóa đơn.</string>
 <key>NSBluetoothPeripheralUsageDescription</key>
@@ -57,10 +58,11 @@ Join our community of developers creating universal apps.
 
 <key>UISupportedExternalAccessoryProtocols</key>
 <array>
-  <string>com.epson.escpos</string>
+<string>com.epson.escpos</string>
 </array>
 
 ## ANDROID BLUETOOTH PERMISSION - AndroidManifest.xml
+
 <uses-permission android:name="android.permission.BLUETOOTH" />
 <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />

@@ -16,20 +16,12 @@ const SearchScreen = observer(() => {
     <SafeAreaView style={styles.container}>
       <Text>Hello {user?.username}!</Text>
       {!authenticated && (
-        <Button
-          icon="camera"
-          mode="contained"
-          onPress={() => router.push('/')}
-        >
+        <Button icon="camera" mode="contained" onPress={() => router.push('/')}>
           Login
         </Button>
       )}
 
-      <Button
-        icon="camera"
-        mode="contained"
-        onPress={() => router.push('/')}
-      >
+      <Button icon="camera" mode="contained" onPress={() => router.push('/')}>
         User
       </Button>
     </SafeAreaView>

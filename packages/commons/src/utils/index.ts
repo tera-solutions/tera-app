@@ -1,2 +1,2 @@
-export * from "./common"
-export * from "./hashHelper"
+export * from "./common";
+export * from "./hashHelper";

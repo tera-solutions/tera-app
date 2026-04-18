@@ -17,14 +17,13 @@ module.exports = function templateForm({ module, entity, Entity, fields }) {
   }
 
   const submitValues = fields
-    .map(
-      (f) =>{
-        if (f.type === "string") {
-          return `        ${f.key}: values.${f.key}?.trim() || undefined,`;
-        }
+    .map((f) => {
+      if (f.type === "string") {
+        return `        ${f.key}: values.${f.key}?.trim() || undefined,`;
+      }
 
-        return `        ${f.key}: values.${f.key} || undefined,`;
-      })
+      return `        ${f.key}: values.${f.key} || undefined,`;
+    })
     .join("\n");
 
   const formItems = fields

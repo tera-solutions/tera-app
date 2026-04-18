@@ -100,7 +100,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,
-    backgroundColor: "#F0F0F0"
+    backgroundColor: '#F0F0F0',
   },
   itemContent: { flex: 1, marginRight: 10 },
   itemType: { fontSize: 12, fontWeight: '700', marginBottom: 2 },

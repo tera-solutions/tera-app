@@ -308,7 +308,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 15,
-    gap: 10
+    gap: 10,
   },
   typeButton: {
     paddingHorizontal: 25,
@@ -366,7 +366,7 @@ export const styles = StyleSheet.create({
   exitText: {
     fontSize: 18,
     color: '#4B5563',
-    fontFamily: FONT_FAMILY.BOLD
+    fontFamily: FONT_FAMILY.BOLD,
   },
   confirmKey: {
     backgroundColor: '#10B981',
@@ -374,6 +374,6 @@ export const styles = StyleSheet.create({
   confirmText: {
     fontSize: 18,
     color: '#FFFFFF',
-    fontFamily: FONT_FAMILY.BOLD
+    fontFamily: FONT_FAMILY.BOLD,
   },
 });

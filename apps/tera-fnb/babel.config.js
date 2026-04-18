@@ -12,13 +12,31 @@ module.exports = function (api) {
           extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
           alias: {
             '@app': './src/app',
-            '@tera/commons': path.resolve(__dirname, '../../packages/commons/src'),
-            '@tera/components': path.resolve(__dirname, '../../packages/components/src'),
-            '@tera/assets': path.resolve(__dirname, '../../packages/assets/src'),
-            '@tera/databases': path.resolve(__dirname, '../../services/databases/src'),
+            '@tera/commons': path.resolve(
+              __dirname,
+              '../../packages/commons/src',
+            ),
+            '@tera/components': path.resolve(
+              __dirname,
+              '../../packages/components/src',
+            ),
+            '@tera/assets': path.resolve(
+              __dirname,
+              '../../packages/assets/src',
+            ),
+            '@tera/databases': path.resolve(
+              __dirname,
+              '../../services/databases/src',
+            ),
             '@tera/api': path.resolve(__dirname, '../../services/api/src'),
-            '@tera/modules': path.resolve(__dirname, '../../services/modules/src'),
-            '@tera/stores': path.resolve(__dirname, '../../services/stores/src'),
+            '@tera/modules': path.resolve(
+              __dirname,
+              '../../services/modules/src',
+            ),
+            '@tera/stores': path.resolve(
+              __dirname,
+              '../../services/stores/src',
+            ),
             '@components': './src/components',
             '@types': './src/types',
             '@hooks': './src/hooks',

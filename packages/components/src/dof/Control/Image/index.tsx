@@ -1,8 +1,8 @@
-import ImageBackground from '@tera/components/web/ImageBackground';
-import MultiImageBackground from '@tera/components/web/ImageBackground/MultiImage';
-import { useTeraForm } from '@tera/components/dof/FormTera/TeraFormContext';
-import { useTeraFormItem } from '@tera/components/dof/FormTera/TeraItemContext';
-import { Controller } from 'react-hook-form';
+import ImageBackground from "@tera/components/web/ImageBackground";
+import MultiImageBackground from "@tera/components/web/ImageBackground/MultiImage";
+import { useTeraForm } from "@tera/components/dof/FormTera/TeraFormContext";
+import { useTeraFormItem } from "@tera/components/dof/FormTera/TeraItemContext";
+import { Controller } from "react-hook-form";
 
 interface ImageProps {
   folder: string;

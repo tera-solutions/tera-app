@@ -1,7 +1,9 @@
-
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
+import {
+  useQueryAdapter,
+  useMutationAdapter,
+} from "@tera/commons/hooks/queryAdapter";
 import { WalletTransactionAPI } from "@tera/api";
 import {
   CreatePayload,
@@ -34,13 +36,16 @@ export const useWalletTransactionCreate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: CreatePayload) => WalletTransactionAPI.create(payload),
+    mutationFn: (payload: CreatePayload) =>
+      WalletTransactionAPI.create(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["wallet-transaction", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["wallet-transaction", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -48,13 +53,33 @@ export const useWalletTransactionUpdate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => WalletTransactionAPI.update(payload),
+    mutationFn: (payload: UpdatePayload) =>
+      WalletTransactionAPI.update(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["wallet-transaction", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["wallet-transaction", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
+  });
+};
+
+export const useUpsertWalletTransaction = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => {
+      if (payload?.id) return WalletTransactionAPI.update(payload);
+      return WalletTransactionAPI.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
   });
 };
 
@@ -62,13 +87,16 @@ export const useWalletTransactionDelete = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => WalletTransactionAPI.delete(payload),
+    mutationFn: (payload: DeletePayload) =>
+      WalletTransactionAPI.delete(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["wallet-transaction", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["wallet-transaction", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -76,7 +104,8 @@ export const useWalletTransactionExport = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => WalletTransactionAPI.export(payload),
+    mutationFn: (payload: ExportPayload) =>
+      WalletTransactionAPI.export(payload),
     onSuccess: (res) => {
       if (res?.data?.link) {
         window.open(res?.data?.link, "_blank");
@@ -84,7 +113,7 @@ export const useWalletTransactionExport = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -93,6 +122,7 @@ export const WalletTransactionService = {
   useWalletTransactionDetail,
   useWalletTransactionCreate,
   useWalletTransactionUpdate,
+  useUpsertWalletTransaction,
   useWalletTransactionDelete,
-  useWalletTransactionExport
+  useWalletTransactionExport,
 };

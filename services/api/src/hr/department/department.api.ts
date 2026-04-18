@@ -10,14 +10,10 @@ import {
 
 export const DepartmentAPI = {
   getList: async ({ params }: ListPayload) =>
-    await api
-      .get(`${endpoint}/hr/department/list`, params)
-      .then((r) => r.data),
+    await api.get(`${endpoint}/hr/department/list`, params).then((r) => r.data),
 
   getDetail: async ({ id }: DetailPayload) =>
-    await api
-      .get(`${endpoint}/hr/department/detail/${id}`)
-      .then((r) => r.data),
+    await api.get(`${endpoint}/hr/department/detail/${id}`).then((r) => r.data),
 
   create: async ({ params }: CreatePayload) =>
     await api

@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import React from "react";
+import { StyleSheet, View, ViewStyle } from "react-native";
 
 interface CardProps {
   children: React.ReactNode;
@@ -14,10 +14,10 @@ export default Card;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderRadius: 12,
     elevation: 2, // Shadow cho Android
-    shadowColor: '#000', // Shadow cho iOS
+    shadowColor: "#000", // Shadow cho iOS
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,

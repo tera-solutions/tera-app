@@ -14,11 +14,7 @@ export const MODULES = {
 
   crm: {
     prefix: "crm",
-    entities: [
-      "parent",
-      "lead",
-      "enrollment",
-    ],
+    entities: ["parent", "lead", "enrollment"],
   },
 
   education: {
@@ -37,36 +33,21 @@ export const MODULES = {
 
   finance: {
     prefix: "fin",
-    entities: [
-      "invoice",
-      "payment",
-      "refund",
-      "debt",
-      "discount",
-    ],
+    entities: ["invoice", "payment", "refund", "debt", "discount"],
   },
 
   wallet: {
     prefix: "fin",
-    entities: [
-      "wallet",
-      "wallet_transaction",
-    ],
+    entities: ["wallet", "wallet_transaction"],
   },
 
   hr: {
     prefix: "hr",
-    entities: [
-      "teacher",
-      "staff",
-    ],
+    entities: ["teacher", "staff"],
   },
 
   notification: {
     prefix: "sys",
-    entities: [
-      "notification",
-      "template",
-    ],
+    entities: ["notification", "template"],
   },
 };

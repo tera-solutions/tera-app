@@ -1,9 +1,9 @@
-import { parseValue, stringifyValue } from '@tera/commons/utils';
-import DB from '@databases/database.native';
-import { Q } from '@nozbe/watermelondb';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { syncManager } from '@services/sync/SyncManager';
-import Customer from '../models/customer.native';
+import { parseValue, stringifyValue } from "@tera/commons/utils";
+import DB from "@databases/database.native";
+import { Q } from "@nozbe/watermelondb";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { syncManager } from "@services/sync/SyncManager";
+import Customer from "../models/customer.native";
 
 const CustomerService = {
   /**
@@ -11,16 +11,16 @@ const CustomerService = {
    */
   _mapFields: (record: Customer, data: any) => {
     record.server_id = data.id || data.server_id || record.server_id || 0;
-    record.code = data.code || record.code || '';
+    record.code = data.code || record.code || "";
     record.business_name =
-      data.business_name || data.business_name || record.business_name || '';
-    record.phone = data.phone || record.phone || '';
+      data.business_name || data.business_name || record.business_name || "";
+    record.phone = data.phone || record.phone || "";
     record.avatar_url =
-      data.avatar_url || data.avatar || record.avatar_url || '';
-    record.email = data.email || record.email || '';
-    record.address = data.address || record.address || '';
-    record.tax = data.tax || record.tax || '';
-    record.object = data.object || record.object || 'crm_customer-object_new';
+      data.avatar_url || data.avatar || record.avatar_url || "";
+    record.email = data.email || record.email || "";
+    record.address = data.address || record.address || "";
+    record.tax = data.tax || record.tax || "";
+    record.object = data.object || record.object || "crm_customer-object_new";
     record.debt_limit = Number(data.debt_limit) || record.debt_limit || 0;
     record.debt_period = Number(data.debt_period) || record.debt_period || 0;
     record.is_delete = data.is_delete || 0;
@@ -33,14 +33,14 @@ const CustomerService = {
    * Upsert: Tạo hoặc cập nhật record từ UI
    */
   upsert: async (data: any) => {
-    const collection = DB.instance.get<Customer>('customers');
+    const collection = DB.instance.get<Customer>("customers");
 
     const result = await DB.instance.write(async () => {
       const existing = await collection
-        .query(Q.or(Q.where('id', data?.id ?? '')))
+        .query(Q.or(Q.where("id", data?.id ?? "")))
         .fetch();
 
-      console.log('existing', existing);
+      console.log("existing", existing);
 
       if (existing.length > 0) {
         return await existing[0].update((record) => {
@@ -48,7 +48,7 @@ const CustomerService = {
         });
       } else {
         return await collection.create((record) => {
-          if (data.id && typeof data.id === 'string') {
+          if (data.id && typeof data.id === "string") {
             record._raw.id = data.id;
           }
           CustomerService._mapFields(record, data);
@@ -56,15 +56,15 @@ const CustomerService = {
       }
     });
 
-    console.log('result', result);
+    console.log("result", result);
 
     if (result?.id) {
       await syncManager.addQueue({
-        table_name: 'customers',
-        type: 'background',
+        table_name: "customers",
+        type: "background",
         record_id: result.id,
         payload: { ...data, id: result.id },
-        action: data.id ? 'UPDATE' : 'CREATE',
+        action: data.id ? "UPDATE" : "CREATE",
       });
     }
 
@@ -75,17 +75,17 @@ const CustomerService = {
    * Lấy tổng số dòng (không bao gồm đã xóa)
    */
   getTotalRows: async (): Promise<number> => {
-    const collection = DB.instance.get<Customer>('customers');
-    return await collection.query(Q.where('is_delete', 0)).count;
+    const collection = DB.instance.get<Customer>("customers");
+    return await collection.query(Q.where("is_delete", 0)).count;
   },
 
   /**
    * Fetch All: Lấy raw data nhanh (thường dùng cho sync hoặc export)
    */
   fetchAll: async () => {
-    const collection = DB.instance.get<Customer>('customers');
+    const collection = DB.instance.get<Customer>("customers");
     return await collection
-      .query(Q.sortBy('updated_at', Q.desc))
+      .query(Q.sortBy("updated_at", Q.desc))
       .unsafeFetchRaw();
   },
 
@@ -101,9 +101,9 @@ const CustomerService = {
       delete filter?.limit;
       delete filter?.page;
 
-      const collection = DB.instance.get<Customer>('customers');
+      const collection = DB.instance.get<Customer>("customers");
       const queryClauses: any[] = [
-        Q.sortBy('updated_at', Q.desc),
+        Q.sortBy("updated_at", Q.desc),
         Q.skip((page - 1) * pageSize),
         Q.take(pageSize),
       ];
@@ -111,23 +111,23 @@ const CustomerService = {
       Object.keys(filter).forEach((key) => {
         const value = filter[key];
         if (value !== undefined && value !== null) {
-          if (key === 'keyword') {
+          if (key === "keyword") {
             const searchStr = `%${Q.sanitizeLikeString(value.toLowerCase())}%`;
             queryClauses.push(
               Q.or(
-                Q.where('code', Q.like(`%${searchStr}%`)),
-                Q.where('phone', Q.like(`%${searchStr}%`)),
-                Q.where('address', Q.like(`%${searchStr}%`)),
-                Q.where('business_name', Q.like(`%${searchStr}%`)),
+                Q.where("code", Q.like(`%${searchStr}%`)),
+                Q.where("phone", Q.like(`%${searchStr}%`)),
+                Q.where("address", Q.like(`%${searchStr}%`)),
+                Q.where("business_name", Q.like(`%${searchStr}%`)),
               ),
             );
-          } else if (key === '_status') {
-            queryClauses.push(Q.where('_status', Q.notEq('synced')));
-          } else if (key === 'sort') {
-            if (value === 'desc') {
-              queryClauses.push(Q.sortBy('server_id', Q.desc));
+          } else if (key === "_status") {
+            queryClauses.push(Q.where("_status", Q.notEq("synced")));
+          } else if (key === "sort") {
+            if (value === "desc") {
+              queryClauses.push(Q.sortBy("server_id", Q.desc));
             } else {
-              queryClauses.push(Q.sortBy('server_id', Q.asc));
+              queryClauses.push(Q.sortBy("server_id", Q.asc));
             }
           } else {
             queryClauses.push(Q.where(key, value));
@@ -144,7 +144,7 @@ const CustomerService = {
         business_name: r.business_name,
       }));
     } catch (error) {
-      console.error('[CustomerService] getAll error', error);
+      console.error("[CustomerService] getAll error", error);
       return [];
     }
   },
@@ -154,7 +154,7 @@ const CustomerService = {
    */
   getDetail: async (id: string): Promise<Customer | null> => {
     try {
-      const collection = DB.instance.get<Customer>('customers');
+      const collection = DB.instance.get<Customer>("customers");
       const result = await collection.find(id);
       return { ...result, raw_data: parseValue(result?.raw_data) } as Customer;
     } catch (error) {
@@ -166,16 +166,16 @@ const CustomerService = {
    * getAllDelete: Lấy danh sách record đang chờ xóa
    */
   getAllDelete: async (): Promise<any[]> => {
-    const collection = DB.instance.get<Customer>('customers');
-    return await collection.query(Q.where('is_delete', 1)).fetch();
+    const collection = DB.instance.get<Customer>("customers");
+    return await collection.query(Q.where("is_delete", 1)).fetch();
   },
 
   /**
    * Observe: Theo dõi thay đổi database cho UI (Realtime)
    */
   observeCustomers: () => {
-    const collection = DB.instance.get<Customer>('customers');
-    return collection.query(Q.where('is_delete', 0)).observe();
+    const collection = DB.instance.get<Customer>("customers");
+    return collection.query(Q.where("is_delete", 0)).observe();
   },
 
   /**
@@ -183,15 +183,15 @@ const CustomerService = {
    */
   deleteByKey: async (id: string) => {
     try {
-      const collection = DB.instance.get<Customer>('customers');
+      const collection = DB.instance.get<Customer>("customers");
       const record = await collection.find(id);
       if (record) {
         await record.markAsDeleted();
         if (record?.server_id) {
           await syncManager.addQueue({
-            table_name: 'customers',
-            type: 'background',
-            action: 'DELETE',
+            table_name: "customers",
+            type: "background",
+            action: "DELETE",
             record_id: id,
           });
         }
@@ -205,13 +205,13 @@ const CustomerService = {
   },
 
   checkCleanData: async () => {
-    const collection = DB.instance.get<Customer>('customers');
-    const dataDirty = await collection.query(Q.where('is_dirty', 1)).fetch();
+    const collection = DB.instance.get<Customer>("customers");
+    const dataDirty = await collection.query(Q.where("is_dirty", 1)).fetch();
     if (dataDirty && dataDirty.length > 0) {
-      console.tron('Tìm thấy ' + dataDirty.length + ' bản ghi dirty');
+      console.tron("Tìm thấy " + dataDirty.length + " bản ghi dirty");
       // Thực hiện logic sync lên Laravel
     } else {
-      console.tron('Không có dữ liệu thay đổi.');
+      console.tron("Không có dữ liệu thay đổi.");
     }
   },
 
@@ -223,14 +223,14 @@ const CustomerService = {
           id: (data?.client_id || data.id).toString(),
           server_id: data.id,
           business_id: data.business_id || 0,
-          code: data.code || '',
-          business_name: data.business_name || '',
-          phone: data.phone || '',
-          avatar_url: data.avatar_url || '',
-          email: data.email || '',
-          address: data.address || '',
-          tax: data.tax || '',
-          object: data.object || 'crm_customer-object_new',
+          code: data.code || "",
+          business_name: data.business_name || "",
+          phone: data.phone || "",
+          avatar_url: data.avatar_url || "",
+          email: data.email || "",
+          address: data.address || "",
+          tax: data.tax || "",
+          object: data.object || "crm_customer-object_new",
           debt_limit: Number(data.debt_limit) || 0,
           debt_period: Number(data.debt_period) || 0,
           is_delete: data.is_delete ? 1 : 0,
@@ -241,7 +241,7 @@ const CustomerService = {
       }
       return changesLocal;
     } catch (error) {
-      console.error('[Native] upsertMapping Error:', error);
+      console.error("[Native] upsertMapping Error:", error);
       return changesLocal;
     }
   },
@@ -278,7 +278,7 @@ const CustomerService = {
 
       return changesLocal;
     } catch (error) {
-      console.error('[Native] mappingCustomer Error:', error);
+      console.error("[Native] mappingCustomer Error:", error);
       return changesLocal;
     }
   },
@@ -289,11 +289,11 @@ const CustomerService = {
   bulkUpdate: async (dataTables: Array<any>, last_sync_at: number) => {
     try {
       if (!DB.instance || !dataTables.length) return;
-      const collection = DB.instance.get<Customer>('customers');
+      const collection = DB.instance.get<Customer>("customers");
 
       const serverIds = dataTables.map((d) => d.id);
       const existingRecords = await collection
-        .query(Q.where('server_id', Q.oneOf(serverIds)))
+        .query(Q.where("server_id", Q.oneOf(serverIds)))
         .fetch();
       const existingMap = new Map(existingRecords.map((r) => [r.server_id, r]));
 
@@ -302,7 +302,7 @@ const CustomerService = {
           const existing = existingMap.get(data.id);
           const mapper = (record: Customer) => {
             CustomerService._mapFields(record, data);
-            record._raw = Object.assign({}, record._raw, { _status: 'synced' });
+            record._raw = Object.assign({}, record._raw, { _status: "synced" });
           };
 
           return existing
@@ -313,7 +313,7 @@ const CustomerService = {
         if (operations.length > 0) await DB.instance.batch(...operations);
       });
     } catch (error) {
-      console.error('[CustomerService] bulkUpdate error', error);
+      console.error("[CustomerService] bulkUpdate error", error);
     }
   },
 
@@ -323,7 +323,7 @@ const CustomerService = {
   truncateTable: async () => {
     await DB.instance.write(async () => {
       await DB.instance.adapter.unsafeExecute({
-        sqls: [['delete from customers', []]],
+        sqls: [["delete from customers", []]],
       });
     });
   },
@@ -336,7 +336,7 @@ const CustomerService = {
       await CustomerService.truncateTable();
       await AsyncStorage.removeItem(`customers:lastPulledAt`);
     } catch (error) {
-      console.error('[CustomerService] clearData error', error);
+      console.error("[CustomerService] clearData error", error);
     }
   },
 };

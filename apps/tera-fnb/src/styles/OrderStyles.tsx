@@ -117,7 +117,7 @@ export const OrderStyles = StyleSheet.create({
   orderListContainer: {
     backgroundColor: '#F5F5F5',
     overflowY: 'scroll',
-    height: Platform.OS === 'web' ? 600 : "auto",
+    height: Platform.OS === 'web' ? 600 : 'auto',
     minHeight: height,
   },
 

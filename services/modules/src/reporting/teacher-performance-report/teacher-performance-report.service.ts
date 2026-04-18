@@ -1,7 +1,9 @@
-
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
+import {
+  useQueryAdapter,
+  useMutationAdapter,
+} from "@tera/commons/hooks/queryAdapter";
 import { TeacherPerformanceReportAPI } from "@tera/api";
 import {
   CreatePayload,
@@ -34,13 +36,16 @@ export const useTeacherPerformanceReportCreate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: CreatePayload) => TeacherPerformanceReportAPI.create(payload),
+    mutationFn: (payload: CreatePayload) =>
+      TeacherPerformanceReportAPI.create(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["teacher-performance-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["teacher-performance-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -48,13 +53,33 @@ export const useTeacherPerformanceReportUpdate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => TeacherPerformanceReportAPI.update(payload),
+    mutationFn: (payload: UpdatePayload) =>
+      TeacherPerformanceReportAPI.update(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["teacher-performance-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["teacher-performance-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
+  });
+};
+
+export const useUpsertTeacherPerformanceReport = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => {
+      if (payload?.id) return TeacherPerformanceReportAPI.update(payload);
+      return TeacherPerformanceReportAPI.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
   });
 };
 
@@ -62,13 +87,16 @@ export const useTeacherPerformanceReportDelete = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => TeacherPerformanceReportAPI.delete(payload),
+    mutationFn: (payload: DeletePayload) =>
+      TeacherPerformanceReportAPI.delete(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["teacher-performance-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["teacher-performance-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -76,7 +104,8 @@ export const useTeacherPerformanceReportExport = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => TeacherPerformanceReportAPI.export(payload),
+    mutationFn: (payload: ExportPayload) =>
+      TeacherPerformanceReportAPI.export(payload),
     onSuccess: (res) => {
       if (res?.data?.link) {
         window.open(res?.data?.link, "_blank");
@@ -84,7 +113,7 @@ export const useTeacherPerformanceReportExport = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -93,6 +122,7 @@ export const TeacherPerformanceReportService = {
   useTeacherPerformanceReportDetail,
   useTeacherPerformanceReportCreate,
   useTeacherPerformanceReportUpdate,
+  useUpsertTeacherPerformanceReport,
   useTeacherPerformanceReportDelete,
-  useTeacherPerformanceReportExport
+  useTeacherPerformanceReportExport,
 };

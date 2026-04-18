@@ -1,6 +1,6 @@
-import { Switch } from '@components/ui/Switch';
-import { Controller, useFormContext } from 'react-hook-form';
-import { StyleSheet, Text, View } from 'react-native';
+import { Switch } from "@components/ui/Switch";
+import { Controller, useFormContext } from "react-hook-form";
+import { StyleSheet, Text, View } from "react-native";
 
 // --- Component Input Tùy chỉnh (dùng cho các trường thông tin) ---
 export interface FormSwitchProps {
@@ -27,7 +27,7 @@ export const FormSwitch: React.FC<FormSwitchProps> = ({
             value={value}
             onValueChange={(checked) => {
               onChange(checked);
-              if (typeof onValueChange === 'function') {
+              if (typeof onValueChange === "function") {
                 onValueChange(checked);
               }
             }}
@@ -45,7 +45,7 @@ export const FormSwitch: React.FC<FormSwitchProps> = ({
 
 const styles = StyleSheet.create({
   textError: {
-    color: '#dd1515',
+    color: "#dd1515",
     fontSize: 14,
     marginTop: 5,
   },

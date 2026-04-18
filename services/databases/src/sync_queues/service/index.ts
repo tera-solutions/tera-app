@@ -1,8 +1,8 @@
-import { ISyncStatus, SyncStatus } from '@tera/commons/interfaces';
-import { parseValue, stringifyValue } from '@tera/commons/utils';
-import ISyncQueue from '@databases/sync_queues/models/sync_queues';
+import { ISyncStatus, SyncStatus } from "@tera/commons/interfaces";
+import { parseValue, stringifyValue } from "@tera/commons/utils";
+import ISyncQueue from "@databases/sync_queues/models/sync_queues";
 
-import DB from '../../database'; // Dexie instance
+import DB from "../../database"; // Dexie instance
 
 const SyncQueueService = {
   /**
@@ -15,10 +15,10 @@ const SyncQueueService = {
 
       const record: any = {
         id: data?.id,
-        table_name: data?.table_name ?? '',
-        record_id: data?.record_id ?? '',
-        type: data?.type ?? 'manual',
-        action: data?.action ?? '',
+        table_name: data?.table_name ?? "",
+        record_id: data?.record_id ?? "",
+        type: data?.type ?? "manual",
+        action: data?.action ?? "",
         payload: stringifiedValue,
         retries: data?.retries ?? 1,
         status: data?.status ?? SyncStatus.QUEUED,
@@ -28,7 +28,7 @@ const SyncQueueService = {
       // bulkPut trong Dexie sẽ tự động insert nếu chưa có hoặc update nếu đã có ID
       return await DB.sync_queues.put(record);
     } catch (error) {
-      console.error('Dexie SyncQueue Upsert Error:', error);
+      console.error("Dexie SyncQueue Upsert Error:", error);
     }
   },
   getAll: async (filter: any = { page: 1, limit: 100 }) => {
@@ -41,7 +41,7 @@ const SyncQueueService = {
       delete activeFilters.limit;
       delete activeFilters.page;
 
-      let collection = DB.sync_queues.orderBy('updated_at').reverse();
+      let collection = DB.sync_queues.orderBy("updated_at").reverse();
 
       collection = collection.filter((item: any) => {
         return Object.keys(activeFilters).every((key) => {
@@ -49,7 +49,7 @@ const SyncQueueService = {
           if (
             filterValue === undefined ||
             filterValue === null ||
-            filterValue === ''
+            filterValue === ""
           )
             return true;
 
@@ -59,8 +59,8 @@ const SyncQueueService = {
             return filterValue.includes(itemValue);
           }
 
-          if (typeof filterValue === 'string') {
-            return (itemValue || '')
+          if (typeof filterValue === "string") {
+            return (itemValue || "")
               .toString()
               .toLowerCase()
               .includes(filterValue.toLowerCase());
@@ -72,10 +72,10 @@ const SyncQueueService = {
 
       const result = await collection.offset(skip).limit(pageSize).toArray();
 
-      console.log('[SyncQueue] Result count:', result.length);
+      console.log("[SyncQueue] Result count:", result.length);
       return result;
     } catch (error) {
-      console.error('WEB DB ERROR:', error);
+      console.error("WEB DB ERROR:", error);
       return [];
     }
   },
@@ -86,7 +86,7 @@ const SyncQueueService = {
     try {
       return await DB.sync_queues.toArray();
     } catch (error) {
-      console.error('Dexie FetchAll Error:', error);
+      console.error("Dexie FetchAll Error:", error);
       return [];
     }
   },
@@ -106,7 +106,7 @@ const SyncQueueService = {
       }
       return record || null;
     } catch (error) {
-      console.error('Dexie GetValue Error:', error);
+      console.error("Dexie GetValue Error:", error);
       return null;
     }
   },
@@ -119,7 +119,7 @@ const SyncQueueService = {
       await DB.sync_queues.delete(id);
       console.log(`Deleted item ${id} from sync_queues`);
     } catch (error) {
-      console.error('Dexie Delete Error:', error);
+      console.error("Dexie Delete Error:", error);
     }
   },
 
@@ -133,7 +133,7 @@ const SyncQueueService = {
         }
         if (status === SyncStatus.QUEUED) {
           retries = 0;
-          type = 'background';
+          type = "background";
         }
         return {
           id: item?.id,
@@ -144,7 +144,7 @@ const SyncQueueService = {
         };
       });
 
-      console.tron('operations', operations);
+      console.tron("operations", operations);
       await DB.sync_queues.bulkPut(operations);
 
       console.log(
@@ -153,7 +153,7 @@ const SyncQueueService = {
 
       return { success: true };
     } catch (error) {
-      console.error('Bulk update failed:', error);
+      console.error("Bulk update failed:", error);
       throw error;
     }
   },
@@ -167,11 +167,11 @@ const SyncQueueService = {
 
       const operations: any = data.map((item) => ({
         id: item?.id,
-        table_name: item?.table_name ?? '',
-        record_id: item?.record_id ?? '',
-        type: item?.type ?? 'manual',
-        action: item?.action ?? '',
-        payload: stringifyValue(item?.payload ?? ''),
+        table_name: item?.table_name ?? "",
+        record_id: item?.record_id ?? "",
+        type: item?.type ?? "manual",
+        action: item?.action ?? "",
+        payload: stringifyValue(item?.payload ?? ""),
         retries: item?.retries ?? 0,
         status: item?.status ?? SyncStatus.QUEUED,
         updated_at: Date.now(),
@@ -186,7 +186,7 @@ const SyncQueueService = {
 
       return { success: true };
     } catch (error) {
-      console.tron('Bulk update failed:', error);
+      console.tron("Bulk update failed:", error);
       throw error;
     }
   },

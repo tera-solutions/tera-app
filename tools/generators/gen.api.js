@@ -16,7 +16,7 @@ Object.entries(MODULES).forEach(([domain, config]) => {
 
     const output = path.join(
       process.cwd(),
-      `services/api/src/${domain}/${entity}/${entity}.api.ts`
+      `services/api/src/${domain}/${entity}/${entity}.api.ts`,
     );
 
     writeFile(output, content);

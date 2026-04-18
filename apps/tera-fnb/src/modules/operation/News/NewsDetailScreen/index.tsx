@@ -152,10 +152,7 @@ const NewsDetailScreen: React.FC = () => {
         </ScrollView>
 
         {/* FLOATING ACTION BUTTON (Icon Home) */}
-        <TouchableOpacity
-          style={styles.fabButton}
-          onPress={scrollToTop}
-        >
+        <TouchableOpacity style={styles.fabButton} onPress={scrollToTop}>
           <Icon source="arrow-up" size={24} color="#FFFFFF" />
         </TouchableOpacity>
       </SafeAreaView>

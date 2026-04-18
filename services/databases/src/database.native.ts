@@ -1,14 +1,14 @@
-import { dbName } from '@tera/commons/constants/common';
-import appSchema from '@databases/appSchema.native';
-import BusinessLocation from '@databases/business_locations/models/business_locations.native';
-import Customer from '@databases/customer/models/customer.native';
-import General from '@databases/general/models/general.native';
-import SyncQueue from '@databases/sync_queues/models/sync_queues.native';
-import TableVersion from '@databases/table_version/models/table_version.native.';
-import { Database } from '@nozbe/watermelondb';
-import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
-import { File, Paths } from 'expo-file-system';
-import { NativeModules, Platform } from 'react-native';
+import { dbName } from "@tera/commons/constants/common";
+import appSchema from "@databases/appSchema.native";
+import BusinessLocation from "@databases/business_locations/models/business_locations.native";
+import Customer from "@databases/customer/models/customer.native";
+import General from "@databases/general/models/general.native";
+import SyncQueue from "@databases/sync_queues/models/sync_queues.native";
+import TableVersion from "@databases/table_version/models/table_version.native.";
+import { Database } from "@nozbe/watermelondb";
+import SQLiteAdapter from "@nozbe/watermelondb/adapters/sqlite";
+import { File, Paths } from "expo-file-system";
+import { NativeModules, Platform } from "react-native";
 
 const { DatabaseSizeModule } = NativeModules;
 
@@ -21,12 +21,12 @@ class DatabaseService {
     try {
       const isJSIAvailable = !!global.nativeWatermelonCreateAdapter;
 
-      console.log('isJSIAvailable', isJSIAvailable);
+      console.log("isJSIAvailable", isJSIAvailable);
 
       const adapter = new SQLiteAdapter({
         dbName: dbName,
         schema: appSchema,
-        jsi: Platform.OS === 'android' ? isJSIAvailable : true,
+        jsi: Platform.OS === "android" ? isJSIAvailable : true,
       });
 
       this.db = new Database({
@@ -42,7 +42,7 @@ class DatabaseService {
 
       return this.db;
     } catch (error) {
-      console.error('❌ Lỗi Native Module:', error);
+      console.error("❌ Lỗi Native Module:", error);
       return null;
     }
   };
@@ -57,25 +57,25 @@ class DatabaseService {
       console.log(`📊 Memory Size:`, memory);
       return 0;
     } catch (error) {
-      console.error('❌ Không thể lấy dung lượng DB:', error);
+      console.error("❌ Không thể lấy dung lượng DB:", error);
       return 0;
     }
   };
 
   getDbSizeAndroid = async () => {
     try {
-      const size = await DatabaseSizeModule.getDbSize('RKStorage');
+      const size = await DatabaseSizeModule.getDbSize("RKStorage");
       console.log(`📊 [Tera-FNB] Database Physical Size: ${size} MB`, size);
       return size;
     } catch (error) {
-      console.error('❌ Không thể lấy dung lượng DB:', error);
+      console.error("❌ Không thể lấy dung lượng DB:", error);
       return 0;
     }
   };
 
   getDbSizeIOS = async () => {
     try {
-      let dbUri = '';
+      let dbUri = "";
 
       const filesToCheck = [
         `${dbName}.db`,
@@ -85,11 +85,11 @@ class DatabaseService {
 
       let dbSize = 0;
       for (const fileName of filesToCheck) {
-        if (Platform.OS === 'ios') {
+        if (Platform.OS === "ios") {
           // iOS: Nằm trực tiếp trong Documents
           dbUri = `${Paths.document.uri}${fileName}`;
         } else {
-          const rootPath = Paths.document.uri.replace('/files/', '/');
+          const rootPath = Paths.document.uri.replace("/files/", "/");
           dbUri = `${rootPath}databases/${fileName}`;
         }
 
@@ -107,19 +107,19 @@ class DatabaseService {
       console.log(`📊 DB Size: ${dbSize} MB`);
       return dbSize;
     } catch (error) {
-      console.error('❌ Không thể lấy dung lượng DB:', error);
+      console.error("❌ Không thể lấy dung lượng DB:", error);
       return 0;
     }
   };
 
   getStorageDatabase = async () => {
-    if (Platform.OS === 'android') {
+    if (Platform.OS === "android") {
       await this.getMemoryAndroid();
       const result = await this.getDbSizeAndroid();
       return result;
     }
 
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === "ios") {
       const result = await this.getDbSizeIOS();
       return result;
     }

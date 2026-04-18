@@ -46,8 +46,13 @@
   },
   "references": [
     { "path": "../../services/modules" },
-    { "path": "../../packages/components" },
+    { "path": "../../packages/components" }
   ],
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "../../packages/commons/src/hooks/usePermission.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "vite.config.ts",
+    "../../packages/commons/src/hooks/usePermission.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

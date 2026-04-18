@@ -1,7 +1,9 @@
-
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
+import {
+  useQueryAdapter,
+  useMutationAdapter,
+} from "@tera/commons/hooks/queryAdapter";
 import { RevenueReportAPI } from "@tera/api";
 import {
   CreatePayload,
@@ -40,7 +42,7 @@ export const useRevenueReportCreate = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -54,7 +56,24 @@ export const useRevenueReportUpdate = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
+  });
+};
+
+export const useUpsertRevenueReport = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => {
+      if (payload?.id) return RevenueReportAPI.update(payload);
+      return RevenueReportAPI.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
   });
 };
 
@@ -68,7 +87,7 @@ export const useRevenueReportDelete = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -84,7 +103,7 @@ export const useRevenueReportExport = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -93,6 +112,7 @@ export const RevenueReportService = {
   useRevenueReportDetail,
   useRevenueReportCreate,
   useRevenueReportUpdate,
+  useUpsertRevenueReport,
   useRevenueReportDelete,
-  useRevenueReportExport
+  useRevenueReportExport,
 };

@@ -1,4 +1,4 @@
-import { CustomerObjectType } from '@modules/sale/Customer/_interface';
+import { CustomerObjectType } from "@modules/sale/Customer/_interface";
 
 export default interface ICustomer {
   id?: string;

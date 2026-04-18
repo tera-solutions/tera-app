@@ -108,8 +108,16 @@ const TableTera = (props: ITeraTableProps) => {
     page?: number,
     pageSize?: number,
   ) => {
-    const currentPage = calculateCurrentPage({ page: page ?? 1, total, pageSize: pageSize ?? defaultPageSize });
-    const dataSource = calculateDataSource(currentPage, pageSize ?? defaultPageSize, dataProp);
+    const currentPage = calculateCurrentPage({
+      page: page ?? 1,
+      total,
+      pageSize: pageSize ?? defaultPageSize,
+    });
+    const dataSource = calculateDataSource(
+      currentPage,
+      pageSize ?? defaultPageSize,
+      dataProp,
+    );
     setDataSource(dataSource as any);
     setParams((prev) => ({
       ...prev,

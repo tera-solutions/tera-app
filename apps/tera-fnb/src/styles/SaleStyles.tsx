@@ -12,7 +12,7 @@ export const SaleStyles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingTop: 15,
     backgroundColor: '#F5F5F5',
-    flex: 1
+    flex: 1,
   },
 
   header: {

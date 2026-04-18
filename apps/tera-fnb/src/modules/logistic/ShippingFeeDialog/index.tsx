@@ -168,7 +168,7 @@ const ShippingFeeDialog: React.FC<ShippingFeeDialogProps> = ({
                   style={styles.numberInput}
                   keyboardType="numeric"
                   returnKeyType="next"
-                  returnKeyLabel='Xong'
+                  returnKeyLabel="Xong"
                   onChangeText={(value: string) => {
                     setSelectedOption({
                       id: '1',

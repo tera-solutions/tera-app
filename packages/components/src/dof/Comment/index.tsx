@@ -1,4 +1,7 @@
-import { useQueryLegacy, useMutationLegacy } from "@tera/commons/hooks/tanstack";
+import {
+  useQueryLegacy,
+  useMutationLegacy,
+} from "@tera/commons/hooks/tanstack";
 
 import ErrorToast from "@tera/components/web/ToastCustom/ErrorsToast";
 import { QUICK_ACTION_PERMISSION_KEY } from "@tera/commons/constants/permission";

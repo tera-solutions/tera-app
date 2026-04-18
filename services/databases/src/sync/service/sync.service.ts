@@ -3,17 +3,17 @@ import {
   ISyncType,
   SpecificTables,
   SyncStatus,
-} from '@tera/commons/interfaces';
-import { handleClearApp } from '@tera/commons/utils/helper';
-import BusinessLocationService from '@databases/business_locations/service';
-import CustomerService from '@databases/customer/service';
-import DB from '@databases/database'; // Giả định là IndexDB wrapper
-import { SyncAPI } from '@services/api/SyncAPI';
-import { rootStore } from '@states/index';
-import moment from 'moment';
-import GeneralService from '../../general/service';
-import SyncQueueService from '../../sync_queues/service';
-import TableVersionService from '../../table_version/service';
+} from "@tera/commons/interfaces";
+import { handleClearApp } from "@tera/commons/utils/helper";
+import BusinessLocationService from "@databases/business_locations/service";
+import CustomerService from "@databases/customer/service";
+import DB from "@databases/database"; // Giả định là IndexDB wrapper
+import { SyncAPI } from "@services/api/SyncAPI";
+import { rootStore } from "@states/index";
+import moment from "moment";
+import GeneralService from "../../general/service";
+import SyncQueueService from "../../sync_queues/service";
+import TableVersionService from "../../table_version/service";
 
 interface TableChanges {
   created: any[];
@@ -31,7 +31,7 @@ export const resetDatabase = async (shouldReset: boolean) => {
   if (shouldReset) {
     await DB.delete(); // Xóa IndexDB
     await DB.open(); // Khởi tạo lại
-    console.log('❌ RESET DATABASE INDEXDB ❌');
+    console.log("❌ RESET DATABASE INDEXDB ❌");
     handleClearApp();
   }
 };
@@ -49,9 +49,9 @@ export const hasChangesTable = (table: any): boolean => {
 export const mappingDataQueue = async (queueData: any[]) => {
   const changes: Record<string, any> = {};
   const actionMap: Record<string, string> = {
-    CREATE: 'created',
-    UPDATE: 'updated',
-    DELETE: 'deleted',
+    CREATE: "created",
+    UPDATE: "updated",
+    DELETE: "deleted",
   };
 
   queueData.forEach((item) => {
@@ -65,12 +65,12 @@ export const mappingDataQueue = async (queueData: any[]) => {
       changes[tableName] = { created: [], updated: [], deleted: [] };
     }
 
-    if (action === 'DELETE') {
+    if (action === "DELETE") {
       if (record_id) changes[tableName].deleted.push(record_id);
     } else {
       try {
         const data =
-          typeof payload === 'string' ? JSON.parse(payload) : payload || {};
+          typeof payload === "string" ? JSON.parse(payload) : payload || {};
         if (record_id) {
           if (data.is_delete === 1) {
             changes[tableName].deleted.push(data.id);
@@ -128,7 +128,7 @@ export const mappingDataServer = async (
 
     // 3. Map General Data (Settings, User, Business)
     const generals: any[] = [];
-    ['settings', 'users', 'business'].forEach((key) => {
+    ["settings", "users", "business"].forEach((key) => {
       if (changes?.[key]) {
         generals.push({ key, value: changes[key], version });
       }
@@ -143,7 +143,7 @@ export const mappingDataServer = async (
 
     return { safeChanges, registry: { lastPulledAt: timestamp } };
   } catch (error) {
-    console.error('ERROR MAPPING WEB:', error);
+    console.error("ERROR MAPPING WEB:", error);
     return { safeChanges, registry: { lastPulledAt: timestamp } };
   }
 };
@@ -159,19 +159,19 @@ export const syncDataFromServer = async (
 
   const tables = [
     ...new Set(
-      queueList.filter((i) => i.action === 'GET').map((i) => i.table_name),
+      queueList.filter((i) => i.action === "GET").map((i) => i.table_name),
     ),
   ];
   if (!tables.length) return;
 
   try {
-    const storageKey = `${tables.join('_')}:lastPulledAt`;
+    const storageKey = `${tables.join("_")}:lastPulledAt`;
     const localPullAt = localStorage.getItem(storageKey);
 
     const response = await SyncAPI.pullChanges({
-      tables: tables.join(', '),
+      tables: tables.join(", "),
       updated_at: localPullAt
-        ? moment(Number(localPullAt) * 1000).format('YYYY-MM-DD HH:mm:ss')
+        ? moment(Number(localPullAt) * 1000).format("YYYY-MM-DD HH:mm:ss")
         : undefined,
     });
 
@@ -182,11 +182,11 @@ export const syncDataFromServer = async (
       db_version,
     );
 
-    console.log('safeChanges', safeChanges);
+    console.log("safeChanges", safeChanges);
 
     const syncTables = Object.keys(safeChanges) as Array<keyof IChangeProps>;
 
-    await DB.transaction('rw', syncTables, async () => {
+    await DB.transaction("rw", syncTables, async () => {
       try {
         const promises = syncTables.map(async (tableName) => {
           const data = safeChanges[tableName];
@@ -214,7 +214,7 @@ export const syncDataFromServer = async (
 
         await Promise.all(promises);
       } catch (error) {
-        console.error('[Sync Transaction] Failed:', error);
+        console.error("[Sync Transaction] Failed:", error);
         // Transaction sẽ tự động Rollback nếu có lỗi throw ra ở đây
         throw error;
       }
@@ -226,7 +226,7 @@ export const syncDataFromServer = async (
     // Update Stores
     rootStore.generalStore.fetchSettingsFromLocal();
   } catch (error) {
-    console.error('SYNC FROM SERVER WEB ERROR:', error);
+    console.error("SYNC FROM SERVER WEB ERROR:", error);
   }
 };
 
@@ -235,7 +235,7 @@ export const pushDataToServer = async (
   status: ISyncStatus[],
 ) => {
   const queueList = await SyncQueueService.getAll({ status, type });
-  if (!queueList?.length) throw new Error('No process sync table found');
+  if (!queueList?.length) throw new Error("No process sync table found");
 
   try {
     const changes = await mappingDataQueue(queueList);
@@ -243,7 +243,7 @@ export const pushDataToServer = async (
 
     const result = await SyncAPI.pushChanges({
       changes: changes,
-      updated_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+      updated_at: moment().format("YYYY-MM-DD HH:mm:ss"),
     });
 
     if (result?.success) {

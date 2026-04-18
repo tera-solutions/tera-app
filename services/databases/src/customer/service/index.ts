@@ -1,5 +1,5 @@
-import { syncManager } from '@services/sync/SyncManager';
-import DB from '../../database'; // Giả định đây là file khởi tạo Dexie (new Dexie)
+import { syncManager } from "@services/sync/SyncManager";
+import DB from "../../database"; // Giả định đây là file khởi tạo Dexie (new Dexie)
 
 const CustomerService = {
   /**
@@ -19,16 +19,16 @@ const CustomerService = {
       const finalId = (data.id || resultId).toString();
       if (finalId) {
         await syncManager.addQueue({
-          table_name: 'customers',
-          type: 'background',
+          table_name: "customers",
+          type: "background",
           record_id: finalId,
           payload: data,
-          action: data.id ? 'UPDATE' : 'CREATE',
+          action: data.id ? "UPDATE" : "CREATE",
         });
       }
       return finalId;
     } catch (error) {
-      console.error('[Web DB] Customer Upsert Error:', error);
+      console.error("[Web DB] Customer Upsert Error:", error);
     }
   },
 
@@ -46,7 +46,7 @@ const CustomerService = {
       }
       return null;
     } catch (error) {
-      console.error('[Web DB] Customer getDetail Error:', error);
+      console.error("[Web DB] Customer getDetail Error:", error);
       return null;
     }
   },
@@ -55,7 +55,7 @@ const CustomerService = {
    * getTotalRows: Đếm số lượng record chưa xóa
    */
   getTotalRows: async (): Promise<number> => {
-    return await DB.customers.where('is_delete').equals(0).count();
+    return await DB.customers.where("is_delete").equals(0).count();
   },
   fetchAll: async () => {
     return [];
@@ -67,7 +67,7 @@ const CustomerService = {
     filter: any = {
       page: 1,
       limit: 20,
-      sort: 'desc',
+      sort: "desc",
     },
   ): Promise<any[]> => {
     try {
@@ -76,7 +76,7 @@ const CustomerService = {
       const skip = (page - 1) * pageSize;
 
       const activeFilters = { ...filter };
-      const sortOrder = activeFilters.sort || 'desc';
+      const sortOrder = activeFilters.sort || "desc";
 
       delete activeFilters.limit;
       delete activeFilters.page;
@@ -84,24 +84,24 @@ const CustomerService = {
 
       // 1. Sắp xếp
       let collection =
-        sortOrder === 'desc'
-          ? DB.customers.orderBy('id').reverse()
-          : DB.customers.orderBy('id');
+        sortOrder === "desc"
+          ? DB.customers.orderBy("id").reverse()
+          : DB.customers.orderBy("id");
 
       // 2. Filter động theo các trường
       collection = collection.filter((item: any) => {
         return Object.keys(activeFilters).every((key) => {
           const value = activeFilters[key];
-          if (value === undefined || value === null || value === '')
+          if (value === undefined || value === null || value === "")
             return true;
 
           // Search mờ cho tên, mã hoặc địa chỉ
-          if (['business_name', 'code', 'address', 'phone'].includes(key)) {
+          if (["business_name", "code", "address", "phone"].includes(key)) {
             return item[key]?.toLowerCase().includes(value.toLowerCase());
           }
 
-          if (key === '_status') {
-            return item._status !== 'synced';
+          if (key === "_status") {
+            return item._status !== "synced";
           }
 
           return item[key] === value;
@@ -110,7 +110,7 @@ const CustomerService = {
 
       return await collection.offset(skip).limit(pageSize).toArray();
     } catch (error) {
-      console.error('[Web DB] Customer getAll Error:', error);
+      console.error("[Web DB] Customer getAll Error:", error);
       return [];
     }
   },
@@ -125,7 +125,7 @@ const CustomerService = {
           server_id: data.id,
           is_delete: data.is_delete ? 1 : 0,
           is_dirty: 0,
-          _status: 'synced',
+          _status: "synced",
           last_sync_at: last_sync_at,
           updated_at: new Date(),
           raw_data: data,
@@ -133,7 +133,7 @@ const CustomerService = {
       }
       return changesLocal;
     } catch (error) {
-      console.error('[Web] upsertMapping Error:', error);
+      console.error("[Web] upsertMapping Error:", error);
       return changesLocal;
     }
   },
@@ -167,7 +167,7 @@ const CustomerService = {
 
       return changesLocal;
     } catch (error) {
-      console.error('[Web] mappingCustomer Error:', error);
+      console.error("[Web] mappingCustomer Error:", error);
       return changesLocal;
     }
   },
@@ -182,7 +182,7 @@ const CustomerService = {
         ...data,
         server_id: data.id,
         is_dirty: 0,
-        _status: 'synced',
+        _status: "synced",
         updated_at: new Date(),
         raw_data: data,
       }));
@@ -190,7 +190,7 @@ const CustomerService = {
       await DB.customers.bulkPut(operations);
       return { success: true, count: operations.length };
     } catch (error) {
-      console.error('[Web DB] bulkUpdate Error:', error);
+      console.error("[Web DB] bulkUpdate Error:", error);
       throw error;
     }
   },
@@ -202,14 +202,14 @@ const CustomerService = {
     try {
       await DB.customers.delete(id);
       await syncManager.addQueue({
-        table_name: 'customers',
-        type: 'background',
+        table_name: "customers",
+        type: "background",
         record_id: id,
-        action: 'DELETE',
+        action: "DELETE",
       });
       console.log(`[Web DB] Deleted customer ${id}`);
     } catch (error) {
-      console.error('[Web DB] Delete Error:', error);
+      console.error("[Web DB] Delete Error:", error);
     }
   },
 
@@ -219,9 +219,9 @@ const CustomerService = {
   clearData: async () => {
     try {
       await DB.customers.clear();
-      console.log('[Web DB] Table Customers cleared');
+      console.log("[Web DB] Table Customers cleared");
     } catch (error) {
-      console.error('[Web DB] Clear Error:', error);
+      console.error("[Web DB] Clear Error:", error);
     }
   },
 };

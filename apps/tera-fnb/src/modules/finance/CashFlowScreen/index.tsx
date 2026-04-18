@@ -2,9 +2,7 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
-import {
-  SafeAreaView
-} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './styles';
 
 interface Transaction {

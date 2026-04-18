@@ -1,4 +1,3 @@
-
 import { endpoint } from "@tera/api/_endpoint";
 import api from "@tera/api/drivers";
 import {
@@ -35,7 +34,7 @@ export const RefundAPI = {
     await api
       .delete(`${endpoint}/fin/refund/delete/${id}`)
       .then((result) => result.data),
-  
+
   export: async ({ params }: ExportPayload) =>
     await api
       .post(`${endpoint}/fin/refund/export`, params)

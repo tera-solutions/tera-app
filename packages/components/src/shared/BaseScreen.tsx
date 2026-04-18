@@ -1,5 +1,5 @@
-import { useRouter } from 'expo-router';
-import React from 'react';
+import { useRouter } from "expo-router";
+import React from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -8,9 +8,9 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { Icon } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
+} from "react-native";
+import { Icon } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export interface BaseScreenProps {
   title: string;
@@ -18,11 +18,11 @@ export interface BaseScreenProps {
   error?: any;
   headerActions?: any;
   onClose: () => void;
-  onConfirm?: ((value: number, type: 'VNĐ' | '%') => void) | undefined;
+  onConfirm?: ((value: number, type: "VNĐ" | "%") => void) | undefined;
   children?: React.ReactNode;
 }
 
-const { height } = Dimensions.get('window');
+const { height } = Dimensions.get("window");
 
 const BaseScreen = ({
   children,
@@ -70,29 +70,29 @@ const BaseScreen = ({
 
 const styles = StyleSheet.create({
   containerFull: {
-    overflow: 'scroll',
-    height: Platform.OS === 'web' ? height - 10 : '100%',
+    overflow: "scroll",
+    height: Platform.OS === "web" ? height - 10 : "100%",
   },
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
-  titleText: { fontSize: 18, fontWeight: '700', color: '#1F2937' },
+  titleText: { fontSize: 18, fontWeight: "700", color: "#1F2937" },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 15,
     paddingVertical: 10,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: "#E5E7EB",
   },
   // Header
-  container: { flex: 1, backgroundColor: '#fff' },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  text: { marginTop: 10, color: '#666' },
-  errorText: { marginTop: 10, color: 'red', fontWeight: '500' },
+  container: { flex: 1, backgroundColor: "#fff" },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  text: { marginTop: 10, color: "#666" },
+  errorText: { marginTop: 10, color: "red", fontWeight: "500" },
 });
 
 export default BaseScreen;

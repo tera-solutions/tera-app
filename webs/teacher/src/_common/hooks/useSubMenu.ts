@@ -26,9 +26,7 @@ const useSubMenu = ({ active }: UseSubMenuProps = {}) => {
 
   // 2. Logic lấy sub menu từ file JSON hiện tại
   const getSubMenuFromJson = (targetParentKey: string) =>
-    admin.subMenu.filter(
-      (item: any) => item?.parentKey === targetParentKey,
-    );
+    admin.subMenu.filter((item: any) => item?.parentKey === targetParentKey);
 
   // 3. Xử lý dữ liệu cấu hình từ API (nếu có)
   const configSubMenu = useMemo(() => {

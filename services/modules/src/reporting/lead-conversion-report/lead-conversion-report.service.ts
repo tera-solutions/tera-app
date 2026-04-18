@@ -1,7 +1,9 @@
-
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
+import {
+  useQueryAdapter,
+  useMutationAdapter,
+} from "@tera/commons/hooks/queryAdapter";
 import { LeadConversionReportAPI } from "@tera/api";
 import {
   CreatePayload,
@@ -34,13 +36,16 @@ export const useLeadConversionReportCreate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: CreatePayload) => LeadConversionReportAPI.create(payload),
+    mutationFn: (payload: CreatePayload) =>
+      LeadConversionReportAPI.create(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lead-conversion-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["lead-conversion-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -48,13 +53,33 @@ export const useLeadConversionReportUpdate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => LeadConversionReportAPI.update(payload),
+    mutationFn: (payload: UpdatePayload) =>
+      LeadConversionReportAPI.update(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lead-conversion-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["lead-conversion-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
+  });
+};
+
+export const useUpsertLeadConversionReport = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => {
+      if (payload?.id) return LeadConversionReportAPI.update(payload);
+      return LeadConversionReportAPI.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
   });
 };
 
@@ -62,13 +87,16 @@ export const useLeadConversionReportDelete = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => LeadConversionReportAPI.delete(payload),
+    mutationFn: (payload: DeletePayload) =>
+      LeadConversionReportAPI.delete(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lead-conversion-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["lead-conversion-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -76,7 +104,8 @@ export const useLeadConversionReportExport = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => LeadConversionReportAPI.export(payload),
+    mutationFn: (payload: ExportPayload) =>
+      LeadConversionReportAPI.export(payload),
     onSuccess: (res) => {
       if (res?.data?.link) {
         window.open(res?.data?.link, "_blank");
@@ -84,7 +113,7 @@ export const useLeadConversionReportExport = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -93,6 +122,7 @@ export const LeadConversionReportService = {
   useLeadConversionReportDetail,
   useLeadConversionReportCreate,
   useLeadConversionReportUpdate,
+  useUpsertLeadConversionReport,
   useLeadConversionReportDelete,
-  useLeadConversionReportExport
+  useLeadConversionReportExport,
 };

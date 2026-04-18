@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { ModuleType } from "@tera/commons/interfaces/router";
 
 import { useStores } from "@tera/stores/useStores";
-import PageLoading from "@tera/components/web/PageLoading"
+import PageLoading from "@tera/components/web/PageLoading";
 
 import DesktopLayout from "./DesktopLayout";
 

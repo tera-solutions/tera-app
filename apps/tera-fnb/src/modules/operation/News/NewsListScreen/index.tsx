@@ -63,7 +63,7 @@ const MOCK_NOTIFICATIONS: Notification[] = [
     iconColor: '#197585ff',
     isRead: false,
   },
-    {
+  {
     id: '6',
     name: 'Anh Tùng - Khách hàng',
     content: 'Kiểm tra đơn IC21454 hộ anh',
@@ -95,11 +95,7 @@ const NotificationItem: React.FC<{ item: Notification }> = ({ item }) => (
   >
     <View style={[styles.itemIconWrapper]}>
       {/* Sử dụng Icon tạm thay cho icon hình ảnh */}
-      <Icon
-        source={item.iconName}
-        size={24}
-        color={item.iconColor}
-      />
+      <Icon source={item.iconName} size={24} color={item.iconColor} />
     </View>
     <View style={styles.itemContent}>
       <Text style={[styles.itemType, { color: item.iconColor }]}>
@@ -182,7 +178,7 @@ const ChatListScreen: React.FC = () => {
           {/* FLOATING ACTION BUTTON (Giả định) */}
           <TouchableOpacity
             style={styles.fabButton}
-            onPress={() => router.push("/operation/chat")}
+            onPress={() => router.push('/operation/chat')}
           >
             <Icon source="pencil" size={28} color="#FFFFFF" />
           </TouchableOpacity>

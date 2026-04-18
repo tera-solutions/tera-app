@@ -17,10 +17,10 @@ export const styles = StyleSheet.create({
     padding: 15,
   },
   modalView: {
-    position: "relative",
+    position: 'relative',
     backgroundColor: 'white',
     width: '100%',
-    height: "100%",
+    height: '100%',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     paddingBottom: 30, // Khoảng cách cho thanh Home Indicator
@@ -66,31 +66,31 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
   placeholderValue: {
-      color: '#9CA3AF',
-      fontWeight: '400',
+    color: '#9CA3AF',
+    fontWeight: '400',
   },
-  
+
   // Reminder Picker (Dropdown nội tuyến)
   reminderPicker: {
-      borderWidth: 1,
-      borderColor: '#E5E7EB',
-      borderRadius: 8,
-      marginVertical: 10,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 8,
+    marginVertical: 10,
   },
   pickerOption: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingVertical: 12,
-      paddingHorizontal: 15,
-      borderBottomWidth: 1,
-      borderBottomColor: '#F3F4F6',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
   },
   pickerOptionText: {
-      fontSize: 15,
-      color: '#1F2937',
+    fontSize: 15,
+    color: '#1F2937',
   },
-  
+
   // Bottom Buttons
   bottomActions: {
     flexDirection: 'row',
@@ -123,5 +123,5 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
-  }
+  },
 });

@@ -1,29 +1,29 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { isArray, isNumber } from 'lodash';
-import moment from 'moment';
-import numeral from 'numeral';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { isArray, isNumber } from "lodash";
+import moment from "moment";
+import numeral from "numeral";
 import { notification } from "tera-dls";
 
-numeral.localeData().delimiters.thousands = ',';
+numeral.localeData().delimiters.thousands = ",";
 
 export function formatNumber(
   value: string | number | undefined,
-  format = '0,0.[000]',
+  format = "0,0.[000]",
 ) {
-  if (value === '') return '';
-  if (value === null || value === undefined) return '0';
+  if (value === "") return "";
+  if (value === null || value === undefined) return "0";
   return numeral(value).format(format);
 }
 
-export function formatBalance(value = 0, format = '0,0') {
-  if (value === null || value === undefined) return '0';
+export function formatBalance(value = 0, format = "0,0") {
+  if (value === null || value === undefined) return "0";
   return numeral(value / 1000).format(format);
 }
 
-export function formatCurrency(value = 0, symbol = 'đ', format = '0,0') {
-  if (value === null || value === undefined) return '0 đ';
+export function formatCurrency(value = 0, symbol = "đ", format = "0,0") {
+  if (value === null || value === undefined) return "0 đ";
 
-  let currencySymbol = 'đ';
+  let currencySymbol = "đ";
   if (symbol) {
     currencySymbol = symbol;
   }
@@ -31,10 +31,10 @@ export function formatCurrency(value = 0, symbol = 'đ', format = '0,0') {
   return `${numeral(value).format(format)} ${currencySymbol}`;
 }
 
-export function formatDate(value: any, format = 'DD/MM/YYYY', type?: string) {
-  return value && value !== '0000-00-00 00:00:00'
+export function formatDate(value: any, format = "DD/MM/YYYY", type?: string) {
+  return value && value !== "0000-00-00 00:00:00"
     ? moment(value, type).format(format)
-    : '';
+    : "";
 }
 
 function isValidDate(dateString: any) {
@@ -47,12 +47,12 @@ function isValidDate(dateString: any) {
 
 export function formatDateInput(value: any) {
   const newDate = isValidDate(value) ? new Date(value) : null;
-  return newDate ? moment(newDate).format('YYYY-MM-DD') : '';
+  return newDate ? moment(newDate).format("YYYY-MM-DD") : "";
 }
 
 export function formatDateTimeInput(value: any) {
   const newDate = isValidDate(value) ? new Date(value) : null;
-  return newDate ? moment(newDate).format('YYYY-MM-DD HH:mm:ss') : '';
+  return newDate ? moment(newDate).format("YYYY-MM-DD HH:mm:ss") : "";
 }
 
 export function removeKeyFromObject(
@@ -74,57 +74,57 @@ export const getFieldObjToArr = (arr: any[], field: string) => {
   return newArr;
 };
 export function checkFileType(file_name: string) {
-  const imageType = ['jpeg', 'jpg', 'png', 'gif'];
-  const pdfType = ['pdf'];
-  const docType = ['doc', 'docx'];
-  const excelType = ['xlsx', 'csv', 'txt', 'xltx'];
-  const zipType = ['zip', 'rar'];
-  const zipOther = ['apk', 'psd', 'ai', 'sql'];
+  const imageType = ["jpeg", "jpg", "png", "gif"];
+  const pdfType = ["pdf"];
+  const docType = ["doc", "docx"];
+  const excelType = ["xlsx", "csv", "txt", "xltx"];
+  const zipType = ["zip", "rar"];
+  const zipOther = ["apk", "psd", "ai", "sql"];
   const audioType = [
-    'avi',
-    'mov',
-    'webm',
-    'mp4',
-    'm4p',
-    'mpg',
-    'mp2',
-    'mpeg',
-    'mpe',
-    'mpv',
-    'm4v',
-    'svi',
+    "avi",
+    "mov",
+    "webm",
+    "mp4",
+    "m4p",
+    "mpg",
+    "mp2",
+    "mpeg",
+    "mpe",
+    "mpv",
+    "m4v",
+    "svi",
   ];
 
-  const fileNameSplit = file_name.split('.');
+  const fileNameSplit = file_name.split(".");
   const fileName = fileNameSplit[fileNameSplit?.length - 1];
-  let type = 'file';
+  let type = "file";
   if (imageType.indexOf(fileName) > -1) {
-    type = 'image';
+    type = "image";
   } else if (pdfType.indexOf(fileName) > -1) {
-    type = 'pdf';
+    type = "pdf";
   } else if (docType.indexOf(fileName) > -1) {
-    type = 'word';
+    type = "word";
   } else if (excelType.indexOf(fileName) > -1) {
-    type = 'excel';
+    type = "excel";
   } else if (zipType.indexOf(fileName) > -1) {
-    type = 'zip';
+    type = "zip";
   } else if (audioType.indexOf(fileName) > -1) {
-    type = 'audio';
+    type = "audio";
   } else if (zipOther.indexOf(fileName) > -1) {
-    type = 'other';
+    type = "other";
   }
 
   return type;
 }
 
-export const convertArrToString = (arr: string[], separate = ' - ') => {
+export const convertArrToString = (arr: string[], separate = " - ") => {
   return arr
-    .filter((item) => Boolean(typeof item === 'string' && !!item))
+    .filter((item) => Boolean(typeof item === "string" && !!item))
     .join(separate);
 };
 
 export const convertSize = (sizeBytes: number) => {
-  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const units = ["B", "KB", "MB", "GB", "TB"];
   let index = 0;
 
   while (sizeBytes >= 1024 && index < units.length - 1) {
@@ -136,7 +136,7 @@ export const convertSize = (sizeBytes: number) => {
 };
 
 export const convertCurrency = (sizeBytes: number) => {
-  const units = ['', '', 'Tr', 'Tỷ'];
+  const units = ["", "", "Tr", "Tỷ"];
   let index = 0;
 
   while (sizeBytes >= 1024 && index < units.length - 1) {
@@ -148,7 +148,7 @@ export const convertCurrency = (sizeBytes: number) => {
 };
 
 export const trimData = (code: string): string => {
-  return code?.split(' ')?.join('');
+  return code?.split(" ")?.join("");
 };
 
 export const convertListOrder = (
@@ -156,7 +156,7 @@ export const convertListOrder = (
   id: number | string,
   fieldDetail: any,
 ) => {
-  const fistItem = { value: 0, label: 'Đứng đầu' };
+  const fistItem = { value: 0, label: "Đứng đầu" };
   if (isArray(listFieldOrder)) {
     const arrExist = id
       ? listFieldOrder.filter((field: any) => field?.id !== fieldDetail?.id)
@@ -172,10 +172,10 @@ export const convertListOrder = (
 
 export const getTimeRender = (TimeDrop: string) => {
   const timeDropMoment = moment(TimeDrop);
-  const dayAgo = moment().diff(timeDropMoment, 'days');
-  const hourAgo = moment().diff(timeDropMoment, 'hours');
-  const minuteAgo = moment().diff(timeDropMoment, 'minutes');
-  const secondAgo = moment().diff(timeDropMoment, 'seconds');
+  const dayAgo = moment().diff(timeDropMoment, "days");
+  const hourAgo = moment().diff(timeDropMoment, "hours");
+  const minuteAgo = moment().diff(timeDropMoment, "minutes");
+  const secondAgo = moment().diff(timeDropMoment, "seconds");
 
   if (hourAgo === 0 && minuteAgo === 0 && secondAgo < 60) {
     return `${secondAgo} giây trước`;
@@ -192,7 +192,7 @@ export const getTimeRender = (TimeDrop: string) => {
   return formatDate(TimeDrop);
 };
 
-export const convertArrayToObject = (array: any, key = 'id') =>
+export const convertArrayToObject = (array: any, key = "id") =>
   [...(array ?? [])].reduce((prev, cur, index) => {
     prev[String(cur[key])] = { ...cur, index };
     return prev;
@@ -212,7 +212,7 @@ export const getDataStorage = async (key: string) => {
     return jsonValue != null ? JSON.parse(jsonValue) : null;
   } catch (e) {
     // Error reading value (VD: lỗi phân quyền hoặc bộ nhớ đầy)
-    console.error('AsyncStorage Get Error:', e);
+    console.error("AsyncStorage Get Error:", e);
     return null;
   }
 };
@@ -227,8 +227,8 @@ export const parseValue = (value: string) => {
 };
 
 export const stringifyValue = (value: any): string => {
-  if (!value) return '';
-  if (typeof value === 'object' && value !== null) {
+  if (!value) return "";
+  if (typeof value === "object" && value !== null) {
     return JSON.stringify(value);
   }
   return String(value);
@@ -236,12 +236,12 @@ export const stringifyValue = (value: any): string => {
 
 export const isJSON = (str: any) => {
   try {
-    if (typeof str === 'string') {
+    if (typeof str === "string") {
       const result = JSON.parse(str);
-      return typeof result === 'object' && result !== null;
+      return typeof result === "object" && result !== null;
     }
 
-    return !!str && typeof str === 'object' && str.constructor === Object;
+    return !!str && typeof str === "object" && str.constructor === Object;
   } catch (e) {
     return false;
   }

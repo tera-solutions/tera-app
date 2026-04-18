@@ -1,7 +1,9 @@
-
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
+import {
+  useQueryAdapter,
+  useMutationAdapter,
+} from "@tera/commons/hooks/queryAdapter";
 import { StudentProgressReportAPI } from "@tera/api";
 import {
   CreatePayload,
@@ -34,13 +36,16 @@ export const useStudentProgressReportCreate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: CreatePayload) => StudentProgressReportAPI.create(payload),
+    mutationFn: (payload: CreatePayload) =>
+      StudentProgressReportAPI.create(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student-progress-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["student-progress-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -48,13 +53,33 @@ export const useStudentProgressReportUpdate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => StudentProgressReportAPI.update(payload),
+    mutationFn: (payload: UpdatePayload) =>
+      StudentProgressReportAPI.update(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student-progress-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["student-progress-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
+  });
+};
+
+export const useUpsertStudentProgressReport = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => {
+      if (payload?.id) return StudentProgressReportAPI.update(payload);
+      return StudentProgressReportAPI.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
   });
 };
 
@@ -62,13 +87,16 @@ export const useStudentProgressReportDelete = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => StudentProgressReportAPI.delete(payload),
+    mutationFn: (payload: DeletePayload) =>
+      StudentProgressReportAPI.delete(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student-progress-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["student-progress-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -76,7 +104,8 @@ export const useStudentProgressReportExport = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => StudentProgressReportAPI.export(payload),
+    mutationFn: (payload: ExportPayload) =>
+      StudentProgressReportAPI.export(payload),
     onSuccess: (res) => {
       if (res?.data?.link) {
         window.open(res?.data?.link, "_blank");
@@ -84,7 +113,7 @@ export const useStudentProgressReportExport = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -93,6 +122,7 @@ export const StudentProgressReportService = {
   useStudentProgressReportDetail,
   useStudentProgressReportCreate,
   useStudentProgressReportUpdate,
+  useUpsertStudentProgressReport,
   useStudentProgressReportDelete,
-  useStudentProgressReportExport
+  useStudentProgressReportExport,
 };

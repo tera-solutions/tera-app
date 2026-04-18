@@ -30,7 +30,11 @@ const getStatusInfo = (status: ReservationStatus) => {
     case 'arrived':
       return { text: 'Khách đã tới', bgColor: '#D1FAE5', textColor: '#10B981' };
     case 'confirmed':
-      return { text: 'Đã chọn chỗ', bgColor: '#b4b4b4ff', textColor: '#ffffffff' };
+      return {
+        text: 'Đã chọn chỗ',
+        bgColor: '#b4b4b4ff',
+        textColor: '#ffffffff',
+      };
     case 'canceled':
       return { text: 'Đã hủy', bgColor: '#FEE2E2', textColor: '#EF4444' };
     default:

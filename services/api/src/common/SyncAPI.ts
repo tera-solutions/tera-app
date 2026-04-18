@@ -1,5 +1,5 @@
-import { endpointPortal } from '@tera/commons/constants/common';
-import api from '@services/@tera/api/drivers';
+import { endpointPortal } from "@tera/commons/constants/common";
+import api from "@services/@tera/api/drivers";
 
 export const SyncAPI = {
   pullChanges: async (params: any) =>

@@ -7,7 +7,7 @@ import { Animated, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 export interface DateTimeProps {
   style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
   value: any;
-  editable?: boolean,
+  editable?: boolean;
   onChange?: (value?: string) => void;
 }
 

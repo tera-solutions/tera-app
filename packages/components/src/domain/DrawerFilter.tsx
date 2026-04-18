@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Dimensions,
   Platform,
@@ -6,9 +6,9 @@ import {
   useWindowDimensions,
   View,
   ViewStyle,
-} from 'react-native';
-import { Drawer as DrawerLayout } from 'react-native-drawer-layout';
-import { SafeAreaView } from 'react-native-safe-area-context';
+} from "react-native";
+import { Drawer as DrawerLayout } from "react-native-drawer-layout";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface DrawerFilterProps {
   children: React.ReactNode;
@@ -20,7 +20,7 @@ interface DrawerFilterProps {
   setIsDrawerOpen: (open: boolean) => void;
 }
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const DrawerFilter: React.FC<DrawerFilterProps> = ({
   children,
@@ -60,17 +60,17 @@ export default DrawerFilter;
 
 const styles = StyleSheet.create({
   containerFull: {
-    overflow: 'scroll',
-    height: Platform.OS === 'web' ? height - 10 : '100%',
+    overflow: "scroll",
+    height: Platform.OS === "web" ? height - 10 : "100%",
   },
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   drawer: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     // Shadow cho iOS & Android (RNP Style)
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 2, height: 0 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
@@ -78,6 +78,6 @@ const styles = StyleSheet.create({
   },
   filterContainer: {
     flex: 1,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
   },
 });

@@ -31,9 +31,7 @@ export function useQueryAdapter<
   TQueryFnData = unknown,
   TError = Error,
   TData = TQueryFnData,
->(
-  options: QueryAdapterOptions<TQueryFnData, TError, TData>,
-) {
+>(options: QueryAdapterOptions<TQueryFnData, TError, TData>) {
   const {
     onSuccess,
     onError,
@@ -94,8 +92,11 @@ export function useQueryAdapter<
 // ==========================
 // MUTATION ADAPTER OPTIONS
 // ==========================
-export interface MutationAdapterOptions<TData, TError, TVariables>
-  extends UseMutationOptions<TData, TError, TVariables> {
+export interface MutationAdapterOptions<
+  TData,
+  TError,
+  TVariables,
+> extends UseMutationOptions<TData, TError, TVariables> {
   onSuccess?: (data: TData) => void;
   onError?: (err: TError) => void;
   onSettled?: (data: TData | undefined, err: TError | null) => void;
@@ -108,9 +109,7 @@ export function useMutationAdapter<
   TData = any,
   TError = Error,
   TVariables = any,
->(
-  options: MutationAdapterOptions<TData, TError, TVariables>,
-) {
+>(options: MutationAdapterOptions<TData, TError, TVariables>) {
   const { onSuccess, onError, onSettled, ...rest } = options;
 
   const mutation = useMutation(rest);

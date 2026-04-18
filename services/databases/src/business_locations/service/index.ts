@@ -1,6 +1,6 @@
-import { syncManager } from '@services/sync/SyncManager';
-import DB from '../../database';
-import BusinessLocation from '../models/business_locations';
+import { syncManager } from "@services/sync/SyncManager";
+import DB from "../../database";
+import BusinessLocation from "../models/business_locations";
 
 const BusinessLocationService = {
   /**
@@ -21,17 +21,17 @@ const BusinessLocationService = {
       const finalId = (data.id || resultId).toString();
       if (finalId) {
         await syncManager.addQueue({
-          table_name: 'business_locations',
-          type: 'background',
+          table_name: "business_locations",
+          type: "background",
           record_id: finalId,
           payload: { ...data, id: finalId },
-          action: data.id ? 'UPDATE' : 'CREATE',
+          action: data.id ? "UPDATE" : "CREATE",
         });
       }
 
       return resultId;
     } catch (error) {
-      console.error('Dexie Upsert Error:', error);
+      console.error("Dexie Upsert Error:", error);
     }
   },
 
@@ -52,7 +52,7 @@ const BusinessLocationService = {
   },
 
   getTotalRows: async (): Promise<any> => {
-    return await DB.business_locations.where('is_delete').equals(0).count();
+    return await DB.business_locations.where("is_delete").equals(0).count();
   },
 
   /**
@@ -62,7 +62,7 @@ const BusinessLocationService = {
     filter: any = {
       page: 1,
       limit: 20,
-      sort: 'desc',
+      sort: "desc",
     },
   ): Promise<any> => {
     try {
@@ -72,7 +72,7 @@ const BusinessLocationService = {
 
       // Sao chép filter để lọc logic (tránh mutate tham số đầu vào)
       const activeFilters = { ...filter };
-      const sortOrder = activeFilters.sort || 'desc';
+      const sortOrder = activeFilters.sort || "desc";
 
       delete activeFilters.limit;
       delete activeFilters.page;
@@ -80,24 +80,24 @@ const BusinessLocationService = {
 
       let collection = DB.business_locations.toCollection();
 
-      if (sortOrder === 'desc') {
-        collection = DB.business_locations.orderBy('id').reverse();
+      if (sortOrder === "desc") {
+        collection = DB.business_locations.orderBy("id").reverse();
       } else {
-        collection = DB.business_locations.orderBy('id');
+        collection = DB.business_locations.orderBy("id");
       }
 
       collection = collection.filter((item: any) => {
         return Object.keys(activeFilters).every((key) => {
           const value = activeFilters[key];
-          if (value === undefined || value === null || value === '')
+          if (value === undefined || value === null || value === "")
             return true;
 
-          if (key === 'name' || key === 'address') {
+          if (key === "name" || key === "address") {
             return item[key]?.toLowerCase().includes(value.toLowerCase());
           }
 
-          if (key === '_status') {
-            return item._status !== 'synced';
+          if (key === "_status") {
+            return item._status !== "synced";
           }
 
           return item[key] === value;
@@ -108,7 +108,7 @@ const BusinessLocationService = {
 
       return result;
     } catch (error) {
-      console.error('[Web DB] BusinessLocation getAll Error:', error);
+      console.error("[Web DB] BusinessLocation getAll Error:", error);
       return [];
     }
   },
@@ -127,7 +127,7 @@ const BusinessLocationService = {
       .offset(skip)
       .limit(pageSize)
       .toArray();
-    console.tron('get all list locations', result);
+    console.tron("get all list locations", result);
 
     return result;
   },
@@ -141,14 +141,14 @@ const BusinessLocationService = {
     try {
       await DB.business_locations.delete(id);
       await syncManager.addQueue({
-        table_name: 'business_locations',
-        type: 'background',
+        table_name: "business_locations",
+        type: "background",
         record_id: id,
-        action: 'DELETE',
+        action: "DELETE",
       });
       console.log(`Deleted item ${id} from business_locations`);
     } catch (error) {
-      console.error('Dexie Delete Error:', error);
+      console.error("Dexie Delete Error:", error);
     }
   },
 
@@ -162,12 +162,12 @@ const BusinessLocationService = {
         const mapCommonFields = {
           id: (data?.client_id || data?.id).toString(),
           server_id: serverId,
-          location_id: data.location_id ?? '',
-          name: data.name ?? '',
-          mobile: data.mobile ?? '',
-          address: data.address ?? '',
-          ward: data.ward ?? '',
-          city: data.city ?? '',
+          location_id: data.location_id ?? "",
+          name: data.name ?? "",
+          mobile: data.mobile ?? "",
+          address: data.address ?? "",
+          ward: data.ward ?? "",
+          city: data.city ?? "",
           last_sync_at: last_sync_at,
           is_new_address: data?.is_new_address ? 1 : 0,
           is_default: data?.is_default ? 1 : 0,
@@ -181,7 +181,7 @@ const BusinessLocationService = {
 
       return changesLocal;
     } catch (error) {
-      console.error('[BusinessLocationService] upsertMapping Error:', error);
+      console.error("[BusinessLocationService] upsertMapping Error:", error);
       return changesLocal;
     }
   },
@@ -211,7 +211,7 @@ const BusinessLocationService = {
 
       return changesLocal;
     } catch (error) {
-      console.error('[BusinessLocationService] mappingLocation Error:', error);
+      console.error("[BusinessLocationService] mappingLocation Error:", error);
       return changesLocal;
     }
   },
@@ -250,22 +250,22 @@ const BusinessLocationService = {
 
       return { success: true };
     } catch (error) {
-      console.error('Bulk update failed:', error);
+      console.error("Bulk update failed:", error);
       throw error;
     }
   },
 
   clearData: async () => {
     try {
-      console.log('Clear all data business_locations');
+      console.log("Clear all data business_locations");
     } catch (error) {
-      console.error('Dexie Delete Error:', error);
+      console.error("Dexie Delete Error:", error);
     }
   },
 
   syncData: async () => {
     //
-    console.log('syncData business_locations');
+    console.log("syncData business_locations");
   },
 };
 

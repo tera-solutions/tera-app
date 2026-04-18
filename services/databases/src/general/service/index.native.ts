@@ -1,7 +1,7 @@
-import { parseValue, stringifyValue } from '@tera/commons/utils';
-import DB from '@databases/database.native';
-import { Q } from '@nozbe/watermelondb';
-import General from '../models/general.native';
+import { parseValue, stringifyValue } from "@tera/commons/utils";
+import DB from "@databases/database.native";
+import { Q } from "@nozbe/watermelondb";
+import General from "../models/general.native";
 
 const GeneralService = {
   /**
@@ -10,33 +10,33 @@ const GeneralService = {
    */
   upsert: async (key: string, value: any, version?: number) => {
     if (!version) return;
-    const generals = DB.instance.get<General>('generals');
+    const generals = DB.instance.get<General>("generals");
 
     const stringifiedValue = stringifyValue(value);
 
     await DB.instance.write(async () => {
-      const existing = await generals.query(Q.where('key', key)).fetch();
+      const existing = await generals.query(Q.where("key", key)).fetch();
 
       if (existing.length > 0) {
         await existing[0].update((record) => {
           record.value = stringifiedValue;
           record.version = version;
-          record._raw._status = 'synced';
+          record._raw._status = "synced";
         });
       } else {
         await generals.create((record) => {
           record.key = key;
           record.value = stringifiedValue;
           record.version = version;
-          record._raw._status = 'synced';
+          record._raw._status = "synced";
         });
       }
     });
   },
   fetchAll: async () => {
-    const collection = DB.instance.get<General>('generals');
+    const collection = DB.instance.get<General>("generals");
     const records = await collection
-      .query([Q.sortBy('updated_at', Q.desc)])
+      .query([Q.sortBy("updated_at", Q.desc)])
       .unsafeFetchRaw();
 
     return records;
@@ -45,16 +45,16 @@ const GeneralService = {
    * GetValue: Tự động Parse dữ liệu khi lấy ra
    */
   getValue: async (key: string, version?: number): Promise<any> => {
-    const generals = DB.instance.get<General>('generals');
+    const generals = DB.instance.get<General>("generals");
 
     const conditions = [];
 
     if (key) {
-      conditions.push(Q.where('key', key));
+      conditions.push(Q.where("key", key));
     }
 
     if (version) {
-      conditions.push(Q.where('version', version));
+      conditions.push(Q.where("version", version));
     }
 
     const records = await generals.query(...conditions).fetch();
@@ -69,10 +69,10 @@ const GeneralService = {
    * Xóa một cấu hình theo Key
    */
   deleteByKey: async (key: string) => {
-    const generals = DB.instance.get<General>('generals');
+    const generals = DB.instance.get<General>("generals");
 
     await DB.instance.write(async () => {
-      const records = await generals.query(Q.where('key', key)).fetch();
+      const records = await generals.query(Q.where("key", key)).fetch();
       const batches = records.map((record) =>
         record.prepareDestroyPermanently(),
       );
@@ -108,7 +108,7 @@ const GeneralService = {
         });
       }
 
-      console.tron('changesLocal General', changesLocal);
+      console.tron("changesLocal General", changesLocal);
 
       return changesLocal;
     } catch (error) {
@@ -122,7 +122,7 @@ const GeneralService = {
   bulkUpdate: async (
     data: Array<{ key: string; value: string; version: number }>,
   ) => {
-    const generals = DB.instance.get<General>('generals');
+    const generals = DB.instance.get<General>("generals");
 
     await DB.instance.write(async () => {
       const allPrepared = data.map((item) =>
@@ -130,7 +130,7 @@ const GeneralService = {
           record.key = item.key;
           record.value = stringifyValue(item.value);
           record.version = item.version;
-          record._raw._status = 'synced';
+          record._raw._status = "synced";
         }),
       );
       await DB.instance.batch(...allPrepared);

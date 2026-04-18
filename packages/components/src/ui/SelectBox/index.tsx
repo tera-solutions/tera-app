@@ -1,9 +1,9 @@
-import colors from '@tera/commons/constants/colors';
-import { FONT_FAMILY } from '@tera/commons/constants/typography';
+import colors from "@tera/commons/constants/colors";
+import { FONT_FAMILY } from "@tera/commons/constants/typography";
 import FloatButtonModal, {
   floatStyles,
-} from '@components/shared/FloatButtonModal';
-import React, { useMemo, useState } from 'react';
+} from "@components/shared/FloatButtonModal";
+import React, { useMemo, useState } from "react";
 import {
   Animated,
   StyleProp,
@@ -12,8 +12,8 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-} from 'react-native';
-import { Icon, TextInput } from 'react-native-paper';
+} from "react-native";
+import { Icon, TextInput } from "react-native-paper";
 
 interface SelectBoxItemProps {
   value: string | number;
@@ -50,7 +50,7 @@ export const SelectBox = ({
       >
         <Text style={styles.textValue}>{renderValue}</Text>
         <View style={styles.icon}>
-          <Icon source={'chevron-down'} size={20} color={colors.gray} />
+          <Icon source={"chevron-down"} size={20} color={colors.gray} />
         </View>
       </TouchableOpacity>
       <FloatButtonModal
@@ -69,7 +69,7 @@ export const SelectBox = ({
               },
             ]}
             onPress={() => {
-              if (typeof onChange === 'function') {
+              if (typeof onChange === "function") {
                 onChange(item);
               }
               setValue(item.value);
@@ -95,24 +95,24 @@ export const SelectBox = ({
 
 const styles = StyleSheet.create({
   input: {
-    display: 'none',
+    display: "none",
   },
   icon: {
-    position: 'absolute',
+    position: "absolute",
     zIndex: 9,
     right: 10,
   },
   button: {
-    position: 'relative',
-    width: '100%',
+    position: "relative",
+    width: "100%",
     height: 50,
     borderWidth: 1,
     borderColor: colors.borderInput,
     borderRadius: 8,
     backgroundColor: colors.white,
     color: colors.black,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   textValue: {
     color: colors.black,

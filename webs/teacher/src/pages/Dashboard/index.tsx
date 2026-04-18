@@ -176,17 +176,13 @@ const Dashboard = () => {
               <p className="font-light text-main text-2xl">Rút tiền</p>
               <Icon.IconTrashCurrency />
             </Col>
-            <Col
-              className="p-6 rounded-md bg-blue-100 h-max flex flex-col items-center gap-3 cursor-pointer"
-            >
+            <Col className="p-6 rounded-md bg-blue-100 h-max flex flex-col items-center gap-3 cursor-pointer">
               <p className="font-light text-main text-2xl">
                 Thêm sản phẩm mới{" "}
               </p>
               <Icon.IconBoxThin />
             </Col>
-            <Col
-              className="p-6 rounded-md bg-blue-100 h-max flex flex-col items-center gap-3 cursor-pointer"
-            >
+            <Col className="p-6 rounded-md bg-blue-100 h-max flex flex-col items-center gap-3 cursor-pointer">
               <p className="font-light text-main text-2xl">Cài đặt cửa hàng</p>
               <Icon.IconStore />
             </Col>

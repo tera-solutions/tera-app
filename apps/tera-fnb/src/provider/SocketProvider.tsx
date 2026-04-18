@@ -1,4 +1,11 @@
-import React, { createContext, ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { io, Socket } from 'socket.io-client';
 import { endpointSocket } from '@tera/commons/constants/common';
 
@@ -29,12 +36,19 @@ interface Props {
   businessId: number;
 }
 
-export const SocketProvider: React.FC<Props> = ({ children, userId, businessId }) => {
+export const SocketProvider: React.FC<Props> = ({
+  children,
+  userId,
+  businessId,
+}) => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const socketRef = useRef<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
+  const socketRef = useRef<Socket<
+    ServerToClientEvents,
+    ClientToServerEvents
+  > | null>(null);
 
   useEffect(() => {
-    if(userId !== 2) return;
+    if (userId !== 2) return;
     const socket = io(endpointSocket, {
       transports: ['websocket'],
       auth: { token: 'JWT_TOKEN', userId, businessId },
@@ -55,7 +69,9 @@ export const SocketProvider: React.FC<Props> = ({ children, userId, businessId }
   };
 
   return (
-    <SocketContext.Provider value={{ socket: socketRef.current, isConnected, sendMessage }}>
+    <SocketContext.Provider
+      value={{ socket: socketRef.current, isConnected, sendMessage }}
+    >
       {children}
     </SocketContext.Provider>
   );
@@ -63,6 +79,7 @@ export const SocketProvider: React.FC<Props> = ({ children, userId, businessId }
 
 export const useSocket = (): SocketContextType => {
   const context = useContext(SocketContext);
-  if (!context) throw new Error('useSocket must be used within a SocketProvider');
+  if (!context)
+    throw new Error('useSocket must be used within a SocketProvider');
   return context;
 };

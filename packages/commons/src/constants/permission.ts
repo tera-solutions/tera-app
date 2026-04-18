@@ -1226,107 +1226,106 @@ export const TIKTOK_PERMISSION_KEY = {
 };
 
 export const DEBT_CUSTOMER_PERMISSION_KEY = {
-  DEBT_CUSTOMER_VIEW_DEBT_CUSTOMER_LIST: 'fin_debt_view_customer_debt_list',
-  DEBT_CUSTOMER_SEARCH_DEBT_CUSTOMER: 'fin_debt_search_customer_debt_list',
-  DEBT_CUSTOMER_EXPORT_DEBT_CUSTOMER: 'fin_debt_export_customer_debt_list',
+  DEBT_CUSTOMER_VIEW_DEBT_CUSTOMER_LIST: "fin_debt_view_customer_debt_list",
+  DEBT_CUSTOMER_SEARCH_DEBT_CUSTOMER: "fin_debt_search_customer_debt_list",
+  DEBT_CUSTOMER_EXPORT_DEBT_CUSTOMER: "fin_debt_export_customer_debt_list",
   DEBT_CUSTOMER_CONFIG_COLUMN_DEBT_CUSTOMER:
-    'fin_debt_config_column_customer_debt_list',
+    "fin_debt_config_column_customer_debt_list",
   //order
-  DEBT_CUSTOMER_VIEW_DEBT_CUSTOMER_ORDER: 'fin_debt_view_customer_order_list',
+  DEBT_CUSTOMER_VIEW_DEBT_CUSTOMER_ORDER: "fin_debt_view_customer_order_list",
   DEBT_CUSTOMER_SEARCH_DEBT_CUSTOMER_ORDER:
-    'fin_debt_search_customer_order_list',
+    "fin_debt_search_customer_order_list",
   DEBT_CUSTOMER_CONFIG_COLUMN_DEBT_CUSTOMER_ORDER:
-    'fin_debt_config_column_sale_order_list',
+    "fin_debt_config_column_sale_order_list",
   DEBT_CUSTOMER_EXPORT_DEBT_CUSTOMER_ORDER:
-    'fin_debt_export_customer_order_list',
+    "fin_debt_export_customer_order_list",
 };
 
 export const DEBT_SUPPLIER_PERMISSION_KEY = {
-  DEBT_SUPPLIER_VIEW_DEBT_SUPPLIER_LIST: 'fin_debt_view_supplier_debt_list',
-  DEBT_SUPPLIER_SEARCH_DEBT_SUPPLIER: 'fin_debt_search_supplier_debt_list',
-  DEBT_SUPPLIER_EXPORT_DEBT_SUPPLIER: 'fin_debt_export_supplier_debt_list',
+  DEBT_SUPPLIER_VIEW_DEBT_SUPPLIER_LIST: "fin_debt_view_supplier_debt_list",
+  DEBT_SUPPLIER_SEARCH_DEBT_SUPPLIER: "fin_debt_search_supplier_debt_list",
+  DEBT_SUPPLIER_EXPORT_DEBT_SUPPLIER: "fin_debt_export_supplier_debt_list",
   DEBT_SUPPLIER_CONFIG_COLUMN_DEBT_SUPPLIER:
-    'fin_debt_config_column_suplier_debt_list',
+    "fin_debt_config_column_suplier_debt_list",
   //order
-  DEBT_SUPPLIER_VIEW_DEBT_SUPPLIER_ORDER: 'fin_debt_view_supplier_order_list',
+  DEBT_SUPPLIER_VIEW_DEBT_SUPPLIER_ORDER: "fin_debt_view_supplier_order_list",
   DEBT_SUPPLIER_SEARCH_DEBT_SUPPLIER_ORDER:
-    'fin_debt_search_supplier_order_list',
+    "fin_debt_search_supplier_order_list",
   DEBT_SUPPLIER_CONFIG_COLUMN_DEBT_SUPPLIER_ORDER:
-    'fin_debt_config_column_purchase_order_list',
+    "fin_debt_config_column_purchase_order_list",
   DEBT_SUPPLIER_EXPORT_DEBT_SUPPLIER_ORDER:
-    'fin_debt_export_supplier_order_list',
+    "fin_debt_export_supplier_order_list",
 };
 
 export const OPERATION_PERMISSION_KEY = {
   //Danh sách luồng
   operation_flow_view_approve_flow_list:
-    'operation_flow_view_approve_flow_list',
-  operation_flow_search_approve_flow: 'operation_flow_search_approve_flow',
+    "operation_flow_view_approve_flow_list",
+  operation_flow_search_approve_flow: "operation_flow_search_approve_flow",
   operation_flow_config_column_approve_flow:
-    'operation_flow_config_column_approve_flow',
-  operation_flow_create_approve_flow: 'operation_flow_create_approve_flow',
-  operation_flow_update_approve_flow: 'operation_flow_update_approve_flow',
-  operation_flow_delete_approve_flow: 'operation_flow_delete_approve_flow',
-  operation_flow_config_approve_flow: 'operation_flow_config_approve_flow',
+    "operation_flow_config_column_approve_flow",
+  operation_flow_create_approve_flow: "operation_flow_create_approve_flow",
+  operation_flow_update_approve_flow: "operation_flow_update_approve_flow",
+  operation_flow_delete_approve_flow: "operation_flow_delete_approve_flow",
+  operation_flow_config_approve_flow: "operation_flow_config_approve_flow",
   //Thiết lập quy trình
-  operation_flow_view_config_workflow_list: 'operation_flow_view_flow_list',
+  operation_flow_view_config_workflow_list: "operation_flow_view_flow_list",
   operation_flow_config_column_config_workflow_flow:
-    'operation_flow_config_column_flow',
+    "operation_flow_config_column_flow",
   operation_flow_apply_approve_config_workflow_flow:
-    'operation_flow_apply_approve_flow',
-  operation_flow_config_status_config_workflow: 'operation_flow_config_status',
-  operation_flow_config_flow_config_workflow: 'operation_flow_config_flow',
+    "operation_flow_apply_approve_flow",
+  operation_flow_config_status_config_workflow: "operation_flow_config_status",
+  operation_flow_config_flow_config_workflow: "operation_flow_config_flow",
 
   //danh sach quy trinh
-  operation_flow_view_workflow_list: 'operation_flow_view_process_list',
-  operation_flow_config_column_workflow: 'operation_flow_config_column_process',
-  operation_flow_config_workflow: 'operation_flow_config_process',
+  operation_flow_view_workflow_list: "operation_flow_view_process_list",
+  operation_flow_config_column_workflow: "operation_flow_config_column_process",
+  operation_flow_config_workflow: "operation_flow_config_process",
 
   // thiết lập trạng thái
-  operation_flow_view_list_status: 'operation_flow_view_list_status',
-  operation_flow_create_status: 'operation_flow_create_status',
-  operation_flow_update_status: 'operation_flow_update_status',
-  operation_flow_delete_status: 'operation_flow_delete_status',
-  operation_flow_config_function: 'operation_flow_config_function',
+  operation_flow_view_list_status: "operation_flow_view_list_status",
+  operation_flow_create_status: "operation_flow_create_status",
+  operation_flow_update_status: "operation_flow_update_status",
+  operation_flow_delete_status: "operation_flow_delete_status",
+  operation_flow_config_function: "operation_flow_config_function",
 
   // cấu hình diagram
-  operation_flow_setup_diagram: 'operation_flow_setup_diagram',
+  operation_flow_setup_diagram: "operation_flow_setup_diagram",
 };
 
 export const CONFIG_MENU_PERMISSION_KEY = {
-  config_menu: 'system_system_config_menu',
+  config_menu: "system_system_config_menu",
 };
 
-
 export const TRANSFER_STOCK_PERMISSION_KEY = {
-  TRANSFER_STOCK_VIEW_LIST: 'wh_warehouse_view_warehouse_transfer_list',
-  TRANSFER_STOCK_VIEW_DETAIL: 'wh_warehouse_view_warehouse_transfer_detail',
-  TRANSFER_STOCK_APPROVE: 'wh_warehouse_approve_warehouse_transfer',
-  TRANSFER_STOCK_REJECT: 'wh_warehouse_reject_warehouse_transfer',
+  TRANSFER_STOCK_VIEW_LIST: "wh_warehouse_view_warehouse_transfer_list",
+  TRANSFER_STOCK_VIEW_DETAIL: "wh_warehouse_view_warehouse_transfer_detail",
+  TRANSFER_STOCK_APPROVE: "wh_warehouse_approve_warehouse_transfer",
+  TRANSFER_STOCK_REJECT: "wh_warehouse_reject_warehouse_transfer",
 
-  TRANSFER_STOCK_CREATE: 'wh_warehouse_create_warehouse_transfer',
-  TRANSFER_STOCK_UPDATE: 'wh_warehouse_update_warehouse_transfer',
-  TRANSFER_STOCK_SEARCH: 'wh_warehouse_search_warehouse_transfer',
-  TRANSFER_STOCK_DELETE: 'wh_warehouse_delete_warehouse_transfer',
+  TRANSFER_STOCK_CREATE: "wh_warehouse_create_warehouse_transfer",
+  TRANSFER_STOCK_UPDATE: "wh_warehouse_update_warehouse_transfer",
+  TRANSFER_STOCK_SEARCH: "wh_warehouse_search_warehouse_transfer",
+  TRANSFER_STOCK_DELETE: "wh_warehouse_delete_warehouse_transfer",
 
-  TRANSFER_STOCK_IMPORT_EXCEL: 'wh_warehouse_import_warehouse_transfer',
-  TRANSFER_STOCK_EXPORT_EXCEL: 'wh_warehouse_export_warehouse_transfer',
-  TRANSFER_STOCK_CONFIG_COLUMN: 'wh_warehouse_config_column_warehouse_transfer',
+  TRANSFER_STOCK_IMPORT_EXCEL: "wh_warehouse_import_warehouse_transfer",
+  TRANSFER_STOCK_EXPORT_EXCEL: "wh_warehouse_export_warehouse_transfer",
+  TRANSFER_STOCK_CONFIG_COLUMN: "wh_warehouse_config_column_warehouse_transfer",
 };
 
 export const INVENTORY_FORECAST_PERMISSION_KEY = {
-  INVENTORY_FORECAST_VIEW_LIST: 'wh_warehouse_view_warehouse_forecast',
-  INVENTORY_FORECAST_SEARCH: 'wh_warehouse_search_warehouse_forecast',
+  INVENTORY_FORECAST_VIEW_LIST: "wh_warehouse_view_warehouse_forecast",
+  INVENTORY_FORECAST_SEARCH: "wh_warehouse_search_warehouse_forecast",
   INVENTORY_FORECAST_CONFIG_COLUMN:
-    'wh_warehouse_config_column_warehouse_forecast',
-  INVENTORY_FORECAST_EXPORT: 'wh_warehouse_export_warehouse_forecast',
+    "wh_warehouse_config_column_warehouse_forecast",
+  INVENTORY_FORECAST_EXPORT: "wh_warehouse_export_warehouse_forecast",
 };
 
 export const STOCK_IN_OUT_PERMISSION_KEY = {
-  STOCK_IN_OUT_VIEW_LIST: 'wh_warehouse_view_warehouse_stock_in_out',
-  STOCK_IN_OUT_VIEW_HISTORY: 'wh_warehouse_view_warehouse_history_stock_in_out',
-  STOCK_IN_OUT_SEARCH: 'wh_warehouse_search_warehouse_stock_in_out',
+  STOCK_IN_OUT_VIEW_LIST: "wh_warehouse_view_warehouse_stock_in_out",
+  STOCK_IN_OUT_VIEW_HISTORY: "wh_warehouse_view_warehouse_history_stock_in_out",
+  STOCK_IN_OUT_SEARCH: "wh_warehouse_search_warehouse_stock_in_out",
   STOCK_IN_OUT_CONFIG_COLUMN:
-    'wh_warehouse_config_column_warehouse_stock_in_out',
-  STOCK_IN_OUT_EXPORT: 'wh_warehouse_export_warehouse_stock_in_out',
+    "wh_warehouse_config_column_warehouse_stock_in_out",
+  STOCK_IN_OUT_EXPORT: "wh_warehouse_export_warehouse_stock_in_out",
 };

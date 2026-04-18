@@ -1,4 +1,7 @@
-import { BTN_PRIMARY, HEADING_CLASS_NAME } from "@tera/commons/constants/common";
+import {
+  BTN_PRIMARY,
+  HEADING_CLASS_NAME,
+} from "@tera/commons/constants/common";
 import { messageValidate } from "@tera/commons/constants/message";
 import InputPassword from "@tera/components/dof/Control/InputPassword";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";

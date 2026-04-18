@@ -25,11 +25,7 @@ const NotificationScreen = observer(() => {
         </Button>
       )}
 
-      <Button
-        icon="camera"
-        mode="contained"
-        onPress={() => router.push('/')}
-      >
+      <Button icon="camera" mode="contained" onPress={() => router.push('/')}>
         User
       </Button>
     </SafeAreaView>

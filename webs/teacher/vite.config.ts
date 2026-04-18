@@ -37,10 +37,7 @@ export default defineConfig(({ mode }) => {
         "@tera/themes": path.resolve(__dirname, "../../packages/themes/src"),
         "@tera/stores": path.resolve(__dirname, "../../services/stores/src"),
         "@tera/api": path.resolve(__dirname, "../../services/api/src"),
-        "@tera/modules": path.resolve(
-          __dirname,
-          "../../services/modules/src",
-        ),
+        "@tera/modules": path.resolve(__dirname, "../../services/modules/src"),
         "tailwind-merge.config": path.resolve(
           __dirname,
           "./src/tailwind-merge.config.ts",
@@ -64,7 +61,7 @@ export default defineConfig(({ mode }) => {
         "react-chartjs-2",
         "chart.js",
         "mobx-persist-store",
-        "react"
+        "react",
       ],
       exclude: ["tera-dls"],
     },

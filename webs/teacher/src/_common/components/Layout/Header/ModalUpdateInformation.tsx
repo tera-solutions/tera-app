@@ -1,4 +1,7 @@
-import { useQueryLegacy, useMutationLegacy } from "@tera/commons/hooks/tanstack";
+import {
+  useQueryLegacy,
+  useMutationLegacy,
+} from "@tera/commons/hooks/tanstack";
 import { useQueryClient } from "@tanstack/react-query";
 import { REGEX } from "@tera/commons/constants/common";
 import Input from "@tera/components/dof/Control/Input";

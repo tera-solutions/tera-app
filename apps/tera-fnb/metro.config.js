@@ -31,17 +31,26 @@ config.resolver = {
   ...resolver,
   // SVG Configuration
   assetExts: resolver.assetExts.filter((ext) => ext !== 'svg'),
-  sourceExts: [...resolver.sourceExts, 'tsx', 'ts', 'js', 'jsx', 'json', 'mjs', 'svg'],
+  sourceExts: [
+    ...resolver.sourceExts,
+    'tsx',
+    'ts',
+    'js',
+    'jsx',
+    'json',
+    'mjs',
+    'svg',
+  ],
 
   // FIX LỖI "useMemoCache of null" & "Invalid Hook Call"
   // Ép Metro luôn dùng React từ node_modules của App hiện tại
-  disableHierarchicalLookup: true, 
+  disableHierarchicalLookup: true,
   extraNodeModules: {
-    'react': path.resolve(projectRoot, 'node_modules/react'),
+    react: path.resolve(projectRoot, 'node_modules/react'),
     'react-dom': path.resolve(projectRoot, 'node_modules/react-dom'),
     'react-native': path.resolve(projectRoot, 'node_modules/react-native'),
   },
-  
+
   // Thứ tự tìm kiếm ưu tiên (Pnpm Symlinks)
   nodeModulesPaths: [
     path.resolve(projectRoot, 'node_modules'),

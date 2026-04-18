@@ -23,7 +23,7 @@ export const Switch = ({
 
   useEffect(() => {
     setChecked(value);
-     if (typeof onValueChange === 'function') {
+    if (typeof onValueChange === 'function') {
       onValueChange(value);
     }
   }, [value]);

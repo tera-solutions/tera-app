@@ -1,4 +1,4 @@
-import DB from '../../database';
+import DB from "../../database";
 
 const TableVersionService = {
   /**
@@ -16,7 +16,7 @@ const TableVersionService = {
         is_dirty: oldVersion === version ? 0 : 1,
       });
     } catch (error) {
-      console.error('Dexie Upsert Error:', error);
+      console.error("Dexie Upsert Error:", error);
     }
   },
 
@@ -35,7 +35,7 @@ const TableVersionService = {
         is_dirty: 0,
       });
     } catch (error) {
-      console.error('Dexie Upsert Error:', error);
+      console.error("Dexie Upsert Error:", error);
     }
   },
 
@@ -84,7 +84,7 @@ const TableVersionService = {
       await DB.table_version_logs.delete(table_name);
       console.log(`Deleted item ${table_name} from table_version_logs`);
     } catch (error) {
-      console.error('Dexie Delete Error:', error);
+      console.error("Dexie Delete Error:", error);
     }
   },
   mappingTableVersion: async (dataTables: Array<any>, last_sync_at: number) => {
@@ -98,7 +98,7 @@ const TableVersionService = {
       const tableNames = dataTables.map((d) => d.table_name);
 
       const existingRecords = await DB.table_version_logs
-        .where('table_name')
+        .where("table_name")
         .anyOf(tableNames)
         .toArray();
 
@@ -126,10 +126,10 @@ const TableVersionService = {
         }
       }
 
-      console.log('[TableVersion] mappingTableVersion result:', changesLocal);
+      console.log("[TableVersion] mappingTableVersion result:", changesLocal);
       return changesLocal;
     } catch (error) {
-      console.error('[TableVersion Web] mappingTableVersion Error:', error);
+      console.error("[TableVersion Web] mappingTableVersion Error:", error);
       return changesLocal;
     }
   },
@@ -153,7 +153,7 @@ const TableVersionService = {
           is_dirty: 0,
         };
 
-        console.log('oldVersion', oldVersion);
+        console.log("oldVersion", oldVersion);
         if (oldVersion !== data.version) {
           item = {
             ...item,
@@ -173,7 +173,7 @@ const TableVersionService = {
 
       return { success: true };
     } catch (error) {
-      console.error('Bulk update failed:', error);
+      console.error("Bulk update failed:", error);
       throw error;
     }
   },

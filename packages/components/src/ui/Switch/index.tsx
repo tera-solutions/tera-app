@@ -1,10 +1,10 @@
-import colors from '@tera/commons/constants/colors';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import colors from "@tera/commons/constants/colors";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import {
   Switch as SwitchPaper,
   SwitchProps as SwitchPaperProps,
-} from 'react-native-paper';
+} from "react-native-paper";
 
 export interface SwitchProps extends SwitchPaperProps {
   onValueChange?: (value: boolean) => void;
@@ -23,14 +23,14 @@ export const Switch = ({
 
   useEffect(() => {
     setChecked(value);
-     if (typeof onValueChange === 'function') {
+    if (typeof onValueChange === "function") {
       onValueChange(value);
     }
   }, [value]);
 
   const handleChangeValue = (checked: boolean) => {
     setChecked(checked);
-    if (typeof onValueChange === 'function') {
+    if (typeof onValueChange === "function") {
       onValueChange(checked);
     }
   };
@@ -40,8 +40,8 @@ export const Switch = ({
       <SwitchPaper
         onValueChange={handleChangeValue}
         value={checked}
-        trackColor={{ false: '#E5E7EB', true: colors.primaryLight }}
-        thumbColor={'#FFFFFF'}
+        trackColor={{ false: "#E5E7EB", true: colors.primaryLight }}
+        thumbColor={"#FFFFFF"}
       />
       {label && <Text>{label}</Text>}
     </View>
@@ -50,8 +50,8 @@ export const Switch = ({
 
 const styles = StyleSheet.create({
   switch: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 5,
     marginBottom: 10,
   },

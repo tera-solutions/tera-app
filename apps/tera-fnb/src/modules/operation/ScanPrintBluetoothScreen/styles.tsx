@@ -26,7 +26,11 @@ export const styles = StyleSheet.create({
   },
   titleText: { fontSize: 18, fontWeight: '700', color: '#1F2937' },
 
-  scrollContent: { paddingHorizontal: 0, paddingVertical: 10, minHeight: height * 0.7 },
+  scrollContent: {
+    paddingHorizontal: 0,
+    paddingVertical: 10,
+    minHeight: height * 0.7,
+  },
 
   // Section Group
   section: {

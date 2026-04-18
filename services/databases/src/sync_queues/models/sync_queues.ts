@@ -1,4 +1,4 @@
-import { ISyncAction, ISyncStatus, ISyncType } from '@tera/commons/interfaces';
+import { ISyncAction, ISyncStatus, ISyncType } from "@tera/commons/interfaces";
 
 export default interface SyncQueue {
   id?: string;

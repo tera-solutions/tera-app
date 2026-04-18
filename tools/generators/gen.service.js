@@ -16,7 +16,7 @@ Object.entries(MODULES).forEach(([domain, config]) => {
 
     const output = path.join(
       process.cwd(),
-      `services/modules/src/${domain}/${entity}/${entity}.service.ts`
+      `services/modules/src/${domain}/${entity}/${entity}.service.ts`,
     );
 
     writeFile(output, content);

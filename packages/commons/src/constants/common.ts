@@ -21,34 +21,34 @@ export const endpointCRM = `${process.env.EXPO_PUBLIC_API_URL}/crm/api`;
 export const appVersion = process.env.EXPO_PUBLIC_APP_VERSION
   ? Number(process.env.EXPO_PUBLIC_APP_VERSION)
   : 1;
-export const dbName = process.env.EXPO_PUBLIC_DB_NAME || 'db_tera_fnb';
+export const dbName = process.env.EXPO_PUBLIC_DB_NAME || "db_tera_fnb";
 
 export const viLocale = {
-  save: 'Lưu',
-  selectSingle: 'Chọn ngày',
-  selectMultiple: 'Chọn nhiều ngày',
-  selectRange: 'Chọn khoảng ngày',
-  notAllowed: 'Không được phép',
-  typeDate: 'Nhập ngày',
-  invalidCharacter: 'Ký tự không hợp lệ',
-  pickDateFromCalendar: 'Chọn từ lịch',
-  close: 'Đóng',
-  previous: 'Tháng trước',
-  next: 'Tháng sau',
+  save: "Lưu",
+  selectSingle: "Chọn ngày",
+  selectMultiple: "Chọn nhiều ngày",
+  selectRange: "Chọn khoảng ngày",
+  notAllowed: "Không được phép",
+  typeDate: "Nhập ngày",
+  invalidCharacter: "Ký tự không hợp lệ",
+  pickDateFromCalendar: "Chọn từ lịch",
+  close: "Đóng",
+  previous: "Tháng trước",
+  next: "Tháng sau",
   // --- Bổ sung các trường còn thiếu để fix lỗi ts(2345) ---
-  hour: 'Giờ',
-  minute: 'Phút',
-  label: 'Chọn thời gian', // Nhãn chung
-  typeTime: 'Nhập thời gian',
-  am: 'AM',
-  pm: 'PM',
+  hour: "Giờ",
+  minute: "Phút",
+  label: "Chọn thời gian", // Nhãn chung
+  typeTime: "Nhập thời gian",
+  am: "AM",
+  pm: "PM",
   notAccordingToDateFormat: (inputFormat: string) =>
     `Định dạng ngày phải là ${inputFormat}`,
   mustBeHigherThan: (date: string) => `Phải sau ngày ${date}`,
   mustBeLowerThan: (date: string) => `Phải trước ngày ${date}`,
   mustBeBetween: (startDate: string, endDate: string) =>
     `Phải nằm trong khoảng ${startDate} - ${endDate}`,
-  dateIsDisabled: 'Ngày này không khả dụng',
+  dateIsDisabled: "Ngày này không khả dụng",
 };
 
 export const DATE_FORMAT = "DD/MM/YYYY";
@@ -91,7 +91,7 @@ export const config = {
   app: {},
   uploadKey: "9074c259a7",
   appId: "2",
-  privateKey: import.meta.env.VITE_TERA_PRIVATE_KEY
+  privateKey: import.meta.env.VITE_TERA_PRIVATE_KEY,
 };
 
 export const gender = {
@@ -176,10 +176,10 @@ export const STATUS_APPROVAL = {
   CANCEL: "cancel",
 };
 
-export const HEADING_CLASS_NAME = 'text-main text-base font-medium mb-6';
-export const TITLE_CLASS_NAME = 'text-[#343C6A] text-2xl font-light';
+export const HEADING_CLASS_NAME = "text-main text-base font-medium mb-6";
+export const TITLE_CLASS_NAME = "text-[#343C6A] text-2xl font-light";
 export const BTN_PRIMARY_LIGHT =
-  'text-main border border-main bg-main-100 hover:bg-blue-50 hover:text-main py-2.5 px-5 w-max';
+  "text-main border border-main bg-main-100 hover:bg-blue-50 hover:text-main py-2.5 px-5 w-max";
 export const BTN_PRIMARY =
-  'bg-main py-2.5 px-5 w-max hover:bg-main-500 text-white hover:text-white';
-export const labelClassName = 'min-w-[200px] text-[#1B1B28] items-start';
+  "bg-main py-2.5 px-5 w-max hover:bg-main-500 text-white hover:text-white";
+export const labelClassName = "min-w-[200px] text-[#1B1B28] items-start";

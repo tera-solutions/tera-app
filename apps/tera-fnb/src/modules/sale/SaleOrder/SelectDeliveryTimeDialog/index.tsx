@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Animated,
-    Dimensions,
-    Modal,
-    Text,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Animated,
+  Dimensions,
+  Modal,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { styles } from './styles';
@@ -26,9 +26,11 @@ interface SelectDeliveryTimeDialogProps {
 const { height, width } = Dimensions.get('window');
 const MODAL_HEIGHT = height * 0.6;
 
-const SelectDeliveryTimeDialog: React.FC<
-  SelectDeliveryTimeDialogProps
-> = ({ isVisible, onClose, onConfirm }) => {
+const SelectDeliveryTimeDialog: React.FC<SelectDeliveryTimeDialogProps> = ({
+  isVisible,
+  onClose,
+  onConfirm,
+}) => {
   // Giả định chọn ngày giờ hiện tại
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState('__:__');
@@ -106,7 +108,7 @@ const SelectDeliveryTimeDialog: React.FC<
       ))}
     </View>
   );
-  
+
   if (!displayContent) {
     return null;
   }

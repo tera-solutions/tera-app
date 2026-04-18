@@ -16,6 +16,7 @@ export const zaloOpenApi = import.meta.env.VITE_TERA_ZALO_OPEN_API;
 
 export const socketUrl = import.meta.env.VITE_TERA_SOCKET;
 
-export const viettelPostEndpoint = import.meta.env.VITE_TERA_VIETTEL_POST_OPEN_API;
+export const viettelPostEndpoint = import.meta.env
+  .VITE_TERA_VIETTEL_POST_OPEN_API;
 
 export const facebookEndpoint = import.meta.env.VITE_TERA_FACEBOOK_API;

@@ -73,7 +73,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 15,
-    borderRadius: 8
+    borderRadius: 8,
   },
   actionText: {
     fontSize: 15,

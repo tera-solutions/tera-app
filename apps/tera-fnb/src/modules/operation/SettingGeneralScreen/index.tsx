@@ -139,7 +139,9 @@ const SettingGeneralScreen: React.FC = () => {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Quản lý kho</Text>
-              <TouchableOpacity onPress={() => console.tron('Info Quản lý kho')}>
+              <TouchableOpacity
+                onPress={() => console.tron('Info Quản lý kho')}
+              >
                 <Icon source="information-outline" size={20} color="#9CA3AF" />
               </TouchableOpacity>
             </View>

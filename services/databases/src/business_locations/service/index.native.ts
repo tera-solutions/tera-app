@@ -1,9 +1,9 @@
-import DB from '@databases/database.native';
-import { Q } from '@nozbe/watermelondb';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { syncManager } from '@services/sync/SyncManager';
-import IBusinessLocation from '../models/business_locations';
-import BusinessLocation from '../models/business_locations.native';
+import DB from "@databases/database.native";
+import { Q } from "@nozbe/watermelondb";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { syncManager } from "@services/sync/SyncManager";
+import IBusinessLocation from "../models/business_locations";
+import BusinessLocation from "../models/business_locations.native";
 
 const BusinessLocationService = {
   /**
@@ -11,11 +11,11 @@ const BusinessLocationService = {
    * Thường dùng cho db_ver, token, hoặc cấu hình ngành hàng
    */
   upsert: async (data: IBusinessLocation) => {
-    const collection = DB.instance.get<BusinessLocation>('business_locations');
+    const collection = DB.instance.get<BusinessLocation>("business_locations");
 
     const result = await DB.instance.write(async () => {
       const existing = await collection
-        .query(Q.where('id', data?.id ?? ''))
+        .query(Q.where("id", data?.id ?? ""))
         .fetch();
 
       const cleanData: any = { ...data, is_dirty: 1 };
@@ -37,11 +37,11 @@ const BusinessLocationService = {
 
     if (result?.id) {
       await syncManager.addQueue({
-        table_name: 'business_locations',
-        type: 'background',
+        table_name: "business_locations",
+        type: "background",
         record_id: result.id,
         payload: { ...data, id: result.id },
-        action: data.id ? 'UPDATE' : 'CREATE',
+        action: data.id ? "UPDATE" : "CREATE",
       });
     }
 
@@ -49,14 +49,14 @@ const BusinessLocationService = {
   },
 
   getTotalRows: async (): Promise<any> => {
-    const collection = DB.instance.get<BusinessLocation>('business_locations');
+    const collection = DB.instance.get<BusinessLocation>("business_locations");
 
-    return await collection.query(Q.where('is_delete', 0)).count;
+    return await collection.query(Q.where("is_delete", 0)).count;
   },
   fetchAll: async () => {
-    const collection = DB.instance.get<BusinessLocation>('business_locations');
+    const collection = DB.instance.get<BusinessLocation>("business_locations");
     const records = await collection
-      .query([Q.sortBy('updated_at', Q.desc)])
+      .query([Q.sortBy("updated_at", Q.desc)])
       .unsafeFetchRaw();
 
     return records;
@@ -65,13 +65,13 @@ const BusinessLocationService = {
     filter: any = {
       page: 1,
       limit: 20,
-      sort: 'desc',
+      sort: "desc",
     },
   ): Promise<any> => {
     try {
       if (!DB.instance) {
         // Nếu chưa init mà đã call instance thì sẽ gây lỗi property 'get' of null
-        console.log('Database chưa được khởi tạo!');
+        console.log("Database chưa được khởi tạo!");
         return [];
       }
 
@@ -81,42 +81,42 @@ const BusinessLocationService = {
       delete filter?.page;
 
       const collection =
-        DB.instance.get<BusinessLocation>('business_locations');
+        DB.instance.get<BusinessLocation>("business_locations");
 
       const queryClauses: any[] = [
-        Q.sortBy('updated_at', Q.desc),
+        Q.sortBy("updated_at", Q.desc),
         Q.skip((page - 1) * pageSize),
         Q.take(pageSize),
       ];
       Object.keys(filter).forEach((key) => {
         const value = filter[key];
         if (value !== undefined && value !== null) {
-          if (key === 'name' || key === 'address') {
+          if (key === "name" || key === "address") {
             queryClauses.push(
               Q.where(
                 key,
                 Q.like(`%${Q.sanitizeLikeString(value?.toLowerCase())}%`),
               ),
             );
-          } else if (key === '_status') {
-            queryClauses.push(Q.where('_status', Q.notEq('synced')));
-          } else if (key === 'sort') {
-            if (value === 'desc') {
-              queryClauses.push(Q.sortBy('server_id', Q.desc));
+          } else if (key === "_status") {
+            queryClauses.push(Q.where("_status", Q.notEq("synced")));
+          } else if (key === "sort") {
+            if (value === "desc") {
+              queryClauses.push(Q.sortBy("server_id", Q.desc));
             } else {
-              queryClauses.push(Q.sortBy('server_id', Q.asc));
+              queryClauses.push(Q.sortBy("server_id", Q.asc));
             }
           } else {
             queryClauses.push(Q.where(key, value));
           }
         }
       });
-      console.log('queryClauses', queryClauses);
+      console.log("queryClauses", queryClauses);
 
       const result = await collection.query(...queryClauses).fetch();
       return result;
     } catch (error) {
-      console.error('ERROR', error);
+      console.error("ERROR", error);
       return [];
     }
   },
@@ -124,19 +124,19 @@ const BusinessLocationService = {
   getAllDelete: async (): Promise<any> => {
     try {
       if (!DB.instance) {
-        console.log('Database chưa được khởi tạo!');
+        console.log("Database chưa được khởi tạo!");
         return [];
       }
 
       const collection =
-        DB.instance.get<BusinessLocation>('business_locations');
+        DB.instance.get<BusinessLocation>("business_locations");
 
       // const result = await (collection as any).experimentalGetDeletedIds();
 
-      const result = await collection.query(Q.where('is_delete', 1)).fetch();
+      const result = await collection.query(Q.where("is_delete", 1)).fetch();
       return result;
     } catch (error) {
-      console.error('ERROR', error);
+      console.error("ERROR", error);
       return [];
     }
   },
@@ -145,13 +145,13 @@ const BusinessLocationService = {
    * GetValue: Tự động Parse dữ liệu khi lấy ra
    */
   getDetail: async (id: string): Promise<any> => {
-    const collection = DB.instance.get<BusinessLocation>('business_locations');
+    const collection = DB.instance.get<BusinessLocation>("business_locations");
 
     const conditions = [];
-    console.log('id', id);
+    console.log("id", id);
 
     if (id) {
-      conditions.push(Q.where('id', id));
+      conditions.push(Q.where("id", id));
     }
 
     const records = await collection.query(...conditions).fetch();
@@ -166,7 +166,7 @@ const BusinessLocationService = {
    * Lấy toàn bộ danh sách cấu hình (Observable cho UI)
    */
   observeBusinessLocations: () => {
-    const collection = DB.instance.get<BusinessLocation>('business_locations');
+    const collection = DB.instance.get<BusinessLocation>("business_locations");
     return collection.query().observe();
   },
 
@@ -174,7 +174,7 @@ const BusinessLocationService = {
    * Xóa một cấu hình theo Key
    */
   deleteByKey: async (id: string) => {
-    const collection = DB.instance.get<BusinessLocation>('business_locations');
+    const collection = DB.instance.get<BusinessLocation>("business_locations");
 
     try {
       const recordExist = await collection.find(id);
@@ -182,10 +182,10 @@ const BusinessLocationService = {
       if (recordExist) {
         await recordExist.markAsDeleted();
         await syncManager.addQueue({
-          table_name: 'business_locations',
-          type: 'background',
+          table_name: "business_locations",
+          type: "background",
           record_id: id,
-          action: 'DELETE',
+          action: "DELETE",
         });
       }
     } catch (error) {
@@ -197,7 +197,7 @@ const BusinessLocationService = {
       // Lưu ý: Lệnh này xóa trực tiếp trong SQLite, rất nhanh
       console.tron(`Data local being truncateTable!`);
       await DB.instance.adapter.unsafeExecute({
-        sqls: [['delete from business_locations', []]],
+        sqls: [["delete from business_locations", []]],
       });
     });
   },
@@ -212,7 +212,7 @@ const BusinessLocationService = {
       if (!DB.instance) return;
 
       const collection =
-        DB.instance.get<BusinessLocation>('business_locations');
+        DB.instance.get<BusinessLocation>("business_locations");
 
       // 1. Thu thập IDs để query một lần (Batch Query)
       const serverIds = dataTables.map((l) => l.id as number);
@@ -221,9 +221,9 @@ const BusinessLocationService = {
         .map((d) => d.client_id as string);
 
       const [existingByServerId, existingByClientId] = await Promise.all([
-        collection.query(Q.where('server_id', Q.oneOf(serverIds))).fetch(),
+        collection.query(Q.where("server_id", Q.oneOf(serverIds))).fetch(),
         clientIds.length
-          ? collection.query(Q.where('id', Q.oneOf(clientIds))).fetch()
+          ? collection.query(Q.where("id", Q.oneOf(clientIds))).fetch()
           : [],
       ]);
 
@@ -247,12 +247,12 @@ const BusinessLocationService = {
 
           const mapCommonFields = (record: BusinessLocation) => {
             record.server_id = serverId;
-            record.location_id = data.location_id ?? '';
-            record.name = data.name ?? '';
-            record.mobile = data.mobile ?? '';
-            record.address = data.address ?? '';
-            record.ward = data.ward ?? '';
-            record.city = data.city ?? '';
+            record.location_id = data.location_id ?? "";
+            record.name = data.name ?? "";
+            record.mobile = data.mobile ?? "";
+            record.address = data.address ?? "";
+            record.ward = data.ward ?? "";
+            record.city = data.city ?? "";
             record.last_sync_at = last_sync_at;
 
             // QUAN TRỌNG: Chỉ set synced nếu không có thay đổi local đang chờ
@@ -266,7 +266,7 @@ const BusinessLocationService = {
               existing.prepareUpdate((record) => {
                 mapCommonFields(record);
                 record._raw = Object.assign({}, record._raw, {
-                  _status: 'synced',
+                  _status: "synced",
                 });
               }),
             );
@@ -274,18 +274,18 @@ const BusinessLocationService = {
             operations.push(
               collection.prepareCreate((record) => {
                 if (data?.client_id) {
-                  console.tron('created ===== new ', data?.client_id);
+                  console.tron("created ===== new ", data?.client_id);
                   // record._raw.id = data?.client_id.toString();
                 }
                 mapCommonFields(record);
 
                 if (!data?.client_id || index === 0) {
                   record._raw = Object.assign({}, record._raw, {
-                    _status: 'updated',
+                    _status: "updated",
                   });
                 } else {
                   record._raw = Object.assign({}, record._raw, {
-                    _status: 'synced',
+                    _status: "synced",
                   });
                 }
               }),
@@ -299,7 +299,7 @@ const BusinessLocationService = {
         }
       });
     } catch (error) {
-      console.error('bulkUpdate ERROR: ', error);
+      console.error("bulkUpdate ERROR: ", error);
     }
   },
   upsertMapping: async (dataTables: Array<any>, last_sync_at: number) => {
@@ -312,12 +312,12 @@ const BusinessLocationService = {
         const mapCommonFields: any = {
           id: data?.client_id.toString(),
           server_id: serverId,
-          location_id: data.location_id ?? '',
-          name: data.name ?? '',
-          mobile: data.mobile ?? '',
-          address: data.address ?? '',
-          ward: data.ward ?? '',
-          city: data.city ?? '',
+          location_id: data.location_id ?? "",
+          name: data.name ?? "",
+          mobile: data.mobile ?? "",
+          address: data.address ?? "",
+          ward: data.ward ?? "",
+          city: data.city ?? "",
           last_sync_at: last_sync_at,
           is_new_address: data?.is_new_address ?? 0,
           is_default: data?.is_default ?? 0,
@@ -354,9 +354,9 @@ const BusinessLocationService = {
     try {
       await BusinessLocationService.truncateTable();
       await AsyncStorage.removeItem(`business_locations:lastPulledAt`);
-      console.log('Clear all data business_locations');
+      console.log("Clear all data business_locations");
     } catch (error) {
-      console.error('Dexie Delete Error:', error);
+      console.error("Dexie Delete Error:", error);
     }
   },
   // syncData: async () => {

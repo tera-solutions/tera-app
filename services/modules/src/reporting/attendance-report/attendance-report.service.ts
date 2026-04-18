@@ -1,7 +1,9 @@
-
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
+import {
+  useQueryAdapter,
+  useMutationAdapter,
+} from "@tera/commons/hooks/queryAdapter";
 import { AttendanceReportAPI } from "@tera/api";
 import {
   CreatePayload,
@@ -36,11 +38,13 @@ export const useAttendanceReportCreate = () => {
   return useMutationAdapter({
     mutationFn: (payload: CreatePayload) => AttendanceReportAPI.create(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["attendance-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["attendance-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -50,11 +54,30 @@ export const useAttendanceReportUpdate = () => {
   return useMutationAdapter({
     mutationFn: (payload: UpdatePayload) => AttendanceReportAPI.update(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["attendance-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["attendance-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
+  });
+};
+
+export const useUpsertAttendanceReport = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => {
+      if (payload?.id) return AttendanceReportAPI.update(payload);
+      return AttendanceReportAPI.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
   });
 };
 
@@ -64,11 +87,13 @@ export const useAttendanceReportDelete = () => {
   return useMutationAdapter({
     mutationFn: (payload: DeletePayload) => AttendanceReportAPI.delete(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["attendance-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["attendance-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -84,7 +109,7 @@ export const useAttendanceReportExport = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -93,6 +118,7 @@ export const AttendanceReportService = {
   useAttendanceReportDetail,
   useAttendanceReportCreate,
   useAttendanceReportUpdate,
+  useUpsertAttendanceReport,
   useAttendanceReportDelete,
-  useAttendanceReportExport
+  useAttendanceReportExport,
 };

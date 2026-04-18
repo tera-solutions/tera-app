@@ -1,7 +1,7 @@
-import colors from '@tera/commons/constants/colors';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { ActivityIndicator, ActivityIndicatorProps } from 'react-native-paper';
+import colors from "@tera/commons/constants/colors";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { ActivityIndicator, ActivityIndicatorProps } from "react-native-paper";
 
 export interface LoadingProps extends ActivityIndicatorProps {
   children: React.ReactElement | React.ReactNode;
@@ -32,23 +32,23 @@ export const Loading = ({
 
 const styles = StyleSheet.create({
   loadingContainer: {
-    position: 'relative',
+    position: "relative",
   },
   loadingMark: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     top: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#b3b3b3ff',
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#b3b3b3ff",
     opacity: 0.05,
     zIndex: 998,
   },
   loadingIndicator: {
-    position: 'absolute',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
+    position: "absolute",
+    left: "50%",
+    top: "50%",
+    transform: "translate(-50%, -50%)",
     zIndex: 999,
   },
 });

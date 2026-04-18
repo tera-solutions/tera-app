@@ -1,4 +1,7 @@
-import { useQueryLegacy, useMutationLegacy } from "@tera/commons/hooks/tanstack";
+import {
+  useQueryLegacy,
+  useMutationLegacy,
+} from "@tera/commons/hooks/tanstack";
 
 import PaginationCustom from "@tera/components/web/PaginationCustom";
 import ActionCUD from "@tera/components/web/TableColumnCustom/ActionCUD";

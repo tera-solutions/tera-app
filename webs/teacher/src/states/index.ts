@@ -1,8 +1,8 @@
-import { createContext } from 'react';
-import { IAuthStore } from './_interface';
-import { AuthStore } from './authStore';
-import { CommonStore } from './commonStore';
-import { ConfirmStore } from './confirmStore';
+import { createContext } from "react";
+import { IAuthStore } from "./_interface";
+import { AuthStore } from "./authStore";
+import { CommonStore } from "./commonStore";
+import { ConfirmStore } from "./confirmStore";
 
 export class RootStore {
   authStore: IAuthStore;

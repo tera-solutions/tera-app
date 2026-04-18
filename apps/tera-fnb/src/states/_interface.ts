@@ -1,4 +1,4 @@
-import { IAuthStore } from "@tera/store";
+import { IAuthStore } from '@tera/store';
 
 export type IndustryKey =
   | 'general'

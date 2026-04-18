@@ -5,7 +5,7 @@ import translationEN from "@tera/assets/locales/en/translation.json";
 
 const resources = {
   en: { translation: translationEN },
-  vi: { translation: translationVI }
+  vi: { translation: translationVI },
 };
 
 i18n.use(initReactI18next).init({

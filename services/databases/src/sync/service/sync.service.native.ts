@@ -3,20 +3,20 @@ import {
   ISyncType,
   SpecificTables,
   SyncStatus,
-} from '@tera/commons/interfaces';
-import BusinessLocationService from '@databases/business_locations/service/index.native';
-import DB from '@databases/database';
-import { synchronize } from '@nozbe/watermelondb/sync';
-import { SyncAPI } from '@services/api/SyncAPI';
-import moment from 'moment';
+} from "@tera/commons/interfaces";
+import BusinessLocationService from "@databases/business_locations/service/index.native";
+import DB from "@databases/database";
+import { synchronize } from "@nozbe/watermelondb/sync";
+import { SyncAPI } from "@services/api/SyncAPI";
+import moment from "moment";
 
-import { handleClearApp } from '@tera/commons/utils/helper';
-import CustomerService from '@databases/customer/service/index.native';
-import GeneralService from '@databases/general/service/index.native';
-import SyncQueueService from '@databases/sync_queues/service/index.native';
-import TableVersionService from '@databases/table_version/service/index.native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { rootStore } from '@states/index';
+import { handleClearApp } from "@tera/commons/utils/helper";
+import CustomerService from "@databases/customer/service/index.native";
+import GeneralService from "@databases/general/service/index.native";
+import SyncQueueService from "@databases/sync_queues/service/index.native";
+import TableVersionService from "@databases/table_version/service/index.native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { rootStore } from "@states/index";
 
 interface TableChanges {
   created: any[];
@@ -33,10 +33,10 @@ export const resetDatabase = async (shouldReset: boolean) => {
     // Phải bọc trong database.write
     await DB.instance.write(async () => {
       await DB.instance.unsafeResetDatabase();
-      console.log('❌ RESET DATABASE WATERMELON ❌');
+      console.log("❌ RESET DATABASE WATERMELON ❌");
     });
 
-    console.log(' call handleClearApp');
+    console.log(" call handleClearApp");
 
     await handleClearApp();
   }
@@ -58,7 +58,7 @@ export const hasChangesTable = (table: any): boolean => {
       table?.deleted?.length > 0
     );
   } catch (err) {
-    console.tron('ERR', err);
+    console.tron("ERR", err);
     return false;
   }
 };
@@ -68,9 +68,9 @@ export const mappingDataQueue = async (queueData: any[]) => {
 
   // Map mapping giữa action record và key trong IChangeProps
   const actionMap: Record<string, string> = {
-    CREATE: 'created',
-    UPDATE: 'updated',
-    DELETE: 'deleted',
+    CREATE: "created",
+    UPDATE: "updated",
+    DELETE: "deleted",
   };
 
   queueData.forEach((item) => {
@@ -93,7 +93,7 @@ export const mappingDataQueue = async (queueData: any[]) => {
     }
 
     // 4. Parse payload và push vào mảng tương ứng
-    if (action === 'DELETE') {
+    if (action === "DELETE") {
       const deletedId = record_id as string;
       if (deletedId) {
         changes[tableName]!.deleted.push(deletedId);
@@ -101,7 +101,7 @@ export const mappingDataQueue = async (queueData: any[]) => {
     } else {
       try {
         const data =
-          typeof payload === 'string' && payload !== ''
+          typeof payload === "string" && payload !== ""
             ? JSON.parse(payload)
             : payload || {};
 
@@ -132,7 +132,7 @@ const getUniqueTableNames = (queueList: any[]): string[] => {
   const uniqueTables = [
     ...new Set(
       queueList
-        .filter((item) => item.action === 'GET')
+        .filter((item) => item.action === "GET")
         .map((item) => item.table_name),
     ),
   ];
@@ -206,7 +206,7 @@ export const mappingDataServer = async (
 
     if (changes?.settings?.device_code) {
       generals.push({
-        key: 'settings',
+        key: "settings",
         value: changes?.settings,
         version: version,
       });
@@ -214,7 +214,7 @@ export const mappingDataServer = async (
 
     if (changes?.users?.id) {
       generals.push({
-        key: 'users',
+        key: "users",
         value: changes?.users,
         version: version,
       });
@@ -222,7 +222,7 @@ export const mappingDataServer = async (
 
     if (changes?.business?.id) {
       generals.push({
-        key: 'business',
+        key: "business",
         value: changes?.business,
         version: version,
       });
@@ -236,7 +236,7 @@ export const mappingDataServer = async (
     }
     return { safeChanges: safeChanges, registry: registry };
   } catch (error) {
-    console.error('ERROR SYNC DB: ', error);
+    console.error("ERROR SYNC DB: ", error);
     return { safeChanges: safeChanges, registry: registry };
   }
 };
@@ -245,19 +245,19 @@ export const updateLastSyncData = async (syncRegistry: any) => {
   try {
     if (syncRegistry.business_locations.pulled) {
       await TableVersionService.updateLastSync(
-        'business_locations',
+        "business_locations",
         syncRegistry.business_locations.timestamp,
         syncRegistry.business_locations.version,
       );
       console.tron(
-        'Pull step finished logic',
+        "Pull step finished logic",
         syncRegistry.business_locations,
         moment
           .unix(syncRegistry.business_locations.timestamp)
-          .format('HH:mm:ss'),
+          .format("HH:mm:ss"),
       );
     }
-    console.tron('FULL SYNC COMPLETED SUCCESSFULLY', syncRegistry);
+    console.tron("FULL SYNC COMPLETED SUCCESSFULLY", syncRegistry);
   } catch (error) {
     throw new Error(error instanceof Error ? error.message : String(error));
   }
@@ -273,7 +273,7 @@ export const syncDataFromServer = async (
   });
   if (!queueList?.length) return;
   const tables = await getUniqueTableNames(queueList);
-  console.tron('tables', tables);
+  console.tron("tables", tables);
   let lastPulledAt = moment().unix();
 
   if (tables?.length > 0) {
@@ -281,16 +281,16 @@ export const syncDataFromServer = async (
       database: DB.instance,
       pullChanges: async () => {
         const localPullAt = await AsyncStorage.getItem(
-          `${tables.join('_')}:lastPulledAt`,
+          `${tables.join("_")}:lastPulledAt`,
         );
-        console.log('localPullAt', localPullAt);
+        console.log("localPullAt", localPullAt);
         const response = await SyncAPI.pullChanges({
-          tables: tables.join(', '),
+          tables: tables.join(", "),
           updated_at: localPullAt
-            ? moment(Number(localPullAt) * 1000).format('YYYY-MM-DD HH:mm:ss')
+            ? moment(Number(localPullAt) * 1000).format("YYYY-MM-DD HH:mm:ss")
             : undefined,
         });
-        console.tron('get new from server', response);
+        console.tron("get new from server", response);
 
         const { changes, timestamp, db_version } = response;
         lastPulledAt = timestamp || moment().unix();
@@ -299,7 +299,7 @@ export const syncDataFromServer = async (
           timestamp,
           db_version,
         );
-        console.tron('changes', safeChanges);
+        console.tron("changes", safeChanges);
         return {
           changes: safeChanges,
           timestamp: Number(lastPulledAt) * 1000,
@@ -310,18 +310,18 @@ export const syncDataFromServer = async (
       .then(async () => {
         await SyncQueueService.bulkUpdateStatus(queueList, SyncStatus.COMPLETE);
         AsyncStorage.setItem(
-          `${tables.join('_')}:lastPulledAt`,
+          `${tables.join("_")}:lastPulledAt`,
           String(lastPulledAt),
         );
-        if (tables.includes('customers')) {
+        if (tables.includes("customers")) {
           await CustomerService.checkCleanData();
         }
         rootStore.generalStore.fetchSettingsFromLocal();
         rootStore.uiStore.fetchBusinessFromLocal();
       })
       .catch(async (err: any) => {
-        const errorMessage = err?.message || 'Unknown Error';
-        console.tron('ERROR SYNC DB:', errorMessage);
+        const errorMessage = err?.message || "Unknown Error";
+        console.tron("ERROR SYNC DB:", errorMessage);
       });
   }
 };
@@ -346,12 +346,12 @@ export const pushDataToServer = async (
 
     const result = await SyncAPI.pushChanges({
       changes: changes,
-      updated_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+      updated_at: moment().format("YYYY-MM-DD HH:mm:ss"),
     });
-    console.log('pushChanges result', result);
+    console.log("pushChanges result", result);
 
     if (result?.code === 200 && result?.success === true) {
-      console.log('pushChanges success');
+      console.log("pushChanges success");
       await SyncQueueService.bulkUpdateStatus(queueList, SyncStatus.COMPLETE);
       return result?.success;
     }

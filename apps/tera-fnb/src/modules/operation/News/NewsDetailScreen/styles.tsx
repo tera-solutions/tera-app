@@ -111,6 +111,6 @@ export const styles = StyleSheet.create({
     backgroundColor: '#000', // Màu xanh lá cây
     borderRadius: 25,
     elevation: 8,
-    opacity: 0.6
+    opacity: 0.6,
   },
 });

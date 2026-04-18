@@ -1,6 +1,6 @@
-import { parseValue } from '@tera/commons/utils';
-import { useLiveQuery } from 'dexie-react-hooks';
-import DB from '../../database';
+import { parseValue } from "@tera/commons/utils";
+import { useLiveQuery } from "dexie-react-hooks";
+import DB from "../../database";
 
 export const useGeneralConfig = <T = any>(
   key: string,

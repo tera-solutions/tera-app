@@ -138,8 +138,8 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: '#F3F4F6',
     fontSize: 15,
-    height: "auto",
-    maxHeight: 100, 
+    height: 'auto',
+    maxHeight: 100,
   },
   sendButton: {
     width: 40,

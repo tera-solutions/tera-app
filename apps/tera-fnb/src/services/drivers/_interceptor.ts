@@ -84,7 +84,8 @@ export const _requestError = (err: any) => {
   if (typeof message === 'string') {
     error.message = message;
   } else {
-    error.message = 'Lỗi hệ thống! Vui lòng kiểm tra lại mạng internet của máy!';
+    error.message =
+      'Lỗi hệ thống! Vui lòng kiểm tra lại mạng internet của máy!';
   }
   throw error;
 };

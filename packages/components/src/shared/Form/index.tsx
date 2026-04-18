@@ -1,10 +1,10 @@
-import React, { JSX } from 'react';
-import { FieldValues, FormProvider, UseFormReturn } from 'react-hook-form';
-import { StyleSheet } from 'react-native';
-import { FormDateTime, FormDateTimeProps } from './FormDateTime';
-import { FormInput, FormInputProps } from './FormInput';
-import { FormInputPassword, FormInputPasswordProps } from './FormInputPassword';
-import { FormSwitch, FormSwitchProps } from './FormSwitch';
+import React, { JSX } from "react";
+import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";
+import { StyleSheet } from "react-native";
+import { FormDateTime, FormDateTimeProps } from "./FormDateTime";
+import { FormInput, FormInputProps } from "./FormInput";
+import { FormInputPassword, FormInputPasswordProps } from "./FormInputPassword";
+import { FormSwitch, FormSwitchProps } from "./FormSwitch";
 
 interface IFormProps<T extends FieldValues> {
   children: React.ReactNode;

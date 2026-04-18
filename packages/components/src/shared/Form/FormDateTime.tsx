@@ -1,6 +1,6 @@
-import { DateTime } from '@components/ui/DateTime';
-import { Controller, useFormContext } from 'react-hook-form';
-import { StyleSheet, Text, View } from 'react-native';
+import { DateTime } from "@components/ui/DateTime";
+import { Controller, useFormContext } from "react-hook-form";
+import { StyleSheet, Text, View } from "react-native";
 
 export interface FormDateTimeProps {
   name: string;
@@ -22,17 +22,14 @@ export const FormDateTime: React.FC<FormDateTimeProps> = ({
       <Text style={styles.inputLabel}>{label}</Text>
       <Controller
         control={control}
-        render={({
-          field: { onChange, value },
-          fieldState: { error },
-        }) => (
+        render={({ field: { onChange, value }, fieldState: { error } }) => (
           <View>
             <View
               style={[styles.inputValueWrapper, !!error && styles.inputError]}
             >
               <DateTime
                 style={styles.textInput}
-                value={value ?? ''}
+                value={value ?? ""}
                 onChange={onChange}
                 {...rest}
               />
@@ -55,29 +52,29 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: "#9CA3AF",
     marginBottom: 5,
   },
   inputValueWrapper: {
-    flexDirection: 'row',
-    alignContent: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignContent: "center",
+    justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: "#E5E7EB",
   },
   inputError: {
-    borderBottomColor: '#dd1515',
+    borderBottomColor: "#dd1515",
   },
   textInput: {
     flex: 1,
     fontSize: 16,
     paddingHorizontal: 0,
-    color: '#1F2937',
+    color: "#1F2937",
     borderWidth: 0,
-    backgroundColor: 'translate',
+    backgroundColor: "translate",
   },
   textError: {
-    color: '#dd1515',
+    color: "#dd1515",
     fontSize: 14,
     marginTop: 5,
   },

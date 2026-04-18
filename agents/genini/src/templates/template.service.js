@@ -58,6 +58,23 @@ export const use${Entity}Update = () => {
   });
 };
 
+export const useUpsert${Entity} = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => {
+      if (payload?.id) return ${Entity}API.update(payload);
+      return ${Entity}API.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const use${Entity}Delete = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -93,6 +110,7 @@ export const ${Entity}Service = {
   use${Entity}Detail,
   use${Entity}Create,
   use${Entity}Update,
+  useUpsert${Entity},
   use${Entity}Delete,
   use${Entity}Export
 };

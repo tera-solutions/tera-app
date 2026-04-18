@@ -1,12 +1,12 @@
-import { endpointCRM } from '@tera/commons/constants/common';
-import api from '@services/@tera/api/drivers';
+import { endpointCRM } from "@tera/commons/constants/common";
+import api from "@services/@tera/api/drivers";
 import {
   createPayload,
   deletePayload,
   detailPayload,
   listPayload,
   updatePayload,
-} from '@tera/api/_interface.ts';
+} from "@tera/api/_interface.ts";
 
 export const CustomerAPI = {
   getList: async ({ params }: listPayload) =>

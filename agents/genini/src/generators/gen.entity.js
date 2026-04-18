@@ -4,7 +4,9 @@ const { toPascal, writeFile } = require("../core/utils");
 const apiTemplate = require("../templates/template.api");
 const serviceTemplate = require("../templates/template.service");
 
-const MODULES = require("../modules.config").MODULES;
+const configPath = path.resolve(__dirname, `../modules.config.json`);
+
+const MODULES = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 
 module.exports = function (domain, entity, options) {
   const module = MODULES[domain];

@@ -1,12 +1,12 @@
-import { messageValidate } from '@tera/commons/constants/message';
-import { FormTeraItem } from '@tera/components/dof/FormTera';
-import { FormTeraItemProps } from '@tera/components/dof/FormTera/FormTeraItem';
-import { useTeraForm } from '@tera/components/dof/FormTera/TeraFormContext';
-import customTwMerge, { tw } from 'tailwind-merge.config';
-import { InputNumberProps } from 'tera-dls';
-import InputNumber from '../InputNumber';
-import { useCallback, useEffect } from 'react';
-import _ from 'lodash';
+import { messageValidate } from "@tera/commons/constants/message";
+import { FormTeraItem } from "@tera/components/dof/FormTera";
+import { FormTeraItemProps } from "@tera/components/dof/FormTera/FormTeraItem";
+import { useTeraForm } from "@tera/components/dof/FormTera/TeraFormContext";
+import customTwMerge, { tw } from "tailwind-merge.config";
+import { InputNumberProps } from "tera-dls";
+import InputNumber from "../InputNumber";
+import { useCallback, useEffect } from "react";
+import _ from "lodash";
 interface IProps {
   startFormName: string;
   endFormName: string;
@@ -22,8 +22,8 @@ interface IProps {
 }
 const RangeNumber = (props: IProps) => {
   const {
-    startFormName = 'start',
-    endFormName = 'end',
+    startFormName = "start",
+    endFormName = "end",
     startFormItemProps = {},
     endFormItemProps = {},
     startInputProps = {},
@@ -58,7 +58,7 @@ const RangeNumber = (props: IProps) => {
   }, [startFormNameWatching, endFormNameWatching, triggerAll]);
 
   return (
-    <div className={tw(customTwMerge('flex gap-2.5', wrapperClassName))}>
+    <div className={tw(customTwMerge("flex gap-2.5", wrapperClassName))}>
       <FormTeraItem
         name={startFormName}
         rules={[

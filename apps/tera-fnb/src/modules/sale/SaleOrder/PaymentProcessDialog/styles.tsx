@@ -44,10 +44,10 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6B7280',
     marginBottom: 10,
-    textAlign: "center"
+    textAlign: 'center',
   },
   paidInput: {
-    fontSize: 36, 
+    fontSize: 36,
     height: 60,
     fontWeight: 'bold',
     color: '#3B82F6',
@@ -113,8 +113,8 @@ export const styles = StyleSheet.create({
 
   // Shipping Options Section (MỚI)
   shippingOptionsSection: {
-      width: '100%',
-      paddingHorizontal: 10,
+    width: '100%',
+    paddingHorizontal: 10,
   },
   shippingRow: {
     flexDirection: 'row',

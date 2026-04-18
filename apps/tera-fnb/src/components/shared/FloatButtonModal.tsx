@@ -133,7 +133,7 @@ export const floatStyles = StyleSheet.create({
   },
   textStyle: {
     fontSize: 16,
-    color: colors.textPrimary
+    color: colors.textPrimary,
   },
 });
 

@@ -14,9 +14,9 @@ interface State {
 class MyErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { 
-        hasError: false,
-        error: null 
+    this.state = {
+      hasError: false,
+      error: null,
     };
   }
 
@@ -27,7 +27,7 @@ class MyErrorBoundary extends Component<Props, State> {
 
   // Ghi nhận lỗi vào các dịch vụ như Sentry/LogRocket nếu cần
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo);
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 
   handleReset = () => {
@@ -45,7 +45,7 @@ class MyErrorBoundary extends Component<Props, State> {
         <View style={styles.container}>
           <Text style={styles.title}>Rất tiếc, đã có lỗi xảy ra!</Text>
           <Text style={styles.message}>
-            {this.state.error?.message || "Không thể tải module này."}
+            {this.state.error?.message || 'Không thể tải module này.'}
           </Text>
           <TouchableOpacity style={styles.button} onPress={this.handleReset}>
             <Text style={styles.buttonText}>Thử lại</Text>

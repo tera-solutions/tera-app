@@ -1,7 +1,9 @@
-
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
+import {
+  useQueryAdapter,
+  useMutationAdapter,
+} from "@tera/commons/hooks/queryAdapter";
 import { ClassUtilizationReportAPI } from "@tera/api";
 import {
   CreatePayload,
@@ -34,13 +36,16 @@ export const useClassUtilizationReportCreate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: CreatePayload) => ClassUtilizationReportAPI.create(payload),
+    mutationFn: (payload: CreatePayload) =>
+      ClassUtilizationReportAPI.create(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["class-utilization-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["class-utilization-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -48,13 +53,33 @@ export const useClassUtilizationReportUpdate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => ClassUtilizationReportAPI.update(payload),
+    mutationFn: (payload: UpdatePayload) =>
+      ClassUtilizationReportAPI.update(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["class-utilization-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["class-utilization-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
+  });
+};
+
+export const useUpsertClassUtilizationReport = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => {
+      if (payload?.id) return ClassUtilizationReportAPI.update(payload);
+      return ClassUtilizationReportAPI.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
   });
 };
 
@@ -62,13 +87,16 @@ export const useClassUtilizationReportDelete = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => ClassUtilizationReportAPI.delete(payload),
+    mutationFn: (payload: DeletePayload) =>
+      ClassUtilizationReportAPI.delete(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["class-utilization-report", "list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["class-utilization-report", "list"],
+      });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -76,7 +104,8 @@ export const useClassUtilizationReportExport = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => ClassUtilizationReportAPI.export(payload),
+    mutationFn: (payload: ExportPayload) =>
+      ClassUtilizationReportAPI.export(payload),
     onSuccess: (res) => {
       if (res?.data?.link) {
         window.open(res?.data?.link, "_blank");
@@ -84,7 +113,7 @@ export const useClassUtilizationReportExport = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -93,6 +122,7 @@ export const ClassUtilizationReportService = {
   useClassUtilizationReportDetail,
   useClassUtilizationReportCreate,
   useClassUtilizationReportUpdate,
+  useUpsertClassUtilizationReport,
   useClassUtilizationReportDelete,
-  useClassUtilizationReportExport
+  useClassUtilizationReportExport,
 };

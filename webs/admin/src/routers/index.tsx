@@ -36,8 +36,10 @@ export const Routers = () => {
       >
         <Route index element={<Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        {/* BLOCK:student */
-        <Route path="/student/lesson/list" element={<LessonListPage />} />}
+        {
+          /* BLOCK:student */
+          <Route path="/student/lesson/list" element={<LessonListPage />} />
+        }
         <Route path="/student/list" element={<StudentListPage />} />
         <Route path="/student/create" element={<StudentCreatePage />} />
         <Route path="/student/update/:id" element={<StudentUpdatePage />} />

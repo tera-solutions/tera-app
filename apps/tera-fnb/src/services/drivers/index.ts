@@ -31,13 +31,19 @@ const get = (endpoints?: any, params?: any, headers?: any) => {
       .catch(_requestError);
   }
   return instance
-    .get(`${endpoints}${params ? `?${qs.stringify(params)}` : ''}`, { timeout: 30000, ...headers })
+    .get(`${endpoints}${params ? `?${qs.stringify(params)}` : ''}`, {
+      timeout: 30000,
+      ...headers,
+    })
     .then(_requestResponse)
     .catch(_requestError);
 };
 
 const getAll = async (endpoints?: any, params?: any, headers?: any) => {
-  const { data: res } = await get(endpoints, params, { timeout: 30000, ...headers });
+  const { data: res } = await get(endpoints, params, {
+    timeout: 30000,
+    ...headers,
+  });
   const { limit, page, total } = res.metadata;
   const totalPage = Math.round(total / limit);
   const listRequests = [];

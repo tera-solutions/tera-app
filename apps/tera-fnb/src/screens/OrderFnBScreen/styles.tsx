@@ -87,14 +87,14 @@ export const styles = StyleSheet.create({
 
   // ScrollView Content
   scrollView: {
-      flex: 1,
+    flex: 1,
   },
   scrollContent: {
-      paddingHorizontal: 15,
-      paddingVertical: 10,
-      backgroundColor: '#F9FAFB'
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: '#F9FAFB',
   },
-  
+
   // Quick Actions (Mang về, Giao hàng)
   quickActionsContainer: {
     flexDirection: 'row',
@@ -161,7 +161,7 @@ export const styles = StyleSheet.create({
   areaStatusText: {
     fontSize: 14,
     color: '#ff0000ff',
-    fontFamily: FONT_FAMILY.BOLD
+    fontFamily: FONT_FAMILY.BOLD,
   },
   tableListRow: {
     justifyContent: 'space-between',
