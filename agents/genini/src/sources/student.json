@@ -1,0 +1,43 @@
+{
+  "module": "education",
+  "prefix": "edu",
+  "entity": "student",
+  "block": "student",
+  "title": "học viên",
+  "router": {
+    "list": "/student/list",
+    "create": "/student/create",
+    "update": "/student/update/:id",
+    "detail": "/student/detail/:id"
+  },
+  "buttons": ["create", "detail", "update", "delete", "export", "filter"],
+  "fields": [
+    {
+      "key": "code",
+      "title": "Mã học viên",
+      "required": true,
+      "type": "string",
+      "width": 100
+    },
+    {
+      "key": "name",
+      "title": "Tên học viên",
+      "required": true,
+      "type": "string",
+      "width": 200
+    },
+    {
+      "key": "level",
+      "title": "Cấp độ",
+      "required": true,
+      "type": "number",
+      "width": 200
+    },
+    {
+      "key": "status",
+      "title": "Trạng thái",
+      "type": "string",
+      "width": 200
+    }
+  ]
+}

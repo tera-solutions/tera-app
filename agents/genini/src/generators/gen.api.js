@@ -1,6 +1,6 @@
 const path = require("path");
 const { toPascal, writeFile } = require("../core/utils");
-const template = require("../core/template.api");
+const template = require("../templates/template.api");
 
 const MODULES = require("../modules.config").MODULES;
 

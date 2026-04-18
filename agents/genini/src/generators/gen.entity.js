@@ -1,8 +1,8 @@
 const path = require("path");
 const fs = require("fs");
 const { toPascal, writeFile } = require("../core/utils");
-const apiTemplate = require("../core/template.api");
-const serviceTemplate = require("../core/template.service");
+const apiTemplate = require("../templates/template.api");
+const serviceTemplate = require("../templates/template.service");
 
 const MODULES = require("../modules.config").MODULES;
 
