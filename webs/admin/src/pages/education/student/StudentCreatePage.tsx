@@ -1,8 +1,8 @@
+/* Import: library */
 import { useRef } from "react";
 import { observer } from "mobx-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-
 import {
   ArrowSmallLeftSolid,
   Breadcrumb,
@@ -11,10 +11,12 @@ import {
   ArrowLeftOutlined,
 } from "tera-dls";
 
+/* Import: packages */
 import { IFormRef } from "@tera/commons/interfaces";
 import useConfirm from "@tera/commons/hooks/useConfirm";
 import { messageWarning } from "@tera/commons/constants/message";
 
+/* Import: pages */
 import StudentForm from "./containers/StudentForm";
 
 const StudentCreatePage = observer(() => {
@@ -47,8 +49,8 @@ const StudentCreatePage = observer(() => {
   };
 
   return (
-    <div className="tera-page-form !gap-0 relative">
-      <div className="sticky top-[45px] z-10 bg-[#F3F3F9]">
+    <div className="tera-page-form gap-0! relative">
+      <div className="sticky top-11.5 z-10 bg-[#F3F3F9]">
         <div className="page-header-v2">
           <div className="page-header-v2__breadcrumb">
             <div

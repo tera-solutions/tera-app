@@ -5,6 +5,9 @@ const templateTable = require("../templates/template.page-table");
 const templateFilter = require("../templates/template.page-filter");
 const templateList = require("../templates/template.page-list");
 const templateForm = require("../templates/template.page-form");
+const templateCreatePage = require("../templates/template.page-create");
+const templateUpdatePage = require("../templates/template.page-update");
+const templateDetailPage = require("../templates/template.page-detail");
 
 const args = process.argv.slice(2);
 
@@ -51,12 +54,12 @@ export const ${ENTITY.toUpperCase()}_PAGE_URL = {
   },
   detail: {
     key: PAGE_KEY.${ENTITY.toUpperCase()}_DETAIL_VIEW,
-    path: (id: string) => "/${ENTITY}/detail/" + id,
+    path: (id: number) => "/${ENTITY}/detail/" + id,
     shortenUrl: "/${ENTITY}/detail/:id",
   },
   update: {
     key: PAGE_KEY.${ENTITY.toUpperCase()}_UPDATE_VIEW,
-    path: (id: string) => "/${ENTITY}/update/" + id,
+    path: (id: number) => "/${ENTITY}/update/" + id,
     shortenUrl: "/${ENTITY}/update/:id",
   },
 };
@@ -181,7 +184,12 @@ function writeFileSafe(filePath, content) {
 }
 
 function generateRoute({ Entity, router }) {
-  return `        <Route path="${router.list}" element={<${Entity}ListPage />} />`;
+  return `
+        {/* BLOCK:${Entity} */}
+        <Route path="${router.list}" element={<${Entity}ListPage />} />
+        <Route path="${router.create}" element={<${Entity}CreatePage />} />
+        <Route path="${router.update}" element={<${Entity}UpdatePage />} />
+        <Route path="${router.detail}" element={<${Entity}DetailPage />} />`;
 }
 
 function insertRoute(filePath, content, entity, block) {
@@ -192,7 +200,7 @@ function insertRoute(filePath, content, entity, block) {
     return;
   }
 
-  const marker = `/* BLOCK:${block} */`;
+  const marker = `{/* BLOCK:router */}`;
 
   if (!file.includes(marker)) {
     throw new Error(`❌ Block not found: ${block}`);
@@ -208,11 +216,16 @@ function insertRoute(filePath, content, entity, block) {
 function insertImport(filePath, ENTITY, moduleName, entity, block) {
   let file = fs.readFileSync(filePath, "utf-8");
 
-  const importLine = `import ${ENTITY}ListPage from "pages/${moduleName}/${entity}/${ENTITY}ListPage";`;
+  const importLine = `
+/* IMPORT:${ENTITY} */
+import ${ENTITY}ListPage from "pages/${moduleName}/${entity}/${ENTITY}ListPage";
+import ${ENTITY}CreatePage from "pages/${moduleName}/${entity}/${ENTITY}CreatePage";
+import ${ENTITY}UpdatePage from "pages/${moduleName}/${entity}/${ENTITY}UpdatePage";
+import ${ENTITY}DetailPage from "pages/${moduleName}/${entity}/${ENTITY}DetailPage";`;
 
   if (file.includes(importLine)) return;
 
-  const marker = `/* IMPORT:${block} */`;
+  const marker = `/* IMPORT:router */`;
 
   if (!file.includes(marker)) {
     throw new Error(`❌ Import block not found: ${block}`);
@@ -337,6 +350,42 @@ const formContent = templateForm({
 writeFileSafe(`${containersDir}/${Entity}Form.tsx`, formContent);
 
 console.log("✅ Generated Form:", entity);
+
+/**
+ * ===== Generate Create Page =====
+ */
+const createContent = templateCreatePage({
+  Entity,
+  entity,
+});
+
+writeFileSafe(`${baseDir}/${Entity}CreatePage.tsx`, createContent);
+
+console.log("✅ Generated Create Page:", entity);
+
+/**
+ * ===== Generate Update Page =====
+ */
+const updateContent = templateUpdatePage({
+  Entity,
+  entity,
+});
+
+writeFileSafe(`${baseDir}/${Entity}UpdatePage.tsx`, updateContent);
+
+console.log("✅ Generated Update Page:", entity);
+
+/**
+ * ===== Generate Detail Page =====
+ */
+const detailContent = templateDetailPage({
+  Entity,
+  entity,
+});
+
+writeFileSafe(`${baseDir}/${Entity}DetailPage.tsx`, detailContent);
+
+console.log("✅ Generated Detail Page:", entity);
 
 const permissionFilePath = path.resolve(
   __dirname,

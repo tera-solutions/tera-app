@@ -40,7 +40,7 @@ const ${Entity}Table = ({ params, setParams }) => {
   const { mutate: onDelete, isPending: isDeleting } =
     ${Entity}Service.use${Entity}Delete();
 
-  const itemsAction = useCallback((item: IStudent): DropdownItem[] => [
+  const itemsAction = useCallback((item: I${Entity}): DropdownItem[] => [
     {
       key: "detail",
       label: t("button.detail"),

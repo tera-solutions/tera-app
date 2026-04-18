@@ -8,27 +8,52 @@ import {
   ArrowSmallLeftSolid,
   Breadcrumb,
   Button,
+  BookmarkOutlined,
   ArrowLeftOutlined,
 } from "tera-dls";
 
 /* Import: packages */
 import { IFormRef } from "@tera/commons/interfaces";
+import useConfirm from "@tera/commons/hooks/useConfirm";
+import { messageWarning } from "@tera/commons/constants/message";
 
 /* Import: services */
-import { StudentService } from "@tera/modules";
+import { LessonService } from "@tera/modules";
 
 /* Import: pages */
-import StudentForm from "./containers/StudentForm";
+import LessonForm from "./containers/LessonForm";
 
-const StudentDetailPage = observer(() => {
+const LessonUpdatePage = observer(() => {
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const { id } = useParams();
 
   const { t } = useTranslation();
 
   const actionRef = useRef<IFormRef>(null);
 
-  const { data, isPending } = StudentService.useStudentDetail({ id });
+  const { data, isPending } = LessonService.useLessonDetail({ id });
+
+  const handleCloseConfirm = async () => {
+    if (await actionRef.current?.getIsDirty()) {
+      confirm.warning({
+        title: t("common.exit_title"),
+        content: (
+          <>
+            <p>{messageWarning.WARNING_EXIT_1}</p>
+            <p>{messageWarning.WARNING_EXIT_2}</p>
+          </>
+        ),
+        onOk: () => navigate(-1),
+      });
+    } else {
+      navigate(-1);
+    }
+  };
+
+  const handleSaveForm = () => {
+    actionRef?.current?.submit();
+  };
 
   return (
     <div className="tera-page-form gap-0! relative">
@@ -37,7 +62,7 @@ const StudentDetailPage = observer(() => {
           <div className="page-header-v2__breadcrumb">
             <div
               className="page-header__breadcrumb-back cursor-pointer"
-              onClick={() => navigate(-1)}
+              onClick={handleCloseConfirm}
             >
               <ArrowSmallLeftSolid className="h-6 w-6" />
             </div>
@@ -46,31 +71,29 @@ const StudentDetailPage = observer(() => {
               items={[
                 {
                   title: (
-                    <a onClick={() => navigate(-1)}>
+                    <a onClick={handleCloseConfirm}>
                       <span className="text-blue-400! hover:text-blue-600!">
-                        {t("student.list")}
+                        {t("lesson.list")}
                       </span>
                     </a>
                   ),
                 },
                 {
-                  title: t("student.update"),
+                  title: t("lesson.update"),
                 },
               ]}
             />
           </div>
         </div>
       </div>
+
       <div className="w-full max-w-3xl mx-auto">
         <div className="bg-white rounded-[5px] w-full p-4">
           <Spin spinning={isPending}>
-            <StudentForm
-              type="detail"
-              dataDetail={data?.data}
-              ref={actionRef}
-            />
+            <LessonForm dataDetail={data?.data} ref={actionRef} type="update" />
           </Spin>
         </div>
+
         <div className="flex justify-between gap-2 mt-4">
           <Button
             onClick={() => navigate(-1)}
@@ -82,10 +105,22 @@ const StudentDetailPage = observer(() => {
               {t("button.back")}
             </span>
           </Button>
+
+          <Button
+            htmlType="submit"
+            type="success"
+            onClick={handleSaveForm}
+            className="page-header-btn px-3"
+          >
+            <BookmarkOutlined className="w-4 h-4 stroke-2" />
+            <span className="font-normal text-[16px] leading-4.5">
+              {t("button.save")}
+            </span>
+          </Button>
         </div>
       </div>
     </div>
   );
 });
 
-export default StudentDetailPage;
+export default LessonUpdatePage;

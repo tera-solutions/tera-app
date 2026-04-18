@@ -65,6 +65,12 @@ export const PAGE_KEY = {
   LESSON_CREATE_VIEW: "edu_lesson_create_view",
   LESSON_UPDATE_VIEW: "edu_lesson_update_view",
   LESSON_DELETE_VIEW: "edu_lesson_delete_view",
+
+  COURSE_LIST_VIEW: "edu_course_list_view",
+  COURSE_DETAIL_VIEW: "edu_course_detail_view",
+  COURSE_CREATE_VIEW: "edu_course_create_view",
+  COURSE_UPDATE_VIEW: "edu_course_update_view",
+  COURSE_DELETE_VIEW: "edu_course_delete_view",
 };
 
 export const TABLE_KEY = {

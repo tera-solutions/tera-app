@@ -15,12 +15,12 @@ import {
 import { IFormRef } from "@tera/commons/interfaces";
 
 /* Import: services */
-import { StudentService } from "@tera/modules";
+import { CourseService } from "@tera/modules";
 
 /* Import: pages */
-import StudentForm from "./containers/StudentForm";
+import CourseForm from "./containers/CourseForm";
 
-const StudentDetailPage = observer(() => {
+const CourseDetailPage = observer(() => {
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -28,7 +28,7 @@ const StudentDetailPage = observer(() => {
 
   const actionRef = useRef<IFormRef>(null);
 
-  const { data, isPending } = StudentService.useStudentDetail({ id });
+  const { data, isPending } = CourseService.useCourseDetail({ id });
 
   return (
     <div className="tera-page-form gap-0! relative">
@@ -48,29 +48,27 @@ const StudentDetailPage = observer(() => {
                   title: (
                     <a onClick={() => navigate(-1)}>
                       <span className="text-blue-400! hover:text-blue-600!">
-                        {t("student.list")}
+                        {t("course.list")}
                       </span>
                     </a>
                   ),
                 },
                 {
-                  title: t("student.update"),
+                  title: t("course.detail"),
                 },
               ]}
             />
           </div>
         </div>
       </div>
+
       <div className="w-full max-w-3xl mx-auto">
         <div className="bg-white rounded-[5px] w-full p-4">
           <Spin spinning={isPending}>
-            <StudentForm
-              type="detail"
-              dataDetail={data?.data}
-              ref={actionRef}
-            />
+            <CourseForm type="detail" dataDetail={data?.data} ref={actionRef} />
           </Spin>
         </div>
+
         <div className="flex justify-between gap-2 mt-4">
           <Button
             onClick={() => navigate(-1)}
@@ -88,4 +86,4 @@ const StudentDetailPage = observer(() => {
   );
 });
 
-export default StudentDetailPage;
+export default CourseDetailPage;

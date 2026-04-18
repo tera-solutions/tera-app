@@ -1,0 +1,83 @@
+/* Import: library */
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useForm } from "react-hook-form";
+import { Row } from "tera-dls";
+
+/* Import: packages */
+import Filter from "@tera/components/web/Filter";
+import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+import { Input } from "@tera/components/dof/Control";
+
+/* Import: pages */
+import { ICourseForm } from "pages/education/course/_interface";
+
+const defaultValues: ICourseForm = {
+  code: undefined,
+  name: undefined,
+  level: undefined,
+  status: undefined,
+};
+
+interface CourseFilterProps {
+  open: boolean;
+  initialValue: ICourseForm;
+  onClose: () => void;
+  onFilter: (value: ICourseForm) => void;
+}
+
+const CourseFilter = ({
+  open,
+  onClose,
+  onFilter,
+  initialValue,
+}: CourseFilterProps) => {
+  const { t } = useTranslation();
+  const form = useForm<ICourseForm>();
+
+  useEffect(() => {
+    form.reset(initialValue);
+  }, [initialValue, form]);
+
+  const handleSubmit = form.handleSubmit((value) => {
+    const data: any = Object.fromEntries(
+      Object.entries(value).map(([k, v]) => [k, v?.trim() || undefined]),
+    );
+
+    onFilter(data);
+    onClose();
+  });
+
+  const handleReset = () => {
+    form.reset(defaultValues);
+    onFilter(defaultValues);
+    onClose();
+  };
+
+  return (
+    <Filter open={open} onClose={onClose} onFilter={handleSubmit}>
+      <FormTera form={form} onSubmit={handleSubmit}>
+        <Row className="grid gap-y-0">
+          <FormTeraItem label={t("course.code")} name="code">
+            <Input placeholder={t("course.code")} />
+          </FormTeraItem>
+          <FormTeraItem label={t("course.name")} name="name">
+            <Input placeholder={t("course.name")} />
+          </FormTeraItem>
+          <FormTeraItem label={t("course.level")} name="level">
+            <Input placeholder={t("course.level")} />
+          </FormTeraItem>
+          <FormTeraItem label={t("course.status")} name="status">
+            <Input placeholder={t("course.status")} />
+          </FormTeraItem>
+        </Row>
+
+        <span className="text-red-500 cursor-pointer" onClick={handleReset}>
+          {t("button.clear_filter")}
+        </span>
+      </FormTera>
+    </Filter>
+  );
+};
+
+export default CourseFilter;

@@ -1,0 +1,43 @@
+{
+  "module": "education",
+  "prefix": "edu",
+  "entity": "course",
+  "block": "course",
+  "title": "khóa học",
+  "router": {
+    "list": "/course/list",
+    "create": "/course/create",
+    "update": "/course/update/:id",
+    "detail": "/course/detail/:id"
+  },
+  "buttons": ["create", "detail", "update", "delete", "export", "filter"],
+  "fields": [
+    {
+      "key": "code",
+      "title": "Mã khóa học",
+      "required": true,
+      "type": "string",
+      "width": 100
+    },
+    {
+      "key": "name",
+      "title": "Tên khóa học",
+      "required": true,
+      "type": "string",
+      "width": 200
+    },
+    {
+      "key": "level",
+      "title": "Cấp độ",
+      "required": true,
+      "type": "number",
+      "width": 200
+    },
+    {
+      "key": "status",
+      "title": "Trạng thái",
+      "type": "string",
+      "width": 200
+    }
+  ]
+}

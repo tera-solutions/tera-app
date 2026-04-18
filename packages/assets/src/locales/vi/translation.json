@@ -46,5 +46,16 @@
     "name": "Tên học viên",
     "level": "Cấp độ",
     "status": "Trạng thái"
+  },
+  "course": {
+    "title": "DANH SÁCH KHÓA HỌC",
+    "list": "Danh sách khóa học",
+    "create": "Thêm mới khóa học",
+    "update": "Cập nhật khóa học",
+    "detail": "Chi tiết khóa học",
+    "code": "Mã khóa học",
+    "name": "Tên khóa học",
+    "level": "Cấp độ",
+    "status": "Trạng thái"
   }
 }

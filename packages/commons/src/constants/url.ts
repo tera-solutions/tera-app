@@ -294,3 +294,26 @@ export const LESSON_PAGE_URL = {
     shortenUrl: "/lesson/update/:id",
   },
 };
+
+export const COURSE_PAGE_URL = {
+  list: {
+    key: PAGE_KEY.COURSE_LIST_VIEW,
+    path: "/course/list",
+    shortenUrl: "/course/list",
+  },
+  create: {
+    key: PAGE_KEY.COURSE_CREATE_VIEW,
+    path: "/course/create",
+    shortenUrl: "/course/create",
+  },
+  detail: {
+    key: PAGE_KEY.COURSE_DETAIL_VIEW,
+    path: (id: number) => "/course/detail/" + id,
+    shortenUrl: "/course/detail/:id",
+  },
+  update: {
+    key: PAGE_KEY.COURSE_UPDATE_VIEW,
+    path: (id: number) => "/course/update/" + id,
+    shortenUrl: "/course/update/:id",
+  },
+};

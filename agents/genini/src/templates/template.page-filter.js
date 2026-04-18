@@ -18,7 +18,7 @@ module.exports = ({ ENTITY, Entity, moduleName, fields }) => {
           value = "undefined";
         }
 
-        return `    ${f.key}: ${value},`;
+        return `  ${f.key}: ${value},`;
       })
       .join("\n");
   }
@@ -57,7 +57,7 @@ const ${Entity}Filter = ({ open, onClose, onFilter, initialValue }: ${Entity}Fil
   }, [initialValue, form]);
 
   const handleSubmit = form.handleSubmit((value) => {
-    const data = Object.fromEntries(
+    const data:any = Object.fromEntries(
       Object.entries(value).map(([k, v]) => [k, v?.trim() || undefined])
     );
 
