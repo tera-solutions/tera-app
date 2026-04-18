@@ -1,36 +1,57 @@
+/* Import: library */
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { DropdownItem, PaginationProps } from "tera-dls";
 import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdown";
 
-import { StudentService } from "@tera/modules";
+/* Import: packages */
 import { TableTera } from "@tera/components/dof";
 import { STUDENT_PAGE_URL } from "@tera/commons/constants/url";
+import useConfirm from "@tera/commons/hooks/useConfirm";
+
+/* Import: services */
+import { StudentService } from "@tera/modules";
+
+/* Import: pages */
+import { IStudent } from "pages/education/student/_interface";
 
 const StudentTable = ({ params, setParams }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const confirm = useConfirm();
 
   const { data, isPending } = StudentService.useStudentList(params);
   const { mutate: onDelete, isPending: isDeleting } =
     StudentService.useStudentDelete();
 
-  const itemsAction = (item): DropdownItem[] => {
+  const itemsAction = (item: IStudent): DropdownItem[] => {
     return [
       {
-        key: 1,
-        label: t("button.view"),
-        onClick: () => navigate(STUDENT_PAGE_URL.view.path(item?.id)),
+        key: "button.detail",
+        label: t("button.detail"),
+        onClick: () => navigate(STUDENT_PAGE_URL.detail.path(item?.id)),
       },
       {
-        key: 2,
+        key: "button.edit",
         label: t("button.edit"),
         onClick: () => navigate(STUDENT_PAGE_URL.update.path(item?.id)),
       },
       {
-        key: 3,
+        key: "button.delete",
         label: <span className="text-red-500">{t("button.delete")}</span>,
-        onClick: () => onDelete({ id: item?.id }),
+        onClick: () => {
+          confirm.warning({
+            title: t("common.delete_confirm_title"),
+            content: (
+              <>
+                <p>{t("common.delete_confirm_question")}</p>
+              </>
+            ),
+            onOk: () => {
+              onDelete({ id: item?.id });
+            },
+          });
+        },
       },
     ];
   };
@@ -62,20 +83,22 @@ const StudentTable = ({ params, setParams }) => {
     },
     {
       title: "",
-      dataIndex: "action",
-      render: (record: any) => (
+      dataIndex: "id",
+      render: (value: string, record: IStudent) => (
         <ActionDropdown dropdownItems={itemsAction(record)} trigger="click" />
       ),
     },
   ];
 
   const handleChangePage: PaginationProps["onChange"] = (page, pageSize) => {
-    const isDiffPageSize = params?.limit && pageSize !== Number(params?.limit);
-    setParams({
-      ...params,
+    const isDiffPageSize =
+      params?.pageSize && pageSize !== Number(params?.pageSize);
+
+    setParams((prev) => ({
+      ...prev,
       page: isDiffPageSize ? 1 : page,
-      limit: pageSize,
-    });
+      pageSize,
+    }));
   };
 
   return (

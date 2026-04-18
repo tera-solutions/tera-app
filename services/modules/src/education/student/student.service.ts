@@ -1,7 +1,9 @@
-
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { useQueryAdapter, useMutationAdapter } from "@tera/commons/hooks/queryAdapter";
+import {
+  useQueryAdapter,
+  useMutationAdapter,
+} from "@tera/commons/hooks/queryAdapter";
 import { StudentAPI } from "@tera/api";
 import {
   CreatePayload,
@@ -40,7 +42,7 @@ export const useStudentCreate = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -54,7 +56,24 @@ export const useStudentUpdate = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
+  });
+};
+
+export const useUpsertStudent = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => {
+      if (payload?.id) return StudentAPI.update(payload);
+      return StudentAPI.create(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
   });
 };
 
@@ -68,13 +87,12 @@ export const useStudentDelete = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
 export const useStudentExport = () => {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: ExportPayload) => StudentAPI.export(payload),
     onSuccess: (res) => {
@@ -84,7 +102,7 @@ export const useStudentExport = () => {
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
-    }
+    },
   });
 };
 
@@ -93,6 +111,7 @@ export const StudentService = {
   useStudentDetail,
   useStudentCreate,
   useStudentUpdate,
+  useUpsertStudent,
   useStudentDelete,
-  useStudentExport
+  useStudentExport,
 };

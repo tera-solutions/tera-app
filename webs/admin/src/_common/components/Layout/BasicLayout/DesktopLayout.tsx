@@ -2,12 +2,18 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
+import { useStores } from "@tera/stores/useStores";
+
 import { ModuleType } from "@tera/commons/interfaces/router";
+import ModalConfirm from "@tera/components/web/ModalConfirm";
 
 import MenuComponent from "../Menu";
 import InlineMenuV2 from "../Menu/InlineMenuV2";
 
 function BasicLayout({ module }: { module?: ModuleType }) {
+  const {
+    confirmStore: { openConfirm },
+  } = useStores();
   const [isExpand, setIsExpand] = useState<boolean>(true);
 
   return (
@@ -26,6 +32,7 @@ function BasicLayout({ module }: { module?: ModuleType }) {
           </div>
         </div>
       </div>
+      {openConfirm && <ModalConfirm />}
     </>
   );
 }

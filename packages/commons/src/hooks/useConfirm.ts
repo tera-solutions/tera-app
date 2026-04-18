@@ -1,5 +1,5 @@
-import { IConfirmStore } from "../stores/interface";
-import { useStores } from "./useStores";
+import { IConfirmStore } from "@tera/stores/_interface";
+import { useStores } from "@tera/stores/useStores";
 
 function useConfirm() {
   const {

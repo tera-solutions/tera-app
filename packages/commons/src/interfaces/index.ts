@@ -1,12 +1,14 @@
-export type SpecificTables =
-  | 'generals'
-  | 'table_version_logs'
-  | 'business_locations'
-  | 'customers';
+import { Ref } from "react";
 
-export type ISyncType = 'manual' | 'background' | 'realtime';
-export type ISyncStatus = 'queued' | 'running' | 'completed' | 'failed';
-export type ISyncAction = 'GET' | 'CREATE' | 'UPDATE' | 'DELETE';
+export type SpecificTables =
+  | "generals"
+  | "table_version_logs"
+  | "business_locations"
+  | "customers";
+
+export type ISyncType = "manual" | "background" | "realtime";
+export type ISyncStatus = "queued" | "running" | "completed" | "failed";
+export type ISyncAction = "GET" | "CREATE" | "UPDATE" | "DELETE";
 
 export interface IQueueProps {
   type: ISyncType;
@@ -14,10 +16,10 @@ export interface IQueueProps {
 }
 
 export const SyncStatus = Object.freeze({
-  QUEUED: 'queued',
-  RUNNING: 'running',
-  COMPLETE: 'completed',
-  FAILED: 'failed',
+  QUEUED: "queued",
+  RUNNING: "running",
+  COMPLETE: "completed",
+  FAILED: "failed",
 });
 
 export interface IFileUpload {
@@ -42,4 +44,21 @@ export interface EmployeeCreated {
 export interface ImportFile {
   file: string;
   overwrite: boolean;
+}
+
+export interface ITeraFormRef {
+  checkError: () => boolean;
+  getTotal: () => number;
+}
+
+export interface IFormRef {
+  checkError: () => boolean;
+  submit: () => void;
+  getIsDirty: () => boolean;
+}
+
+export interface IFormProps {
+  dataDetail?: any;
+  type: "create" | "update" | "detail";
+  ref: Ref<IFormRef>;
 }

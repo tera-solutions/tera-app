@@ -66,7 +66,11 @@ function FormTeraItem({
   );
   const config = useMemo(() => {
     const itemConfig = fields?.find((obj: any) => obj?.code === item_code);
-    if (!itemConfig) return { show: true, isRequired: !!validations?.required };
+    if (!itemConfig)
+      return {
+        show: true,
+        isRequired: !!validations?.required,
+      };
     return {
       ...itemConfig,
       field: {

@@ -26,6 +26,6 @@
     "skipLibCheck": true,
     "allowJs": true
   },
-  "include": ["src"],
+  "include": ["src", "../commons/src/hooks/useConfirm.ts"],
   "exclude": ["node_modules", "dist"]
 }

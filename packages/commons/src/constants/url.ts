@@ -134,14 +134,14 @@ export const STUDENT_PAGE_URL = {
     path: "/student/create",
     shortenUrl: "/student/create",
   },
-  view: {
+  detail: {
     key: PAGE_KEY.STUDENT_DETAIL_VIEW,
-    path: (id: string) => `/student/detail/${id}`,
+    path: (id: number) => `/student/detail/${id}`,
     shortenUrl: "/student/detail/:id",
   },
   update: {
     key: PAGE_KEY.STUDENT_UPDATE_VIEW,
-    path: (id: string) => `/student/update/${id}`,
+    path: (id: number) => `/student/update/${id}`,
     shortenUrl: "/student/update/:id",
   },
 };
@@ -271,3 +271,27 @@ export const FILE_MANAGEMENT_URL = {
 };
 
 export const CART_URL = "/cart";
+
+
+export const LESSON_PAGE_URL = {
+  list: {
+    key: PAGE_KEY.LESSON_LIST_VIEW,
+    path: "/lesson/list",
+    shortenUrl: "/lesson/list",
+  },
+  create: {
+    key: PAGE_KEY.LESSON_CREATE_VIEW,
+    path: "/lesson/create",
+    shortenUrl: "/lesson/create",
+  },
+  detail: {
+    key: PAGE_KEY.LESSON_DETAIL_VIEW,
+    path: (id: string) => "/lesson/detail/" + id,
+    shortenUrl: "/lesson/detail/:id",
+  },
+  update: {
+    key: PAGE_KEY.LESSON_UPDATE_VIEW,
+    path: (id: string) => "/lesson/update/" + id,
+    shortenUrl: "/lesson/update/:id",
+  },
+};

@@ -2,21 +2,47 @@
   "welcome": "Welcome to Hana English",
   "common": {
     "search_placeholder": "Tìm kiếm ...",
-    "error_message": "Lỗi bất thường! Vui lòng thử lại"
+    "error_message": "Lỗi bất thường! Vui lòng thử lại",
+    "delete_confirm_title": "XÁC NHẬN XÓA DỮ LIỆU",
+    "delete_confirm_question": "Bạn có chắc chắn muốn xóa dữ liệu?",
+    "exit_title": "Thoát bản ghi?"
+  },
+  "form": {
+    "enter_value": "Vui lòng nhập {{key}}."
+  },
+  "validate": {
+    "required": "Trường này bắt buộc nhập!",
+    "maxLength": "Không nhập quá {{maxLength}} ký tự!"
   },
   "button": {
     "create": "Thêm mới",
     "edit": "Sửa",
-    "view": "Xem",
+    "detail": "Xem",
     "delete": "Xóa",
     "save": "Lưu",
     "cancel": "Hủy",
+    "back": "Trờ lại",
     "export_excel": "Xuất Excel",
     "clear_filter": "Hủy bộ lọc"
   },
   "student": {
     "title": "DANH SÁCH HỌC VIÊN",
+    "list": "Danh sách học viên",
+    "create": "Thêm mới học viên",
+    "update": "Cập nhật học viên",
+    "detail": "Chi tiết học viên",
     "code": "Mã HV",
+    "name": "Tên học viên",
+    "level": "Cấp độ",
+    "status": "Trạng thái"
+  },
+  "lesson": {
+    "title": "DANH SÁCH BÀI HỌC",
+    "list": "Danh sách bài học",
+    "create": "Thêm mới bài học",
+    "update": "Cập nhật bài học",
+    "detail": "Chi tiết bài học",
+    "code": "Mã học viên",
     "name": "Tên học viên",
     "level": "Cấp độ",
     "status": "Trạng thái"

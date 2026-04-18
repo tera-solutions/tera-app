@@ -1,16 +1,22 @@
+/* Import: library */
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { Row } from "tera-dls";
 
+/* Import: packages */
 import Filter from "@tera/components/web/Filter";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import { Input } from "@tera/components/dof/Control";
 
-interface UserFilterProps {
+/* Import: pages */
+import { IStudentForm } from "pages/education/student/_interface";
+
+interface StudentFilterProps {
   open: boolean;
-  initialValue: any;
+  initialValue: IStudentForm;
   onClose: () => void;
-  onFilter: (value) => void;
+  onFilter: (value: IStudentForm) => void;
 }
 
 function StudentFilter({
@@ -18,31 +24,27 @@ function StudentFilter({
   onClose,
   onFilter,
   initialValue,
-}: UserFilterProps) {
+}: StudentFilterProps) {
   const { t } = useTranslation();
 
-  const form = useForm({
-    defaultValues: {
-      ...initialValue,
-    },
-  });
+  const form = useForm<IStudentForm>();
 
-  const handleSubmitForm = (value) => {
-    const data = {
-      ...value,
-    };
+  useEffect(() => {
+    form.reset(initialValue);
+  }, [initialValue, form]);
 
-    onFilter(data);
+  const handleSubmitForm = (value: IStudentForm) => {
+    onFilter(value);
     onClose();
   };
 
   const handleReset = () => {
-    const values = {
-      type: null,
-      is_active: null,
-      business_id: null,
+    const defaultValues: IStudentForm = {
+      code: undefined,
+      name: undefined,
     };
-    onFilter(values);
+    form.reset(defaultValues);
+    onFilter(defaultValues);
     onClose();
   };
 
@@ -51,23 +53,23 @@ function StudentFilter({
       open={open}
       onClose={onClose}
       onCancel={onClose}
-      onFilter={() => form?.handleSubmit(handleSubmitForm)()}
+      onFilter={() => form.handleSubmit(handleSubmitForm)()}
     >
-      <FormTera form={form} onSubmit={form?.handleSubmit(handleSubmitForm)}>
+      <FormTera form={form} onSubmit={form.handleSubmit(handleSubmitForm)}>
         <Row className="grid gap-y-0">
           <FormTeraItem label={t("student.code")} name="code">
             <Input placeholder={t("student.code")} />
           </FormTeraItem>
-           <FormTeraItem label={t("student.name")} name="name">
+          <FormTeraItem label={t("student.name")} name="name">
             <Input placeholder={t("student.name")} />
           </FormTeraItem>
         </Row>
-        <a
+        <span
           className="text-red-500 text-sm font-normal cursor-pointer"
-          onClick={() => handleReset()}
+          onClick={handleReset}
         >
           {t("button.clear_filter")}
-        </a>
+        </span>
       </FormTera>
     </Filter>
   );

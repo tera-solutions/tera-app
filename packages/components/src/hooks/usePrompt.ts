@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect } from "react";
 import { UNSAFE_NavigationContext as NavigationContext } from "react-router-dom";
-import useConfirm from "./useConfirm";
+import useConfirm from "@tera/commons/hooks/useConfirm";
 import { ModalProps } from "tera-dls";
 
 const useConfirmExit = (

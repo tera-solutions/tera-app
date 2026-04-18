@@ -7,7 +7,6 @@ import FormTeraItem from "./FormTeraItem";
 import FormWrapper from "./FormWrapper";
 import TableWrapper from "./TableWrapper";
 import TeraFormContext from "./TeraFormContext";
-import FormConfigApi from "./_api";
 import { FormTeraRefProps } from "./_interfaces";
 import useFormTera from "./useFormTera";
 
@@ -18,7 +17,8 @@ interface FormTeraProps {
   isUpdate?: boolean;
   isCreate?: boolean;
   isLoading?: boolean;
-  onSubmit?: (value) => void;
+  isDisabled?: boolean;
+  onSubmit?: (value: any) => void;
   schemaCustom?: yup.ObjectShape;
   wrapper_type?: "form" | "table";
   form?: any;
@@ -33,7 +33,7 @@ const FormTera = forwardRef<FormTeraRefProps, FormTeraProps>(
       object_id,
       isCreate,
       isUpdate,
-      //  isLoading,
+      isLoading,
       wrapper_type = "form",
       onSubmit,
       children,
@@ -43,16 +43,6 @@ const FormTera = forwardRef<FormTeraRefProps, FormTeraProps>(
     },
     ref,
   ) => {
-    const { data } = useQuery({
-      queryKey: ["get-tera-form", object_type, object_id],
-      queryFn: () => FormConfigApi.getConfig({ object_type, object_id }),
-      gcTime: 300000,
-      staleTime: 300000,
-      enabled: !!object_type,
-      retry: 2,
-      retryDelay: 10000,
-    });
-
     const defaultForm = useForm({
       defaultValues,
       mode: "onChange",
@@ -64,7 +54,6 @@ const FormTera = forwardRef<FormTeraRefProps, FormTeraProps>(
       console.log("value$$$$$", value);
       return value;
     };
-
     useImperativeHandle(
       ref,
       () => ({
@@ -89,16 +78,10 @@ const FormTera = forwardRef<FormTeraRefProps, FormTeraProps>(
         isUpdate={isUpdate}
         object_type={object_type}
         object_id={object_id}
-        fields={data?.fields}
         layout={{
-          title: data?.title,
-          type: data?.layout,
-          column: data?.column,
-          order: data?.order,
-          className: data?.class_name,
-          show: data?.status === "active" || !data?.code,
+          show: true,
         }}
-        isLoading={false}
+        isLoading={isLoading}
       >
         <Wrapper onSubmit={form.handleSubmit(onSubmit)} className={className}>
           {children}

@@ -59,6 +59,12 @@ export const PAGE_KEY = {
   STUDENT_CREATE_VIEW: "edu_student_create_view",
   STUDENT_UPDATE_VIEW: "edu_student_update_view",
   STUDENT_DELETE_VIEW: "edu_student_delete_view",
+
+  LESSON_LIST_VIEW: "edu_lesson_list_view",
+  LESSON_DETAIL_VIEW: "edu_lesson_detail_view",
+  LESSON_CREATE_VIEW: "edu_lesson_create_view",
+  LESSON_UPDATE_VIEW: "edu_lesson_update_view",
+  LESSON_DELETE_VIEW: "edu_lesson_delete_view",
 };
 
 export const TABLE_KEY = {
@@ -241,6 +247,11 @@ export const BUTTON_KEY = {
     "purchase_order_return_confirm_detail_confirm",
   PURCHASE_ORDER_RETURN_CONFIRM_DETAIL_REPORT:
     "purchase_order_return_confirm_detail_report",
+
+  LESSON_CREATE: "edu_lesson_create",
+  LESSON_UPDATE: "edu_lesson_update",
+  LESSON_DELETE: "edu_lesson_delete",
+  LESSON_EXPORT: "edu_lesson_export",
 };
 
 // PERMISSION

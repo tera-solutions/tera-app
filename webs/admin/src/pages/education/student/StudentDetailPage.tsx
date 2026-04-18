@@ -19,7 +19,7 @@ import { messageWarning } from "@tera/commons/constants/message";
 import StudentForm from "./containers/StudentForm";
 import { StudentService } from "@tera/modules";
 
-const StudentUpdatePage = observer(() => {
+const StudentDetailPage = observer(() => {
   const navigate = useNavigate();
   const confirm = useConfirm();
   const { id } = useParams();
@@ -30,27 +30,6 @@ const StudentUpdatePage = observer(() => {
 
   const { data, isPending } = StudentService.useStudentDetail({ id });
 
-  const handleCloseConfirm = async () => {
-    if (await actionRef.current?.getIsDirty()) {
-      confirm.warning({
-        title: t("common.exit_title"),
-        content: (
-          <>
-            <p>{messageWarning.WARNING_EXIT_1}</p>
-            <p>{messageWarning.WARNING_EXIT_2}</p>
-          </>
-        ),
-        onOk: () => {
-          navigate(-1);
-        },
-      });
-    } else navigate(-1);
-  };
-
-  const handleSaveForm = () => {
-    actionRef?.current?.submit();
-  };
-
   return (
     <div className="tera-page-form !gap-0 relative">
       <div className="sticky top-[45px] z-10 bg-[#F3F3F9]">
@@ -58,7 +37,7 @@ const StudentUpdatePage = observer(() => {
           <div className="page-header-v2__breadcrumb">
             <div
               className="page-header__breadcrumb-back cursor-pointer"
-              onClick={handleCloseConfirm}
+              onClick={() => navigate(-1)}
             >
               <ArrowSmallLeftSolid className="h-6 w-6" />
             </div>
@@ -67,7 +46,7 @@ const StudentUpdatePage = observer(() => {
               items={[
                 {
                   title: (
-                    <a onClick={handleCloseConfirm}>
+                    <a onClick={() => navigate(-1)}>
                       <span className="!text-blue-400 hover:!text-blue-600">
                         {t("student.list")}
                       </span>
@@ -86,9 +65,9 @@ const StudentUpdatePage = observer(() => {
         <div className="bg-white rounded-[5px] w-full p-4">
           <Spin spinning={isPending}>
             <StudentForm
+              type="detail"
               dataDetail={data?.data}
               ref={actionRef}
-              type="update"
             />
           </Spin>
         </div>
@@ -103,21 +82,10 @@ const StudentUpdatePage = observer(() => {
               {t("button.back")}
             </span>
           </Button>
-          <Button
-            htmlType="submit"
-            type="success"
-            onClick={handleSaveForm}
-            className="page-header-btn px-3"
-          >
-            <BookmarkOutlined className="w-4 h-4 stroke-2" />
-            <span className="font-normal text-[16px] leading-4.5">
-              {t("button.save")}
-            </span>
-          </Button>
         </div>
       </div>
     </div>
   );
 });
 
-export default StudentUpdatePage;
+export default StudentDetailPage;

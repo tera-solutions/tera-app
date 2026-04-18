@@ -1,25 +1,44 @@
-import { makeAutoObservable, toJS } from "mobx";
+import { makeAutoObservable, toJS, observable } from "mobx";
 import { IConfirmStore } from "./_interface";
 import * as CSS from "csstype";
 
 export class ConfirmStore {
   openConfirm = false;
-  onOk = null;
-  onCancel = null;
-  content = null;
-  type = null;
+  onOk: any = null;
+  onCancel: any = null;
+  content: any = null;
+  type: any = null;
   align: CSS.Property.TextAlign = "center";
   props = {} as any;
 
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(
+      this,
+      {
+        content: observable.ref,
+        props: observable.ref,
+        onOk: false,
+        onCancel: false,
+      },
+      { autoBind: true },
+    );
   }
+
   pushEvent() {
+    const snapshot = toJS({
+      openConfirm: this.openConfirm,
+      content: this.content,
+      type: this.type,
+      align: this.align,
+      props: this.props,
+    });
+
     const event = new CustomEvent("ConfirmStore", {
-      detail: toJS(this),
+      detail: snapshot,
     });
     window.dispatchEvent(event);
   }
+
   setOpenConfirm = (value: IConfirmStore) => {
     this.openConfirm = true;
     this.onOk = value?.onOk || null;

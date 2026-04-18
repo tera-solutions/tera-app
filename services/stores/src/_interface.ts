@@ -1,3 +1,6 @@
+import { ModalProps } from "tera-dls";
+import * as CSS from "csstype";
+
 export interface IGlobalStore {
   device: string;
   authenticated: boolean;
@@ -22,4 +25,10 @@ export interface IGlobalStore {
   updateAccessId: (access_id: string) => void;
   updateEpic: (epics: string[]) => void;
   updateBusiness: (business: any) => void;
+}
+
+export interface IConfirmStore extends ModalProps {
+  type?: "success" | "warning" | "error";
+  align?: CSS.Property.TextAlign;
+  [props: string]: any;
 }
