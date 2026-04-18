@@ -28,7 +28,8 @@ const LessonDetailPage = observer(() => {
 
   const actionRef = useRef<IFormRef>(null);
 
-  const { data, isPending } = LessonService.useLessonDetail({ id });
+  const { data, isPending } =
+    LessonService.useLessonDetail({ id });
 
   return (
     <div className="tera-page-form gap-0! relative">
@@ -65,7 +66,11 @@ const LessonDetailPage = observer(() => {
       <div className="w-full max-w-3xl mx-auto">
         <div className="bg-white rounded-[5px] w-full p-4">
           <Spin spinning={isPending}>
-            <LessonForm type="detail" dataDetail={data?.data} ref={actionRef} />
+            <LessonForm
+              type="detail"
+              dataDetail={data?.data}
+              ref={actionRef}
+            />
           </Spin>
         </div>
 

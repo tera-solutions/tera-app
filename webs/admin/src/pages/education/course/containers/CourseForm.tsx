@@ -17,9 +17,9 @@ import { ICourseForm } from "pages/education/course/_interface";
 
 const defaultValues: ICourseForm = {
   code: undefined,
-  name: undefined,
-  level: undefined,
-  status: undefined,
+name: undefined,
+level: undefined,
+status: undefined,
 };
 
 const CourseForm = forwardRef<any, IFormProps>(
@@ -33,7 +33,8 @@ const CourseForm = forwardRef<any, IFormProps>(
 
     const { reset, formState } = form;
 
-    const { mutate: onSubmit, isPending } = CourseService.useUpsertCourse();
+    const { mutate: onSubmit, isPending } =
+      CourseService.useUpsertCourse();
 
     useEffect(() => {
       if (dataDetail?.id) {
@@ -72,6 +73,7 @@ const CourseForm = forwardRef<any, IFormProps>(
         isDisabled={type === "detail"}
       >
         <Row className="grid grid-cols-1">
+
           <Col>
             <FormTeraItem
               label={t("course.code")}
@@ -82,7 +84,7 @@ const CourseForm = forwardRef<any, IFormProps>(
                     value: true,
                     message: t("validate.required"),
                   },
-                },
+                }
               ]}
             >
               <Input
@@ -103,7 +105,7 @@ const CourseForm = forwardRef<any, IFormProps>(
                     value: true,
                     message: t("validate.required"),
                   },
-                },
+                }
               ]}
             >
               <Input
@@ -124,7 +126,7 @@ const CourseForm = forwardRef<any, IFormProps>(
                     value: true,
                     message: t("validate.required"),
                   },
-                },
+                }
               ]}
             >
               <Input
@@ -136,7 +138,13 @@ const CourseForm = forwardRef<any, IFormProps>(
           </Col>
 
           <Col>
-            <FormTeraItem label={t("course.status")} name="status" rules={[]}>
+            <FormTeraItem
+              label={t("course.status")}
+              name="status"
+              rules={[
+                
+              ]}
+            >
               <Input
                 placeholder={t("form.enter_value", {
                   key: t("course.status"),

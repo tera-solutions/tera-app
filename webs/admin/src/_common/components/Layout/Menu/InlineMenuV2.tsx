@@ -157,7 +157,7 @@ const InlineMenuV2: React.FC<InlineMenuProps> = observer(
     };
 
     return (
-      <div className="hidden xmd:block fixed top-0 left-0 transition-all h-screen shrink-0 bg-gradient-to-b from-white to-[#F3F3F9] z-[1000]">
+      <div className="hidden xmd:block fixed top-0 left-0 transition-all h-screen shrink-0 bg-gradient-to-b from-white to-[#F3F3F9] z-50">
         <div className={menuClasses}>
           <div className="flex flex-col gap-y-5 items-center h-full">
             {/* Header: Logo & Toggle */}

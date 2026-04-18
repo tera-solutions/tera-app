@@ -10,10 +10,10 @@ import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import { Input } from "@tera/components/dof/Control";
 
 /* Import: pages */
-import { ICourseForm } from "pages/education/course/_interface";
+import { ICourse } from "pages/education/course/_interface";
 
-const defaultValues: ICourseForm = {
-  code: undefined,
+const defaultValues: ICourse = {
+    code: undefined,
   name: undefined,
   level: undefined,
   status: undefined,
@@ -21,27 +21,25 @@ const defaultValues: ICourseForm = {
 
 interface CourseFilterProps {
   open: boolean;
-  initialValue: ICourseForm;
+  initialValue: ICourse & {
+    page: number;
+    pageSize: number;
+  };
   onClose: () => void;
-  onFilter: (value: ICourseForm) => void;
+  onFilter: (value: ICourse) => void;
 }
 
-const CourseFilter = ({
-  open,
-  onClose,
-  onFilter,
-  initialValue,
-}: CourseFilterProps) => {
+const CourseFilter = ({ open, onClose, onFilter, initialValue }: CourseFilterProps) => {
   const { t } = useTranslation();
-  const form = useForm<ICourseForm>();
+  const form = useForm<ICourse>();
 
   useEffect(() => {
     form.reset(initialValue);
   }, [initialValue, form]);
 
   const handleSubmit = form.handleSubmit((value) => {
-    const data: any = Object.fromEntries(
-      Object.entries(value).map(([k, v]) => [k, v?.trim() || undefined]),
+    const data:any = Object.fromEntries(
+      Object.entries(value).map(([k, v]) => [k, v?.trim() || undefined])
     );
 
     onFilter(data);
@@ -58,6 +56,7 @@ const CourseFilter = ({
     <Filter open={open} onClose={onClose} onFilter={handleSubmit}>
       <FormTera form={form} onSubmit={handleSubmit}>
         <Row className="grid gap-y-0">
+          
           <FormTeraItem label={t("course.code")} name="code">
             <Input placeholder={t("course.code")} />
           </FormTeraItem>

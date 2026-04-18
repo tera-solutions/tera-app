@@ -8,15 +8,16 @@ import { Row } from "tera-dls";
 import Filter from "@tera/components/web/Filter";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import { Input } from "@tera/components/dof/Control";
+import { ListParams } from "@tera/commons/interfaces";
 
 /* Import: pages */
-import { IStudentForm } from "pages/education/student/_interface";
+import { IStudent } from "pages/education/student/_interface";
 
 interface StudentFilterProps {
   open: boolean;
-  initialValue: IStudentForm;
+  initialValue: ListParams<IStudent>;
   onClose: () => void;
-  onFilter: (value: IStudentForm) => void;
+  onFilter: (value: IStudent) => void;
 }
 
 function StudentFilter({
@@ -27,19 +28,19 @@ function StudentFilter({
 }: StudentFilterProps) {
   const { t } = useTranslation();
 
-  const form = useForm<IStudentForm>();
+  const form = useForm<IStudent>();
 
   useEffect(() => {
-    form.reset(initialValue);
+    form.reset(initialValue.filters);
   }, [initialValue, form]);
 
-  const handleSubmitForm = (value: IStudentForm) => {
+  const handleSubmitForm = (value: IStudent) => {
     onFilter(value);
     onClose();
   };
 
   const handleReset = () => {
-    const defaultValues: IStudentForm = {
+    const defaultValues: IStudent = {
       code: undefined,
       name: undefined,
     };

@@ -46,19 +46,44 @@ export interface ImportFile {
   overwrite: boolean;
 }
 
+export interface ListParams<TFilter = any> {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  filters?: TFilter;
+}
+
 export interface ITeraFormRef {
   checkError: () => boolean;
   getTotal: () => number;
 }
 
 export interface IFormRef {
-  checkError: () => boolean;
+  isValid: () => boolean;
   submit: () => void;
-  getIsDirty: () => boolean;
+  isDirty: () => boolean;
 }
+
+export type ITypeForm = "create" | "update" | "detail";
 
 export interface IFormProps {
   dataDetail?: any;
-  type: "create" | "update" | "detail";
+  type: ITypeForm;
   ref: Ref<IFormRef>;
+}
+
+export interface IModalProps {
+  open: boolean;
+  type: "create" | "update" | "detail";
+  onClose?: () => void;
+  onSuccess?: () => void;
+  id?: number;
+}
+
+export interface IStudentTable<T = any> {
+  params: ListParams<T>;
+  setParams: (value: ListParams<T> | ((prev: ListParams<T>) => ListParams<T>)) => void;
+  setModalData: (data: IModalProps) => void
 }

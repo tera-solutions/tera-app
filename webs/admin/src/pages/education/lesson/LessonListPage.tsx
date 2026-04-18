@@ -37,7 +37,10 @@ const LessonListPage = () => {
         onClickFilter={() => setIsFilter(true)}
         buttonCreatingKey={BUTTON_KEY.LESSON_CREATE}
         buttonAddRender={() => (
-          <Button onClick={() => navigate(LESSON_PAGE_URL.create.path)}>
+          <Button
+            onClick={() => navigate(LESSON_PAGE_URL.create.path)}
+            className="rounded-xsm shrink-0 px-2 py-1"
+          >
             <PlusCircleOutlined />
             {t("button.create")}
           </Button>
@@ -49,13 +52,7 @@ const LessonListPage = () => {
             onClick: () => onExport({ params }),
           },
         ]}
-        actionLeftRender={
-          <HeaderSearch
-            onSearch={(v) =>
-              setParams((p) => ({ ...p, keyword: v?.keyword, page: 1 }))
-            }
-          />
-        }
+        actionLeftRender={<HeaderSearch onSearch={(v) => setParams(p => ({...p, keyword: v?.keyword, page: 1}))} />}
       >
         <LessonTable params={params} setParams={setParams} />
       </HeaderViewList>
@@ -64,7 +61,7 @@ const LessonListPage = () => {
         <LessonFilter
           open={isFilter}
           onClose={() => setIsFilter(false)}
-          onFilter={(v) => setParams((p) => ({ ...p, ...v, page: 1 }))}
+          onFilter={(v) => setParams(p => ({ ...p, ...v, page: 1 }))}
           initialValue={params}
         />
       )}

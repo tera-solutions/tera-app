@@ -23,9 +23,9 @@ export interface ApiResponse<T = any> {
 // ==========================
 export interface PaginationMeta {
   page: number;
-  perPage: number;
+  per_page: number;
   total: number;
-  totalPages: number;
+  total_page: number;
 }
 
 export interface PaginatedResponse<T> {
@@ -38,7 +38,7 @@ export interface PaginatedResponse<T> {
 // ==========================
 export interface ListParams<TFilter = any> {
   page?: number;
-  perPage?: number;
+  per_page?: number;
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";

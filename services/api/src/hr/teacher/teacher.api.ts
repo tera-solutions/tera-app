@@ -1,3 +1,4 @@
+
 import { endpoint } from "@tera/api/_endpoint";
 import api from "@tera/api/drivers";
 import {
@@ -12,7 +13,7 @@ import {
 export const TeacherAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
-      .get(`${endpoint}/hr/teacher/list`, params)
+      .get(`${endpoint}/hr/teacher/list`, {...params, ...params?.filters})
       .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
@@ -34,7 +35,7 @@ export const TeacherAPI = {
     await api
       .delete(`${endpoint}/hr/teacher/delete/${id}`)
       .then((result) => result.data),
-
+  
   export: async ({ params }: ExportPayload) =>
     await api
       .post(`${endpoint}/hr/teacher/export`, params)

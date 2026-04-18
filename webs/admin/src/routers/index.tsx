@@ -52,6 +52,24 @@ export const Routers = () => {
 
         {/* BLOCK:router */}
 
+        {/* BLOCK:Lesson */}
+        <Route path="/student/lesson/list" element={<LessonListPage />} />
+        <Route path="/student/lesson/create" element={<LessonCreatePage />} />
+        <Route path="/student/lesson/update/:id" element={<LessonUpdatePage />} />
+        <Route path="/student/lesson/detail/:id" element={<LessonDetailPage />} />
+
+        {/* BLOCK:Lesson */}
+        <Route path="/student/lesson/list" element={<LessonListPage />} />
+        <Route path="/student/lesson/create" element={<LessonCreatePage />} />
+        <Route
+          path="/student/lesson/update/:id"
+          element={<LessonUpdatePage />}
+        />
+        <Route
+          path="/student/lesson/detail/:id"
+          element={<LessonDetailPage />}
+        />
+
         {/* BLOCK:Course */}
         <Route path="/course/list" element={<CourseListPage />} />
         <Route path="/course/create" element={<CourseCreatePage />} />

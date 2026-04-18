@@ -32,10 +32,11 @@ const LessonUpdatePage = observer(() => {
 
   const actionRef = useRef<IFormRef>(null);
 
-  const { data, isPending } = LessonService.useLessonDetail({ id });
+  const { data, isPending } =
+    LessonService.useLessonDetail({ id });
 
   const handleCloseConfirm = async () => {
-    if (await actionRef.current?.getIsDirty()) {
+    if (actionRef.current?.isDirty()) {
       confirm.warning({
         title: t("common.exit_title"),
         content: (
@@ -90,7 +91,11 @@ const LessonUpdatePage = observer(() => {
       <div className="w-full max-w-3xl mx-auto">
         <div className="bg-white rounded-[5px] w-full p-4">
           <Spin spinning={isPending}>
-            <LessonForm dataDetail={data?.data} ref={actionRef} type="update" />
+            <LessonForm
+              dataDetail={data?.data}
+              ref={actionRef}
+              type="update"
+            />
           </Spin>
         </div>
 

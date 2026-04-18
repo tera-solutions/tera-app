@@ -28,7 +28,7 @@ const StudentCreatePage = observer(() => {
   const actionRef = useRef<IFormRef>(null);
 
   const handleCloseConfirm = async () => {
-    if (await actionRef.current?.getIsDirty()) {
+    if (actionRef.current?.isDirty()) {
       confirm.warning({
         title: t("common.exit_title"),
         content: (
