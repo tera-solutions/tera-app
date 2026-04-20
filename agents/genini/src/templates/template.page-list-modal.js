@@ -1,4 +1,7 @@
-/* Import: library */
+module.exports = function templateListPage({ Entity, entity }) {
+  const ENTITY = entity.toLowerCase();
+
+  return `/* Import: library */
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, PlusCircleOutlined } from "tera-dls";
@@ -10,18 +13,18 @@ import { PAGE_KEY } from "@tera/commons/constants/permission";
 import { IModalProps, ListParams } from "@tera/commons/interfaces";
 
 /* Import: services */
-import { CourseService } from "@tera/modules";
+import { ${Entity}Service } from "@tera/modules";
 
 /* Import: pages */
-import { ICourse } from "pages/course/_interface";
-import CourseTable from "./containers/CourseTable";
-import CourseFilter from "./containers/CourseFilter";
-import CourseFormModal from "./CourseFormModal";
+import { I${Entity} } from "pages/${entity}/_interface";
+import ${Entity}Table from "./containers/${Entity}Table";
+import ${Entity}Filter from "./containers/${Entity}Filter";
+import ${Entity}FormModal from "./${Entity}FormModal";
 
-const CourseListPage = () => {
+const ${Entity}ListPage = () => {
   const { t } = useTranslation();
 
-  const [params, setParams] = useState<ListParams<ICourse>>({
+  const [params, setParams] = useState<ListParams<I${Entity}>>({
     page: 1,
     per_page: 20,
   });
@@ -35,7 +38,7 @@ const CourseListPage = () => {
   });
 
   const { mutate: onExport } =
-    CourseService.useCourseExport();
+    ${Entity}Service.use${Entity}Export();
 
   const handleSearch = (value) => {
     setParams((prev) => ({
@@ -60,9 +63,9 @@ const CourseListPage = () => {
   return (
     <div className="p-2.5">
       <HeaderViewList
-        title={t("course.title")}
+        title={t("${ENTITY}.title")}
         onClickFilter={() => setIsFilter(true)}
-        buttonCreatingKey={PAGE_KEY.COURSE_CREATE_VIEW}
+        buttonCreatingKey={PAGE_KEY.${ENTITY.toUpperCase()}_CREATE_VIEW}
         buttonAddRender={() => (
           <Button
             onClick={() =>
@@ -85,7 +88,7 @@ const CourseListPage = () => {
         ]}
         actionLeftRender={<HeaderSearch onSearch={handleSearch} />}
       >
-        <CourseTable
+        <${Entity}Table
           params={params}
           setParams={setParams}
           setModalData={setModalData}
@@ -93,7 +96,7 @@ const CourseListPage = () => {
       </HeaderViewList>
 
       {isFilter && (
-        <CourseFilter
+        <${Entity}Filter
           open={isFilter}
           onClose={() => setIsFilter(false)}
           onFilter={handleFilter}
@@ -102,7 +105,7 @@ const CourseListPage = () => {
       )}
 
       {modalData.open && (
-        <CourseFormModal
+        <${Entity}FormModal
           open={modalData.open}
           type={modalData.type}
           id={modalData.id}
@@ -119,4 +122,6 @@ const CourseListPage = () => {
   );
 };
 
-export default CourseListPage;
+export default ${Entity}ListPage;
+`;
+};

@@ -4,6 +4,7 @@
   "entity": "lesson",
   "block": "student",
   "title": "bài học",
+  "mode": "modal",
   "router": {
     "list": "/student/lesson/list",
     "create": "/student/lesson/create",

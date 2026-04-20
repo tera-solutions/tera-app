@@ -2,12 +2,15 @@ const fs = require("fs");
 const path = require("path");
 const templateInterface = require("../templates/template.interface");
 const templateTable = require("../templates/template.page-table");
+const templateTableModal = require("../templates/template.page-table-modal");
 const templateFilter = require("../templates/template.page-filter");
 const templateList = require("../templates/template.page-list");
+const templateListModal = require("../templates/template.page-list-modal");
 const templateForm = require("../templates/template.page-form");
 const templateCreatePage = require("../templates/template.page-create");
 const templateUpdatePage = require("../templates/template.page-update");
 const templateDetailPage = require("../templates/template.page-detail");
+const templateFormModal = require("../templates/template.page-form-modal");
 
 const args = process.argv.slice(2);
 
@@ -77,7 +80,7 @@ function appendUrlConstant(filePath, content, entity) {
   }
 
   fs.appendFileSync(filePath, "\n" + content);
-  console.log(`✅ Append URL: ${constantName}`);
+  console.log(`✅ Append URL: ${constantName} => ${filePath}`);
 }
 
 function generatePageKey({ ENTITY, prefix }) {
@@ -118,10 +121,10 @@ function insertPageKey(filePath, content, ENTITY) {
 
   fs.writeFileSync(filePath, file);
 
-  console.log(`✅ Insert PAGE_KEY: ${ENTITY}`);
+  console.log(`✅ Insert PAGE_KEY: ${ENTITY} => ${filePath}`);
 }
 
-function generateButtonKey({ ENTITY, prefix, controls }) {
+function generateButtonKey({ ENTITY, prefix, buttons }) {
   const E = ENTITY.toUpperCase();
 
   const map = {
@@ -131,7 +134,7 @@ function generateButtonKey({ ENTITY, prefix, controls }) {
     export: `${E}_EXPORT: "${prefix}_${ENTITY}_export",`,
   };
 
-  return controls
+  return buttons
     .filter((c) => map[c])
     .map((c) => "  " + map[c])
     .join("\n");
@@ -163,7 +166,7 @@ function insertButtonKey(filePath, content, ENTITY) {
 
   fs.writeFileSync(filePath, file);
 
-  console.log(`✅ Insert BUTTON_KEY: ${ENTITY}`);
+  console.log(`✅ Insert BUTTON_KEY: ${ENTITY} => ${filePath}`);
 }
 
 function writeFileSafe(filePath, content) {
@@ -184,46 +187,61 @@ function writeFileSafe(filePath, content) {
 }
 
 function generateRoute({ Entity, router }) {
-  return `
+  if (config?.mode === "page") {
+    return `
         {/* BLOCK:${Entity} */}
         <Route path="${router.list}" element={<${Entity}ListPage />} />
         <Route path="${router.create}" element={<${Entity}CreatePage />} />
         <Route path="${router.update}" element={<${Entity}UpdatePage />} />
         <Route path="${router.detail}" element={<${Entity}DetailPage />} />`;
+  }
+
+  return `
+        {/* BLOCK:${Entity} */}
+        <Route path="${router.list}" element={<${Entity}ListPage />} />`;
 }
 
-function insertRoute(filePath, content, entity, block) {
+function insertRoute(filePath, content, Entity, block) {
   let file = fs.readFileSync(filePath, "utf-8");
+  const checkExits = `{/* BLOCK:${Entity} */}`;
 
-  if (file.includes(content.trim())) {
-    console.log(`⚠️ Skip Route (exists): ${entity}`);
+  if (file.includes(checkExits)) {
+    console.log(`⚠️ Skip Route (exists): ${Entity}`);
     return;
   }
 
   const marker = `{/* BLOCK:router */}`;
 
   if (!file.includes(marker)) {
-    throw new Error(`❌ Block not found: ${block}`);
+    throw new Error(`❌ Block not found: ${Entity}`);
   }
 
   const updated = file.replace(marker, `${marker}\n${content}`);
 
   fs.writeFileSync(filePath, updated);
 
-  console.log(`✅ Insert Route: ${entity} → block:${block}`);
+  console.log(`✅ Insert Route: ${Entity} => ${filePath}`);
 }
 
 function insertImport(filePath, ENTITY, moduleName, entity, block) {
   let file = fs.readFileSync(filePath, "utf-8");
 
-  const importLine = `
+  let importLine = `
+/* IMPORT:${ENTITY} */
+import ${ENTITY}ListPage from "pages/${moduleName}/${entity}/${ENTITY}ListPage";`;
+  if (config?.mode === "page") {
+    importLine = `
 /* IMPORT:${ENTITY} */
 import ${ENTITY}ListPage from "pages/${moduleName}/${entity}/${ENTITY}ListPage";
 import ${ENTITY}CreatePage from "pages/${moduleName}/${entity}/${ENTITY}CreatePage";
 import ${ENTITY}UpdatePage from "pages/${moduleName}/${entity}/${ENTITY}UpdatePage";
 import ${ENTITY}DetailPage from "pages/${moduleName}/${entity}/${ENTITY}DetailPage";`;
+  }
 
-  if (file.includes(importLine)) return;
+  if (file.includes(importLine)) {
+    console.log(`⚠️ Skip Import (exists): ${ENTITY}`);
+    return;
+  }
 
   const marker = `/* IMPORT:router */`;
 
@@ -235,7 +253,7 @@ import ${ENTITY}DetailPage from "pages/${moduleName}/${entity}/${ENTITY}DetailPa
 
   fs.writeFileSync(filePath, updated);
 
-  console.log(`✅ Insert Import: ${ENTITY}`);
+  console.log(`✅ Insert Import: ${ENTITY} => ${filePath}`);
 }
 
 function generateI18n({ entity, title, fields }) {
@@ -274,7 +292,7 @@ function insertI18n(filePath, content, entity) {
 
   fs.writeFileSync(filePath, JSON.stringify(updated, null, 2));
 
-  console.log(`✅ Insert i18n: ${entity}`);
+  console.log(`✅ Insert i18n: ${entity} => ${filePath}`);
 }
 
 /**
@@ -297,21 +315,6 @@ const interfaceContent = templateInterface({
 const interfacePath = `${baseDir}/_interface.ts`;
 
 writeFileSafe(interfacePath, interfaceContent);
-
-console.log("✅ Generated Interface:", entity);
-
-/**
- * ===== Generate Table =====
- */
-const tableContent = templateTable({
-  Entity,
-  ENTITY,
-  moduleName,
-  fields,
-});
-
-writeFileSafe(`${containersDir}/${Entity}Table.tsx`, tableContent);
-
 /**
  * ===== Generate Filter =====
  */
@@ -325,19 +328,6 @@ const filterContent = templateFilter({
 writeFileSafe(`${containersDir}/${Entity}Filter.tsx`, filterContent);
 
 /**
- * ===== Generate Page =====
- */
-const pageContent = templateList({
-  entity,
-  Entity,
-  ENTITY,
-});
-
-writeFileSafe(`${baseDir}/${Entity}ListPage.tsx`, pageContent);
-
-console.log("✅ Generated Page List for:", entity);
-
-/**
  * ===== Generate Form =====
  */
 const formContent = templateForm({
@@ -349,43 +339,94 @@ const formContent = templateForm({
 
 writeFileSafe(`${containersDir}/${Entity}Form.tsx`, formContent);
 
-console.log("✅ Generated Form:", entity);
+if (config?.mode === "modal") {
+  /**
+   * ===== Generate Table modal =====
+   */
+  const tableContent = templateTableModal({
+    Entity,
+    ENTITY,
+    moduleName,
+    fields,
+  });
 
-/**
- * ===== Generate Create Page =====
- */
-const createContent = templateCreatePage({
-  Entity,
-  entity,
-});
+  writeFileSafe(`${containersDir}/${Entity}Table.tsx`, tableContent);
 
-writeFileSafe(`${baseDir}/${Entity}CreatePage.tsx`, createContent);
+  /**
+   * ===== Generate Page modal =====
+   */
+  const pageContent = templateListModal({
+    entity,
+    Entity,
+  });
 
-console.log("✅ Generated Create Page:", entity);
+  writeFileSafe(`${baseDir}/${Entity}ListPage.tsx`, pageContent);
 
-/**
- * ===== Generate Update Page =====
- */
-const updateContent = templateUpdatePage({
-  Entity,
-  entity,
-});
+  /**
+   * ===== Generate Form Modal =====
+   */
+  const modalContent = templateFormModal({
+    Entity,
+    entity,
+  });
 
-writeFileSafe(`${baseDir}/${Entity}UpdatePage.tsx`, updateContent);
+  writeFileSafe(`${baseDir}/${Entity}FormModal.tsx`, modalContent);
+}
 
-console.log("✅ Generated Update Page:", entity);
+if (config?.mode === "page") {
+  /**
+   * ===== Generate Table =====
+   */
+  const tableContent = templateTable({
+    Entity,
+    ENTITY,
+    moduleName,
+    fields,
+  });
 
-/**
- * ===== Generate Detail Page =====
- */
-const detailContent = templateDetailPage({
-  Entity,
-  entity,
-});
+  writeFileSafe(`${containersDir}/${Entity}Table.tsx`, tableContent);
 
-writeFileSafe(`${baseDir}/${Entity}DetailPage.tsx`, detailContent);
+  /**
+   * ===== Generate Page =====
+   */
+  const pageContent = templateList({
+    entity,
+    Entity,
+    ENTITY,
+  });
 
-console.log("✅ Generated Detail Page:", entity);
+  writeFileSafe(`${baseDir}/${Entity}ListPage.tsx`, pageContent);
+
+  /**
+   * ===== Generate Create Page =====
+   */
+  const createContent = templateCreatePage({
+    Entity,
+    entity,
+  });
+
+  writeFileSafe(`${baseDir}/${Entity}CreatePage.tsx`, createContent);
+
+  /**
+   * ===== Generate Update Page =====
+   */
+  const updateContent = templateUpdatePage({
+    Entity,
+    entity,
+  });
+
+  writeFileSafe(`${baseDir}/${Entity}UpdatePage.tsx`, updateContent);
+
+  /**
+   * ===== Generate Detail Page =====
+   */
+  const detailContent = templateDetailPage({
+    Entity,
+    entity,
+  });
+
+  writeFileSafe(`${baseDir}/${Entity}DetailPage.tsx`, detailContent);
+}
 
 const permissionFilePath = path.resolve(
   __dirname,
@@ -398,16 +439,14 @@ const pageKeyContent = generatePageKey({
 });
 
 insertPageKey(permissionFilePath, pageKeyContent, ENTITY);
-console.log("✅ AUTO ADD PAGE KEY Page:", entity);
 
 const buttonKeyContent = generateButtonKey({
   ENTITY,
   prefix: config.prefix,
-  controls: config.controls || [],
+  buttons: config.buttons || [],
 });
 
 insertButtonKey(permissionFilePath, buttonKeyContent, ENTITY);
-console.log("✅ AUTO ADD BUTTON KEY Page:", entity);
 
 const urlFilePath = path.resolve(
   __dirname,
@@ -417,7 +456,6 @@ const urlFilePath = path.resolve(
 const urlContent = generatePageUrl({ ENTITY });
 
 appendUrlConstant(urlFilePath, urlContent, ENTITY);
-console.log("✅ AUTO ADD URL Page:", entity);
 
 const routerPath = path.resolve(
   __dirname,
@@ -431,8 +469,7 @@ const routeContent = generateRoute({
   router: config.router,
 });
 
-insertRoute(routerPath, routeContent, entity, config.block);
-console.log("✅ AUTO ADD ROUTER Page:", entity);
+insertRoute(routerPath, routeContent, Entity);
 
 const i18nPath = path.resolve(
   __dirname,
@@ -446,4 +483,3 @@ const i18nContent = generateI18n({
 });
 
 insertI18n(i18nPath, i18nContent, entity);
-console.log("✅ AUTO ADD TRANSLATE:", entity);

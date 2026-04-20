@@ -4,6 +4,7 @@
   "entity": "student",
   "block": "student",
   "title": "học viên",
+  "mode": "page",
   "router": {
     "list": "/student/list",
     "create": "/student/create",

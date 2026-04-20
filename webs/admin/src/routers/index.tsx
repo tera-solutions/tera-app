@@ -20,9 +20,6 @@ import UnAuthLayout from "_common/components/Layout/UnAuthLayout";
 
 /* IMPORT:Course */
 import CourseListPage from "pages/education/course/CourseListPage";
-import CourseCreatePage from "pages/education/course/CourseCreatePage";
-import CourseUpdatePage from "pages/education/course/CourseUpdatePage";
-import CourseDetailPage from "pages/education/course/CourseDetailPage";
 
 /* IMPORT:Lesson */
 import LessonListPage from "pages/education/lesson/LessonListPage";
@@ -52,29 +49,8 @@ export const Routers = () => {
 
         {/* BLOCK:router */}
 
-        {/* BLOCK:Lesson */}
-        <Route path="/student/lesson/list" element={<LessonListPage />} />
-        <Route path="/student/lesson/create" element={<LessonCreatePage />} />
-        <Route path="/student/lesson/update/:id" element={<LessonUpdatePage />} />
-        <Route path="/student/lesson/detail/:id" element={<LessonDetailPage />} />
-
-        {/* BLOCK:Lesson */}
-        <Route path="/student/lesson/list" element={<LessonListPage />} />
-        <Route path="/student/lesson/create" element={<LessonCreatePage />} />
-        <Route
-          path="/student/lesson/update/:id"
-          element={<LessonUpdatePage />}
-        />
-        <Route
-          path="/student/lesson/detail/:id"
-          element={<LessonDetailPage />}
-        />
-
         {/* BLOCK:Course */}
         <Route path="/course/list" element={<CourseListPage />} />
-        <Route path="/course/create" element={<CourseCreatePage />} />
-        <Route path="/course/update/:id" element={<CourseUpdatePage />} />
-        <Route path="/course/detail/:id" element={<CourseDetailPage />} />
 
         {/* BLOCK:Lesson */}
         <Route path="/student/lesson/list" element={<LessonListPage />} />

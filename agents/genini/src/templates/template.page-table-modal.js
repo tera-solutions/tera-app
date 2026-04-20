@@ -1,7 +1,27 @@
-/* Import: library */
+module.exports = function templateTable({
+  Entity,
+  ENTITY,
+  moduleName,
+  fields,
+}) {
+  function genColumns(fields) {
+    return fields
+      .map(
+        (col) => `
+    {
+      title: t("${ENTITY}.${col.key}"),
+      dataIndex: "${col.key}",
+      key: "${col.key}",
+      width: ${col.width || 150},
+    }`,
+      )
+      .join(",");
+  }
+  return `/* Import: library */
 import { useTranslation } from "react-i18next";
 import { DropdownItem, PaginationProps } from "tera-dls";
 import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdown";
+
 
 /* Import: packages */
 import { TableTera } from "@tera/components/dof";
@@ -9,24 +29,26 @@ import useConfirm from "@tera/commons/hooks/useConfirm";
 import { ITableProps } from "@tera/commons/interfaces";
 
 /* Import: services */
-import { StudentService } from "@tera/modules";
+import { ${Entity}Service } from "@tera/modules";
 
 /* Import: pages */
-import { IStudent } from "pages/education/student/_interface";
+import { I${Entity} } from "pages/${moduleName}/${ENTITY}/_interface";
 
-const StudentTable = ({
+const ${Entity}Table = ({
   params,
   setParams,
   setModalData,
-}: ITableProps<IStudent>) => {
+}: ITableProps<I${Entity}>) => {
   const { t } = useTranslation();
   const confirm = useConfirm();
 
-  const { data, isPending } = StudentService.useStudentList({ params: params });
-  const { mutate: onDelete, isPending: isDeleting } =
-    StudentService.useStudentDelete();
+  const { data, isPending } =
+    ${Entity}Service.use${Entity}List({ params });
 
-  const itemsAction = (item: IStudent): DropdownItem[] => {
+  const { mutate: onDelete, isPending: isDeleting } =
+    ${Entity}Service.use${Entity}Delete();
+
+  const itemsAction = (item: I${Entity}): DropdownItem[] => {
     return [
       {
         key: "button.detail",
@@ -61,40 +83,23 @@ const StudentTable = ({
   };
 
   const columns = [
-    {
-      title: t("student.code"),
-      dataIndex: "code",
-      key: "code",
-      width: 100,
-    },
-    {
-      title: t("student.name"),
-      dataIndex: "name",
-      key: "name",
-      width: 200,
-    },
-    {
-      title: t("student.level"),
-      dataIndex: "level",
-      key: "level",
-      width: 200,
-    },
-    {
-      title: t("student.status"),
-      dataIndex: "status",
-      key: "status",
-      width: 200,
-    },
+${genColumns(fields)},
     {
       title: "",
       dataIndex: "id",
-      render: (value: string, record: IStudent) => (
-        <ActionDropdown dropdownItems={itemsAction(record)} trigger="click" />
+      render: (_: string, record: I${Entity}) => (
+        <ActionDropdown
+          dropdownItems={itemsAction(record)}
+          trigger="click"
+        />
       ),
     },
   ];
 
-  const handleChangePage: PaginationProps["onChange"] = (page, pageSize) => {
+  const handleChangePage: PaginationProps["onChange"] = (
+    page,
+    pageSize,
+  ) => {
     const isDiffPageSize =
       params?.page && pageSize !== Number(params?.page);
 
@@ -123,4 +128,6 @@ const StudentTable = ({
   );
 };
 
-export default StudentTable;
+export default ${Entity}Table;
+`;
+};

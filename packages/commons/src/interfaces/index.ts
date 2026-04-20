@@ -82,7 +82,7 @@ export interface IModalProps {
   id?: number;
 }
 
-export interface IStudentTable<T = any> {
+export interface ITableProps<T = any> {
   params: ListParams<T>;
   setParams: (value: ListParams<T> | ((prev: ListParams<T>) => ListParams<T>)) => void;
   setModalData: (data: IModalProps) => void

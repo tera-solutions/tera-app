@@ -1,6 +1,5 @@
 /* Import: library */
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button, PlusCircleOutlined } from "tera-dls";
 
@@ -8,7 +7,6 @@ import { Button, PlusCircleOutlined } from "tera-dls";
 import HeaderSearch from "@tera/components/web/HeaderViewList/HeaderSearch";
 import HeaderViewList from "@tera/components/web/HeaderViewList";
 import { PAGE_KEY } from "@tera/commons/constants/permission";
-import { STUDENT_PAGE_URL } from "@tera/commons/constants/url";
 import { IModalProps, ListParams } from "@tera/commons/interfaces";
 
 /* Import: services */
@@ -22,7 +20,6 @@ import StudentFormModal from "./StudentFormModal";
 
 const StudentListPage = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const [params, setParams] = useState<ListParams<IStudent>>({
     page: 1,

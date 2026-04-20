@@ -9,22 +9,25 @@ import useConfirm from "@tera/commons/hooks/useConfirm";
 import { IFormRef, IModalProps } from "@tera/commons/interfaces";
 
 /* Import: services */
-import { StudentService } from "@tera/modules";
+import { CourseService } from "@tera/modules";
 
 /* Import: pages */
-import StudentForm from "./containers/StudentForm";
+import CourseForm from "./containers/CourseForm";
 
-const StudentFormModal = (props: IModalProps) => {
+const CourseFormModal = (props: IModalProps) => {
   const confirm = useConfirm();
   const { t } = useTranslation();
   const actionRef = useRef<IFormRef>(null);
 
   const { open, onClose, id, type } = props;
 
-  const { data, isLoading } = StudentService.useStudentDetail({ id });
+  const { data, isLoading } =
+    CourseService.useCourseDetail({ id });
 
   const handleCloseConfirm = async () => {
-    if (actionRef.current?.isDirty) {
+    const isDirty = actionRef.current?.isDirty?.();
+
+    if (isDirty) {
       confirm.warning({
         title: t("common.exit_title"),
         content: (
@@ -33,31 +36,37 @@ const StudentFormModal = (props: IModalProps) => {
             <p>{messageWarning.WARNING_EXIT_2}</p>
           </>
         ),
-        onOk: () => {
-          onClose();
-        },
+        onOk: onClose,
       });
-    } else onClose();
+    } else {
+      onClose();
+    }
   };
 
   return (
     <Modal
-      title={id ? t("student.update") : t("student.create")}
+      title={
+        id ? t("course.update") : t("course.create")
+      }
       destroyOnClose
       closeIcon={false}
-      width={"60%"}
+      width="60%"
       cancelText={t("button.cancel")}
       okText={t("button.save")}
-      onOk={() => actionRef?.current?.submit()}
+      onOk={() => actionRef.current?.submit()}
       onCancel={handleCloseConfirm}
       open={open}
-      centered={true}
+      centered
     >
       <Spin spinning={isLoading}>
-        <StudentForm ref={actionRef} dataDetail={data?.data} type={type} />
+        <CourseForm
+          ref={actionRef}
+          dataDetail={data?.data}
+          type={type}
+        />
       </Spin>
     </Modal>
   );
 };
 
-export default StudentFormModal;
+export default CourseFormModal;

@@ -19,9 +19,7 @@ module.exports = function templateInterface({ Entity, fields }) {
     })
     .join("\n");
 
-  return `/* Auto generate interface */
-
-export interface I${Entity} {
+  return `export interface I${Entity} {
   id?: number;
 ${baseFields}
 }

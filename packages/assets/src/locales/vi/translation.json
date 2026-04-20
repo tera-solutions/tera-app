@@ -55,7 +55,9 @@
     "detail": "Chi tiết khóa học",
     "code": "Mã khóa học",
     "name": "Tên khóa học",
-    "level": "Cấp độ",
-    "status": "Trạng thái"
+    "level_id": "Cấp độ",
+    "program_id": "Chương trình",
+    "duration": "Thời gian",
+    "price": "Học phí"
   }
 }

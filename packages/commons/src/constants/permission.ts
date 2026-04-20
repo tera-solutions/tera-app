@@ -259,7 +259,10 @@ export const BUTTON_KEY = {
   LESSON_DELETE: "edu_lesson_delete",
   LESSON_EXPORT: "edu_lesson_export",
 
-
+  COURSE_CREATE: "edu_course_create",
+  COURSE_UPDATE: "edu_course_update",
+  COURSE_DELETE: "edu_course_delete",
+  COURSE_EXPORT: "edu_course_export",
 };
 
 // PERMISSION

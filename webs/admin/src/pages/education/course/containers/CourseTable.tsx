@@ -1,61 +1,75 @@
 /* Import: library */
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { DropdownItem, PaginationProps } from "tera-dls";
+import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdown";
+
 
 /* Import: packages */
-import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdown";
 import { TableTera } from "@tera/components/dof";
 import useConfirm from "@tera/commons/hooks/useConfirm";
+import { ITableProps } from "@tera/commons/interfaces";
 
 /* Import: services */
 import { CourseService } from "@tera/modules";
-import { COURSE_PAGE_URL } from "@tera/commons/constants/url";
 
 /* Import: pages */
 import { ICourse } from "pages/education/course/_interface";
 
-const CourseTable = ({ params, setParams }) => {
+const CourseTable = ({
+  params,
+  setParams,
+  setModalData,
+}: ITableProps<ICourse>) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const confirm = useConfirm();
 
-  const { data, isPending } = CourseService.useCourseList(params);
+  const { data, isPending } =
+    CourseService.useCourseList({ params });
+
   const { mutate: onDelete, isPending: isDeleting } =
     CourseService.useCourseDelete();
 
-  const itemsAction = useCallback((item: ICourse): DropdownItem[] => [
-    {
-      key: "detail",
-      label: t("button.detail"),
-      onClick: () => navigate(COURSE_PAGE_URL.detail.path(item.id)),
-    },
-    {
-      key: "edit",
-      label: t("button.edit"),
-      onClick: () => navigate(COURSE_PAGE_URL.update.path(item.id)),
-    },
-    {
-      key: "delete",
-      label: <span className="text-red-500">{t("button.delete")}</span>,
-      onClick: () => {
-        confirm.warning({
-          title: t("common.delete_confirm_title"),
-          content: t("common.delete_confirm_question"),
-          onOk: () => onDelete({ id: item.id }),
-        });
+  const itemsAction = (item: ICourse): DropdownItem[] => {
+    return [
+      {
+        key: "button.detail",
+        label: t("button.detail"),
+        onClick: () =>
+          setModalData({ open: true, type: "detail", id: item?.id }),
       },
-    },
-  ], [t, navigate, confirm, onDelete]);
+      {
+        key: "button.edit",
+        label: t("button.edit"),
+        onClick: () =>
+          setModalData({ open: true, type: "update", id: item?.id }),
+      },
+      {
+        key: "button.delete",
+        label: <span className="text-red-500">{t("button.delete")}</span>,
+        onClick: () => {
+          confirm.warning({
+            title: t("common.delete_confirm_title"),
+            content: (
+              <>
+                <p>{t("common.delete_confirm_question")}</p>
+              </>
+            ),
+            onOk: () => {
+              onDelete({ id: item?.id });
+            },
+          });
+        },
+      },
+    ];
+  };
 
-  const fields = [
-    
+  const columns = [
+
     {
       title: t("course.code"),
       dataIndex: "code",
       key: "code",
-      width: 100,
+      width: 200,
     },
     {
       title: t("course.name"),
@@ -64,29 +78,47 @@ const CourseTable = ({ params, setParams }) => {
       width: 200,
     },
     {
-      title: t("course.level"),
-      dataIndex: "level",
-      key: "level",
+      title: t("course.level_id"),
+      dataIndex: "level_id",
+      key: "level_id",
       width: 200,
     },
     {
-      title: t("course.status"),
-      dataIndex: "status",
-      key: "status",
+      title: t("course.program_id"),
+      dataIndex: "program_id",
+      key: "program_id",
+      width: 200,
+    },
+    {
+      title: t("course.duration"),
+      dataIndex: "duration",
+      key: "duration",
+      width: 100,
+    },
+    {
+      title: t("course.price"),
+      dataIndex: "price",
+      key: "price",
       width: 200,
     },
     {
       title: "",
       dataIndex: "id",
-      render: (value: string, record: ICourse) => (
-        <ActionDropdown dropdownItems={itemsAction(record)} />
+      render: (_: string, record: ICourse) => (
+        <ActionDropdown
+          dropdownItems={itemsAction(record)}
+          trigger="click"
+        />
       ),
     },
   ];
 
-  const handleChangePage: PaginationProps["onChange"] = (page, pageSize) => {
+  const handleChangePage: PaginationProps["onChange"] = (
+    page,
+    pageSize,
+  ) => {
     const isDiffPageSize =
-      params?.pageSize && pageSize !== Number(params?.pageSize);
+      params?.page && pageSize !== Number(params?.page);
 
     setParams((prev) => ({
       ...prev,
@@ -97,8 +129,8 @@ const CourseTable = ({ params, setParams }) => {
 
   return (
     <TableTera
-      rowKey="id"
-      fields={fields}
+      rowKey={(record: any) => record.id}
+      columns={columns}
       data={data?.data?.data || []}
       loading={isPending || isDeleting}
       pagination={{
@@ -106,6 +138,8 @@ const CourseTable = ({ params, setParams }) => {
         total: data?.data?.total,
         current: data?.data?.current_page,
         pageSize: Number(data?.data?.per_page),
+        to: data?.data?.to,
+        from: data?.data?.from,
       }}
     />
   );

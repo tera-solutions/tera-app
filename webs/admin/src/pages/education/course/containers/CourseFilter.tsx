@@ -15,8 +15,10 @@ import { ICourse } from "pages/education/course/_interface";
 const defaultValues: ICourse = {
     code: undefined,
   name: undefined,
-  level: undefined,
-  status: undefined,
+  level_id: undefined,
+  program_id: undefined,
+  duration: undefined,
+  price: undefined,
 };
 
 interface CourseFilterProps {
@@ -63,11 +65,17 @@ const CourseFilter = ({ open, onClose, onFilter, initialValue }: CourseFilterPro
           <FormTeraItem label={t("course.name")} name="name">
             <Input placeholder={t("course.name")} />
           </FormTeraItem>
-          <FormTeraItem label={t("course.level")} name="level">
-            <Input placeholder={t("course.level")} />
+          <FormTeraItem label={t("course.level_id")} name="level_id">
+            <Input placeholder={t("course.level_id")} />
           </FormTeraItem>
-          <FormTeraItem label={t("course.status")} name="status">
-            <Input placeholder={t("course.status")} />
+          <FormTeraItem label={t("course.program_id")} name="program_id">
+            <Input placeholder={t("course.program_id")} />
+          </FormTeraItem>
+          <FormTeraItem label={t("course.duration")} name="duration">
+            <Input placeholder={t("course.duration")} />
+          </FormTeraItem>
+          <FormTeraItem label={t("course.price")} name="price">
+            <Input placeholder={t("course.price")} />
           </FormTeraItem>
         </Row>
 

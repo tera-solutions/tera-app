@@ -4,6 +4,7 @@
   "entity": "course",
   "block": "course",
   "title": "khóa học",
+  "mode": "modal",
   "router": {
     "list": "/course/list",
     "create": "/course/create",
@@ -17,7 +18,7 @@
       "title": "Mã khóa học",
       "required": true,
       "type": "string",
-      "width": 100
+      "width": 200
     },
     {
       "key": "name",
@@ -27,16 +28,31 @@
       "width": 200
     },
     {
-      "key": "level",
+      "key": "level_id",
       "title": "Cấp độ",
       "required": true,
       "type": "number",
       "width": 200
     },
     {
-      "key": "status",
-      "title": "Trạng thái",
-      "type": "string",
+      "key": "program_id",
+      "title": "Chương trình",
+      "required": true,
+      "type": "number",
+      "width": 200
+    },
+    {
+      "key": "duration",
+      "title": "Thời gian",
+      "required": true,
+      "type": "number",
+      "width": 100
+    },
+    {
+      "key": "price",
+      "title": "Học phí",
+      "required": true,
+      "type": "number",
       "width": 200
     }
   ]

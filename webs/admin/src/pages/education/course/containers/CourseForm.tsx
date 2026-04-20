@@ -18,8 +18,10 @@ import { ICourseForm } from "pages/education/course/_interface";
 const defaultValues: ICourseForm = {
   code: undefined,
 name: undefined,
-level: undefined,
-status: undefined,
+level_id: undefined,
+program_id: undefined,
+duration: undefined,
+price: undefined,
 };
 
 const CourseForm = forwardRef<any, IFormProps>(
@@ -48,8 +50,10 @@ const CourseForm = forwardRef<any, IFormProps>(
       const params = {
         code: values.code?.trim() || undefined,
         name: values.name?.trim() || undefined,
-        level: values.level || undefined,
-        status: values.status?.trim() || undefined,
+        level_id: values.level_id || undefined,
+        program_id: values.program_id || undefined,
+        duration: values.duration || undefined,
+        price: values.price || undefined,
       };
 
       onSubmit({ id: dataDetail?.id, params });
@@ -118,8 +122,8 @@ const CourseForm = forwardRef<any, IFormProps>(
 
           <Col>
             <FormTeraItem
-              label={t("course.level")}
-              name="level"
+              label={t("course.level_id")}
+              name="level_id"
               rules={[
                 {
                   required: {
@@ -131,7 +135,7 @@ const CourseForm = forwardRef<any, IFormProps>(
             >
               <Input
                 placeholder={t("form.enter_value", {
-                  key: t("course.level"),
+                  key: t("course.level_id"),
                 })}
               />
             </FormTeraItem>
@@ -139,15 +143,62 @@ const CourseForm = forwardRef<any, IFormProps>(
 
           <Col>
             <FormTeraItem
-              label={t("course.status")}
-              name="status"
+              label={t("course.program_id")}
+              name="program_id"
               rules={[
-                
+                {
+                  required: {
+                    value: true,
+                    message: t("validate.required"),
+                  },
+                }
               ]}
             >
               <Input
                 placeholder={t("form.enter_value", {
-                  key: t("course.status"),
+                  key: t("course.program_id"),
+                })}
+              />
+            </FormTeraItem>
+          </Col>
+
+          <Col>
+            <FormTeraItem
+              label={t("course.duration")}
+              name="duration"
+              rules={[
+                {
+                  required: {
+                    value: true,
+                    message: t("validate.required"),
+                  },
+                }
+              ]}
+            >
+              <Input
+                placeholder={t("form.enter_value", {
+                  key: t("course.duration"),
+                })}
+              />
+            </FormTeraItem>
+          </Col>
+
+          <Col>
+            <FormTeraItem
+              label={t("course.price")}
+              name="price"
+              rules={[
+                {
+                  required: {
+                    value: true,
+                    message: t("validate.required"),
+                  },
+                }
+              ]}
+            >
+              <Input
+                placeholder={t("form.enter_value", {
+                  key: t("course.price"),
                 })}
               />
             </FormTeraItem>

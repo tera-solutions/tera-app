@@ -1,4 +1,7 @@
-/* Import: library */
+module.exports = function templateFormModal({ Entity, entity }) {
+  const ENTITY = entity.toLowerCase();
+
+  return `/* Import: library */
 import { useRef } from "react";
 import { Modal, Spin } from "tera-dls";
 import { useTranslation } from "react-i18next";
@@ -9,22 +12,25 @@ import useConfirm from "@tera/commons/hooks/useConfirm";
 import { IFormRef, IModalProps } from "@tera/commons/interfaces";
 
 /* Import: services */
-import { StudentService } from "@tera/modules";
+import { ${Entity}Service } from "@tera/modules";
 
 /* Import: pages */
-import StudentForm from "./containers/StudentForm";
+import ${Entity}Form from "./containers/${Entity}Form";
 
-const StudentFormModal = (props: IModalProps) => {
+const ${Entity}FormModal = (props: IModalProps) => {
   const confirm = useConfirm();
   const { t } = useTranslation();
   const actionRef = useRef<IFormRef>(null);
 
   const { open, onClose, id, type } = props;
 
-  const { data, isLoading } = StudentService.useStudentDetail({ id });
+  const { data, isLoading } =
+    ${Entity}Service.use${Entity}Detail({ id });
 
   const handleCloseConfirm = async () => {
-    if (actionRef.current?.isDirty) {
+    const isDirty = actionRef.current?.isDirty?.();
+
+    if (isDirty) {
       confirm.warning({
         title: t("common.exit_title"),
         content: (
@@ -33,31 +39,39 @@ const StudentFormModal = (props: IModalProps) => {
             <p>{messageWarning.WARNING_EXIT_2}</p>
           </>
         ),
-        onOk: () => {
-          onClose();
-        },
+        onOk: onClose,
       });
-    } else onClose();
+    } else {
+      onClose();
+    }
   };
 
   return (
     <Modal
-      title={id ? t("student.update") : t("student.create")}
+      title={
+        id ? t("${ENTITY}.update") : t("${ENTITY}.create")
+      }
       destroyOnClose
       closeIcon={false}
-      width={"60%"}
+      width="60%"
       cancelText={t("button.cancel")}
       okText={t("button.save")}
-      onOk={() => actionRef?.current?.submit()}
+      onOk={() => actionRef.current?.submit()}
       onCancel={handleCloseConfirm}
       open={open}
-      centered={true}
+      centered
     >
       <Spin spinning={isLoading}>
-        <StudentForm ref={actionRef} dataDetail={data?.data} type={type} />
+        <${Entity}Form
+          ref={actionRef}
+          dataDetail={data?.data}
+          type={type}
+        />
       </Spin>
     </Modal>
   );
 };
 
-export default StudentFormModal;
+export default ${Entity}FormModal;
+`;
+};
