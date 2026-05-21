@@ -1,0 +1,58 @@
+{
+  "extends": "@tera/typescript-config/react-library.json",
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "pages/*": ["src/pages/*"],
+      "styles/*": ["src/styles/*"],
+      "routers/*": ["src/routers/*"],
+      "states/*": ["src/states/*"],
+      "_common/*": ["src/_common/*"],
+      "@tera/commons/*": ["../../packages/commons/src/*"],
+      "@tera/components/*": ["../../packages/components/src/*"],
+      "@tera/assets/*": ["../../packages/assets/src/*"],
+      "@tera/themes/*": ["../../packages/themes/src/*"],
+      "@tera/stores/*": ["../../services/stores/src/*"],
+      "@tera/api/*": ["../../services/api/src/*"],
+      "@tera/modules": ["../../services/modules/src/index"],
+      "@tera/modules/*": ["../../services/modules/src/*"],
+      "tailwind-merge.config": ["src/tailwind-merge.config.ts"],
+      "~/*": ["./*"],
+      "@/*": ["src/*"],
+      "src/*": ["src/*"]
+    },
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "allowSyntheticDefaultImports": true,
+    "emitDeclarationOnly": true,
+    "esModuleInterop": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "checkJs": false,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "incremental": true
+  },
+  "references": [
+    { "path": "../../services/modules" },
+    { "path": "../../packages/components" }
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "vite.config.ts",
+    "../../packages/commons/src/hooks/usePermission.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

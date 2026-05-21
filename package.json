@@ -12,6 +12,8 @@
     "hana:ios": "pnpm --filter @tera/hana ios",
     "admin": "pnpm --filter @tera/admin dev",
     "admin:build": "pnpm --filter @tera/admin build",
+    "lesson": "pnpm --filter @tera/lesson dev",
+    "lesson:build": "pnpm --filter @tera/lesson build",
     "teacher": "pnpm --filter @tera/teacher dev",
     "teacher:build": "pnpm --filter @tera/teacher build",
     "student": "pnpm --filter @tera/student dev",

@@ -1,10 +1,10 @@
-import { authEndpoint } from "@tera/api/_endpoint";
+import { authEndpoint, auth2Endpoint } from "@tera/api/_endpoint";
 import api from "@tera/api/drivers";
 
 export const AuthApi = {
   getDeviceCode: async () =>
     await api
-      .post(`${authEndpoint}/device/init`)
+      .post(`${auth2Endpoint}/device/init`)
       .then((result) => result.data?.data),
   checkAuth: async (params) =>
     await api
@@ -12,7 +12,7 @@ export const AuthApi = {
       .then((result) => result.data),
   logout: async () => await api.post(`${authEndpoint}/logout`),
   getProfile: async () =>
-    await api.get(`${authEndpoint}/profile`).then((result) => result.data),
+    await api.get(`${auth2Endpoint}/profile`).then((result) => result.data),
   getPermissions: async () =>
     await api
       .get(`${authEndpoint}/get-permissions`)
@@ -37,7 +37,7 @@ export const AuthApi = {
       .then((result) => result.data),
   login: async (params: any) =>
     await api
-      .post(`${authEndpoint}/login`, params)
+      .post(`${auth2Endpoint}/login`, params)
       .then((result) => result.data),
   checkLogin: async (params) =>
     await api

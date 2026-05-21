@@ -1,0 +1,452 @@
+{
+  "groupMenu": [
+    {
+      "id": "r1",
+      "code": "student",
+      "title": "Học Viên",
+      "path": "/student/list",
+      "icon": "menu11",
+      "key": "student",
+      "permission": "student"
+    },
+    {
+      "id": "r3",
+      "code": "teacher",
+      "title": "Giáo Viên",
+      "path": "/teacher/list",
+      "icon": "menu12",
+      "key": "teacher",
+      "permission": "teacher"
+    },
+    {
+      "id": "r4",
+      "code": "course",
+      "title": "Khóa Học",
+      "path": "/course/list",
+      "icon": "menu13",
+      "key": "course",
+      "permission": "course"
+    },
+    {
+      "id": "r7",
+      "code": "withdraw",
+      "title": "Lịch học",
+      "path": "/withdraw",
+      "icon": "menu14",
+      "key": "withdraw",
+      "permission": "cs"
+    },
+    {
+      "id": "r6",
+      "code": "setting-store",
+      "title": "Trung Tâm",
+      "path": "/setting-store",
+      "icon": "menu16",
+      "key": "setting-store",
+      "permission": "cs"
+    }
+  ],
+  "parentGroup": [
+    {
+      "id": 1,
+      "title": "Quản lý thông tin",
+      "key": "group-student",
+      "parentKey": "student"
+    },
+    {
+      "id": 2,
+      "title": "Tuyển sinh",
+      "key": "group-service",
+      "parentKey": "student"
+    },
+    {
+      "id": 3,
+      "title": "Theo dõi học tập",
+      "key": "group-study",
+      "parentKey": "student"
+    },
+    {
+      "id": 4,
+      "title": "Liên kết",
+      "key": "group-affiliate",
+      "parentKey": "student"
+    },
+    {
+      "id": 5,
+      "title": "Quản lý thông tin",
+      "key": "group-teacher",
+      "parentKey": "teacher"
+    },
+    {
+      "id": 6,
+      "title": "Quản lý lịch dạy",
+      "key": "group-teacher2",
+      "parentKey": "teacher"
+    },
+    {
+      "id": 7,
+      "title": "Chấm công & Lương",
+      "key": "group-teacher3",
+      "parentKey": "teacher"
+    },
+    {
+      "id": 8,
+      "title": "Phàn hồi & Đánh giá",
+      "key": "group-teacher4",
+      "parentKey": "teacher"
+    },
+    {
+      "id": 9,
+      "title": "Danh mục",
+      "key": "group-course1",
+      "parentKey": "course"
+    },
+    {
+      "id": 10,
+      "title": "Quản lý lớp học",
+      "key": "group-course2",
+      "parentKey": "course"
+    },
+    {
+      "id": 11,
+      "title": "Đề thi & Kiểm tra",
+      "key": "group-course3",
+      "parentKey": "course"
+    }
+  ],
+  "parentMenu": [
+    {
+      "id": 1,
+      "title": "DS Học Viên",
+      "icon": "briefcase",
+      "path": "/student/list",
+      "status": "active",
+      "code": "p1",
+      "parentKey": "student",
+      "parentGroupKey": "group-student",
+      "activeKeys": "list"
+    },
+    {
+      "id": 2,
+      "title": "DS Phụ Huynh",
+      "icon": "briefcase",
+      "path": "/parent/list",
+      "status": "active",
+      "code": "p2",
+      "parentKey": "student",
+      "parentGroupKey": "group-student",
+      "activeKeys": "parent"
+    },
+    {
+      "id": 3,
+      "title": "Đăng ký mới",
+      "path": "/warehouse",
+      "icon": "briefcase",
+      "key": "warehouse",
+      "parentKey": "student",
+      "parentGroupKey": "group-service",
+      "permission": ""
+    },
+    {
+      "id": 4,
+      "title": "Kiểm tra đầu vào",
+      "path": "/order",
+      "icon": "briefcase",
+      "key": "order",
+      "parentKey": "student",
+      "parentGroupKey": "group-service",
+      "permission": ""
+    },
+    {
+      "id": 5,
+      "title": "Hồ sơ",
+      "path": "",
+      "icon": "briefcase",
+      "key": "shopping-bag",
+      "parentKey": "student",
+      "parentGroupKey": "group-service",
+      "permission": ""
+    },
+    {
+      "id": 6,
+      "title": "Điểm danh",
+      "path": "/package/list",
+      "icon": "briefcase",
+      "key": "package",
+      "parentKey": "student",
+      "parentGroupKey": "group-study",
+      "permission": ""
+    },
+    {
+      "id": 7,
+      "title": "Bài tập",
+      "path": "/advertising-package/list",
+      "icon": "briefcase",
+      "key": "advertising-package",
+      "parentKey": "student",
+      "parentGroupKey": "group-study",
+      "permission": ""
+    },
+    {
+      "id": 8,
+      "title": "Điểm số",
+      "path": "/link-system",
+      "icon": "briefcase",
+      "key": "link-system",
+      "parentKey": "student",
+      "parentGroupKey": "group-study",
+      "permission": ""
+    },
+    {
+      "id": 9,
+      "title": "Nhận xét & Đánh giá",
+      "path": "/withdraw",
+      "icon": "briefcase",
+      "key": "withdraw",
+      "parentKey": "student",
+      "parentGroupKey": "group-study",
+      "permission": ""
+    },
+    {
+      "id": 10,
+      "title": "Lịch sử đổi quà",
+      "path": "/invoice",
+      "icon": "briefcase",
+      "key": "invoice",
+      "parentKey": "student",
+      "parentGroupKey": "group-affiliate",
+      "permission": ""
+    },
+    {
+      "id": 14,
+      "title": "Giới thiệu học viên",
+      "path": "/payment-history",
+      "icon": "briefcase",
+      "key": "payment-history",
+      "parentKey": "student",
+      "parentGroupKey": "group-affiliate",
+      "permission": ""
+    },
+    {
+      "id": 15,
+      "title": "DS Giáo Viên",
+      "path": "/teacher/list",
+      "icon": "briefcase",
+      "key": "commission-history",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher",
+      "permission": ""
+    },
+    {
+      "id": 16,
+      "title": "DS Trợ Giảng",
+      "path": "/support-ticket",
+      "icon": "briefcase",
+      "key": "support-ticket",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher",
+      "permission": ""
+    },
+    {
+      "id": 161,
+      "title": "Hợp đồng & Lương",
+      "path": "/product-q&a",
+      "icon": "briefcase",
+      "key": "product-q&a",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher",
+      "permission": ""
+    },
+    {
+      "id": 17,
+      "title": "Thời khóa biểu",
+      "path": "/product-q&a",
+      "icon": "briefcase",
+      "key": "product-q&a",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher2",
+      "permission": ""
+    },
+    {
+      "id": 13,
+      "title": "Phân công lớp học",
+      "path": "/product-q&a",
+      "icon": "briefcase",
+      "key": "product-q&a",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher2",
+      "permission": ""
+    },
+    {
+      "id": 11,
+      "title": "Đăng ký đổi ca",
+      "path": "/setting-store",
+      "icon": "briefcase",
+      "key": "setting-store",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher2",
+      "permission": ""
+    },
+    {
+      "id": 12,
+      "title": "Bảng chấm công",
+      "path": "/shopping-voucher",
+      "icon": "briefcase",
+      "key": "shopping-voucher",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher3",
+      "permission": ""
+    },
+    {
+      "id": 18,
+      "title": "Thông kê giờ dạy",
+      "path": "/file-uploaded",
+      "icon": "briefcase",
+      "key": "file-uploaded",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher3",
+      "permission": ""
+    },
+    {
+      "id": 19,
+      "title": "Bảng lương tháng",
+      "path": "/change-password",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher3",
+      "permission": ""
+    },
+    {
+      "id": 20,
+      "title": "Khen thưởng KPI",
+      "path": "/change-password",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher3",
+      "permission": ""
+    },
+    {
+      "id": 21,
+      "title": "Kỷ luật",
+      "path": "/change-password",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher3",
+      "permission": ""
+    },
+    {
+      "id": 22,
+      "title": "Phản hồi phụ huynh",
+      "path": "/change-password",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher4",
+      "permission": ""
+    },
+    {
+      "id": 22,
+      "title": "Đánh giá học viên",
+      "path": "/change-password",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "teacher",
+      "parentGroupKey": "group-teacher4",
+      "permission": ""
+    },
+    {
+      "id": 23,
+      "title": "DS Khóa học",
+      "path": "/course/list",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "course",
+      "parentGroupKey": "group-course1",
+      "permission": ""
+    },
+    {
+      "id": 24,
+      "title": "Chương trình học",
+      "path": "/course/list",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "course",
+      "parentGroupKey": "group-course1",
+      "permission": ""
+    },
+    {
+      "id": 25,
+      "title": "Cấp độ",
+      "path": "/course/list",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "course",
+      "parentGroupKey": "group-course1",
+      "permission": ""
+    },
+    {
+      "id": 26,
+      "title": "Giáo trình",
+      "path": "/course/list",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "course",
+      "parentGroupKey": "group-course1",
+      "permission": ""
+    },
+    {
+      "id": 27,
+      "title": "DS Lớp học",
+      "path": "/course/list",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "course",
+      "parentGroupKey": "group-course2",
+      "permission": ""
+    },
+    {
+      "id": 28,
+      "title": "Thời khóa biểu",
+      "path": "/course/list",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "course",
+      "parentGroupKey": "group-course2",
+      "permission": ""
+    },
+    {
+      "id": 28,
+      "title": "Xếp lớp & Sỷ số",
+      "path": "/course/list",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "course",
+      "parentGroupKey": "group-course2",
+      "permission": ""
+    },
+    {
+      "id": 29,
+      "title": "Kho đề thi",
+      "path": "/course/list",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "course",
+      "parentGroupKey": "group-course3",
+      "permission": ""
+    },
+    {
+      "id": 30,
+      "title": "Xếp lớp & Sỷ số",
+      "path": "/course/list",
+      "icon": "briefcase",
+      "key": "change-password",
+      "parentKey": "course",
+      "parentGroupKey": "group-course3",
+      "permission": ""
+    }
+  ],
+  "subMenu": []
+}

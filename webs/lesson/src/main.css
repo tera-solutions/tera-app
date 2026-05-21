@@ -1,0 +1,11 @@
+@import "@tera/assets/styles/main.css";
+
+@source "./**/*.{ts,tsx}";
+
+#proxy-renderer {
+    height: 100vh;
+}
+
+#msdoc-renderer {
+    height: 100vh;
+}
