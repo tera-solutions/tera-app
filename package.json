@@ -20,6 +20,8 @@
     "student:build": "pnpm --filter @tera/student build",
     "parent": "pnpm --filter @tera/parent dev",
     "parent:build": "pnpm --filter @tera/parent build",
+    "game": "pnpm --filter @tera/game dev",
+    "game:build": "pnpm --filter @tera/game build",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,scss,md}\" --ignore-path .gitignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,scss,md}\"",
     "turbo:format": "turbo run format",
