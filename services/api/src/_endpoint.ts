@@ -2,7 +2,7 @@ export const endpoint = `${import.meta.env.VITE_TERA_API}/v1`;
 
 export const portalEndpoint = `${import.meta.env.VITE_TERA_API}/api/portal`;
 
-export const authEndpoint = `${import.meta.env.VITE_TERA_API}/api/auth`;
+export const authEndpoint = `${import.meta.env.VITE_TERA_API}/auth/api`;
 
 export const adminEndpoint = `${import.meta.env.VITE_TERA_API}/api/admin`;
 
