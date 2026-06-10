@@ -6,7 +6,7 @@ import { Controller } from "react-hook-form";
 import customTwMerge from "tailwind-merge.config";
 import { SearchProps } from "tera-dls";
 
-const Search = forwardRef(({ ...props }: SearchProps) => {
+const Search = forwardRef<HTMLDivElement, SearchProps>(({ ...props }, ref) => {
   const { form } = useTeraForm();
   const { item, config, rules } = useTeraFormItem();
   const { control } = form;

@@ -317,3 +317,27 @@ export const COURSE_PAGE_URL = {
     shortenUrl: "/course/update/:id",
   },
 };
+
+
+export const TEACHER_PAGE_URL = {
+  list: {
+    key: PAGE_KEY.TEACHER_LIST_VIEW,
+    path: "/teacher/list",
+    shortenUrl: "/teacher/list",
+  },
+  create: {
+    key: PAGE_KEY.TEACHER_CREATE_VIEW,
+    path: "/teacher/create",
+    shortenUrl: "/teacher/create",
+  },
+  detail: {
+    key: PAGE_KEY.TEACHER_DETAIL_VIEW,
+    path: (id: number) => "/teacher/detail/" + id,
+    shortenUrl: "/teacher/detail/:id",
+  },
+  update: {
+    key: PAGE_KEY.TEACHER_UPDATE_VIEW,
+    path: (id: number) => "/teacher/update/" + id,
+    shortenUrl: "/teacher/update/:id",
+  },
+};

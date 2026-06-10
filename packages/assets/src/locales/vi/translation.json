@@ -23,7 +23,9 @@
     "cancel": "Hủy",
     "back": "Trờ lại",
     "export_excel": "Xuất Excel",
-    "clear_filter": "Hủy bộ lọc"
+    "clear_filter": "Hủy bộ lọc",
+    "filter": "Lọc",
+    "action": "Hành động"
   },
   "student": {
     "title": "DANH SÁCH HỌC VIÊN",
@@ -59,5 +61,17 @@
     "program_id": "Chương trình",
     "duration": "Thời gian",
     "price": "Học phí"
+  },
+  "teacher": {
+    "title": "DANH SÁCH GIÁO VIÊN",
+    "list": "Danh sách giáo viên",
+    "create": "Thêm mới giáo viên",
+    "update": "Cập nhật giáo viên",
+    "detail": "Chi tiết giáo viên",
+    "code": "Mã giáo viên",
+    "name": "Tên giáo viên",
+    "type": "Loại",
+    "status": "Trạng thái",
+    "salary_per_hour": "Lương/giờ"
   }
 }

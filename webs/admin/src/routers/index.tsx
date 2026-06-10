@@ -18,6 +18,12 @@ import UnAuthLayout from "_common/components/Layout/UnAuthLayout";
 
 /* IMPORT:router */
 
+/* IMPORT:Teacher */
+import TeacherListPage from "pages/education/teacher/TeacherListPage";
+import TeacherCreatePage from "pages/education/teacher/TeacherCreatePage";
+import TeacherUpdatePage from "pages/education/teacher/TeacherUpdatePage";
+import TeacherDetailPage from "pages/education/teacher/TeacherDetailPage";
+
 /* IMPORT:Course */
 import CourseListPage from "pages/education/course/CourseListPage";
 
@@ -49,6 +55,12 @@ export const Routers = () => {
 
         {/* BLOCK:router */}
 
+        {/* BLOCK:Teacher */}
+        <Route path="/teacher/list" element={<TeacherListPage />} />
+        <Route path="/teacher/create" element={<TeacherCreatePage />} />
+        <Route path="/teacher/update/:id" element={<TeacherUpdatePage />} />
+        <Route path="/teacher/detail/:id" element={<TeacherDetailPage />} />
+
         {/* BLOCK:Course */}
         <Route path="/course/list" element={<CourseListPage />} />
 
@@ -69,12 +81,6 @@ export const Routers = () => {
         <Route path="/student/create" element={<StudentCreatePage />} />
         <Route path="/student/update/:id" element={<StudentUpdatePage />} />
         <Route path="/student/detail/:id" element={<StudentDetailPage />} />
-
-        {/* BLOCK:hr */}
-        <Route path="/teacher/list" element={<Dashboard />} />
-
-        {/* BLOCK:course */}
-        <Route path="/course/list" element={<Dashboard />} />
       </Route>
 
       <Route

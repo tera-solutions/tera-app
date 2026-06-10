@@ -69,7 +69,7 @@ export const useUpsertTeacher = () => {
       return TeacherAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["teacher", "list"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);

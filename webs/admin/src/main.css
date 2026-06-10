@@ -1,3 +1,7 @@
 @import "@tera/assets/styles/main.css";
 
 @source "./**/*.{ts,tsx}";
+
+.tera-table-cell-scrollbar {
+  display: none;
+}
