@@ -2,7 +2,8 @@
 import { useEffect, useImperativeHandle, forwardRef } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Col, Row } from "tera-dls";
+import { useQueryClient } from "@tanstack/react-query";
+import { Col, Row, notification } from "tera-dls";
 
 /* Import: packages */
 import { IFormProps } from "@tera/commons/interfaces";
@@ -35,6 +36,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
 
     const { reset, formState } = form;
 
+    const queryClient = useQueryClient();
     const { mutate: onSubmit, isPending } =
       TeacherService.useUpsertTeacher();
 
@@ -55,7 +57,17 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
         salary_per_hour: values.salary_per_hour ? Number(values.salary_per_hour) : undefined,
       };
 
-      onSubmit({ id: dataDetail?.id, params }, { onSuccess });
+      onSubmit({ id: dataDetail?.id, params }, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["teacher", "list"] });
+          onSuccess?.();
+        },
+        onError: (error: any) => {
+          notification.error({
+            message: error?.message || t("common.error_message"),
+          });
+        },
+      });
     };
 
     useImperativeHandle(

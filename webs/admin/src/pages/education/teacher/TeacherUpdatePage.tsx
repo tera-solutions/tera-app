@@ -95,7 +95,7 @@ const TeacherUpdatePage = observer(() => {
         <div className="bg-white rounded-[5px] w-full p-4">
           <Spin spinning={isPending}>
             <TeacherForm
-              dataDetail={data?.data}
+              dataDetail={data?.data?.teacher}
               ref={actionRef}
               type="update"
               onSuccess={() => navigate(TEACHER_PAGE_URL.list.path)}

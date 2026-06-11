@@ -23,8 +23,8 @@ const defaultValues: ITeacher = {
 interface TeacherFilterProps {
   open: boolean;
   initialValue: ITeacher & {
-    page: number;
-    pageSize: number;
+    page?: number;
+    per_page?: number;
   };
   onClose: () => void;
   onFilter: (value: ITeacher) => void;

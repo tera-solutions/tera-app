@@ -1,5 +1,4 @@
 /* Import: library */
-import { useRef } from "react";
 import { observer } from "mobx-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -9,10 +8,11 @@ import {
   Breadcrumb,
   Button,
   ArrowLeftOutlined,
+  PencilSquareOutlined,
 } from "tera-dls";
 
 /* Import: packages */
-import { IFormRef } from "@tera/commons/interfaces";
+import { TEACHER_PAGE_URL } from "@tera/commons/constants/url";
 
 /* Import: services */
 import { TeacherService } from "@tera/modules";
@@ -25,8 +25,6 @@ const TeacherDetailPage = observer(() => {
   const { id } = useParams();
 
   const { t } = useTranslation();
-
-  const actionRef = useRef<IFormRef>(null);
 
   const { data, isPending } =
     TeacherService.useTeacherDetail({ id });
@@ -68,8 +66,7 @@ const TeacherDetailPage = observer(() => {
           <Spin spinning={isPending}>
             <TeacherForm
               type="detail"
-              dataDetail={data?.data}
-              ref={actionRef}
+              dataDetail={data?.data?.teacher}
             />
           </Spin>
         </div>
@@ -83,6 +80,17 @@ const TeacherDetailPage = observer(() => {
             <ArrowLeftOutlined className="w-4 h-4 stroke-2" />
             <span className="font-normal text-[16px] leading-4.5">
               {t("button.back")}
+            </span>
+          </Button>
+
+          <Button
+            type="success"
+            onClick={() => navigate(TEACHER_PAGE_URL.update.path(Number(id)))}
+            className="px-3"
+          >
+            <PencilSquareOutlined className="w-4 h-4 stroke-2" />
+            <span className="font-normal text-[16px] leading-4.5">
+              {t("button.edit")}
             </span>
           </Button>
         </div>

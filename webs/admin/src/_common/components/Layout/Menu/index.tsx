@@ -85,21 +85,23 @@ const MenuComponent: React.FC<MenuProps> = observer(
     return (
       <>
         <div
-          id="menu"
+          id='menu'
           ref={elementRef}
           className={`${
             isExpand ? "xmd:left-[225px]" : "xmd:left-[50px]"
-          } transition-all fixed top-0 right-0 z-[49] px-2.5 h-[45px]  flex items-center justify-between bg-white border-b border-gray-200 text-xxs left-0`}
+          } transition-all fixed top-0 right-0 z-[49] px-2.5 h-[45px] flex items-center justify-between bg-white border-b border-gray-200 text-xxs left-0`}
           style={{ boxShadow: "0px 2px 2px 0px rgba(0, 0, 0, 0.05)" }}
         >
-          <div className="flex items-center gap-x-4 xmd:hidden">
+          <div className='flex items-center gap-x-4 xmd:hidden'>
             <Bars3Outlined
-              className="text-blue-800 w-7 h-7 cursor-pointer"
+              className='text-blue-800 w-7 h-7 cursor-pointer flex-shrink-0'
               onClick={() => setOpenDrawerMenu(true)}
             />
             <Logo />
           </div>
-          <ul className="hidden xmd:flex gap-x-[5px] h-full mr-auto">
+
+          {/* Desktop: menu items*/}
+          <ul className='hidden xmd:flex gap-x-[5px] h-full mr-auto'>
             {sliceMenu.menu?.map((item: IMenu) => {
               const { id, key, icon, path, title } = item;
               return (
@@ -109,20 +111,53 @@ const MenuComponent: React.FC<MenuProps> = observer(
                   onClick={() => handleActiveMenu(key)}
                 >
                   <Icons icon={icon} />
-                  <span className="text-gray-800 text-xxs link-outer-container menu-title">
-                    <Link to={path}> {title}</Link>
+                  <span className='text-gray-800 text-xxs link-outer-container menu-title'>
+                    <Link to={path}>{title}</Link>
                   </span>
                 </li>
               );
             })}
           </ul>
+
           <Header />
         </div>
+
+        {/* Mobile: bottom navigation */}
+        <nav
+          className='xmd:hidden fixed bottom-0 left-0 right-0 z-[49] bg-white border-t border-gray-200 h-[60px]'
+          style={{ boxShadow: "0px -2px 4px 0px rgba(0, 0, 0, 0.05)" }}
+        >
+          <ul className='flex items-center justify-around h-full'>
+            {sliceMenu.menu?.map((item: IMenu) => {
+              const { id, key, icon, path, title } = item;
+              return (
+                <li
+                  key={id}
+                  className='flex flex-col items-center justify-center gap-y-0.5 cursor-pointer flex-1 h-full'
+                  onClick={() => handleActiveMenu(key)}
+                >
+                  <Link
+                    to={path}
+                    className={`flex flex-col items-center justify-center gap-y-0.5 w-full h-full
+              ${
+                key === activeMenu
+                  ? "text-blue-600 border-t-2 border-blue-600"
+                  : "text-gray-500"
+              }`}
+                  >
+                    <Icons icon={icon} className='w-5 h-5' />
+                    <span className='text-[10px] leading-tight'>{title}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
         <MoreMenu menus={sliceMenu.menuRemain} />
         <DrawerMenu
           open={openDrawerMenu}
           onClose={() => setOpenDrawerMenu(false)}
-          containerClassName="p-0"
+          containerClassName='p-0'
         />
       </>
     );
