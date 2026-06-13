@@ -1,6 +1,8 @@
 /* Import: library */
-import { useEffect, useImperativeHandle, forwardRef } from "react";
+import { useEffect, useImperativeHandle, forwardRef, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Col, Row, notification } from "tera-dls";
@@ -33,9 +35,31 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
     const isUpdate = type === "update";
     const { t } = useTranslation();
 
+    const schema = useMemo(
+      () =>
+        yup.object({
+          code: yup
+            .string()
+            .required(t("validate.required"))
+            .matches(/^[a-zA-Z0-9_-]+$/, t("validate.no_special_chars")),
+          name: yup
+            .string()
+            .required(t("validate.required"))
+            .matches(
+              /^[^!@#$%^&*()+\=\[\]{}|;:'",<>?\/\\~`]+$/,
+              t("validate.no_special_chars"),
+            ),
+          type: yup.string().required(t("validate.required")),
+          status: yup.string().required(t("validate.required")),
+          salary_per_hour: yup.string().required(t("validate.required")),
+        }),
+      [t],
+    );
+
     const form = useForm<ITeacherForm>({
       mode: "onChange",
-      defaultValues: defaultValues,
+      defaultValues,
+      resolver: yupResolver(schema) as any,
     });
 
     const { reset, formState, watch } = form;
@@ -64,7 +88,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
         code: values.code?.trim() || undefined,
         name: values.name?.trim() || undefined,
         type: values.type || undefined,
-        status: values.status?.trim() || "active",
+        status: values.status || undefined,
         salary_per_hour: values.salary_per_hour
           ? Number(values.salary_per_hour)
           : undefined,
@@ -104,15 +128,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
             <FormTeraItem
               label={t("teacher.code")}
               name='code'
-              rules={[
-                {
-                  required: t("validate.required"),
-                  pattern: {
-                    value: /^[a-zA-Z0-9_\-]+$/,
-                    message: t("validate.no_special_chars"),
-                  },
-                },
-              ]}
+              rules={[{ required: t("validate.required") }]}
             >
               <Input
                 placeholder={t("form.enter_value", { key: t("teacher.code") })}
@@ -125,15 +141,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
             <FormTeraItem
               label={t("teacher.name")}
               name='name'
-              rules={[
-                {
-                  required: t("validate.required"),
-                  pattern: {
-                    value: /^[^!@#$%^&*()+\=\[\]{}|;:'",<>?\/\\~`]+$/,
-                    message: t("validate.no_special_chars"),
-                  },
-                },
-              ]}
+              rules={[{ required: t("validate.required") }]}
             >
               <Input
                 placeholder={t("form.enter_value", { key: t("teacher.name") })}
@@ -143,7 +151,11 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
           </Col>
 
           <Col>
-            <FormTeraItem label={t("teacher.type")} name='type' rules={[]}>
+            <FormTeraItem
+              label={t("teacher.type")}
+              name='type'
+              rules={[{ required: t("validate.required") }]}
+            >
               <div className='w-full overflow-hidden'>
                 <select
                   className={SELECT_CLASS}
@@ -191,7 +203,11 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
           </Col>
 
           <Col>
-            <FormTeraItem label={t("teacher.status")} name='status' rules={[]}>
+            <FormTeraItem
+              label={t("teacher.status")}
+              name='status'
+              rules={[{ required: t("validate.required") }]}
+            >
               <div className='w-full overflow-hidden'>
                 <select
                   className={SELECT_CLASS}

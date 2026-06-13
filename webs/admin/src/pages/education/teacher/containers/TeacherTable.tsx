@@ -44,6 +44,12 @@ const TeacherTable = ({
     assistant: t("teacher.type_assistant"),
     freelance: t("teacher.type_freelance"),
   };
+
+  const statusLabels: Record<string, string> = {
+    active: t("teacher.status_active"),
+    suspended: t("teacher.status_suspended"),
+    resigned: t("teacher.status_resigned"),
+  };
   const queryClient = useQueryClient();
   const confirmDialog = useConfirm();
 
@@ -113,6 +119,7 @@ const TeacherTable = ({
       key: "status",
       width: isMobile ? undefined : 120,
       align: "center",
+      render: (status: string) => statusLabels[status] ?? status,
     },
     {
       title: <HeaderTitle>{t("teacher.salary_per_hour")}</HeaderTitle>,
