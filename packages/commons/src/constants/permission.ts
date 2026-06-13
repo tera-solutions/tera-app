@@ -270,10 +270,10 @@ export const BUTTON_KEY = {
   COURSE_DELETE: "edu_course_delete",
   COURSE_EXPORT: "edu_course_export",
 
-  TEACHER_CREATE: "edu_teacher_create",
-  TEACHER_UPDATE: "edu_teacher_update",
-  TEACHER_DELETE: "edu_teacher_delete",
-  TEACHER_EXPORT: "edu_teacher_export",
+  TEACHER_CREATE: "hr_teacher_create",
+  TEACHER_UPDATE: "hr_teacher_update",
+  TEACHER_DELETE: "hr_teacher_delete",
+  TEACHER_EXPORT: "hr_teacher_export",
 };
 
 // PERMISSION
