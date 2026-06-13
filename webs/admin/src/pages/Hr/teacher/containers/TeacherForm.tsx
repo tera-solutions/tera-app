@@ -18,7 +18,7 @@ import { TeacherService } from "@tera/modules";
 import { TeacherAPI } from "@tera/api";
 
 /* Import: pages */
-import { ITeacherForm } from "pages/education/hr/teacher/_interface";
+import { ITeacherForm } from "pages/Hr/teacher/_interface";
 
 const SELECT_CLASS =
   "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";

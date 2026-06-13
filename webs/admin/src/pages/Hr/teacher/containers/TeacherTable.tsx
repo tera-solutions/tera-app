@@ -23,7 +23,7 @@ import { TEACHER_PAGE_URL } from "@tera/commons/constants/url";
 import { TeacherService } from "@tera/modules";
 
 /* Import: pages */
-import { ITeacher } from "pages/education/hr/teacher/_interface";
+import { ITeacher } from "pages/Hr/teacher/_interface";
 
 interface TeacherTableProps {
   params: any;
