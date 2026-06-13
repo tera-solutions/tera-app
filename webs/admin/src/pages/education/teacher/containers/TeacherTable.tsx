@@ -90,13 +90,13 @@ const TeacherTable = ({
       title: <HeaderTitle>{t("teacher.code")}</HeaderTitle>,
       dataIndex: "code",
       key: "code",
-      width: isMobile ? undefined : 120,
+      width: 120,
     },
     {
       title: <HeaderTitle>{t("teacher.name")}</HeaderTitle>,
       dataIndex: "name",
       key: "name",
-      width: isMobile ? undefined : 200,
+      width: 200,
       render: (name: string, record: ITeacher) => (
         <div className='flex flex-col gap-0.5'>
           <span>{name}</span>
@@ -112,7 +112,7 @@ const TeacherTable = ({
       title: <HeaderTitle>{t("teacher.status")}</HeaderTitle>,
       dataIndex: "status",
       key: "status",
-      width: isMobile ? undefined : 120,
+      width: 120,
       align: "center",
       render: (status: string) => statusLabels[status] ?? status,
     },
@@ -120,7 +120,7 @@ const TeacherTable = ({
       title: <HeaderTitle>{t("teacher.salary_per_hour")}</HeaderTitle>,
       dataIndex: "salary_per_hour",
       key: "salary_per_hour",
-      width: isMobile ? undefined : 150,
+      width: 150,
       align: "center" as const,
       render: (value: any) => {
         const num = parseFloat(value);
@@ -130,7 +130,7 @@ const TeacherTable = ({
     {
       title: <HeaderTitle>{t("button.action")}</HeaderTitle>,
       key: "action",
-      width: isMobile ? undefined : 120,
+      width: 100,
       align: "center" as const,
       render: (_: any, record: ITeacher) => (
         <div className='flex items-center justify-center gap-1'>
@@ -203,7 +203,7 @@ const TeacherTable = ({
     <div
       style={{
         width: "100%",
-        overflowX: isMobile ? "hidden" : "auto",
+        overflowX: "auto",
         colorScheme: "light",
       }}
     >
