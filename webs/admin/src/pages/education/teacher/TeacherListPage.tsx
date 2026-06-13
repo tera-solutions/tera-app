@@ -1,12 +1,14 @@
 /* Import: library */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { Button, PlusCircleOutlined } from "tera-dls";
 
 /* Import: packages */
 import HeaderViewList from "@tera/components/web/HeaderViewList";
 import HeaderSearch from "@tera/components/web/HeaderViewList/HeaderSearch";
 import { IModalProps } from "@tera/commons/interfaces";
+import { TEACHER_PAGE_URL } from "@tera/commons/constants/url";
 
 /* Import: pages */
 import TeacherTable from "./containers/TeacherTable";
@@ -15,6 +17,15 @@ import TeacherFormModal from "./TeacherFormModal";
 
 const TeacherListPage = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 960);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 960px)");
+    const handler = (e: MediaQueryListEvent) => setIsMobile(!e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   const [params, setParams] = useState({
     page: 1,
@@ -38,14 +49,18 @@ const TeacherListPage = () => {
   };
 
   return (
-    <div className="p-2.5">
+    <div className="p-2.5 max-xmd:pb-[60px]">
       <HeaderViewList
         title={t("teacher.title")}
         onClickFilter={() => setIsFilter(true)}
         buttonAddRender={() => (
           <Button
-            onClick={() => setModalData({ open: true, type: "create" })}
-            className="rounded-xsm shrink-0 px-2 py-1"
+            onClick={() =>
+              isMobile
+                ? navigate(TEACHER_PAGE_URL.create.path)
+                : setModalData({ open: true, type: "create" })
+            }
+            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1"
           >
             <div className="flex items-center gap-1 shrink-0">
               <PlusCircleOutlined className="w-5 h-5" />

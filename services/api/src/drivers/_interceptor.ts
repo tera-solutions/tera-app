@@ -71,7 +71,9 @@ export const _requestError = (err: any) => {
   }
   const error = err || {};
 
-  if (typeof message === "string") {
+  if (Array.isArray(message)) {
+    error.message = message[0];
+  } else if (typeof message === "string") {
     error.message = message;
   } else {
     error.message =

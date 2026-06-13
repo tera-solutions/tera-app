@@ -16,17 +16,21 @@ import { TeacherService } from "@tera/modules";
 /* Import: pages */
 import { ITeacherForm } from "pages/education/teacher/_interface";
 
+const SELECT_CLASS =
+  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
+
 const defaultValues: ITeacherForm = {
-  code: undefined,
-  name: undefined,
-  type: "teacher",
-  status: "active",
-  salary_per_hour: undefined,
+  code: "",
+  name: "",
+  type: "",
+  status: "",
+  salary_per_hour: "",
 };
 
 const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
   ({ dataDetail, type = "create", onSuccess }, ref) => {
     const isView = type === "detail";
+    const isUpdate = type === "update";
     const { t } = useTranslation();
 
     const form = useForm<ITeacherForm>({
@@ -34,15 +38,22 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
       defaultValues: defaultValues,
     });
 
-    const { reset, formState } = form;
+    const { reset, formState, watch } = form;
+    const typeValue = watch("type");
+    const statusValue = watch("status");
 
     const queryClient = useQueryClient();
-    const { mutate: onSubmit, isPending } =
-      TeacherService.useUpsertTeacher();
+    const { mutate: onSubmit, isPending } = TeacherService.useUpsertTeacher();
 
     useEffect(() => {
       if (dataDetail?.id) {
-        reset(dataDetail);
+        reset({
+          code: dataDetail.code ?? "",
+          name: dataDetail.name ?? "",
+          type: dataDetail.type ?? "",
+          status: dataDetail.status ?? "",
+          salary_per_hour: dataDetail.salary_per_hour ?? "",
+        });
       } else {
         reset(defaultValues);
       }
@@ -52,33 +63,34 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
       const params = {
         code: values.code?.trim() || undefined,
         name: values.name?.trim() || undefined,
-        type: values.type || "teacher",
+        type: values.type || undefined,
         status: values.status?.trim() || "active",
-        salary_per_hour: values.salary_per_hour ? Number(values.salary_per_hour) : undefined,
+        salary_per_hour: values.salary_per_hour
+          ? Number(values.salary_per_hour)
+          : undefined,
       };
 
-      onSubmit({ id: dataDetail?.id, params }, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["teacher", "list"] });
-          onSuccess?.();
+      onSubmit(
+        { id: dataDetail?.id, params },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["teacher", "list"] });
+            onSuccess?.();
+          },
+          onError: (error: any) => {
+            notification.error({
+              message: error?.message || t("common.error_message"),
+            });
+          },
         },
-        onError: (error: any) => {
-          notification.error({
-            message: error?.message || t("common.error_message"),
-          });
-        },
-      });
+      );
     };
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        isValid: () => formState.isValid,
-        submit: () => form.handleSubmit(handleSubmitForm)(),
-        isDirty: () => formState.isDirty,
-      }),
-      [formState.isValid, formState.isDirty],
-    );
+    useImperativeHandle(ref, () => ({
+      isValid: () => formState.isValid,
+      submit: () => form.handleSubmit(handleSubmitForm)(),
+      isDirty: () => formState.isDirty,
+    }));
 
     return (
       <FormTera
@@ -87,26 +99,24 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
         isLoading={isPending}
         isDisabled={type === "detail"}
       >
-        <Row className="grid grid-cols-1">
-
+        <Row className='grid grid-cols-1'>
           <Col>
             <FormTeraItem
               label={t("teacher.code")}
-              name="code"
+              name='code'
               rules={[
                 {
-                  required: {
-                    value: true,
-                    message: t("validate.required"),
+                  required: t("validate.required"),
+                  pattern: {
+                    value: /^[a-zA-Z0-9_\-]+$/,
+                    message: t("validate.no_special_chars"),
                   },
-                }
+                },
               ]}
             >
               <Input
-                placeholder={t("form.enter_value", {
-                  key: t("teacher.code"),
-                })}
-                disabled={isView}
+                placeholder={t("form.enter_value", { key: t("teacher.code") })}
+                disabled={isView || isUpdate}
               />
             </FormTeraItem>
           </Col>
@@ -114,48 +124,64 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
           <Col>
             <FormTeraItem
               label={t("teacher.name")}
-              name="name"
+              name='name'
               rules={[
                 {
-                  required: {
-                    value: true,
-                    message: t("validate.required"),
+                  required: t("validate.required"),
+                  pattern: {
+                    value: /^[^!@#$%^&*()+\=\[\]{}|;:'",<>?\/\\~`]+$/,
+                    message: t("validate.no_special_chars"),
                   },
-                }
+                },
               ]}
             >
               <Input
-                placeholder={t("form.enter_value", {
-                  key: t("teacher.name"),
-                })}
+                placeholder={t("form.enter_value", { key: t("teacher.name") })}
                 disabled={isView}
               />
             </FormTeraItem>
           </Col>
 
           <Col>
-            <FormTeraItem
-              label={t("teacher.type")}
-              name="type"
-              rules={[]}
-            >
-              <Input
-                placeholder={t("form.enter_value", {
-                  key: t("teacher.type"),
-                })}
-                disabled
-              />
+            <FormTeraItem label={t("teacher.type")} name='type' rules={[]}>
+              <div className='w-full overflow-hidden'>
+                <select
+                  className={SELECT_CLASS}
+                  style={{
+                    borderRadius: "3px",
+                    color: typeValue ? "#111827" : "#9ca3af",
+                  }}
+                  disabled={isView}
+                  {...form.register("type")}
+                >
+                  <option value='' disabled hidden>
+                    {t("form.enter_value", { key: t("teacher.type") })}
+                  </option>
+                  <option value='part_time'>
+                    {t("teacher.type_part_time")}
+                  </option>
+                  <option value='full_time'>
+                    {t("teacher.type_full_time")}
+                  </option>
+                  <option value='assistant'>
+                    {t("teacher.type_assistant")}
+                  </option>
+                  <option value='freelance'>
+                    {t("teacher.type_freelance")}
+                  </option>
+                </select>
+              </div>
             </FormTeraItem>
           </Col>
 
           <Col>
             <FormTeraItem
               label={t("teacher.salary_per_hour")}
-              name="salary_per_hour"
-              rules={[]}
+              name='salary_per_hour'
+              rules={[{ required: t("validate.required") }]}
             >
               <Input
-                type="number"
+                type='number'
                 placeholder={t("form.enter_value", {
                   key: t("teacher.salary_per_hour"),
                 })}
@@ -165,19 +191,29 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
           </Col>
 
           <Col>
-            <FormTeraItem
-              label={t("teacher.status")}
-              name="status"
-              rules={[
-                
-              ]}
-            >
-              <Input
-                placeholder={t("form.enter_value", {
-                  key: t("teacher.status"),
-                })}
-                disabled={isView}
-              />
+            <FormTeraItem label={t("teacher.status")} name='status' rules={[]}>
+              <div className='w-full overflow-hidden'>
+                <select
+                  className={SELECT_CLASS}
+                  style={{
+                    borderRadius: "3px",
+                    color: statusValue ? "#111827" : "#9ca3af",
+                  }}
+                  disabled={isView}
+                  {...form.register("status")}
+                >
+                  <option value='' disabled hidden>
+                    {t("form.enter_value", { key: t("teacher.status") })}
+                  </option>
+                  <option value='active'>{t("teacher.status_active")}</option>
+                  <option value='suspended'>
+                    {t("teacher.status_suspended")}
+                  </option>
+                  <option value='resigned'>
+                    {t("teacher.status_resigned")}
+                  </option>
+                </select>
+              </div>
             </FormTeraItem>
           </Col>
         </Row>

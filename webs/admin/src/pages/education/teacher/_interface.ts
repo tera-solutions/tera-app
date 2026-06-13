@@ -12,5 +12,5 @@ export interface ITeacherForm {
   name: string;
   type?: string;
   status?: string;
-  salary_per_hour?: number;
+  salary_per_hour?: number | string;
 }

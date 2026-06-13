@@ -6,9 +6,7 @@ import { useTranslation } from "react-i18next";
 import {
   ArrowSmallLeftSolid,
   Breadcrumb,
-  Button,
   BookmarkOutlined,
-  ArrowLeftOutlined,
 } from "tera-dls";
 
 /* Import: packages */
@@ -81,37 +79,23 @@ const TeacherCreatePage = observer(() => {
       </div>
 
       <div className="w-full max-w-3xl mx-auto">
+        <div className="flex justify-end mb-2">
+          <button
+            type="button"
+            onClick={handleSaveForm}
+            className="flex items-center gap-2 px-6 py-3 xmd:px-4 xmd:py-2 mr-4 rounded-xl bg-gradient-to-r from-green-400 to-emerald-500 text-white font-semibold shadow-lg shadow-emerald-200 hover:from-green-500 hover:to-emerald-600 hover:shadow-emerald-300 active:scale-95 transition-all duration-200"
+          >
+            <BookmarkOutlined className="w-5 h-5 xmd:w-4 xmd:h-4" />
+            <span className="text-base xmd:text-sm">{t("button.save")}</span>
+          </button>
+        </div>
+
         <div className="bg-white rounded-[5px] w-full p-4">
           <TeacherForm
             ref={actionRef}
             type="create"
             onSuccess={() => navigate(TEACHER_PAGE_URL.list.path)}
           />
-        </div>
-
-        <div className="flex justify-between gap-2 mt-4">
-          <Button
-            onClick={() => navigate(-1)}
-            type="light"
-            className="btn-info px-3"
-          >
-            <ArrowLeftOutlined className="w-4 h-4 stroke-2" />
-            <span className="font-normal text-[16px] leading-4.5">
-              {t("button.back")}
-            </span>
-          </Button>
-
-          <Button
-            htmlType="submit"
-            type="success"
-            onClick={handleSaveForm}
-            className="page-header-btn px-3"
-          >
-            <BookmarkOutlined className="w-4 h-4 stroke-2" />
-            <span className="font-normal text-[16px] leading-4.5">
-              {t("button.save")}
-            </span>
-          </Button>
         </div>
       </div>
     </div>

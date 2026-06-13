@@ -12,7 +12,8 @@
   },
   "validate": {
     "required": "Trường này bắt buộc nhập!",
-    "maxLength": "Không nhập quá {{maxLength}} ký tự!"
+    "maxLength": "Không nhập quá {{maxLength}} ký tự!",
+    "no_special_chars": "Không được nhập ký tự đặc biệt!"
   },
   "button": {
     "create": "Thêm mới",
@@ -71,7 +72,14 @@
     "code": "Mã giáo viên",
     "name": "Tên giáo viên",
     "type": "Loại",
+    "type_part_time": "Bán thời gian",
+    "type_full_time": "Toàn thời gian",
+    "type_assistant": "Trợ giảng",
+    "type_freelance": "Cộng tác viên",
     "status": "Trạng thái",
+    "status_active": "Đang làm việc",
+    "status_suspended": "Tạm ngừng",
+    "status_resigned": "Nghỉ việc",
     "salary_per_hour": "Lương/giờ"
   }
 }

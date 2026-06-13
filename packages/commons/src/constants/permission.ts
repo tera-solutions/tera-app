@@ -72,11 +72,11 @@ export const PAGE_KEY = {
   COURSE_UPDATE_VIEW: "edu_course_update_view",
   COURSE_DELETE_VIEW: "edu_course_delete_view",
 
-  TEACHER_LIST_VIEW: "edu_teacher_list_view",
-  TEACHER_DETAIL_VIEW: "edu_teacher_detail_view",
-  TEACHER_CREATE_VIEW: "edu_teacher_create_view",
-  TEACHER_UPDATE_VIEW: "edu_teacher_update_view",
-  TEACHER_DELETE_VIEW: "edu_teacher_delete_view",
+  TEACHER_LIST_VIEW: "hr_teacher_list_view",
+  TEACHER_DETAIL_VIEW: "hr_teacher_detail_view",
+  TEACHER_CREATE_VIEW: "hr_teacher_create_view",
+  TEACHER_UPDATE_VIEW: "hr_teacher_update_view",
+  TEACHER_DELETE_VIEW: "hr_teacher_delete_view",
 };
 
 export const TABLE_KEY = {

@@ -5,9 +5,9 @@ import FormTera, {
   useFormTera,
 } from "@tera/components/dof/FormTera";
 import _ from "lodash";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { MagnifyingGlassOutlined, getQueryParams } from "tera-dls";
+import { MagnifyingGlassOutlined, XMarkOutlined, getQueryParams } from "tera-dls";
 
 interface IProps {
   placeholder?: string;
@@ -16,6 +16,7 @@ interface IProps {
 
 function HeaderSearch({ onSearch, placeholder }: IProps) {
   const { t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
 
   const [formRef] = useFormTera();
 
@@ -30,7 +31,6 @@ function HeaderSearch({ onSearch, placeholder }: IProps) {
   useEffect(() => {
     if (queryParams) {
       const values = _.pick(queryParams, ["keyword"]);
-
       formRef?.current?.reset({
         keyword: values?.keyword ?? "",
       });
@@ -38,15 +38,49 @@ function HeaderSearch({ onSearch, placeholder }: IProps) {
   }, [queryParams]);
 
   return (
-    <FormTera ref={formRef} onSubmit={handleSearch} isLoading={false}>
-      <FormTeraItem className="!mb-0" name="keyword">
-        <Search
-          placeholder={placeholder || t("common.search_placeholder")}
-          icon={<MagnifyingGlassOutlined />}
-          className="w-[400px] rounded-[39px] py-[6px] pl-8"
-        />
-      </FormTeraItem>
-    </FormTera>
+    <>
+      {/* Desktop: always visible */}
+      <div className="hidden xmd:block">
+        <FormTera ref={formRef} onSubmit={handleSearch} isLoading={false}>
+          <FormTeraItem className="!mb-0" name="keyword">
+            <Search
+              placeholder={placeholder || t("common.search_placeholder")}
+              icon={<MagnifyingGlassOutlined />}
+              className="w-[400px] rounded-[39px] py-[6px] pl-8"
+            />
+          </FormTeraItem>
+        </FormTera>
+      </div>
+
+      {/* Mobile: icon button + expandable input below */}
+      <div className="xmd:hidden flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={() => setIsOpen((v) => !v)}
+          className="flex items-center gap-1.5 px-3 h-8 rounded-lg bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors self-start"
+        >
+          {isOpen ? (
+            <XMarkOutlined className="w-4 h-4" />
+          ) : (
+            <MagnifyingGlassOutlined className="w-4 h-4" />
+          )}
+          <span className="text-sm font-medium">Lọc</span>
+        </button>
+
+        {isOpen && (
+          <FormTera ref={formRef} onSubmit={handleSearch} isLoading={false}>
+            <FormTeraItem className="!mb-0" name="keyword">
+              <Search
+                placeholder={placeholder || t("common.search_placeholder")}
+                icon={<MagnifyingGlassOutlined />}
+                className="w-full rounded-[39px] py-[6px] pl-8"
+                autoFocus
+              />
+            </FormTeraItem>
+          </FormTera>
+        )}
+      </div>
+    </>
   );
 }
 

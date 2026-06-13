@@ -1,8 +1,8 @@
 /* Import: library */
+import { useState, useEffect, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
 import {
   PaginationProps,
   notification,
@@ -37,6 +37,13 @@ const TeacherTable = ({
 }: TeacherTableProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const typeLabels: Record<string, string> = {
+    part_time: t("teacher.type_part_time"),
+    full_time: t("teacher.type_full_time"),
+    assistant: t("teacher.type_assistant"),
+    freelance: t("teacher.type_freelance"),
+  };
   const queryClient = useQueryClient();
   const confirmDialog = useConfirm();
 
@@ -73,41 +80,45 @@ const TeacherTable = ({
     });
   };
 
+  const HeaderTitle = ({ children }: { children: ReactNode }) => (
+    <span style={{ color: "#111827" }}>{children}</span>
+  );
+
   const columns = [
     {
-      title: t("teacher.code"),
+      title: <HeaderTitle>{t("teacher.code")}</HeaderTitle>,
       dataIndex: "code",
       key: "code",
-      width: 120,
+      width: isMobile ? undefined : 120,
     },
     {
-      title: t("teacher.name"),
+      title: <HeaderTitle>{t("teacher.name")}</HeaderTitle>,
       dataIndex: "name",
       key: "name",
-      width: 200,
+      width: isMobile ? undefined : 200,
       render: (name: string, record: ITeacher) => (
         <div className='flex flex-col gap-0.5'>
           <span>{name}</span>
           {record.type && (
             <span className='inline-block w-fit px-1.5 py-0.5 text-xs rounded bg-blue-100 text-blue-700'>
-              {record.type}
+              {typeLabels[record.type] ?? record.type}
             </span>
           )}
         </div>
       ),
     },
     {
-      title: t("teacher.status"),
+      title: <HeaderTitle>{t("teacher.status")}</HeaderTitle>,
       dataIndex: "status",
       key: "status",
-      width: 120,
+      width: isMobile ? undefined : 120,
       align: "center",
     },
     {
-      title: t("teacher.salary_per_hour"),
+      title: <HeaderTitle>{t("teacher.salary_per_hour")}</HeaderTitle>,
       dataIndex: "salary_per_hour",
       key: "salary_per_hour",
-      width: 150,
+      width: isMobile ? undefined : 150,
       align: "center" as const,
       render: (value: any) => {
         const num = parseFloat(value);
@@ -115,16 +126,20 @@ const TeacherTable = ({
       },
     },
     {
-      title: t("button.action"),
+      title: <HeaderTitle>{t("button.action")}</HeaderTitle>,
       key: "action",
-      width: 120,
+      width: isMobile ? undefined : 120,
       align: "center" as const,
       render: (_: any, record: ITeacher) => (
         <div className='flex items-center justify-center gap-1'>
           <Tooltip title={t("button.detail")}>
             <button
               type='button'
-              onClick={() => navigate(TEACHER_PAGE_URL.detail.path(record.id))}
+              onClick={() =>
+                isMobile
+                  ? navigate(TEACHER_PAGE_URL.detail.path(record.id))
+                  : setModalData({ open: true, type: "detail", id: record.id })
+              }
               className='flex h-7 w-7 items-center justify-center rounded text-blue-500 transition-colors hover:bg-blue-50 hover:text-blue-600'
             >
               <EyeOutlined className='h-4 w-4' />
@@ -134,7 +149,9 @@ const TeacherTable = ({
             <button
               type='button'
               onClick={() =>
-                setModalData({ open: true, type: "update", id: record.id })
+                isMobile
+                  ? navigate(TEACHER_PAGE_URL.update.path(record.id))
+                  : setModalData({ open: true, type: "update", id: record.id })
               }
               className='flex h-7 w-7 items-center justify-center rounded text-amber-500 transition-colors hover:bg-amber-50 hover:text-amber-600'
             >
@@ -175,13 +192,19 @@ const TeacherTable = ({
 
   const tableData = data?.data?.items ?? [];
 
-  const mobileKeys = ["code", "name", "salary_per_hour", "action"];
+  const mobileKeys = ["code", "name", "status", "salary_per_hour", "action"];
   const visibleColumns = isMobile
     ? columns.filter((col) => mobileKeys.includes(col.key as string))
     : columns;
 
   return (
-    <div style={{ width: "100%", overflowX: "auto" }}>
+    <div
+      style={{
+        width: "100%",
+        overflowX: isMobile ? "hidden" : "auto",
+        colorScheme: "light",
+      }}
+    >
       <TableTera
         rowKey='code'
         columns={visibleColumns}
@@ -192,39 +215,9 @@ const TeacherTable = ({
           total: totalItems,
           current: currentPage,
           pageSize: perPage,
+          pageSizeOptions: [20, 50, 100],
         }}
       />
-
-      {/* Mobile pagination — hidden on desktop */}
-      {totalItems > 0 && (
-        <div className='xmd:hidden flex items-center justify-between px-4 py-3 border-t border-gray-200'>
-          <button
-            type='button'
-            onClick={() =>
-              currentPage > 1 &&
-              setParams((prev: any) => ({ ...prev, page: currentPage - 1 }))
-            }
-            disabled={currentPage <= 1}
-            className='flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-gray-300 bg-white text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed active:bg-gray-50'
-          >
-            ← Trước
-          </button>
-          <span className='text-sm text-gray-600'>
-            Trang {currentPage} / {lastPage}
-          </span>
-          <button
-            type='button'
-            onClick={() =>
-              currentPage < lastPage &&
-              setParams((prev: any) => ({ ...prev, page: currentPage + 1 }))
-            }
-            disabled={currentPage >= lastPage}
-            className='flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-gray-300 bg-white text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed active:bg-gray-50'
-          >
-            Tiếp →
-          </button>
-        </div>
-      )}
     </div>
   );
 };
