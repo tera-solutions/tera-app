@@ -78,12 +78,14 @@ const HeaderViewListV2 = (props: IProps) => {
         <div className="text-gray-700 font-semibold text-base uppercase">
           {title}
         </div>
-        {checkPermissionButton(buttonCreatingKey) && renderBtnAdd()}
+        <div className="hidden xmd:block">
+          {checkPermissionButton(buttonCreatingKey) && renderBtnAdd()}
+        </div>
       </div>
       {middleContent && <>{middleContent}</>}
       <div className="rounded-[6px] overflow-hidden shadow-xsm bg-white">
         <div
-          className={classNames("px-[9px] flex justify-between bg-white", {
+          className={classNames("px-[9px] flex flex-wrap justify-between bg-white gap-y-2", {
             "py-2.5":
               !!selectedNumber ||
               !!optionItems ||
@@ -94,6 +96,7 @@ const HeaderViewListV2 = (props: IProps) => {
           })}
         >
           <div className="flex gap-2.5 items-center">
+            <div className="xmd:hidden">{actionLeftRender}</div>
             {selectedNumber !== 0 && (
               <div className="flex gap-1 italic text-[13px] leading-[13px]">
                 <span className=" font-light"> Đã chọn</span>{" "}
@@ -122,8 +125,11 @@ const HeaderViewListV2 = (props: IProps) => {
               </Dropdown>
             )}
           </div>
-          <div className="flex gap-2.5">
-            {actionLeftRender}
+          <div className="flex gap-2.5 items-center">
+            <div className="hidden xmd:block">{actionLeftRender}</div>
+            <div className="xmd:hidden">
+              {checkPermissionButton(buttonCreatingKey) && renderBtnAdd()}
+            </div>
             {dropdownItems && dropdownItems?.length > 0 && (
               <Dropdown menu={{ items: dropdownItems }} trigger="click">
                 <Button
@@ -138,7 +144,7 @@ const HeaderViewListV2 = (props: IProps) => {
             {onClickFilter && checkPermissionButton(buttonFilterKey) && (
               <Button
                 type="alternative"
-                className="rounded-xsm py-1 px-1 bg-blue-50"
+                className="hidden xmd:flex rounded-xsm py-1 px-1 bg-blue-50"
                 icon={
                   <FunnelOutlined className=" text-blue-500 rounded-[4px] shrink-0" />
                 }
