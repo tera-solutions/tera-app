@@ -19,10 +19,10 @@ import UnAuthLayout from "_common/components/Layout/UnAuthLayout";
 /* IMPORT:router */
 
 /* IMPORT:Teacher */
-import TeacherListPage from "pages/education/teacher/TeacherListPage";
-import TeacherCreatePage from "pages/education/teacher/TeacherCreatePage";
-import TeacherUpdatePage from "pages/education/teacher/TeacherUpdatePage";
-import TeacherDetailPage from "pages/education/teacher/TeacherDetailPage";
+import TeacherListPage from "pages/education/hr/teacher/TeacherListPage";
+import TeacherCreatePage from "pages/education/hr/teacher/TeacherCreatePage";
+import TeacherUpdatePage from "pages/education/hr/teacher/TeacherUpdatePage";
+import TeacherDetailPage from "pages/education/hr/teacher/TeacherDetailPage";
 
 /* IMPORT:Course */
 import CourseListPage from "pages/education/course/CourseListPage";

@@ -1,6 +1,6 @@
 {
-  "module": "education",
-  "prefix": "edu",
+  "module": "education/hr",
+  "prefix": "hr",
   "entity": "teacher",
   "block": "teacher",
   "title": "giáo viên",

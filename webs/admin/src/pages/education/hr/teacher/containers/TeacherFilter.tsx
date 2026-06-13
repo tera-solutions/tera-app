@@ -10,7 +10,7 @@ import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import { Input } from "@tera/components/dof/Control";
 
 /* Import: pages */
-import { ITeacher } from "pages/education/teacher/_interface";
+import { ITeacher } from "pages/education/hr/teacher/_interface";
 
 const defaultValues: ITeacher = {
   code: undefined,
