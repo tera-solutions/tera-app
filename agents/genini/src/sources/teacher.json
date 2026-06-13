@@ -1,5 +1,5 @@
 {
-  "module": "education/hr",
+  "module": "hr",
   "prefix": "hr",
   "entity": "teacher",
   "block": "teacher",
