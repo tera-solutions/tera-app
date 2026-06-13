@@ -11,6 +11,7 @@ import {
   PencilSquareOutlined,
   TrashOutlined,
   notification,
+  Button,
 } from "tera-dls";
 
 /* Import: packages */
@@ -254,23 +255,21 @@ const TeacherDetailPage = observer(() => {
         </div>
 
         <div className='flex justify-between mt-2 max-xmd:mb-[60px]'>
-          <button
-            type='button'
+          <Button
             onClick={() => navigate(TEACHER_PAGE_URL.update.path(Number(id)))}
-            className='flex items-center gap-2 px-6 py-3 xmd:px-4 xmd:py-2 ml-4 rounded-xl bg-gradient-to-r from-green-400 to-emerald-500 text-white font-semibold shadow-lg shadow-emerald-200 hover:from-green-500 hover:to-emerald-600 hover:shadow-emerald-300 active:scale-95 transition-all duration-200'
+            className='flex items-center gap-2 px-6 py-3 xmd:px-4 xmd:py-2 ml-4 rounded-xl! bg-gradient-to-r! from-green-400! to-emerald-500! text-white! font-semibold shadow-lg shadow-emerald-200 hover:from-green-500! hover:to-emerald-600! hover:shadow-emerald-300 active:scale-95 transition-all duration-200 border-none!'
           >
             <PencilSquareOutlined className='w-5 h-5 xmd:w-4 xmd:h-4' />
             <span className='text-base xmd:text-sm'>{t("button.edit")}</span>
-          </button>
-          <button
-            type='button'
+          </Button>
+          <Button
             onClick={handleDelete}
-            disabled={isDeleting}
-            className='flex items-center gap-2 px-6 py-3 xmd:px-4 xmd:py-2 mr-4 rounded-xl bg-gradient-to-r from-red-400 to-red-500 text-white font-semibold shadow-lg shadow-red-200 hover:from-red-500 hover:to-red-600 hover:shadow-red-300 active:scale-95 transition-all duration-200 disabled:opacity-50'
+            loading={isDeleting}
+            className='flex items-center gap-2 px-6 py-3 xmd:px-4 xmd:py-2 mr-4 rounded-xl! bg-gradient-to-r! from-red-400! to-red-500! text-white! font-semibold shadow-lg shadow-red-200 hover:from-red-500! hover:to-red-600! hover:shadow-red-300 active:scale-95 transition-all duration-200 border-none!'
           >
             <TrashOutlined className='w-5 h-5 xmd:w-4 xmd:h-4' />
             <span className='text-base xmd:text-sm'>{t("button.delete")}</span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>
