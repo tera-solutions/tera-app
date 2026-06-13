@@ -1,5 +1,5 @@
 /* Import: library */
-import { useState, useEffect, ReactNode } from "react";
+import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
@@ -15,6 +15,7 @@ import {
 /* Import: packages */
 import { TableTera } from "@tera/components/dof";
 import useConfirm from "@tera/commons/hooks/useConfirm";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { IModalProps } from "@tera/commons/interfaces";
 import { TEACHER_PAGE_URL } from "@tera/commons/constants/url";
 
@@ -53,13 +54,7 @@ const TeacherTable = ({
   const queryClient = useQueryClient();
   const confirmDialog = useConfirm();
 
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 960);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 960px)");
-    const handler = (e: MediaQueryListEvent) => setIsMobile(!e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  const isMobile = useIsMobile();
 
   const { data, isPending } = TeacherService.useTeacherList({ params });
   const { mutate: onDelete, isPending: isDeleting } =

@@ -59,7 +59,10 @@ export const _requestResponse = (response: any) => {
 
 export const _requestError = (err: any) => {
   const message =
-    _.get(err, "data.msg") || _.get(err, "response.data.error.message");
+    _.get(err, "data.msg") ||
+    _.get(err, "response.data.error.message") ||
+    _.get(err, "response.data.message") ||
+    _.get(err, "response.data.msg");
   const status = _.get(err, "data.code") || _.get(err, "response.status");
   if (status === 403) {
     // window.localStorage.clear();

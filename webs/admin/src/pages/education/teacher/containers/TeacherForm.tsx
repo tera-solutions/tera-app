@@ -1,11 +1,12 @@
 /* Import: library */
-import { useEffect, useImperativeHandle, forwardRef, useMemo } from "react";
+import { useEffect, useImperativeHandle, forwardRef, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Col, Row, notification } from "tera-dls";
+import debounce from "lodash/debounce";
 
 /* Import: packages */
 import { IFormProps } from "@tera/commons/interfaces";
@@ -14,6 +15,7 @@ import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 
 /* Import: services */
 import { TeacherService } from "@tera/modules";
+import { TeacherAPI } from "@tera/api";
 
 /* Import: pages */
 import { ITeacherForm } from "pages/education/teacher/_interface";
@@ -35,13 +37,33 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
     const isUpdate = type === "update";
     const { t } = useTranslation();
 
+    const checkCodeRef = useRef(
+      debounce(
+        (code: string, resolve: (valid: boolean) => void) => {
+          TeacherAPI.getList({ params: { keyword: code, per_page: 5 } })
+            .then((res) => {
+              const items: any[] = res?.data?.items ?? [];
+              resolve(!items.some((item) => item.code === code));
+            })
+            .catch(() => resolve(true));
+        },
+        500,
+      ),
+    );
+
     const schema = useMemo(
       () =>
         yup.object({
           code: yup
             .string()
             .required(t("validate.required"))
-            .matches(/^[a-zA-Z0-9_-]+$/, t("validate.no_special_chars")),
+            .matches(/^[a-zA-Z0-9_-]+$/, t("validate.no_special_chars"))
+            .test("unique-code", t("validate.code_exists"), (value) => {
+              if (!value || isUpdate) return true;
+              return new Promise((resolve) =>
+                checkCodeRef.current(value, resolve),
+              );
+            }),
           name: yup
             .string()
             .required(t("validate.required"))

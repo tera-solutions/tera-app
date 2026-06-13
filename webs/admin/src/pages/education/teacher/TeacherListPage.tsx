@@ -1,5 +1,5 @@
 /* Import: library */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button, PlusCircleOutlined } from "tera-dls";
@@ -9,6 +9,7 @@ import HeaderViewList from "@tera/components/web/HeaderViewList";
 import HeaderSearch from "@tera/components/web/HeaderViewList/HeaderSearch";
 import { IModalProps } from "@tera/commons/interfaces";
 import { TEACHER_PAGE_URL } from "@tera/commons/constants/url";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
 
 /* Import: pages */
 import TeacherTable from "./containers/TeacherTable";
@@ -19,13 +20,7 @@ const TeacherListPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 960);
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 960px)");
-    const handler = (e: MediaQueryListEvent) => setIsMobile(!e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  const isMobile = useIsMobile();
 
   const [params, setParams] = useState({
     page: 1,

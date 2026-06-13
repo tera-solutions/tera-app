@@ -13,7 +13,8 @@
   "validate": {
     "required": "Trường này bắt buộc nhập!",
     "maxLength": "Không nhập quá {{maxLength}} ký tự!",
-    "no_special_chars": "Không được nhập ký tự đặc biệt!"
+    "no_special_chars": "Không được nhập ký tự đặc biệt!",
+    "code_exists": "Mã đã tồn tại trong hệ thống!"
   },
   "button": {
     "create": "Thêm mới",
