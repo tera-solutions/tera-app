@@ -91,7 +91,7 @@ export const config = {
   app: {},
   uploadKey: "9074c259a7",
   appId: "2",
-  privateKey: import.meta.env.VITE_TERA_PRIVATE_KEY,
+  privateKey: process.env.EXPO_PUBLIC_TERA_PRIVATE_KEY,
 };
 
 export const gender = {
