@@ -1,5 +1,4 @@
 import { useStates } from '@hooks/useStates';
-import { handleClearApp } from '@tera/commons/utils';
 import GeneralService from '@databases/general/service';
 import { useTableVersion } from '@databases/table_version/hook/useTableVersion';
 import TableVersionService from '@databases/table_version/service';
@@ -8,6 +7,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 
 export const useLogout = (callback?: () => void) => {
+  const {
+    authStore: { clear },
+  } = useStates();
   return useMutation({
     mutationFn: () => AuthApi.logout(),
     onSuccess: async () => {
@@ -19,11 +21,11 @@ export const useLogout = (callback?: () => void) => {
         text1: 'Đăng xuất thành công!',
       });
 
-      handleClearApp();
+      clear();
     },
     onError: async (error: any) => {
       console.error(error);
-      handleClearApp();
+      clear();
       Toast.show({
         type: 'error',
         text1: error?.msg || error?.message,

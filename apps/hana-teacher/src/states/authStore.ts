@@ -16,8 +16,8 @@ export class AuthStore {
     makeAutoObservable(this);
     makePersistable(this, {
       storage: AsyncStorage,
-      name: 'AuthStore',
-      properties: ['token'],
+      name: 'AuthMobileStore',
+      properties: ['token', 'user'],
     }).then((persistable) => {
       this.setHydrated(persistable.isHydrated);
     });

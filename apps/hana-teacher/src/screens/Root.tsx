@@ -8,7 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import RootNavigator from 'src/app/navigation/RootNavigator';
 
 export default function RootApp() {
-  const { generalStore } = useStates();
+  const { generalStore, authStore } = useStates();
 
   useQueryLegacy({
     queryKey: ['get_device'],
@@ -16,6 +16,16 @@ export default function RootApp() {
     staleTime: 300000,
     onSuccess: (data) => {
       generalStore.setInitData(data);
+    },
+  });
+
+  useQueryLegacy({
+    queryKey: ['get_profile'],
+    queryFn: AuthApi.getProfile,
+    staleTime: 300000,
+    enabled: !!authStore.token,
+    onSuccess: (res) => {
+      authStore.updateUser({ user: res?.data });
     },
   });
 

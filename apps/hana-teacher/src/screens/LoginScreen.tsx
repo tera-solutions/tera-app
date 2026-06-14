@@ -23,7 +23,6 @@ const LoginScreen = observer(() => {
   const {
     generalStore: { device },
   } = useStates();
-  const [refreshing, setRefreshing] = useState(false);
 
   const {
     control,
@@ -44,26 +43,10 @@ const LoginScreen = observer(() => {
     mutate({ ...data });
   };
 
-  useEffect(() => {
-    if (!device) {
-      handleSyncData();
-    }
-  }, [device]);
-
-  const handleSyncData = async () => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
         style={[{ flex: 1, marginTop: 0, backgroundColor: 'transparent' }]}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleSyncData} />
-        }
       >
         <Image
           source={require('@assets/images/logo.png')}
