@@ -3,7 +3,14 @@ const path = require('path');
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ['babel-preset-expo'],
+    presets: [
+      [
+        'babel-preset-expo',
+        {
+          unstable_transformImportMeta: true,
+        },
+      ],
+    ],
     plugins: [
       [
         'module-resolver',
@@ -64,6 +71,7 @@ module.exports = function (api) {
       ['@babel/plugin-proposal-decorators', { legacy: true }],
       'react-native-reanimated/plugin',
       '@babel/plugin-syntax-import-meta',
+      'babel-plugin-transform-import-meta'
     ],
   };
 };

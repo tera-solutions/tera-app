@@ -1,24 +1,19 @@
-export const endpoint = `${import.meta.env.VITE_TERA_API}/v1`;
+const getApiUrl = (): string => {
+  if (typeof window !== 'undefined' && typeof import.meta !== 'undefined' && (import.meta as any).env) {
+    return (import.meta as any).env.VITE_TERA_API || '';
+  }
+  
+  return process.env.EXPO_PUBLIC_API_URL || process.env.VITE_TERA_API || '';
+};
 
-export const portalEndpoint = `${import.meta.env.VITE_TERA_API}/api/portal`;
+const BASE_API = getApiUrl();
 
-export const authEndpoint = `${import.meta.env.VITE_TERA_API}/auth/api`;
+export const endpoint = `${BASE_API}/v1`;
 
-export const auth2Endpoint = `${import.meta.env.VITE_TERA_API}/auth/api`;
+export const portalEndpoint = `${BASE_API}/api/portal`;
 
-export const adminEndpoint = `${import.meta.env.VITE_TERA_API}/api/admin`;
+export const authEndpoint = `${BASE_API}/api/auth`;
 
-export const webApi = `${import.meta.env.VITE_TERA_WEB_API}/api`;
+export const auth2Endpoint = `${BASE_API}/api/auth`;
 
-export const webClientUrl = import.meta.env.VITE_TERA_WEB_CLIENT;
-
-export const zaloAuthApi = import.meta.env.VITE_TERA_ZALO_AUTH_API;
-
-export const zaloOpenApi = import.meta.env.VITE_TERA_ZALO_OPEN_API;
-
-export const socketUrl = import.meta.env.VITE_TERA_SOCKET;
-
-export const viettelPostEndpoint = import.meta.env
-  .VITE_TERA_VIETTEL_POST_OPEN_API;
-
-export const facebookEndpoint = import.meta.env.VITE_TERA_FACEBOOK_API;
+export const adminEndpoint = `${BASE_API}/api/admin`;

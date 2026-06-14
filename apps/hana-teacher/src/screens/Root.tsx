@@ -1,3 +1,6 @@
+import { useStates } from '@hooks/useStates';
+import { AuthApi } from '@tera/api/auth';
+import { useQueryLegacy } from '@tera/commons/hooks/useQueryLegacy';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -5,7 +8,17 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import RootNavigator from 'src/app/navigation/RootNavigator';
 
 export default function RootApp() {
-  // 1. Giữ lại các hook logic toàn cục
+  const { generalStore } = useStates();
+
+  useQueryLegacy({
+    queryKey: ['get_device'],
+    queryFn: AuthApi.getDeviceCode,
+    staleTime: 300000,
+    onSuccess: (data) => {
+      generalStore.setInitData(data);
+    },
+  });
+
   return (
     <SafeAreaProvider>
       <RootNavigator />

@@ -9,7 +9,6 @@ import { registerTranslation } from 'react-native-paper-dates';
 import Toast from 'react-native-toast-message';
 
 import { viLocale } from '@tera/commons/constants/common';
-import { DatabaseProvider } from '@provider/DatabaseProvider';
 import { Splash } from '@components/ui/Splash';
 import RootApp from '@screens/Root';
 
@@ -63,9 +62,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <PaperProvider>
         <QueryClientProvider client={queryClient}>
-          <DatabaseProvider>
-            <RootApp />
-          </DatabaseProvider>
+          <RootApp />
           <Toast />
         </QueryClientProvider>
       </PaperProvider>

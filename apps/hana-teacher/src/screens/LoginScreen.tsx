@@ -52,12 +52,6 @@ const LoginScreen = observer(() => {
 
   const handleSyncData = async () => {
     setRefreshing(true);
-    await syncManager.addQueue({
-      table_name: 'generals',
-      type: 'realtime',
-      action: 'GET',
-    });
-    await syncManager.processQueue('realtime');
     setTimeout(() => {
       setRefreshing(false);
     }, 1000);

@@ -108,6 +108,12 @@ export class GeneralStore {
     });
   };
 
+  setInitData = (data: any) => {
+    runInAction(() => {
+      this.device = data?.device_code || this.device;
+    });
+  };
+
   setVersion = (ver: number) => {
     runInAction(() => {
       this.version = ver || this.version;

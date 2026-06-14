@@ -1,5 +1,3 @@
-import { IAuthStore } from '@tera/store';
-
 export type IndustryKey =
   | 'general'
   | 'fnb'
@@ -63,5 +61,18 @@ export interface IGeneralStore {
   setIsDbReady: (status: boolean) => void;
   setIsOffline: (status: boolean) => void;
   setDevice: (device_code: string) => void;
+  setInitData: (data: any) => void;
   setVersion: (ver: number) => void;
+}
+
+export interface IAuthStore {
+  authenticated: boolean;
+  isHydrated: boolean;
+  user: any;
+  token: string;
+  role: string;
+  clear: () => void;
+  fetchUserFromLocal: () => void;
+  updateToken: (token: string) => void;
+  updateUser: (user: any) => void;
 }

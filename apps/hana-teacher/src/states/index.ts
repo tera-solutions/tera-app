@@ -1,6 +1,6 @@
 import { createContext } from 'react';
-import { IGeneralStore, IPrintStore, IUIStore } from './_interface';
-import { AuthStore, IAuthStore } from '@tera/stores';
+import { IAuthStore, IGeneralStore, IPrintStore, IUIStore } from './_interface';
+import { AuthStore } from './authStore';
 import { GeneralStore } from './generalStore';
 import { PrintStore } from './printStore';
 import { UIStore } from './uiStore';
