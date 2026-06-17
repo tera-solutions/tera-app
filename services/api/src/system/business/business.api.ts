@@ -13,31 +13,31 @@ import {
 export const BusinessAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
-      .get(`${endpoint}/system/business/list`, {...params, ...params?.filters})
+      .get(`${endpoint}/sys/business/list`, {...params, ...params?.filters})
       .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
     await api
-      .get(`${endpoint}/system/business/detail/${id}`)
+      .get(`${endpoint}/sys/business/detail/${id}`)
       .then((result) => result.data),
 
   create: async ({ params }: CreatePayload) =>
     await api
-      .post(`${endpoint}/system/business/create`, params)
+      .post(`${endpoint}/sys/business/create`, params)
       .then((result) => result.data),
 
   update: async ({ id, params }: UpdatePayload) =>
     await api
-      .put(`${endpoint}/system/business/update/${id}`, params)
+      .put(`${endpoint}/sys/business/update/${id}`, params)
       .then((result) => result.data),
 
   delete: async ({ id }: DeletePayload) =>
     await api
-      .delete(`${endpoint}/system/business/delete/${id}`)
+      .delete(`${endpoint}/sys/business/delete/${id}`)
       .then((result) => result.data),
   
   export: async ({ params }: ExportPayload) =>
     await api
-      .post(`${endpoint}/system/business/export`, params)
+      .post(`${endpoint}/sys/business/export`, params)
       .then((result) => result.data),
 };
