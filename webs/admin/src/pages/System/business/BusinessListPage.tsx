@@ -42,9 +42,9 @@ const BusinessListPage = observer(() => {
     id: undefined,
   });
 
-  const statusOptions = (globalStore.getOptions("business_status") ?? []).filter(
-    (opt: any) => opt.value !== "suspended",
-  );
+  const statusOptions = (
+    globalStore.getOptions("business_status") ?? []
+  ).filter((opt: any) => opt.value !== "suspended");
   const statusTabs = [
     { key: "", label: t("common.all") },
     ...statusOptions.map((opt: any) => ({ key: opt.value, label: opt.label })),
@@ -77,7 +77,7 @@ const BusinessListPage = observer(() => {
   };
 
   return (
-    <div className="p-2.5 max-xmd:pb-[60px]">
+    <div className='p-2.5 max-xmd:pb-[60px]'>
       <HeaderViewList
         title={t("business.title")}
         buttonAddRender={() => (
@@ -87,21 +87,21 @@ const BusinessListPage = observer(() => {
                 ? navigate(BUSINESS_PAGE_URL.create.path)
                 : setModalData({ open: true, type: "create" })
             }
-            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1"
+            className='rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1'
           >
-            <div className="flex items-center gap-1 shrink-0">
-              <PlusCircleOutlined className="w-5 h-5" />
+            <div className='flex items-center gap-1 shrink-0'>
+              <PlusCircleOutlined className='w-5 h-5' />
               <span>{t("button.create")}</span>
             </div>
           </Button>
         )}
       >
         {/* Status tabs */}
-        <div className="flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent">
+        <div className='flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent'>
           {statusTabs.map((tab) => (
             <button
               key={tab.key}
-              type="button"
+              type='button'
               onClick={() => handleStatusChange(tab.key)}
               className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors ${
                 activeStatus === tab.key
@@ -115,22 +115,22 @@ const BusinessListPage = observer(() => {
         </div>
 
         {/* Search + quick filters row */}
-        <div className="relative z-20 grid grid-cols-2 gap-2 mb-3 xmd:flex xmd:flex-nowrap xmd:items-center">
+        <div className='relative z-20 grid grid-cols-2 gap-2 mb-3 xmd:flex xmd:flex-nowrap xmd:items-center'>
           {/* Search + Sắp xếp — mobile cùng 1 hàng; desktop tách ra (contents + order) */}
-          <div className="col-span-2 flex gap-2 items-center xmd:contents">
-            <div className="relative flex-1 min-w-0 xmd:flex-1 xmd:order-1">
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+          <div className='col-span-2 flex gap-2 items-center xmd:contents'>
+            <div className='relative flex-1 min-w-0 xmd:flex-1 xmd:order-1'>
+              <span className='absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400'>
                 <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                  className='w-4 h-4'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
                     strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
                   />
                 </svg>
               </span>
@@ -141,16 +141,16 @@ const BusinessListPage = observer(() => {
                   resetPage();
                 }}
                 placeholder={t("business.search_placeholder")}
-                className="w-full h-9 border border-gray-300 rounded pl-8 pr-3 text-[13px] bg-white focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500"
+                className='w-full h-9 border border-gray-300 rounded pl-8 pr-3 text-[13px] bg-white focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500'
               />
             </div>
-            <div className="shrink-0 xmd:order-4">
+            <div className='shrink-0 xmd:order-4'>
               <SortSelect
                 options={sortOptions}
                 sortBy={sortBy}
                 sortDir={sortDir}
                 placeholder={t("business.sort_by")}
-                defaultDir="asc"
+                defaultDir='asc'
                 onChange={(sb, sd) => {
                   setSortBy(sb);
                   setSortDir(sd);
@@ -161,7 +161,7 @@ const BusinessListPage = observer(() => {
           </div>
 
           {/* Người quản lý */}
-          <div className="w-full xmd:w-auto xmd:min-w-[170px] xmd:order-2">
+          <div className='w-full xmd:w-auto xmd:min-w-[170px] xmd:order-2'>
             <UserSelect
               value={managerFilter}
               selectedUser={selectedManager}
@@ -177,16 +177,32 @@ const BusinessListPage = observer(() => {
 
           {/* Ngày tạo */}
           <input
-            type="date"
+            type='date'
             value={dateFilter}
             onChange={(e) => {
               setDateFilter(e.target.value);
               resetPage();
             }}
             title={t("business.created_at")}
-            className={QUICK_SELECT_CLASS + " xmd:order-3"}
+            className={QUICK_SELECT_CLASS}
             style={{ color: dateFilter ? "#111827" : "#9ca3af" }}
           />
+
+          {/* Sắp xếp */}
+          <div className='w-full xmd:w-auto xmd:min-w-[170px]'>
+            <SortSelect
+              options={sortOptions}
+              sortBy={sortBy}
+              sortDir={sortDir}
+              placeholder={t("business.sort_by")}
+              defaultDir='asc'
+              onChange={(sb, sd) => {
+                setSortBy(sb);
+                setSortDir(sd);
+                resetPage();
+              }}
+            />
+          </div>
         </div>
 
         <BusinessTable
