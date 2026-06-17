@@ -1,7 +1,6 @@
 /* Import: library */
-import { useState } from "react";
 import { observer } from "mobx-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -17,9 +16,13 @@ import {
 /* Import: packages */
 import { TEACHER_PAGE_URL } from "@tera/commons/constants/url";
 import useConfirm from "@tera/commons/hooks/useConfirm";
+import { useStores } from "@tera/stores/useStores";
 
 /* Import: services */
 import { TeacherService } from "@tera/modules";
+
+/* Import: containers */
+import TeacherCertificate from "./containers/TeacherCertificate";
 
 const TeacherDetailPage = observer(() => {
   const navigate = useNavigate();
@@ -27,8 +30,12 @@ const TeacherDetailPage = observer(() => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const confirmDialog = useConfirm();
+  const { globalStore } = useStores();
 
-  const [activeTab, setActiveTab] = useState("general");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "general";
+  const setActiveTab = (key: string) =>
+    setSearchParams({ tab: key }, { replace: true });
 
   const { data, isPending } = TeacherService.useTeacherDetail({ id });
   const { mutate: onDelete, isPending: isDeleting } =
@@ -36,17 +43,17 @@ const TeacherDetailPage = observer(() => {
 
   const teacher = data?.data?.teacher;
 
-  const typeLabels: Record<string, string> = {
-    part_time: t("teacher.type_part_time"),
-    full_time: t("teacher.type_full_time"),
-    assistant: t("teacher.type_assistant"),
-    freelance: t("teacher.type_freelance"),
+  const skillLevelLabels: Record<string, string> = {
+    beginner: t("teacher.skill_level_beginner"),
+    intermediate: t("teacher.skill_level_intermediate"),
+    advanced: t("teacher.skill_level_advanced"),
+    expert: t("teacher.skill_level_expert"),
   };
 
-  const statusLabels: Record<string, string> = {
-    active: t("teacher.status_active"),
-    suspended: t("teacher.status_suspended"),
-    resigned: t("teacher.status_resigned"),
+  const employmentTypeLabels: Record<string, string> = {
+    contract: t("teacher.employment_type_contract"),
+    collaborator: t("teacher.employment_type_collaborator"),
+    probation: t("teacher.employment_type_probation"),
   };
 
   const handleDelete = () => {
@@ -72,20 +79,20 @@ const TeacherDetailPage = observer(() => {
   };
 
   const tabItems = [
-    { key: "general", label: "Thông tin chi tiết" },
-    { key: "salary", label: "Lương" },
-    { key: "expertise", label: "Chuyên môn" },
-    { key: "certificate", label: "Chứng chỉ" },
-    { key: "class", label: "Lớp học" },
-    { key: "session", label: "Buổi học" },
-    { key: "review", label: "Đánh giá" },
-    { key: "attendance", label: "Chấm công" },
-    { key: "activity", label: "Lịch sử hoạt động" },
+    { key: "general", label: t("teacher.tab_detail") },
+    { key: "salary", label: t("teacher.tab_salary") },
+    { key: "certificate", label: t("teacher.certificate") },
+    { key: "expertise", label: t("teacher.tab_expertise") },
+    { key: "class", label: t("teacher.tab_class") },
+    { key: "session", label: t("teacher.tab_session") },
+    { key: "review", label: t("teacher.tab_review") },
+    { key: "attendance", label: t("teacher.tab_attendance") },
+    { key: "activity", label: t("teacher.tab_activity") },
   ];
 
   return (
     <div className='tera-page-form gap-0! relative'>
-      <div className='sticky top-11.25 z-10 bg-[#F3F3F9]'>
+      <div className='sticky top-11.25 z-30 bg-[#F3F3F9]'>
         <div className='page-header-v2'>
           <div className='page-header-v2__breadcrumb'>
             <div
@@ -123,17 +130,17 @@ const TeacherDetailPage = observer(() => {
               {teacher?.avatar ? (
                 <img
                   src={teacher.avatar}
-                  alt={teacher.name}
+                  alt={teacher.full_name}
                   className='w-full h-full object-cover'
                 />
               ) : (
                 <div className='w-full h-full bg-blue-100 flex items-center justify-center text-blue-500 text-2xl font-bold'>
-                  {teacher?.name ? teacher.name.charAt(0).toUpperCase() : "?"}
+                  {teacher?.full_name ? teacher.full_name.charAt(0).toUpperCase() : "?"}
                 </div>
               )}
             </div>
             <p className='text-base font-bold text-gray-800'>
-              {teacher?.name ?? "—"}
+              {teacher?.full_name ?? "—"}
             </p>
             <p className='text-sm text-gray-400 mt-0.5'>
               {teacher?.code ?? "—"}
@@ -163,21 +170,52 @@ const TeacherDetailPage = observer(() => {
               <Spin spinning={isPending}>
                 {activeTab === "general" && (
                   <div>
-                    <SectionHeader title='Thông tin chung' />
+                    <SectionHeader title={t("teacher.section_general")} />
                     <div className='divide-y divide-gray-100 mt-2'>
                       <InfoRow label={t("teacher.code")} value={teacher?.code} />
-                      <InfoRow label={t("teacher.name")} value={teacher?.name} />
+                      <InfoRow label={t("teacher.name")} value={teacher?.full_name} />
+                      <InfoRow label={t("teacher.branch")} value={teacher?.branch?.name} />
                       <InfoRow
                         label={t("teacher.type")}
                         value={
-                          teacher?.type ? typeLabels[teacher.type] : undefined
+                          teacher?.teacher_type
+                            ? globalStore.getMetaLabel("teacher_type", teacher.teacher_type)
+                            : undefined
                         }
                       />
                       <InfoRow
                         label={t("teacher.status")}
                         value={
                           teacher?.status
-                            ? statusLabels[teacher.status]
+                            ? globalStore.getMetaLabel("teacher_status", teacher.status)
+                            : undefined
+                        }
+                      />
+                      <InfoRow
+                        label={t("teacher.gender")}
+                        value={
+                          teacher?.gender
+                            ? globalStore.getMetaLabel("gender", teacher.gender)
+                            : undefined
+                        }
+                      />
+                      <InfoRow
+                        label={t("teacher.dob")}
+                        value={
+                          teacher?.dob
+                            ? new Date(teacher.dob).toLocaleDateString("vi-VN")
+                            : undefined
+                        }
+                      />
+                      <InfoRow label={t("teacher.phone")} value={teacher?.phone} />
+                      <InfoRow label={t("teacher.email")} value={teacher?.email} />
+                      <InfoRow label={t("teacher.address")} value={teacher?.address} />
+                      <InfoRow label={t("teacher.identity_no")} value={teacher?.identity_no} />
+                      <InfoRow
+                        label={t("teacher.joined_at")}
+                        value={
+                          teacher?.joined_at
+                            ? new Date(teacher.joined_at).toLocaleDateString("vi-VN")
                             : undefined
                         }
                       />
@@ -187,65 +225,109 @@ const TeacherDetailPage = observer(() => {
 
                 {activeTab === "salary" && (
                   <div>
-                    <SectionHeader title='Lương' />
+                    <SectionHeader title={t("teacher.tab_salary")} />
                     <div className='divide-y divide-gray-100 mt-2'>
+                      <InfoRow
+                        label={t("teacher.employment_type")}
+                        value={teacher?.employment_type ? (employmentTypeLabels[teacher.employment_type] ?? teacher.employment_type) : undefined}
+                      />
                       <InfoRow
                         label={t("teacher.salary_per_hour")}
                         value={
-                          teacher?.salary_per_hour != null
-                            ? teacher.salary_per_hour.toLocaleString("vi-VN")
+                          teacher?.hourly_rate != null
+                            ? Number(teacher.hourly_rate).toLocaleString("vi-VN")
+                            : undefined
+                        }
+                      />
+                      <InfoRow
+                        label={t("teacher.monthly_salary")}
+                        value={
+                          teacher?.monthly_salary != null
+                            ? Number(teacher.monthly_salary).toLocaleString("vi-VN")
                             : undefined
                         }
                       />
                     </div>
-                  </div>
-                )}
 
-                {activeTab === "expertise" && (
-                  <div>
-                    <SectionHeader title='Chuyên môn' />
-                    <EmptyTab />
+                    <div className='mt-4'>
+                      <SectionHeader title={t("teacher.bank_info")} />
+                      <div className='divide-y divide-gray-100 mt-2'>
+                        <InfoRow label={t("teacher.bank_name")} value={teacher?.bank_account?.bank_name} />
+                        <InfoRow label={t("teacher.bank_account_number")} value={teacher?.bank_account?.bank_account_number} />
+                        <InfoRow label={t("teacher.bank_account_holder")} value={teacher?.bank_account?.bank_account_holder} />
+                        <InfoRow label={t("teacher.bank_branch")} value={teacher?.bank_account?.bank_branch} />
+                      </div>
+                    </div>
                   </div>
                 )}
 
                 {activeTab === "certificate" && (
                   <div>
-                    <SectionHeader title='Chứng chỉ' />
-                    <EmptyTab />
+                    <SectionHeader title={t("teacher.certificate")} />
+                    <TeacherCertificate teacherId={Number(id)} />
                   </div>
                 )}
 
+                {activeTab === "expertise" && (
+                  <div>
+                    <SectionHeader title={t("teacher.tab_expertise")} />
+                    {teacher?.skills?.length ? (
+                      <table className='w-full mt-2 text-[13px]'>
+                        <thead>
+                          <tr className='bg-gray-50 text-gray-500 text-left'>
+                            <th className='px-3 py-2 font-medium'>{t("teacher.skill_name")}</th>
+                            <th className='px-3 py-2 font-medium'>{t("teacher.skill_level")}</th>
+                          </tr>
+                        </thead>
+                        <tbody className='divide-y divide-gray-100'>
+                          {teacher.skills.map((skill) => (
+                            <tr key={skill.id}>
+                              <td className='px-3 py-2 text-gray-800'>{skill.skill_name}</td>
+                              <td className='px-3 py-2 text-gray-800'>
+                                {skillLevelLabels[skill.level] ?? skill.level}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <EmptyTab />
+                    )}
+                  </div>
+                )}
+
+
                 {activeTab === "class" && (
                   <div>
-                    <SectionHeader title='Lớp học' />
+                    <SectionHeader title={t("teacher.tab_class")} />
                     <EmptyTab />
                   </div>
                 )}
 
                 {activeTab === "session" && (
                   <div>
-                    <SectionHeader title='Buổi học' />
+                    <SectionHeader title={t("teacher.tab_session")} />
                     <EmptyTab />
                   </div>
                 )}
 
                 {activeTab === "review" && (
                   <div>
-                    <SectionHeader title='Đánh giá' />
+                    <SectionHeader title={t("teacher.tab_review")} />
                     <EmptyTab />
                   </div>
                 )}
 
                 {activeTab === "attendance" && (
                   <div>
-                    <SectionHeader title='Chấm công' />
+                    <SectionHeader title={t("teacher.tab_attendance")} />
                     <EmptyTab />
                   </div>
                 )}
 
                 {activeTab === "activity" && (
                   <div>
-                    <SectionHeader title='Lịch sử hoạt động' />
+                    <SectionHeader title={t("teacher.tab_activity")} />
                     <EmptyTab />
                   </div>
                 )}
@@ -276,14 +358,17 @@ const TeacherDetailPage = observer(() => {
   );
 });
 
-const EmptyTab = () => (
-  <div className='flex flex-col items-center justify-center py-12 text-gray-400'>
-    <svg className='w-12 h-12 mb-3 text-gray-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
-    </svg>
-    <p className='text-sm'>Chưa có dữ liệu</p>
-  </div>
-);
+const EmptyTab = () => {
+  const { t } = useTranslation();
+  return (
+    <div className='flex flex-col items-center justify-center py-12 text-gray-400'>
+      <svg className='w-12 h-12 mb-3 text-gray-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
+      </svg>
+      <p className='text-sm'>{t("common.no_data")}</p>
+    </div>
+  );
+};
 
 const SectionHeader = ({ title }: { title: string }) => (
   <div className='bg-gray-100 px-4 py-2 rounded border-l-4 border-blue-400'>

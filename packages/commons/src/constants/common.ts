@@ -15,7 +15,7 @@ export const getConfig = () => {
 };
 
 export const endpointSocket = process.env.EXPO_PUBLIC_SOCKET_URL;
-export const endpointAuth = `${process.env.EXPO_PUBLIC_API_URL}/auth/api`;
+export const endpointAuth = `${process.env.EXPO_PUBLIC_API_URL}/api/auth`;
 export const endpointPortal = `${process.env.EXPO_PUBLIC_API_URL}/portal/api`;
 export const endpointCRM = `${process.env.EXPO_PUBLIC_API_URL}/crm/api`;
 export const appVersion = process.env.EXPO_PUBLIC_APP_VERSION
@@ -91,7 +91,7 @@ export const config = {
   app: {},
   uploadKey: "9074c259a7",
   appId: "2",
-  privateKey: import.meta.env.VITE_TERA_PRIVATE_KEY,
+  privateKey: process.env.EXPO_PUBLIC_TERA_PRIVATE_KEY,
 };
 
 export const gender = {

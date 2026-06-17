@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "@tera/assets/icons/LogoTera.svg?react";
-import { Bars3Outlined } from "tera-dls";
+import { Bars3Outlined, EllipsisHorizontalOutlined } from "tera-dls";
 import useGroupMenu from "_common/hooks/useGroupMenu";
 import useClickOutside from "_common/hooks/useClickOutside";
 import { useStates } from "_common/hooks/useStates";
@@ -28,6 +28,7 @@ const MenuComponent: React.FC<MenuProps> = observer(
 
     const menus = useGroupMenu();
     const [openDrawerMenu, setOpenDrawerMenu] = useState<boolean>(false);
+    const [openMobileMore, setOpenMobileMore] = useState<boolean>(false);
     const updateActiveMenu = () => {
       const splitUrl = location?.pathname?.split("/");
       const checkMenu: IMenu = menus?.find(
@@ -59,8 +60,8 @@ const MenuComponent: React.FC<MenuProps> = observer(
     };
 
     const sliceMenu = useMemo(() => {
-      const menu = [...menus].splice(0, 6);
-      const menuRemain = [...menus].splice(6, 100);
+      const menu = [...menus].splice(0, 7);
+      const menuRemain = [...menus].splice(7, 100);
 
       return {
         menu,
@@ -82,6 +83,15 @@ const MenuComponent: React.FC<MenuProps> = observer(
     }, [activeMenu, sliceMenu]);
     activeOtherMenu;
     handleOpenMoreMenu;
+
+    // Mobile bottom nav: hiện 5 mục chính (gồm Lịch học) + nút "Thêm" mở sheet
+    // chứa phần còn lại (Trung Tâm, Doanh Nghiệp).
+    // Lọc bỏ phần tử rỗng (systemMenu = []) không có key.
+    const mobileMenu = sliceMenu.menu.filter((m: IMenu) => m?.key);
+    const mobileMain = mobileMenu.slice(0, 5);
+    const mobileMore = mobileMenu.slice(5);
+    const isMoreActive = mobileMore.some((m: IMenu) => m.key === activeMenu);
+
     return (
       <>
         <div
@@ -122,19 +132,22 @@ const MenuComponent: React.FC<MenuProps> = observer(
           <Header />
         </div>
 
-        {/* Mobile: bottom navigation */}
+        {/* Mobile: bottom navigation (4 mục chính + nút Thêm) */}
         <nav
           className='xmd:hidden fixed bottom-0 left-0 right-0 z-[49] bg-white border-t border-gray-200 h-[60px]'
           style={{ boxShadow: "0px -2px 4px 0px rgba(0, 0, 0, 0.05)" }}
         >
           <ul className='flex items-center justify-around h-full'>
-            {sliceMenu.menu?.map((item: IMenu) => {
-              const { id, key, icon, path, title } = item;
+            {mobileMain.map((item: IMenu) => {
+              const { id, key, icon, path, title, shortTitle } = item;
               return (
                 <li
                   key={id}
                   className='flex flex-col items-center justify-center gap-y-0.5 cursor-pointer flex-1 h-full'
-                  onClick={() => handleActiveMenu(key)}
+                  onClick={() => {
+                    handleActiveMenu(key);
+                    setOpenMobileMore(false);
+                  }}
                 >
                   <Link
                     to={path}
@@ -146,13 +159,71 @@ const MenuComponent: React.FC<MenuProps> = observer(
               }`}
                   >
                     <Icons icon={icon} className='w-5 h-5' />
-                    <span className='text-[10px] leading-tight'>{title}</span>
+                    <span className='text-[10px] leading-tight'>
+                      {shortTitle || title}
+                    </span>
                   </Link>
                 </li>
               );
             })}
+
+            {mobileMore.length > 0 && (
+              <li
+                className='flex flex-col items-center justify-center gap-y-0.5 cursor-pointer flex-1 h-full'
+                onClick={() => setOpenMobileMore((v) => !v)}
+              >
+                <div
+                  className={`flex flex-col items-center justify-center gap-y-0.5 w-full h-full ${
+                    openMobileMore || isMoreActive
+                      ? "text-blue-600 border-t-2 border-blue-600"
+                      : "text-gray-500"
+                  }`}
+                >
+                  <EllipsisHorizontalOutlined className='w-5 h-5' />
+                  <span className='text-[10px] leading-tight'>Thêm</span>
+                </div>
+              </li>
+            )}
           </ul>
         </nav>
+
+        {/* Mobile: sheet "Thêm" chứa các mục còn lại */}
+        {openMobileMore && (
+          <>
+            <div
+              className='xmd:hidden fixed inset-0 z-[50] bg-black/30'
+              onClick={() => setOpenMobileMore(false)}
+            />
+            <div className='xmd:hidden fixed bottom-[60px] left-0 right-0 z-[51] bg-white rounded-t-2xl border-t border-gray-200 px-3 pt-3 pb-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]'>
+              <div className='w-10 h-1 bg-gray-200 rounded-full mx-auto mb-3' />
+              <div className='grid grid-cols-4 gap-2'>
+                {mobileMore.map((item: IMenu) => {
+                  const { id, key, icon, path, title, shortTitle } = item;
+                  return (
+                    <Link
+                      key={id}
+                      to={path}
+                      onClick={() => {
+                        handleActiveMenu(key);
+                        setOpenMobileMore(false);
+                      }}
+                      className={`flex flex-col items-center justify-center gap-y-1 py-2.5 rounded-xl ${
+                        key === activeMenu
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-gray-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      <Icons icon={icon} className='w-5 h-5' />
+                      <span className='text-[10px] leading-tight text-center'>
+                        {title || shortTitle}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
         <MoreMenu menus={sliceMenu.menuRemain} />
         <DrawerMenu
           open={openDrawerMenu}

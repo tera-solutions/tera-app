@@ -7,6 +7,7 @@ import {
   ArrowSmallLeftSolid,
   Breadcrumb,
   BookmarkOutlined,
+  Button,
 } from "tera-dls";
 
 /* Import: packages */
@@ -78,16 +79,15 @@ const TeacherCreatePage = observer(() => {
         </div>
       </div>
 
-      <div className="w-full max-w-3xl mx-auto">
+      <div className="w-full max-w-3xl mx-auto max-xmd:pb-[60px]">
         <div className="flex justify-end mb-2">
-          <button
-            type="button"
+          <Button
             onClick={handleSaveForm}
-            className="flex items-center gap-2 px-6 py-3 xmd:px-4 xmd:py-2 mr-4 rounded-xl bg-gradient-to-r from-green-400 to-emerald-500 text-white font-semibold shadow-lg shadow-emerald-200 hover:from-green-500 hover:to-emerald-600 hover:shadow-emerald-300 active:scale-95 transition-all duration-200"
+            className="flex! items-center! gap-2 px-6 py-3 xmd:px-4 xmd:py-2 mr-4 rounded-xl! bg-gradient-to-r! from-green-400! to-emerald-500! text-white! font-semibold! shadow-lg! shadow-emerald-200! hover:from-green-500! hover:to-emerald-600! hover:shadow-emerald-300! active:scale-95 transition-all duration-200 border-none!"
           >
             <BookmarkOutlined className="w-5 h-5 xmd:w-4 xmd:h-4" />
             <span className="text-base xmd:text-sm">{t("button.save")}</span>
-          </button>
+          </Button>
         </div>
 
         <div className="bg-white rounded-[5px] w-full p-4">

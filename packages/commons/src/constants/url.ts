@@ -340,4 +340,61 @@ export const TEACHER_PAGE_URL = {
     path: (id: number) => "/teacher/update/" + id,
     shortenUrl: "/teacher/update/:id",
   },
+  certificateCreate: {
+    key: PAGE_KEY.TEACHER_DETAIL_VIEW,
+    path: (id: number) => `/teacher/${id}/certificate/create`,
+    shortenUrl: "/teacher/:id/certificate/create",
+  },
+  certificateUpdate: {
+    key: PAGE_KEY.TEACHER_DETAIL_VIEW,
+    path: (id: number, certificateId: number) =>
+      `/teacher/${id}/certificate/update/${certificateId}`,
+    shortenUrl: "/teacher/:id/certificate/update/:certificateId",
+  },
+};
+
+export const BRANCH_PAGE_URL = {
+  list: {
+    key: "",
+    path: "/system/branch/list",
+    shortenUrl: "/system/branch/list",
+  },
+  create: {
+    key: "",
+    path: "/system/branch/create",
+    shortenUrl: "/system/branch/create",
+  },
+  detail: {
+    key: "",
+    path: (id: number) => "/system/branch/detail/" + id,
+    shortenUrl: "/system/branch/detail/:id",
+  },
+  update: {
+    key: "",
+    path: (id: number) => "/system/branch/update/" + id,
+    shortenUrl: "/system/branch/update/:id",
+  },
+};
+
+export const BUSINESS_PAGE_URL = {
+  list: {
+    key: "",
+    path: "/system/business/list",
+    shortenUrl: "/system/business/list",
+  },
+  create: {
+    key: "",
+    path: "/system/business/create",
+    shortenUrl: "/system/business/create",
+  },
+  detail: {
+    key: "",
+    path: (id: number) => "/system/business/detail/" + id,
+    shortenUrl: "/system/business/detail/:id",
+  },
+  update: {
+    key: "",
+    path: (id: number) => "/system/business/update/" + id,
+    shortenUrl: "/system/business/update/:id",
+  },
 };

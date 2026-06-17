@@ -1,14 +1,9 @@
-import { systemSubMenu } from "../components/Layout/Menu/menus";
 import { mergeArrayObjectByKeyDependOnNewArray } from "tera-dls";
 import { useMemo } from "react";
 import { useStates } from "_common/hooks/useStates";
 
 // Import các file menu JSON từ path của bạn
 import admin from "_common/components/Layout/Menu/admin.json";
-
-const subMenuObject = {
-  ["system"]: systemSubMenu,
-};
 
 // Giả lập dữ liệu từ API (sau này bạn có thể mở lại useQuery ở đây)
 const subMenusFromApi = {
@@ -55,8 +50,7 @@ const useSubMenu = ({ active }: UseSubMenuProps = {}) => {
       });
   }, [admin, active, activeMenu, configSubMenu]);
 
-  // Trả về menu hệ thống nếu key là 'system', ngược lại trả về menu theo module
-  return subMenuObject[activeMenu] ?? menus;
+  return menus;
 };
 
 export default useSubMenu;
