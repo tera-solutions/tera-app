@@ -50,29 +50,29 @@ const TabLayout = observer(() => {
         }}
       />
       <Tabs.Screen
-        name="lesson"
+        name="classroom"
         options={{
-          title: 'Bài học',
+          title: 'Lớp học',
           tabBarIcon: ({ color }) => (
-            <Icon source="book-open-variant" size={ICON_SIZE} color={color} />
+            <Icon source="school" size={ICON_SIZE} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="homework"
         options={{
-          title: 'Luyện tập',
+          title: 'Giáo án',
           tabBarIcon: ({ color }) => (
-            <Icon source="pencil-outline" size={ICON_SIZE} color={color} />
+            <Icon source="book-open-page-variant" size={ICON_SIZE} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="product"
+        name="lesson"
         options={{
-          title: 'Thành tích',
+          title: 'Lịch dạy',
           tabBarIcon: ({ color }) => (
-            <Icon source="trophy-outline" size={ICON_SIZE} color={color} />
+            <Icon source="calendar-clock" size={ICON_SIZE} color={color} />
           ),
         }}
       />

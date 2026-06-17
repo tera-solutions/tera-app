@@ -1,84 +1,48 @@
-import { useStates } from '@hooks/useStates';
-import NetInfo from '@react-native-community/netinfo';
-import { observer } from 'mobx-react-lite';
-import { ScrollView } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView, View } from 'react-native';
 
-import { useSyncQueue } from '@databases/sync_queues/hook/useSyncQueue';
-import { syncManager } from '@hana/teacher/services/sync/SyncManager';
-import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { Icon } from 'react-native-paper';
-import HomeHeader from '@screens/HomeScreen/HomeHeader';
-import TodayActivityCard from './TodayActivityCard';
-import SubjectGrid from './SubjectGrid';
-import LessonSection from './LessonSection';
-import WeeklyChallengeCard from './WeeklyChallengeCard';
+import HeaderSection from './components/HeaderSection';
+import TodayScheduleCard from './components/TodayScheduleCard';
+import QuickActionGrid from './components/QuickActionGrid';
+import ClassOverviewCard from './components/ClassOverviewCard';
+import StudentOverviewCard from './components/StudentOverviewCard';
+import TodoSection from './components/TodoSection';
+import NotificationSection from './components/NotificationSection';
 
-// --- 2. Dữ liệu Mẫu (Mock Data) ---
-const metrics: any[] = [
-  {
-    title: 'Đơn hàng tháng này',
-    count: '9',
-    amount: '290,000,000 đ',
-    subText: 'Doanh thu tháng này',
-  },
-  {
-    title: 'Khách hàng tháng này',
-    count: '9',
-    amount: '10,000,000 đ',
-    subText: 'Công nợ tháng này',
-  },
-];
+import { styles } from './style';
 
-const tasks = [
-  'Nhiệm vụ tưới cây',
-  'Nhiệm vụ code layout',
-  'Nhiệm vụ lấy dữ liệu',
-];
-
-const HomeScreen = observer(() => {
-  const {
-    authStore: { user },
-    uiStore: { business_info },
-  } = useStates();
-  const router = useRouter();
-  const { count } = useSyncQueue();
-  const insets = useSafeAreaInsets();
-  const [isOffline, setIsOffline] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-
-  useEffect(() => {
-    NetInfo.fetch().then((state) => {
-      setIsOffline(!state.isConnected);
-    });
-  }, []);
-
-  const handleSyncData = async () => {
-    setRefreshing(true);
-    await syncManager.addQueue({
-      table_name: 'generals',
-      type: 'realtime',
-      action: 'GET',
-    });
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
-  };
-
+export default function HomeScreen() {
   return (
-    <ScrollView>
-      <HomeHeader />
+    <View style={styles.container}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+      >
+        <HeaderSection />
 
-      <TodayActivityCard />
+        <TodayScheduleCard />
 
-      <SubjectGrid />
+        <QuickActionGrid />
 
-      <LessonSection />
+        <View style={styles.summaryRow}>
+          <ClassOverviewCard
+            data={{
+              totalClass: 3,
+              classes: ['Starters 2A', 'Movers 1B', 'Flyers 3A'],
+            }}
+            onPressViewAll={() => {}}
+          />
+          <StudentOverviewCard
+            data={{
+              totalStudent: 72,
+              growthPercent: 8,
+            }}
+          />
+        </View>
 
-      <WeeklyChallengeCard />
-    </ScrollView>
+        <TodoSection />
+
+        <NotificationSection />
+      </ScrollView>
+    </View>
   );
-});
-
-export default HomeScreen;
+}

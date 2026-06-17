@@ -1,4 +1,5 @@
 import { Image, Text, View } from 'react-native';
+import { Icon } from 'react-native-paper';
 
 import { styles } from './style';
 
@@ -28,15 +29,15 @@ export default function HomeHeader() {
             />
           </View>
 
-          <Text style={styles.greeting}>Chào buổi sáng, Minh! 👋</Text>
+          <Text style={styles.greeting}>Xin chào, Cô Hạ! 👋</Text>
 
-          <Text style={styles.subGreeting}>Hôm nay chúng ta học gì nhé?</Text>
+          <Text style={styles.subGreeting}>Chúc cô một ngày dạy học hiệu quả</Text>
         </View>
 
         <View style={styles.headerRight}>
           <View style={styles.avatarWrapper}>
             <Image
-              source={require('@tera/assets/app/element_8.png')}
+              source={require('@tera/assets/app/element_3.png')}
               style={styles.avatar}
             />
 
@@ -44,15 +45,8 @@ export default function HomeHeader() {
           </View>
 
           <View style={styles.coinBadge}>
-            <Image
-              source={require('@tera/assets/app/element_19.png')}
-              style={{
-                width: 20,
-                height: 20,
-              }}
-              resizeMode="contain"
-            />
-            <Text style={styles.coinText}>120</Text>
+            <Icon source="school" size={20} color="#002080" />
+            <Text style={styles.coinText}>Giáo viên</Text>
           </View>
         </View>
       </View>
