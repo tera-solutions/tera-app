@@ -310,6 +310,7 @@ const BusinessTable = observer(
             rowKey="id"
             columns={columns}
             data={tableData}
+            scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
             loading={isPending || isDeleting}
             pagination={{
               onChange: handleChangePage,

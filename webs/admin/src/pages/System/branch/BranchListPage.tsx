@@ -16,11 +16,9 @@ import { BranchService, BusinessService } from "@tera/modules";
 /* Import: pages */
 import UserSelect from "_common/components/UserSelect";
 import SortSelect from "_common/components/SortSelect";
+import FilterSelect from "_common/components/FilterSelect";
 import BranchTable from "./containers/BranchTable";
 import BranchFormModal from "./BranchFormModal";
-
-const QUICK_SELECT_CLASS =
-  "h-9 w-full border border-gray-300 bg-white rounded px-2 text-[13px] xmd:w-auto xmd:min-w-[150px] focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500 cursor-pointer";
 
 const BranchListPage = () => {
   const { t } = useTranslation();
@@ -128,75 +126,79 @@ const BranchListPage = () => {
 
         {/* Search + filter row */}
         <div className="relative z-20 grid grid-cols-2 gap-2 mb-3 xmd:flex xmd:flex-nowrap xmd:items-center">
-          <div className="relative col-span-2 min-w-0 xmd:flex-1">
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </span>
-            <input
-              value={keyword}
-              onChange={(e) => {
-                setKeyword(e.target.value);
-                resetPage();
-              }}
-              placeholder={t("branch.search_placeholder")}
-              className="w-full h-9 border border-gray-300 rounded pl-8 pr-3 text-[13px] bg-white focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500"
-            />
+          {/* Search + Sắp xếp — mobile cùng 1 hàng; desktop tách ra (contents + order) */}
+          <div className="col-span-2 flex gap-2 items-center xmd:contents">
+            <div className="relative flex-1 min-w-0 xmd:flex-1 xmd:order-1">
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </span>
+              <input
+                value={keyword}
+                onChange={(e) => {
+                  setKeyword(e.target.value);
+                  resetPage();
+                }}
+                placeholder={t("branch.search_placeholder")}
+                className="w-full h-9 border border-gray-300 rounded pl-8 pr-3 text-[13px] bg-white focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500"
+              />
+            </div>
+            <div className="shrink-0 xmd:order-5">
+              <SortSelect
+                options={sortOptions}
+                sortBy={sortBy}
+                sortDir={sortDir}
+                placeholder={t("branch.sort_by")}
+                defaultDir="asc"
+                onChange={(sb, sd) => {
+                  setSortBy(sb);
+                  setSortDir(sd);
+                  resetPage();
+                }}
+              />
+            </div>
           </div>
 
           {/* Doanh nghiệp */}
-          <select
+          <FilterSelect
+            className="w-full xmd:w-auto xmd:min-w-[150px] xmd:order-2"
             value={businessFilter}
-            onChange={(e) => {
-              setBusinessFilter(e.target.value);
+            placeholder={t("branch.all_business")}
+            options={businesses.map((b) => ({
+              value: String(b.id),
+              label: b.name,
+            }))}
+            onChange={(v) => {
+              setBusinessFilter(v);
               resetPage();
             }}
-            className={QUICK_SELECT_CLASS}
-            style={{ color: businessFilter ? "#111827" : "#9ca3af" }}
-          >
-            <option value="" style={{ color: "#111827" }}>
-              {t("branch.all_business")}
-            </option>
-            {businesses.map((b) => (
-              <option key={b.id} value={String(b.id)} style={{ color: "#111827" }}>
-                {b.name}
-              </option>
-            ))}
-          </select>
+          />
 
           {/* Tỉnh/Thành */}
-          <select
+          <FilterSelect
+            className="w-full xmd:w-auto xmd:min-w-[150px] xmd:order-3"
             value={provinceFilter}
-            onChange={(e) => {
-              setProvinceFilter(e.target.value);
+            placeholder={t("branch.all_provinces")}
+            options={provinces.map((p) => ({ value: p, label: p }))}
+            onChange={(v) => {
+              setProvinceFilter(v);
               resetPage();
             }}
-            className={QUICK_SELECT_CLASS}
-            style={{ color: provinceFilter ? "#111827" : "#9ca3af" }}
-          >
-            <option value="" style={{ color: "#111827" }}>
-              {t("branch.all_provinces")}
-            </option>
-            {provinces.map((p) => (
-              <option key={p} value={p} style={{ color: "#111827" }}>
-                {p}
-              </option>
-            ))}
-          </select>
+          />
 
           {/* Người quản lý */}
-          <div className="w-full xmd:w-auto xmd:min-w-[180px]">
+          <div className="w-full xmd:w-auto xmd:min-w-[180px] xmd:order-4">
             <UserSelect
               value={managerFilter}
               selectedUser={selectedManager}
@@ -205,22 +207,6 @@ const BranchListPage = () => {
               onChange={(id, user) => {
                 setManagerFilter(id);
                 setSelectedManager(user ?? null);
-                resetPage();
-              }}
-            />
-          </div>
-
-          {/* Sắp xếp */}
-          <div className="w-full xmd:w-auto xmd:min-w-[170px]">
-            <SortSelect
-              options={sortOptions}
-              sortBy={sortBy}
-              sortDir={sortDir}
-              placeholder={t("branch.sort_by")}
-              defaultDir="asc"
-              onChange={(sb, sd) => {
-                setSortBy(sb);
-                setSortDir(sd);
                 resetPage();
               }}
             />

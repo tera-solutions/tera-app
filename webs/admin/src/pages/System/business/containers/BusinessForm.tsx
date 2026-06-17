@@ -73,6 +73,17 @@ const BusinessForm = observer(
       const currentIdRef = useRef(dataDetail?.id);
       currentIdRef.current = dataDetail?.id;
 
+      const checkCodeRef = useRef(
+        debounce((code: string, resolve: (valid: boolean) => void) => {
+          BusinessAPI.getList({ params: { keyword: code, per_page: 20 } })
+            .then((res: any) => {
+              const items: any[] = res?.data?.items ?? [];
+              resolve(!items.some((item) => item.business_code === code));
+            })
+            .catch(() => resolve(true));
+        }, 500),
+      );
+
       const checkEmailRef = useRef(
         debounce((email: string, resolve: (valid: boolean) => void) => {
           BusinessAPI.getList({ params: { keyword: email, per_page: 20 } })
@@ -96,7 +107,13 @@ const BusinessForm = observer(
               .string()
               .test("code-required", t("validate.required"), (value) =>
                 isUpdateRef.current ? true : !!value,
-              ),
+              )
+              .test("unique-code", t("validate.code_exists"), (value) => {
+                if (!value || isUpdateRef.current) return true;
+                return new Promise((resolve) =>
+                  checkCodeRef.current(value, resolve),
+                );
+              }),
             name: yup.string().required(t("validate.required")),
             short_name: yup.string().optional(),
             prefix: yup

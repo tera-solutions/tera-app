@@ -43,10 +43,18 @@
   padding-inline-end: 0;
 }
 
-/* Ẩn scrollbar dọc của table body nhưng vẫn giữ scroll được */
+/* Hiện cả scrollbar NGANG lẫn DỌC cho table body */
 .tera-table-body {
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: thin; /* Firefox */
 }
 .tera-table-body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
+  width: 8px; /* thanh DỌC */
+  height: 8px; /* thanh NGANG */
+}
+.tera-table-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+.tera-table-body::-webkit-scrollbar-track {
+  background: transparent;
 }
