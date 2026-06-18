@@ -28,6 +28,9 @@ export class GlobalStore {
 
   auth_url = "";
 
+  // Dữ liệu enum dùng chung từ API metadata, dạng { group: { list_name: IMetaOption[] } }
+  metadata: Record<string, Record<string, IMetaOption[]>> = {};
+
   constructor() {
     makeAutoObservable(this);
     makePersistable(this, {
@@ -41,6 +44,7 @@ export class GlobalStore {
         "modules",
         "role",
         "device",
+        "metadata",
       ],
       storage: window.localStorage,
     });
@@ -114,4 +118,41 @@ export class GlobalStore {
     this.user = { ...(this.user ?? {}), business };
     this.business_id = business?.id || this.business_id;
   };
+
+  setMetadata = (data: any) => {
+    this.metadata = data || {};
+  };
+
+  // Gộp tất cả list của mọi group lại theo tên (các tên list là unique trên toàn metadata)
+  // -> getOptions("teacher_status") không cần biết nó thuộc group "hr".
+  get metaOptionsMap(): Record<string, IMetaOption[]> {
+    const map: Record<string, IMetaOption[]> = {};
+    Object.values(this.metadata || {}).forEach((group) => {
+      Object.entries(group || {}).forEach(([name, list]) => {
+        map[name] = list as IMetaOption[];
+      });
+    });
+    return map;
+  }
+
+  getOptions = (name: string): IMetaOption[] => this.metaOptionsMap[name] ?? [];
+
+  getMetaItem = (
+    name: string,
+    value?: string | null,
+  ): IMetaOption | undefined =>
+    value == null
+      ? undefined
+      : this.getOptions(name).find((o) => o.value === value);
+
+  getMetaLabel = (name: string, value?: string | null): string =>
+    this.getMetaItem(name, value)?.label ?? value ?? "";
+}
+
+export interface IMetaOption {
+  key: string;
+  value: string;
+  label: string;
+  color?: string;
+  backgroundColor?: string;
 }

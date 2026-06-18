@@ -318,6 +318,7 @@ export const COURSE_PAGE_URL = {
   },
 };
 
+
 export const TEACHER_PAGE_URL = {
   list: {
     key: PAGE_KEY.TEACHER_LIST_VIEW,
