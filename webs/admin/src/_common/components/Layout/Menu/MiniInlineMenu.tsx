@@ -5,11 +5,10 @@ import { groupBy } from "lodash";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeftOutlined, Collapse, Icon, XMarkSolid } from "tera-dls";
+import { Collapse, Icon, XMarkSolid } from "tera-dls";
 import { IMenu } from "./interface";
 import admin from "./admin.json";
 import useSubMenu from "_common/hooks/useSubMenu";
-import useGroupMenu from "_common/hooks/useGroupMenu";
 import { usePermission } from "@tera/commons/hooks/usePermission";
 import { useStates } from "_common/hooks/useStates";
 
@@ -21,13 +20,11 @@ const MiniInlineMenu: React.FC<MiniInlineMenuProps> = observer(
     const {
       commonStore: { activeMenu: activeGroupKey },
     } = useStates();
-    const [activeGroupDraft, setActiveGroupDraft] = useState<string>(null);
     const location = useLocation();
     const navigate = useNavigate();
     const { hasPage } = usePermission();
 
-    const listMenu = useSubMenu(activeGroupDraft || activeGroupKey);
-    const groupMenu = useGroupMenu();
+    const listMenu = useSubMenu({ active: activeGroupKey });
 
     const [collapseActiveKey, setCollapseActiveKey] = useState<string>();
 
@@ -139,99 +136,57 @@ const MiniInlineMenu: React.FC<MiniInlineMenuProps> = observer(
       );
     };
 
-    const [isModuleMenu, setIsModuleMenu] = useState<boolean>(false);
-
     return (
       <div className="flex flex-col gap-y-4 items-center h-full bg-blue-800 p-5">
         <div className="shrink-0">
           <XMarkSolid className="w-6 h-6 text-white" onClick={onClose} />
         </div>
-        {isModuleMenu ? (
-          <div className="grid grid-cols-2 w-full gap-x-10 gap-y-2.5">
-            {groupMenu.map((item) => (
-              <div
-                className={classNames(
-                  "flex flex-col p-2.5 items-center gap-y-2.5 rounded-[10px]",
-                  {
-                    "bg-white/25": activeGroupKey === item?.key,
-                  },
-                )}
-                onClick={() => {
-                  setActiveGroupDraft(item.key);
-                  setIsModuleMenu(false);
-                }}
-              >
-                <Icons
-                  icon={item?.icon}
-                  className="tera-menu-mini_icon"
-                  width={30}
-                  height={30}
-                />
-                <span className="text-white line-clamp-1 break-all">
-                  {item?.title}
-                </span>
-              </div>
-            ))}
+        <div className={"flex items-center w-full justify-between"}>
+          <div className={"flex items-center gap-x-2.5"}>
+            <h1 className={classNames("text-white")}>{renderHeading()}</h1>
           </div>
-        ) : (
-          <>
-            <div className={"flex items-center w-full justify-between"}>
-              <div className={"flex items-center gap-x-2.5"}>
-                <ArrowLeftOutlined
-                  className="w-5 h-5 text-white"
-                  onClick={() => setIsModuleMenu(true)}
-                />
-                <h1
-                  className={classNames("text-white")}
-                  // key={key}
-                >
-                  {renderHeading()}
-                </h1>
-              </div>
-            </div>
-            <div
-              ref={elementRef}
-              className="flex-1 flex flex-col gap-y-5 overflow-auto w-full scrollbar-none"
-            >
-              {Object.entries(groupListMenu)
-                .filter(([, value]) => {
-                  return value.some((item) => hasPage(item.permission));
-                })
-                .map(([key, value]) => {
-                  const name = menu?.parentGroup?.find(
-                    (i) => i.key === key,
-                  )?.title;
-                  return (
-                    <div className={classNames("flex flex-col gap-y-[5px]")}>
-                      <h3
-                        className={classNames(
-                          "ml-2.5 uppercase text-gray-200 font-medium transition-all leading-6",
-                        )}
-                      >
-                        {renderTitle(name || "Khác")}
-                      </h3>
+        </div>
+        <div
+          ref={elementRef}
+          className="flex-1 flex flex-col gap-y-5 overflow-auto w-full scrollbar-none"
+        >
+          {Object.entries(groupListMenu)
+            .filter(([, value]) => {
+              return value.some((item) => hasPage(item.permission));
+            })
+            .map(([key, value]) => {
+              const name = admin?.parentGroup?.find(
+                (i) => i.key === key,
+              )?.title;
+              return (
+                <div className={classNames("flex flex-col gap-y-[5px]")}>
+                  <h3
+                    className={classNames(
+                      "ml-2.5 uppercase text-gray-200 font-medium transition-all leading-6",
+                    )}
+                  >
+                    {renderTitle(name || "Khác")}
+                  </h3>
 
-                      <Collapse
-                        accordion
-                        activeKey={collapseActiveKey}
-                        containerClassName="flex flex-col gap-2.5 w-full"
-                        headingClassName={classNames(
-                          "p-2.5 bg-transparent border-none !rounded-e-full text-gray-200 focus:ring-0",
-                        )}
-                        contentClassName={classNames(
-                          "border-none p-0 !text-red-500",
-                        )}
-                        activeClassName="bg-white/25 text-gray-200"
-                        onChange={(key: any) => setCollapseActiveKey(key[0])}
-                        items={listCollapse(value)}
-                      />
-                    </div>
-                  );
-                })}
-            </div>
-            <p className="text-gray-200">@Copyright TeraVN ver 3.0</p>
-          </>
-        )}
+                  <Collapse
+                    accordion
+                    activeKey={collapseActiveKey}
+                    containerClassName="flex flex-col gap-2.5 w-full"
+                    headingClassName={classNames(
+                      "p-2.5 bg-transparent border-none !rounded-e-full text-gray-200 focus:ring-0",
+                    )}
+                    contentClassName={classNames(
+                      "border-none p-0 !text-red-500",
+                    )}
+                    activeClassName="bg-white/25 text-gray-200"
+                    onChange={(key: any) => setCollapseActiveKey(key[0])}
+                    items={listCollapse(value)}
+                  />
+                </div>
+              );
+            })}
+        </div>
+        <p className="text-gray-200">@Copyright TeraVN ver 3.0</p>
       </div>
     );
   },
