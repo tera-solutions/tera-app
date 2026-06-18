@@ -56,15 +56,15 @@ export const Routers = () => {
   return (
     <Routes>
       <Route
-        path="/"
+        path='/'
         element={
           <MiddlewareRouter>
             <BasicLayout />
           </MiddlewareRouter>
         }
       >
-        <Route index element={<Navigate to="/dashboard" />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route index element={<Navigate to='/dashboard' />} />
+        <Route path='/dashboard' element={<Dashboard />} />
 
         {/* BLOCK:router */}
 
@@ -77,17 +77,17 @@ export const Routers = () => {
         <Route path="/teacher/:id/certificate/update/:certificateId" element={<TeacherCertificateFormPage />} />
 
         {/* BLOCK:Course */}
-        <Route path="/course/list" element={<CourseListPage />} />
+        <Route path='/course/list' element={<CourseListPage />} />
 
         {/* BLOCK:Lesson */}
-        <Route path="/student/lesson/list" element={<LessonListPage />} />
-        <Route path="/student/lesson/create" element={<LessonCreatePage />} />
+        <Route path='/student/lesson/list' element={<LessonListPage />} />
+        <Route path='/student/lesson/create' element={<LessonCreatePage />} />
         <Route
-          path="/student/lesson/update/:id"
+          path='/student/lesson/update/:id'
           element={<LessonUpdatePage />}
         />
         <Route
-          path="/student/lesson/detail/:id"
+          path='/student/lesson/detail/:id'
           element={<LessonDetailPage />}
         />
 
@@ -111,21 +111,21 @@ export const Routers = () => {
       </Route>
 
       <Route
-        path="auth"
+        path='auth'
         element={
           <CheckAuth>
             <UnAuthLayout />
           </CheckAuth>
         }
       >
-        <Route path="login" element={<LoginPage />} />
-        <Route path="forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="register" element={<RegisterPage />} />
+        <Route path='login' element={<LoginPage />} />
+        <Route path='forgot-password' element={<ForgotPasswordPage />} />
+        <Route path='register' element={<RegisterPage />} />
       </Route>
 
-      <Route path="*" element={<PageNotfound />} />
-      <Route path="/403" element={<PageNotPermission />} />
-      <Route path="/401" element={<PageUnauthorized />} />
+      <Route path='*' element={<PageNotfound />} />
+      <Route path='/403' element={<PageNotPermission />} />
+      <Route path='/401' element={<PageUnauthorized />} />
     </Routes>
   );
 };
