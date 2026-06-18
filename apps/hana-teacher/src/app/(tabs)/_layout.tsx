@@ -59,16 +59,20 @@ const TabLayout = observer(() => {
         }}
       />
       <Tabs.Screen
-        name="homework"
+        name="lesson-plan"
         options={{
           title: 'Giáo án',
           tabBarIcon: ({ color }) => (
-            <Icon source="book-open-page-variant" size={ICON_SIZE} color={color} />
+            <Icon
+              source="book-open-page-variant"
+              size={ICON_SIZE}
+              color={color}
+            />
           ),
         }}
       />
       <Tabs.Screen
-        name="lesson"
+        name="teaching-schedule"
         options={{
           title: 'Lịch dạy',
           tabBarIcon: ({ color }) => (
@@ -77,10 +81,9 @@ const TabLayout = observer(() => {
         }}
       />
       <Tabs.Screen
-        name="more"
+        name="account"
         options={{
           title: 'Cá nhân',
-          href: (isOffline ? undefined : '/more') as any,
           tabBarIcon: ({ color }) => (
             <Icon source="account-outline" size={ICON_SIZE} color={color} />
           ),

@@ -41,7 +41,7 @@ export default function CategoryCard({
 
       <Text
         style={{
-          color: selected ? '#0094D9' : '#FFFFFF',
+          color: selected ? '#0066cc' : '#FFFFFF',
           fontWeight: '600',
         }}
       >

@@ -1,5 +1,5 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TextInput, TouchableOpacity } from 'react-native';
 
 import { Search, SlidersHorizontal, Plus } from 'lucide-react-native';
 
@@ -8,6 +8,11 @@ import { styles } from './style';
 export default function HeaderSection() {
   return (
     <View style={styles.container}>
+      <Image
+        source={require('@tera/assets/app/element_46.png')}
+        style={styles.headerBackground}
+        resizeMode="cover"
+      />
       <SafeAreaView>
         <Text style={styles.title}>Lớp học</Text>
 

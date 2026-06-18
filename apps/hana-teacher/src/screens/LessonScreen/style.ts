@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
   // ==========================
 
   header: {
-    backgroundColor: '#0094D9',
+    backgroundColor: '#0066cc',
 
     paddingHorizontal: 20,
     paddingTop: 20,

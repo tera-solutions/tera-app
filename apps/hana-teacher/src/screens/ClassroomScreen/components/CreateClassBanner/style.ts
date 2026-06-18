@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#16A34A',
+    color: '#0E1B4D',
   },
 
   description: {

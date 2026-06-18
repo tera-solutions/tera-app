@@ -21,7 +21,7 @@ export default {
   // button
   bgButton: "#0095D9",
   bgButtonActive: "#e7f7ffff",
-  primary: "#0094D9",
+  primary: "#0066cc",
   primaryLight: "#33B4F0",
 
   secondary: "#FFC107",

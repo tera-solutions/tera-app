@@ -1,10 +1,6 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  // ==========================
-  // SCREEN
-  // ==========================
-
   container: {
     flex: 1,
     backgroundColor: '#F4F8FC',
@@ -14,12 +10,8 @@ export const styles = StyleSheet.create({
     paddingBottom: 120,
   },
 
-  // ==========================
-  // HEADER
-  // ==========================
-
   header: {
-    backgroundColor: '#0094D9',
+    backgroundColor: '#0066cc',
 
     paddingHorizontal: 20,
     paddingTop: 20,
@@ -156,9 +148,6 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // ==========================
-  // COMMON CARD
-  // ==========================
   content: {
     paddingBottom: 40,
     backgroundColor: '#F3F8FD',
@@ -200,7 +189,7 @@ export const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#0094D9',
+    color: '#0066cc',
   },
 
   statLabel: {
@@ -253,7 +242,7 @@ export const styles = StyleSheet.create({
 
   progressFill: {
     height: '100%',
-    backgroundColor: '#0094D9',
+    backgroundColor: '#0066cc',
   },
 
   progressText: {
@@ -263,7 +252,7 @@ export const styles = StyleSheet.create({
 
   rewardCard: {
     margin: 20,
-    backgroundColor: '#0094D9',
+    backgroundColor: '#0066cc',
     borderRadius: 24,
     padding: 20,
   },
@@ -288,7 +277,7 @@ export const styles = StyleSheet.create({
 
   buttonText: {
     textAlign: 'center',
-    color: '#0094D9',
+    color: '#0066cc',
     fontWeight: '700',
   },
 });

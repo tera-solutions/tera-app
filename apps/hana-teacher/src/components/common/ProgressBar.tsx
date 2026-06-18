@@ -32,7 +32,7 @@ export default function ProgressBar({ progress, text = '' }: Props) {
             width: `${percentage}%`,
             height: '100%',
             borderRadius: 999,
-            backgroundColor: '#0094D9',
+            backgroundColor: '#0066cc',
           }}
         />
       </View>

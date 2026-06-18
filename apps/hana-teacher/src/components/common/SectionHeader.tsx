@@ -57,6 +57,6 @@ const styles = StyleSheet.create({
   action: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#0094D9',
+    color: '#0066cc',
   },
 });
