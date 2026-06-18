@@ -77,7 +77,7 @@ const BusinessListPage = observer(() => {
   };
 
   return (
-    <div className="p-2.5 max-xmd:pb-[60px]">
+    <div className='p-2.5 max-xmd:pb-[60px]'>
       <HeaderViewList
         title={t("business.title")}
         buttonAddRender={() => (
@@ -87,21 +87,21 @@ const BusinessListPage = observer(() => {
                 ? navigate(BUSINESS_PAGE_URL.create.path)
                 : setModalData({ open: true, type: "create" })
             }
-            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1"
+            className='rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1'
           >
-            <div className="flex items-center gap-1 shrink-0">
-              <PlusCircleOutlined className="w-5 h-5" />
+            <div className='flex items-center gap-1 shrink-0'>
+              <PlusCircleOutlined className='w-5 h-5' />
               <span>{t("button.create")}</span>
             </div>
           </Button>
         )}
       >
         {/* Status tabs */}
-        <div className="flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent">
+        <div className='flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent'>
           {statusTabs.map((tab) => (
             <button
               key={tab.key}
-              type="button"
+              type='button'
               onClick={() => handleStatusChange(tab.key)}
               className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors ${
                 activeStatus === tab.key
@@ -177,16 +177,32 @@ const BusinessListPage = observer(() => {
 
           {/* Ngày tạo */}
           <input
-            type="date"
+            type='date'
             value={dateFilter}
             onChange={(e) => {
               setDateFilter(e.target.value);
               resetPage();
             }}
             title={t("business.created_at")}
-            className={QUICK_SELECT_CLASS + " xmd:order-3"}
+            className={QUICK_SELECT_CLASS}
             style={{ color: dateFilter ? "#111827" : "#9ca3af" }}
           />
+
+          {/* Sắp xếp */}
+          <div className='w-full xmd:w-auto xmd:min-w-[170px]'>
+            <SortSelect
+              options={sortOptions}
+              sortBy={sortBy}
+              sortDir={sortDir}
+              placeholder={t("business.sort_by")}
+              defaultDir='asc'
+              onChange={(sb, sd) => {
+                setSortBy(sb);
+                setSortDir(sd);
+                resetPage();
+              }}
+            />
+          </div>
         </div>
 
         <BusinessTable

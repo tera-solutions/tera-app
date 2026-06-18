@@ -450,21 +450,28 @@ const BusinessForm = observer(
                 <Col>
                   <FormTeraItem
                     label={t("business.status")}
-                    name="status"
+                    name='status'
                     rules={[{ required: t("validate.required") }]}
                   >
-                    <div className="w-full overflow-hidden">
+                    <div className='w-full overflow-hidden'>
                       <select
                         className={SELECT_CLASS}
-                        style={{ borderRadius: "3px", color: statusValue ? "#111827" : "#9ca3af" }}
+                        style={{
+                          borderRadius: "3px",
+                          color: statusValue ? "#111827" : "#9ca3af",
+                        }}
                         disabled={isView}
                         {...form.register("status")}
                       >
-                        <option value="" disabled hidden>
+                        <option value='' disabled hidden>
                           {t("form.enter_value", { key: t("business.status") })}
                         </option>
                         {statusOptions.map((opt: any) => (
-                          <option key={opt.value} value={opt.value} style={{ color: "#111827" }}>
+                          <option
+                            key={opt.value}
+                            value={opt.value}
+                            style={{ color: "#111827" }}
+                          >
                             {opt.label}
                           </option>
                         ))}
