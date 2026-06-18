@@ -40,4 +40,39 @@ export const TeacherAPI = {
     await api
       .post(`${endpoint}/hr/teacher/export`, params)
       .then((result) => result.data),
+
+  suspend: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/hr/teacher/suspend/${id}`, params)
+      .then((result) => result.data),
+
+  restore: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/hr/teacher/restore/${id}`, params)
+      .then((result) => result.data),
+
+  resign: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/hr/teacher/resign/${id}`, params)
+      .then((result) => result.data),
+
+  getCertificateList: async ({ id }: DetailPayload) =>
+    await api
+      .get(`${endpoint}/hr/teacher/certificate/list/${id}`)
+      .then((result) => result.data),
+
+  createCertificate: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/hr/teacher/certificate/create/${id}`, params)
+      .then((result) => result.data),
+
+  updateCertificate: async ({ id, params }: UpdatePayload) =>
+    await api
+      .put(`${endpoint}/hr/teacher/certificate/update/${id}`, params)
+      .then((result) => result.data),
+
+  deleteCertificate: async ({ id }: DeletePayload) =>
+    await api
+      .delete(`${endpoint}/hr/teacher/certificate/delete/${id}`)
+      .then((result) => result.data),
 };

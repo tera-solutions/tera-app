@@ -69,7 +69,7 @@ export const useUpsertTeacher = () => {
       return TeacherAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["teacher", "list"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -88,6 +88,95 @@ export const useTeacherDelete = () => {
     onError: (error) => {
       console.error(t("common.error_message"), error);
     },
+  });
+};
+
+export const useTeacherSuspend = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => TeacherAPI.suspend(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teacher", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["teacher", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useTeacherRestore = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => TeacherAPI.restore(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teacher", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["teacher", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useTeacherResign = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => TeacherAPI.resign(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teacher", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["teacher", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useTeacherCertificateList = (payload: DetailPayload) => {
+  return useQueryAdapter({
+    queryKey: ["teacher", "certificate", "list", payload.id],
+    queryFn: () => TeacherAPI.getCertificateList(payload),
+    enabled: !!payload.id,
+  });
+};
+
+export const useTeacherCertificateCreate = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => TeacherAPI.createCertificate(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teacher", "certificate", "list"] });
+    },
+    onError: (error) => console.error(t("common.error_message"), error),
+  });
+};
+
+export const useTeacherCertificateUpdate = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => TeacherAPI.updateCertificate(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teacher", "certificate", "list"] });
+    },
+    onError: (error) => console.error(t("common.error_message"), error),
+  });
+};
+
+export const useTeacherCertificateDelete = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: DeletePayload) => TeacherAPI.deleteCertificate(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teacher", "certificate", "list"] });
+    },
+    onError: (error) => console.error(t("common.error_message"), error),
   });
 };
 
@@ -114,5 +203,12 @@ export const TeacherService = {
   useTeacherUpdate,
   useUpsertTeacher,
   useTeacherDelete,
+  useTeacherSuspend,
+  useTeacherRestore,
+  useTeacherResign,
   useTeacherExport,
+  useTeacherCertificateList,
+  useTeacherCertificateCreate,
+  useTeacherCertificateUpdate,
+  useTeacherCertificateDelete,
 };

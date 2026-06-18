@@ -81,7 +81,11 @@ const StudentCreatePage = observer(() => {
       </div>
       <div className="w-full max-w-3xl mx-auto">
         <div className="bg-white rounded-[5px] w-full p-4">
-          <StudentForm ref={actionRef} type="create" />
+          <StudentForm
+            ref={actionRef}
+            type="create"
+            onSuccess={() => navigate(-1)}
+          />
         </div>
         <div className="flex justify-between gap-2 mt-4">
           <Button

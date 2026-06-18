@@ -18,6 +18,13 @@ import UnAuthLayout from "_common/components/Layout/UnAuthLayout";
 
 /* IMPORT:router */
 
+/* IMPORT:Teacher */
+import TeacherListPage from "pages/Hr/teacher/TeacherListPage";
+import TeacherCreatePage from "pages/Hr/teacher/TeacherCreatePage";
+import TeacherUpdatePage from "pages/Hr/teacher/TeacherUpdatePage";
+import TeacherDetailPage from "pages/Hr/teacher/TeacherDetailPage";
+import TeacherCertificateFormPage from "pages/Hr/teacher/TeacherCertificateFormPage";
+
 /* IMPORT:Course */
 import CourseListPage from "pages/education/course/CourseListPage";
 
@@ -32,6 +39,18 @@ import StudentListPage from "pages/education/student/StudentListPage";
 import StudentCreatePage from "pages/education/student/StudentCreatePage";
 import StudentUpdatePage from "pages/education/student/StudentUpdatePage";
 import StudentDetailPage from "pages/education/student/StudentDetailPage";
+
+/* IMPORT:Branch */
+import BranchListPage from "pages/System/branch/BranchListPage";
+import BranchCreatePage from "pages/System/branch/BranchCreatePage";
+import BranchUpdatePage from "pages/System/branch/BranchUpdatePage";
+import BranchDetailPage from "pages/System/branch/BranchDetailPage";
+
+/* IMPORT:Business */
+import BusinessListPage from "pages/System/business/BusinessListPage";
+import BusinessCreatePage from "pages/System/business/BusinessCreatePage";
+import BusinessUpdatePage from "pages/System/business/BusinessUpdatePage";
+import BusinessDetailPage from "pages/System/business/BusinessDetailPage";
 
 export const Routers = () => {
   return (
@@ -48,6 +67,14 @@ export const Routers = () => {
         <Route path="/dashboard" element={<Dashboard />} />
 
         {/* BLOCK:router */}
+
+        {/* BLOCK:Teacher */}
+        <Route path="/teacher/list" element={<TeacherListPage />} />
+        <Route path="/teacher/create" element={<TeacherCreatePage />} />
+        <Route path="/teacher/update/:id" element={<TeacherUpdatePage />} />
+        <Route path="/teacher/detail/:id" element={<TeacherDetailPage />} />
+        <Route path="/teacher/:id/certificate/create" element={<TeacherCertificateFormPage />} />
+        <Route path="/teacher/:id/certificate/update/:certificateId" element={<TeacherCertificateFormPage />} />
 
         {/* BLOCK:Course */}
         <Route path="/course/list" element={<CourseListPage />} />
@@ -70,11 +97,17 @@ export const Routers = () => {
         <Route path="/student/update/:id" element={<StudentUpdatePage />} />
         <Route path="/student/detail/:id" element={<StudentDetailPage />} />
 
-        {/* BLOCK:hr */}
-        <Route path="/teacher/list" element={<Dashboard />} />
+        {/* BLOCK:Branch */}
+        <Route path="/system/branch/list" element={<BranchListPage />} />
+        <Route path="/system/branch/create" element={<BranchCreatePage />} />
+        <Route path="/system/branch/update/:id" element={<BranchUpdatePage />} />
+        <Route path="/system/branch/detail/:id" element={<BranchDetailPage />} />
 
-        {/* BLOCK:course */}
-        <Route path="/course/list" element={<Dashboard />} />
+        {/* BLOCK:Business */}
+        <Route path="/system/business/list" element={<BusinessListPage />} />
+        <Route path="/system/business/create" element={<BusinessCreatePage />} />
+        <Route path="/system/business/update/:id" element={<BusinessUpdatePage />} />
+        <Route path="/system/business/detail/:id" element={<BusinessDetailPage />} />
       </Route>
 
       <Route
