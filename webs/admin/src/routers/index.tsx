@@ -69,18 +69,12 @@ export const Routers = () => {
         {/* BLOCK:router */}
 
         {/* BLOCK:Teacher */}
-        <Route path='/teacher/list' element={<TeacherListPage />} />
-        <Route path='/teacher/create' element={<TeacherCreatePage />} />
-        <Route path='/teacher/update/:id' element={<TeacherUpdatePage />} />
-        <Route path='/teacher/detail/:id' element={<TeacherDetailPage />} />
-        <Route
-          path='/teacher/:id/certificate/create'
-          element={<TeacherCertificateFormPage />}
-        />
-        <Route
-          path='/teacher/:id/certificate/update/:certificateId'
-          element={<TeacherCertificateFormPage />}
-        />
+        <Route path="/teacher/list" element={<TeacherListPage />} />
+        <Route path="/teacher/create" element={<TeacherCreatePage />} />
+        <Route path="/teacher/update/:id" element={<TeacherUpdatePage />} />
+        <Route path="/teacher/detail/:id" element={<TeacherDetailPage />} />
+        <Route path="/teacher/:id/certificate/create" element={<TeacherCertificateFormPage />} />
+        <Route path="/teacher/:id/certificate/update/:certificateId" element={<TeacherCertificateFormPage />} />
 
         {/* BLOCK:Course */}
         <Route path='/course/list' element={<CourseListPage />} />
@@ -98,37 +92,22 @@ export const Routers = () => {
         />
 
         {/* BLOCK:student */}
-        <Route path='/student/list' element={<StudentListPage />} />
-        <Route path='/student/create' element={<StudentCreatePage />} />
-        <Route path='/student/update/:id' element={<StudentUpdatePage />} />
-        <Route path='/student/detail/:id' element={<StudentDetailPage />} />
+        <Route path="/student/list" element={<StudentListPage />} />
+        <Route path="/student/create" element={<StudentCreatePage />} />
+        <Route path="/student/update/:id" element={<StudentUpdatePage />} />
+        <Route path="/student/detail/:id" element={<StudentDetailPage />} />
 
         {/* BLOCK:Branch */}
-        <Route path='/system/branch/list' element={<BranchListPage />} />
-        <Route path='/system/branch/create' element={<BranchCreatePage />} />
-        <Route
-          path='/system/branch/update/:id'
-          element={<BranchUpdatePage />}
-        />
-        <Route
-          path='/system/branch/detail/:id'
-          element={<BranchDetailPage />}
-        />
+        <Route path="/system/branch/list" element={<BranchListPage />} />
+        <Route path="/system/branch/create" element={<BranchCreatePage />} />
+        <Route path="/system/branch/update/:id" element={<BranchUpdatePage />} />
+        <Route path="/system/branch/detail/:id" element={<BranchDetailPage />} />
 
         {/* BLOCK:Business */}
-        <Route path='/system/business/list' element={<BusinessListPage />} />
-        <Route
-          path='/system/business/create'
-          element={<BusinessCreatePage />}
-        />
-        <Route
-          path='/system/business/update/:id'
-          element={<BusinessUpdatePage />}
-        />
-        <Route
-          path='/system/business/detail/:id'
-          element={<BusinessDetailPage />}
-        />
+        <Route path="/system/business/list" element={<BusinessListPage />} />
+        <Route path="/system/business/create" element={<BusinessCreatePage />} />
+        <Route path="/system/business/update/:id" element={<BusinessUpdatePage />} />
+        <Route path="/system/business/detail/:id" element={<BusinessDetailPage />} />
       </Route>
 
       <Route

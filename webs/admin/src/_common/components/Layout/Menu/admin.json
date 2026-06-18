@@ -12,7 +12,7 @@
     {
       "id": "r3",
       "code": "teacher",
-      "title": "Giáo Viên",
+      "title": " Giáo Viên",
       "path": "/teacher/list",
       "icon": "menu12",
       "key": "teacher",
@@ -43,6 +43,16 @@
       "path": "/setting-store",
       "icon": "menu16",
       "key": "setting-store",
+      "permission": "cs"
+    },
+    {
+      "id": "r9",
+      "code": "system",
+      "title": "Doanh Nghiệp",
+      "shortTitle": "DN",
+      "path": "/system/business/list",
+      "icon": "menu10",
+      "key": "system",
       "permission": "cs"
     }
   ],
@@ -112,6 +122,12 @@
       "title": "Đề thi & Kiểm tra",
       "key": "group-course3",
       "parentKey": "course"
+    },
+    {
+      "id": 12,
+      "title": "Hệ thống",
+      "key": "group-system",
+      "parentKey": "system"
     }
   ],
   "parentMenu": [
@@ -120,6 +136,7 @@
       "title": "DS Học Viên",
       "icon": "briefcase",
       "path": "/student/list",
+      "key": "list",
       "status": "active",
       "code": "p1",
       "parentKey": "student",
@@ -133,6 +150,7 @@
       "path": "/parent/list",
       "status": "active",
       "code": "p2",
+      "key": "parent",
       "parentKey": "student",
       "parentGroupKey": "group-student",
       "activeKeys": "parent"
@@ -232,7 +250,8 @@
       "title": "DS Giáo Viên",
       "path": "/teacher/list",
       "icon": "briefcase",
-      "key": "commission-history",
+      "key": "list",
+      "activeKeys": "list",
       "parentKey": "teacher",
       "parentGroupKey": "group-teacher",
       "permission": ""
@@ -252,7 +271,7 @@
       "title": "Hợp đồng & Lương",
       "path": "/product-q&a",
       "icon": "briefcase",
-      "key": "product-q&a",
+      "key": "teacher-contract-salary",
       "parentKey": "teacher",
       "parentGroupKey": "group-teacher",
       "permission": ""
@@ -262,7 +281,7 @@
       "title": "Thời khóa biểu",
       "path": "/product-q&a",
       "icon": "briefcase",
-      "key": "product-q&a",
+      "key": "teacher-schedule",
       "parentKey": "teacher",
       "parentGroupKey": "group-teacher2",
       "permission": ""
@@ -272,7 +291,7 @@
       "title": "Phân công lớp học",
       "path": "/product-q&a",
       "icon": "briefcase",
-      "key": "product-q&a",
+      "key": "teacher-assign-class",
       "parentKey": "teacher",
       "parentGroupKey": "group-teacher2",
       "permission": ""
@@ -282,7 +301,7 @@
       "title": "Đăng ký đổi ca",
       "path": "/setting-store",
       "icon": "briefcase",
-      "key": "setting-store",
+      "key": "teacher-shift-change",
       "parentKey": "teacher",
       "parentGroupKey": "group-teacher2",
       "permission": ""
@@ -292,7 +311,7 @@
       "title": "Bảng chấm công",
       "path": "/shopping-voucher",
       "icon": "briefcase",
-      "key": "shopping-voucher",
+      "key": "teacher-timesheet",
       "parentKey": "teacher",
       "parentGroupKey": "group-teacher3",
       "permission": ""
@@ -302,7 +321,7 @@
       "title": "Thông kê giờ dạy",
       "path": "/file-uploaded",
       "icon": "briefcase",
-      "key": "file-uploaded",
+      "key": "teacher-teaching-hours",
       "parentKey": "teacher",
       "parentGroupKey": "group-teacher3",
       "permission": ""
@@ -312,7 +331,7 @@
       "title": "Bảng lương tháng",
       "path": "/change-password",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "teacher-monthly-salary",
       "parentKey": "teacher",
       "parentGroupKey": "group-teacher3",
       "permission": ""
@@ -322,7 +341,7 @@
       "title": "Khen thưởng KPI",
       "path": "/change-password",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "teacher-kpi-reward",
       "parentKey": "teacher",
       "parentGroupKey": "group-teacher3",
       "permission": ""
@@ -332,7 +351,7 @@
       "title": "Kỷ luật",
       "path": "/change-password",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "teacher-discipline",
       "parentKey": "teacher",
       "parentGroupKey": "group-teacher3",
       "permission": ""
@@ -342,17 +361,17 @@
       "title": "Phản hồi phụ huynh",
       "path": "/change-password",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "teacher-parent-feedback",
       "parentKey": "teacher",
       "parentGroupKey": "group-teacher4",
       "permission": ""
     },
     {
-      "id": 22,
+      "id": 221,
       "title": "Đánh giá học viên",
       "path": "/change-password",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "teacher-student-review",
       "parentKey": "teacher",
       "parentGroupKey": "group-teacher4",
       "permission": ""
@@ -362,7 +381,8 @@
       "title": "DS Khóa học",
       "path": "/course/list",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "list",
+      "activeKeys": "list",
       "parentKey": "course",
       "parentGroupKey": "group-course1",
       "permission": ""
@@ -372,7 +392,7 @@
       "title": "Chương trình học",
       "path": "/course/list",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "course-program",
       "parentKey": "course",
       "parentGroupKey": "group-course1",
       "permission": ""
@@ -382,7 +402,7 @@
       "title": "Cấp độ",
       "path": "/course/list",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "course-level",
       "parentKey": "course",
       "parentGroupKey": "group-course1",
       "permission": ""
@@ -392,7 +412,7 @@
       "title": "Giáo trình",
       "path": "/course/list",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "course-curriculum",
       "parentKey": "course",
       "parentGroupKey": "group-course1",
       "permission": ""
@@ -402,7 +422,7 @@
       "title": "DS Lớp học",
       "path": "/course/list",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "course-class-list",
       "parentKey": "course",
       "parentGroupKey": "group-course2",
       "permission": ""
@@ -412,17 +432,17 @@
       "title": "Thời khóa biểu",
       "path": "/course/list",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "course-schedule",
       "parentKey": "course",
       "parentGroupKey": "group-course2",
       "permission": ""
     },
     {
-      "id": 28,
+      "id": 281,
       "title": "Xếp lớp & Sỷ số",
       "path": "/course/list",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "course-arrange-class",
       "parentKey": "course",
       "parentGroupKey": "group-course2",
       "permission": ""
@@ -432,7 +452,7 @@
       "title": "Kho đề thi",
       "path": "/course/list",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "course-exam-bank",
       "parentKey": "course",
       "parentGroupKey": "group-course3",
       "permission": ""
@@ -442,9 +462,31 @@
       "title": "Xếp lớp & Sỷ số",
       "path": "/course/list",
       "icon": "briefcase",
-      "key": "change-password",
+      "key": "course-exam-arrange",
       "parentKey": "course",
       "parentGroupKey": "group-course3",
+      "permission": ""
+    },
+    {
+      "id": 40,
+      "title": "DS Doanh Nghiệp",
+      "path": "/system/business/list",
+      "icon": "briefcase",
+      "key": "business",
+      "parentKey": "system",
+      "parentGroupKey": "group-system",
+      "activeKeys": "business",
+      "permission": ""
+    },
+    {
+      "id": 41,
+      "title": "DS Chi Nhánh",
+      "path": "/system/branch/list",
+      "icon": "briefcase",
+      "key": "branch",
+      "parentKey": "system",
+      "parentGroupKey": "group-system",
+      "activeKeys": "branch",
       "permission": ""
     }
   ],

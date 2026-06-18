@@ -1,3 +1,60 @@
 @import "@tera/assets/styles/main.css";
 
 @source "./**/*.{ts,tsx}";
+
+.tera-table-cell-scrollbar {
+  display: none;
+}
+
+/* This is a light-mode app — prevent browser dark mode from inverting colors */
+@media (prefers-color-scheme: dark) {
+  .dark\:text-white,
+  .dark\:text-gray-100,
+  .dark\:text-gray-200,
+  .dark\:text-gray-300,
+  .dark\:text-gray-400 {
+    color: #111827 !important;
+  }
+
+  .dark\:bg-gray-700,
+  .dark\:bg-gray-800 {
+    background-color: #ffffff !important;
+  }
+
+  /* Giữ màu nền xanh cho số trang đang active trong phân trang */
+  .dark\:bg-gray-800.bg-blue-50 {
+    background-color: #eff6ff !important;
+  }
+
+  /* Giữ nền tối cho Tooltip popup — tránh chữ trắng trên nền trắng */
+  .dark\:bg-gray-700.bg-gray-700 {
+    background-color: #374151 !important;
+  }
+
+  .dark\:border-gray-600,
+  .dark\:border-gray-700,
+  .dark\:border-gray-900 {
+    border-color: #e5e7eb !important;
+  }
+}
+
+.tera-table-thead .tera-table-cell:last-child,
+.tera-table-row .tera-table-cell:last-child {
+  padding-inline-end: 0;
+}
+
+/* Hiện cả scrollbar NGANG lẫn DỌC cho table body */
+.tera-table-body {
+  scrollbar-width: thin; /* Firefox */
+}
+.tera-table-body::-webkit-scrollbar {
+  width: 8px; /* thanh DỌC */
+  height: 8px; /* thanh NGANG */
+}
+.tera-table-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+.tera-table-body::-webkit-scrollbar-track {
+  background: transparent;
+}
