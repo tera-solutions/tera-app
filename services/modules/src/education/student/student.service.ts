@@ -91,6 +91,36 @@ export const useStudentDelete = () => {
   });
 };
 
+export const useStudentSuspend = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => StudentAPI.suspend(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["student", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useStudentRestore = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => StudentAPI.restore(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["student", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const useStudentExport = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -114,5 +144,7 @@ export const StudentService = {
   useStudentUpdate,
   useUpsertStudent,
   useStudentDelete,
+  useStudentSuspend,
+  useStudentRestore,
   useStudentExport,
 };

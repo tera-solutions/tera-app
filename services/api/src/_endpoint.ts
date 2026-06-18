@@ -1,9 +1,13 @@
 const getApiUrl = (): string => {
-  if (typeof window !== 'undefined' && typeof import.meta !== 'undefined' && (import.meta as any).env) {
-    return (import.meta as any).env.VITE_TERA_API || '';
+  if (
+    typeof window !== "undefined" &&
+    typeof import.meta !== "undefined" &&
+    (import.meta as any).env
+  ) {
+    return (import.meta as any).env.VITE_TERA_API || "";
   }
-  
-  return process.env.EXPO_PUBLIC_API_URL || process.env.VITE_TERA_API || '';
+
+  return process.env.EXPO_PUBLIC_API_URL || process.env.VITE_TERA_API || "";
 };
 
 const BASE_API = getApiUrl();

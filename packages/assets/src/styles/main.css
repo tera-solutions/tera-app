@@ -18,7 +18,7 @@
 
   --color-gray-800: #1f2229;
 
-  --breakpoint-xmd: 960px;
+  --breakpoint-xmd: 1280px;
 }
 
 @layer base {

@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
+    ".": "./src/index.ts",
     "./*": "./src/*.tsx",
     "./images/*": "./src/images/*",
     "./icons/*": "./src/icons/*",
     "./fonts/*": "./src/fonts/*",
     "./styles/*": "./src/styles/*",
+    "./app/*": "./src/app/*",
     "./theme.scss": "./src/styles/theme.scss",
     "./main.css": "./src/styles/main.css"
   },

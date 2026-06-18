@@ -99,16 +99,18 @@ const MenuComponent: React.FC<MenuProps> = observer(
           ref={elementRef}
           className={`${
             isExpand ? "xmd:left-[225px]" : "xmd:left-[50px]"
-          } transition-all fixed top-0 right-0 z-[49] px-2.5 h-[45px]  flex items-center justify-between bg-white border-b border-gray-200 text-xxs left-0`}
+          } transition-all fixed top-0 right-0 z-[49] px-2.5 h-[45px] flex items-center justify-between bg-white border-b border-gray-200 text-xxs left-0`}
           style={{ boxShadow: "0px 2px 2px 0px rgba(0, 0, 0, 0.05)" }}
         >
           <div className='flex items-center gap-x-4 xmd:hidden'>
             <Bars3Outlined
-              className='text-blue-800 w-7 h-7 cursor-pointer'
+              className='text-blue-800 w-7 h-7 cursor-pointer flex-shrink-0'
               onClick={() => setOpenDrawerMenu(true)}
             />
             <Logo />
           </div>
+
+          {/* Desktop: menu items*/}
           <ul className='hidden xmd:flex gap-x-[5px] h-full mr-auto'>
             {sliceMenu.menu?.map((item: IMenu) => {
               const { id, key, icon, path, title } = item;
@@ -120,12 +122,13 @@ const MenuComponent: React.FC<MenuProps> = observer(
                 >
                   <Icons icon={icon} />
                   <span className='text-gray-800 text-xxs link-outer-container menu-title'>
-                    <Link to={path}> {title}</Link>
+                    <Link to={path}>{title}</Link>
                   </span>
                 </li>
               );
             })}
           </ul>
+
           <Header />
         </div>
 

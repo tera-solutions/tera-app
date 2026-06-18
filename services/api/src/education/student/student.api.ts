@@ -40,4 +40,14 @@ export const StudentAPI = {
     await api
       .post(`${endpoint}/edu/student/export`, params)
       .then((result) => result.data),
+
+  suspend: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/edu/student/suspend/${id}`, params)
+      .then((result) => result.data),
+
+  restore: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/edu/student/restore/${id}`, params)
+      .then((result) => result.data),
 };

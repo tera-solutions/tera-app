@@ -1,0 +1,49 @@
+{
+  "module": "hr",
+  "prefix": "hr",
+  "entity": "teacher",
+  "block": "teacher",
+  "title": "giáo viên",
+  "mode": "page",
+  "router": {
+    "list": "/teacher/list",
+    "create": "/teacher/create",
+    "update": "/teacher/update/:id",
+    "detail": "/teacher/detail/:id"
+  },
+  "buttons": ["create", "detail", "update", "delete", "export", "filter"],
+  "fields": [
+    {
+      "key": "code",
+      "title": "Mã giáo viên",
+      "required": true,
+      "type": "string",
+      "width": 100
+    },
+    {
+      "key": "name",
+      "title": "Tên giáo viên",
+      "required": true,
+      "type": "string",
+      "width": 200
+    },
+    {
+      "key": "type",
+      "title": "Loại",
+      "type": "string",
+      "width": 100
+    },
+    {
+      "key": "status",
+      "title": "Trạng thái",
+      "type": "string",
+      "width": 120
+    },
+    {
+      "key": "salary_per_hour",
+      "title": "Lương/giờ",
+      "type": "number",
+      "width": 150
+    }
+  ]
+}
