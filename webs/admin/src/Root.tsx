@@ -43,6 +43,17 @@ const Root = observer(() => {
     },
   });
 
+  // 3. Get Metadata (enum dùng chung: trạng thái, loại, giới tính...)
+  useQueryLegacy({
+    queryKey: ["get_metadata"],
+    queryFn: AuthApi.getMetadata,
+    staleTime: 300000,
+    enabled: !!globalStore.token,
+    onSuccess: (res) => {
+      globalStore.setMetadata(res?.data);
+    },
+  });
+
   return (
     <BrowserRouter basename={basename}>
       <Routers />

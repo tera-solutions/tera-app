@@ -13,6 +13,8 @@ export const AuthApi = {
   logout: async () => await api.post(`${authEndpoint}/logout`),
   getProfile: async () =>
     await api.get(`${auth2Endpoint}/profile`).then((result) => result.data),
+  getMetadata: async () =>
+    await api.get(`${authEndpoint}/metadata`).then((result) => result.data),
   getPermissions: async () =>
     await api
       .get(`${authEndpoint}/get-permissions`)

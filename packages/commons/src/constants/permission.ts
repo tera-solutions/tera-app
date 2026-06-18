@@ -71,6 +71,12 @@ export const PAGE_KEY = {
   COURSE_CREATE_VIEW: "edu_course_create_view",
   COURSE_UPDATE_VIEW: "edu_course_update_view",
   COURSE_DELETE_VIEW: "edu_course_delete_view",
+
+  TEACHER_LIST_VIEW: "hr_teacher_list_view",
+  TEACHER_DETAIL_VIEW: "hr_teacher_detail_view",
+  TEACHER_CREATE_VIEW: "hr_teacher_create_view",
+  TEACHER_UPDATE_VIEW: "hr_teacher_update_view",
+  TEACHER_DELETE_VIEW: "hr_teacher_delete_view",
 };
 
 export const TABLE_KEY = {
@@ -263,6 +269,11 @@ export const BUTTON_KEY = {
   COURSE_UPDATE: "edu_course_update",
   COURSE_DELETE: "edu_course_delete",
   COURSE_EXPORT: "edu_course_export",
+
+  TEACHER_CREATE: "hr_teacher_create",
+  TEACHER_UPDATE: "hr_teacher_update",
+  TEACHER_DELETE: "hr_teacher_delete",
+  TEACHER_EXPORT: "hr_teacher_export",
 };
 
 // PERMISSION
