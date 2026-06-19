@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StatusBar, Image } from 'react-native';
 import { Searchbar, Button, IconButton, Icon } from 'react-native-paper';
 import { FlashList } from '@shopify/flash-list';
+import { useRouter } from 'expo-router';
 
 import { styles } from './styles';
 import { ClassHeader } from './components/ClassHeader';
@@ -74,6 +75,7 @@ const MOCK_LESSONS: LessonData[] = [
 ];
 
 export default function LessonPlanScreen() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [currentTab, setCurrentTab] = useState<TabType>('plan');
 
@@ -164,7 +166,7 @@ export default function LessonPlanScreen() {
           <View style={styles.renderItemContainer}>
             <LessonItem
               item={item}
-              onPress={() => console.log(`Detail ${item.id}`)}
+              onPress={() => router.push(`/edu/lesson?id=${item.id}` as any)}
             />
           </View>
         )}

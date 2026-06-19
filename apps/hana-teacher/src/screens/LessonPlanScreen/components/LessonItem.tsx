@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { IconButton, Icon } from 'react-native-paper';
 import { styles } from '../styles';
 
@@ -55,7 +55,7 @@ export const LessonItem: React.FC<{
       </View>
 
       <View style={styles.rightCardColumn}>
-        <View style={styles.lessonCard}>
+        <TouchableOpacity style={styles.lessonCard} onPress={onPress}>
           <Image
             source={item.thumb}
             style={styles.lessonThumb}
@@ -100,11 +100,10 @@ export const LessonItem: React.FC<{
                 )}
                 size={20}
                 style={{ margin: 0, padding: 0, marginLeft: 4 }}
-                onPress={onPress}
               />
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

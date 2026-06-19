@@ -1,8 +1,7 @@
 import { View } from 'react-native';
+import { useRouter } from 'expo-router';
 
-import QuickActionItem, {
-  QuickAction,
-} from './QuickActionItem';
+import QuickActionItem, { QuickAction } from './QuickActionItem';
 
 import { styles } from './style';
 
@@ -10,6 +9,7 @@ const actions: QuickAction[] = [
   {
     key: 'attendance',
     title: 'Điểm danh',
+    link: '/student/attendance',
     icon: require('@tera/assets/app/element_55.png'),
   },
   {
@@ -51,18 +51,19 @@ const actions: QuickAction[] = [
 ];
 
 export default function QuickActionGrid() {
+  const router = useRouter();
+
   const handlePress = (action: QuickAction) => {
     console.log(action.key);
+    if (action?.link) {
+      router.push(action?.link as any);
+    }
   };
 
   return (
     <View style={styles.container}>
       {actions.map((item) => (
-        <QuickActionItem
-          key={item.key}
-          item={item}
-          onPress={handlePress}
-        />
+        <QuickActionItem key={item.key} item={item} onPress={handlePress} />
       ))}
     </View>
   );

@@ -6,6 +6,7 @@ export interface QuickAction {
   key: string;
   title: string;
   icon: any;
+  link?: string;
   badge?: number;
 }
 

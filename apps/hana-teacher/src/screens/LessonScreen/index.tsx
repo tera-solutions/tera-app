@@ -1,103 +1,43 @@
-import { useState } from 'react';
-import { FlashList } from '@shopify/flash-list';
-import { View } from 'react-native';
+import React, { useState } from 'react';
+import { View, ScrollView } from 'react-native';
+import { styles } from './styles';
+import { HeaderSection } from './components/HeaderSection';
+import { LessonInfoCard } from './components/LessonInfoCard';
+import { TabNavigation } from './components/TabNavigation';
+import { StatsSummary } from './components/StatsSummary';
+import { LessonObjectives } from './components/LessonObjectives';
+import { MaterialList } from './components/MaterialList';
+import { ActivityList } from './components/ActivityList';
+import { BottomActions } from './components/BottomActions';
 
-import { ScrollView } from 'react-native';
-import LessonHeader from './LessonHeader';
-import LessonBanner from './LessonBanner';
-import LessonCategoryTabs from './LessonCategoryTabs';
-import LessonTopicCard from './LessonTopicCard';
+const TABS = ['Tổng quan', 'Nội dung', 'Hoạt động', 'Tài liệu', 'Ghi chú'];
 
-const topics = [
-  {
-    id: 1,
-    title: '1. Chào hỏi',
-    description: 'Học cách chào hỏi bằng tiếng Anh',
-    image: require('@tera/assets/app/element_48.png'),
-    icon: require('@tera/assets/app/element_51.png'),
-    totalWords: 10,
-    completedWords: 7,
-    newWords: 15,
-  },
-  {
-    id: 2,
-    title: '2. Trái cây',
-    description: 'Nhận biết các loại trái cây',
-    image: require('@tera/assets/app/element_49.png'),
-    icon: require('@tera/assets/app/element_52.png'),
-    totalWords: 10,
-    completedWords: 6,
-    newWords: 12,
-  },
-  {
-    id: 3,
-    title: '3. Động vật',
-    description: 'Học tên các con vật quen thuộc',
-    image: require('@tera/assets/app/element_50.png'),
-    icon: require('@tera/assets/app/element_53.png'),
-    totalWords: 10,
-    completedWords: 5,
-    newWords: 18,
-  },
-];
-
-const LessonScreen = () => {
-  const [category, setCategory] = useState('all');
+export default function LessonScreen() {
+  const [activeTab, setActiveTab] = useState('Tổng quan');
 
   return (
-    <ScrollView>
-      <LessonHeader />
-
-      <View
-        style={{
-          paddingHorizontal: 20,
-          marginTop: -40,
-        }}
+    <View style={styles.container}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false} 
+        contentContainerStyle={styles.scrollContent}
       >
-        <LessonCategoryTabs
-          activeTab={category}
-          data={[
-            {
-              id: 'all',
-              name: 'Tất cả',
-              icon: require('@tera/assets/app/element_15.png'),
-            },
-            {
-              id: 'english',
-              name: 'Tiếng Anh',
-              icon: require('@tera/assets/app/element_23.png'),
-            },
-            {
-              id: 'phonics',
-              name: 'Phonics',
-              icon: require('@tera/assets/app/element_21.png'),
-            },
-            {
-              id: 'grammar',
-              name: 'ngữ pháp',
-              icon: require('@tera/assets/app/element_2.png'),
-            },
-          ]}
-          onChange={setCategory}
-        />
+        <HeaderSection />
+        <LessonInfoCard />
+        <TabNavigation tabs={TABS} activeTab={activeTab} setActiveTab={setActiveTab} />
+        
+        {/* Render theo Tab - Hiện tại hiển thị block thông tin tổng quan của ảnh 'bai hoc.png' */}
+        {activeTab === 'Tổng quan' && (
+          <>
+            <StatsSummary />
+            <LessonObjectives />
+            <MaterialList />
+            <ActivityList />
+          </>
+        )}
+      </ScrollView>
 
-        <LessonBanner
-          image={require('@tera/assets/app/element_47.png')}
-          onPress={() => {}}
-        />
-      </View>
-      <View
-        style={{
-          paddingHorizontal: 20,
-        }}
-      >
-        <FlashList
-          data={topics}
-          renderItem={({ item }) => <LessonTopicCard topic={item} />}
-        />
-      </View>
-    </ScrollView>
+      {/* Cố định nút điều hướng cuối màn hình */}
+      <BottomActions />
+    </View>
   );
-};
-
-export default LessonScreen;
+}
