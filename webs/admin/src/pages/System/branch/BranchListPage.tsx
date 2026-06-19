@@ -125,9 +125,9 @@ const BranchListPage = () => {
         </div>
 
         {/* Search + filter row */}
-        <div className="relative z-20 grid grid-cols-3 gap-2 mb-3 xmd:flex xmd:flex-nowrap xmd:items-center">
+        <div className="relative z-20 grid grid-cols-2 gap-2 mb-3 xmd:flex xmd:flex-nowrap xmd:items-center">
           {/* Search + Sắp xếp — mobile cùng 1 hàng; desktop tách ra (contents + order) */}
-          <div className="col-span-3 flex gap-2 items-center xmd:contents">
+          <div className="col-span-2 flex gap-2 items-center xmd:contents">
             <div className="relative flex-1 min-w-0 xmd:flex-1 xmd:order-1">
               <span className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                 <svg
