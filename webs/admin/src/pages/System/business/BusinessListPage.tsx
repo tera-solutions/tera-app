@@ -161,7 +161,7 @@ const BusinessListPage = observer(() => {
           </div>
 
           {/* Người quản lý */}
-          <div className='w-full xmd:w-auto xmd:min-w-[170px] xmd:order-2'>
+          <div className='w-full xmd:w-auto xmd:shrink-0 xmd:min-w-[170px] xmd:order-2'>
             <UserSelect
               value={managerFilter}
               selectedUser={selectedManager}
@@ -184,25 +184,9 @@ const BusinessListPage = observer(() => {
               resetPage();
             }}
             title={t("business.created_at")}
-            className={QUICK_SELECT_CLASS}
+            className={`${QUICK_SELECT_CLASS} xmd:order-3 xmd:shrink-0`}
             style={{ color: dateFilter ? "#111827" : "#9ca3af" }}
           />
-
-          {/* Sắp xếp */}
-          <div className='w-full xmd:w-auto xmd:min-w-[170px]'>
-            <SortSelect
-              options={sortOptions}
-              sortBy={sortBy}
-              sortDir={sortDir}
-              placeholder={t("business.sort_by")}
-              defaultDir='asc'
-              onChange={(sb, sd) => {
-                setSortBy(sb);
-                setSortDir(sd);
-                resetPage();
-              }}
-            />
-          </div>
         </div>
 
         <BusinessTable
