@@ -42,8 +42,8 @@ export const styles = StyleSheet.create({
   label: {
     marginTop: 5,
 
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: '700',
 
     textAlign: 'center',
 

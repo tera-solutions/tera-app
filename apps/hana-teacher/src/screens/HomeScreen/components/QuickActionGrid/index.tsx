@@ -14,12 +14,14 @@ const actions: QuickAction[] = [
   },
   {
     key: 'grade',
-    title: 'Nhập điểm',
+    title: 'Chấm bài',
+    link: '/edu/assignment-grading',
     icon: require('@tera/assets/app/element_56.png'),
   },
   {
     key: 'homework',
     title: 'Bài tập',
+    link: '/edu/homework',
     icon: require('@tera/assets/app/element_57.png'),
     badge: 6,
   },
@@ -30,12 +32,14 @@ const actions: QuickAction[] = [
   },
   {
     key: 'schedule',
-    title: 'Lịch dạy',
+    title: 'Thời khóa biểu',
+    link: '/edu/timetable',
     icon: require('@tera/assets/app/element_59.png'),
   },
   {
     key: 'lesson-plan',
-    title: 'Giáo án',
+    title: 'Thành tích',
+    link: '/edu/achievement',
     icon: require('@tera/assets/app/element_60.png'),
   },
   {

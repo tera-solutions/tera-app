@@ -16,9 +16,9 @@ export const styles = StyleSheet.create({
    */
 
   header: {
-    height: 220,
+    height: 185,
     backgroundColor: '#0066cc',
-    paddingTop: 60,
+    paddingTop: 50,
     paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -42,7 +42,7 @@ export const styles = StyleSheet.create({
   },
 
   headerTitle: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '700',
     color: '#FFFFFF',
     marginTop: 8,

@@ -6,6 +6,8 @@ export default function LessonLayout() {
       screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
     >
       <Stack.Screen name="lesson" />
+      <Stack.Screen name="homework" />
+      <Stack.Screen name="assignment-grading" />
     </Stack>
   );
 }

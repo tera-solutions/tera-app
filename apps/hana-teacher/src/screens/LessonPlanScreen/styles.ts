@@ -9,8 +9,8 @@ export const styles = StyleSheet.create({
   },
   headerBackground: {
     backgroundColor: '#0066cc',
-    paddingTop: 60,
-    paddingBottom: 20,
+    paddingTop: 50,
+    paddingBottom: 10,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     paddingHorizontal: 16,

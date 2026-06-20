@@ -13,32 +13,30 @@ export default function HeaderSection() {
         style={styles.headerBackground}
         resizeMode="cover"
       />
-      <SafeAreaView>
-        <Text style={styles.title}>Lớp học</Text>
+      <Text style={styles.title}>Lớp học</Text>
 
-        <Text style={styles.subtitle}>
-          Quản lý và theo dõi các lớp bạn chủ nhiệm
-        </Text>
+      <Text style={styles.subtitle}>
+        Quản lý và theo dõi các lớp bạn chủ nhiệm
+      </Text>
 
-        <TouchableOpacity style={styles.addButton}>
-          <Plus size={24} color="#0B84FF" />
-        </TouchableOpacity>
+      <TouchableOpacity style={styles.addButton}>
+        <Plus size={24} color="#0B84FF" />
+      </TouchableOpacity>
 
-        <View style={styles.searchRow}>
-          <View style={styles.searchBox}>
-            <Search size={20} color="#888" />
-            <TextInput
-              placeholder="Tìm kiếm lớp học, học viên..."
-              style={styles.input}
-            />
-          </View>
-
-          <TouchableOpacity style={styles.filterBtn}>
-            <SlidersHorizontal size={20} color="#0B84FF" />
-            <Text style={styles.filterText}>Bộ lọc</Text>
-          </TouchableOpacity>
+      <View style={styles.searchRow}>
+        <View style={styles.searchBox}>
+          <Search size={20} color="#888" />
+          <TextInput
+            placeholder="Tìm kiếm lớp học, học viên..."
+            style={styles.input}
+          />
         </View>
-      </SafeAreaView>
+
+        <TouchableOpacity style={styles.filterBtn}>
+          <SlidersHorizontal size={20} color="#0B84FF" />
+          <Text style={styles.filterText}>Bộ lọc</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }

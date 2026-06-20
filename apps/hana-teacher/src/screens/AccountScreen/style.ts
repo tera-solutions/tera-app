@@ -12,9 +12,9 @@ export const styles = StyleSheet.create({
 
   header: {
     backgroundColor: '#0066cc',
-    paddingTop: 60,
+    paddingTop: 50,
     paddingHorizontal: 20,
-    paddingBottom: 90,
+    paddingBottom: 60,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
   },
@@ -85,7 +85,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 24,
     flexDirection: 'row',
-    paddingVertical: 24,
+    paddingVertical: 12,
     elevation: 3,
   },
 
@@ -121,7 +121,8 @@ export const styles = StyleSheet.create({
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#F1F5F9',
   },
