@@ -42,7 +42,11 @@ const UserSelect = ({
 
   const updateRect = () => {
     const r = btnRef.current?.getBoundingClientRect();
-    if (r) setRect({ top: r.bottom + 4, left: r.left, width: r.width });
+    if (!r) return;
+    // menu rộng tối thiểu 180; kẹp trong viewport để không tràn mép (vd cột phải nhất ở mobile)
+    const width = Math.max(r.width, 180);
+    const left = Math.min(Math.max(8, r.left), window.innerWidth - width - 8);
+    setRect({ top: r.bottom + 4, left, width });
   };
 
   useLayoutEffect(() => {
@@ -134,7 +138,6 @@ const UserSelect = ({
               top: rect.top,
               left: rect.left,
               width: rect.width,
-              minWidth: 180,
               zIndex: 9999,
             }}
             className="bg-white border border-gray-200 rounded shadow-lg"
