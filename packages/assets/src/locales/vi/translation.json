@@ -151,11 +151,11 @@
     "sort_by": "Sắp xếp"
   },
   "parent_student": {
-    "title": "LIÊN KẾT PHỤ HUYNH - HỌC VIÊN",
-    "list": "Danh sách liên kết",
-    "create": "Thêm mới liên kết",
-    "update": "Cập nhật liên kết",
-    "detail": "Chi tiết liên kết",
+    "title": "DANH SÁCH QUAN HỆ",
+    "list": "Danh sách quan hệ",
+    "create": "Thêm mới quan hệ",
+    "update": "Cập nhật quan hệ",
+    "detail": "Chi tiết quan hệ",
     "parent": "Phụ huynh",
     "student": "Học viên",
     "parent_code": "Mã PH",
