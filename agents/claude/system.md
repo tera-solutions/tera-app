@@ -27,6 +27,7 @@ Kiến trúc được thiết kế theo Domain-Driven Module Architecture.
 * REST API
 * Laravel Policies
 * Laravel Events
+* Link API document: https://documenter.getpostman.com/view/28246687/2sBXwwn83a#f50839a4-917c-4fee-a972-ae673ad3deb0
 
 ## Frontend
 
