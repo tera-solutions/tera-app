@@ -46,6 +46,9 @@
 /* Hiện cả scrollbar NGANG lẫn DỌC cho table body */
 .tera-table-body {
   scrollbar-width: thin; /* Firefox */
+  /* Luôn chừa chỗ scrollbar dọc để body khớp width với header
+     → tránh lệch cột header/body khi ít dòng (antd sticky-header) */
+  scrollbar-gutter: stable;
 }
 .tera-table-body::-webkit-scrollbar {
   width: 8px; /* thanh DỌC */
