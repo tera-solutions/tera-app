@@ -146,6 +146,52 @@ export const STUDENT_PAGE_URL = {
   },
 };
 
+export const PARENT_PAGE_URL = {
+  list: {
+    key: "",
+    path: "/student/parent/list",
+    shortenUrl: "/student/parent/list",
+  },
+  create: {
+    key: "",
+    path: "/student/parent/create",
+    shortenUrl: "/student/parent/create",
+  },
+  detail: {
+    key: "",
+    path: (id: number) => "/student/parent/detail/" + id,
+    shortenUrl: "/student/parent/detail/:id",
+  },
+  update: {
+    key: "",
+    path: (id: number) => "/student/parent/update/" + id,
+    shortenUrl: "/student/parent/update/:id",
+  },
+};
+
+export const PARENT_STUDENT_PAGE_URL = {
+  list: {
+    key: "",
+    path: "/student/parent-student/list",
+    shortenUrl: "/student/parent-student/list",
+  },
+  create: {
+    key: "",
+    path: "/student/parent-student/create",
+    shortenUrl: "/student/parent-student/create",
+  },
+  detail: {
+    key: "",
+    path: (id: number) => "/student/parent-student/detail/" + id,
+    shortenUrl: "/student/parent-student/detail/:id",
+  },
+  update: {
+    key: "",
+    path: (id: number) => "/student/parent-student/update/" + id,
+    shortenUrl: "/student/parent-student/update/:id",
+  },
+};
+
 export const MANAGE_PAGE_URL = {
   list: {
     key: PAGE_KEY.MANAGE_PAGE_LIST_VIEW,

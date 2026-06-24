@@ -147,13 +147,25 @@
       "id": 2,
       "title": "DS Phụ Huynh",
       "icon": "briefcase",
-      "path": "/parent/list",
+      "path": "/student/parent/list",
       "status": "active",
       "code": "p2",
       "key": "parent",
       "parentKey": "student",
       "parentGroupKey": "group-student",
       "activeKeys": "parent"
+    },
+    {
+      "id": 50,
+      "title": "Liên Kết PH - HV",
+      "icon": "briefcase",
+      "path": "/student/parent-student/list",
+      "status": "active",
+      "code": "p3",
+      "key": "parent-student",
+      "parentKey": "student",
+      "parentGroupKey": "group-student",
+      "activeKeys": "parent-student"
     },
     {
       "id": 3,

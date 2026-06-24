@@ -40,6 +40,18 @@ import StudentCreatePage from "pages/education/student/StudentCreatePage";
 import StudentUpdatePage from "pages/education/student/StudentUpdatePage";
 import StudentDetailPage from "pages/education/student/StudentDetailPage";
 
+/* IMPORT:Parent */
+import ParentListPage from "pages/CRM/parent/ParentListPage";
+import ParentCreatePage from "pages/CRM/parent/ParentCreatePage";
+import ParentUpdatePage from "pages/CRM/parent/ParentUpdatePage";
+import ParentDetailPage from "pages/CRM/parent/ParentDetailPage";
+
+/* IMPORT:ParentStudent */
+import ParentStudentListPage from "pages/CRM/parent-student/ParentStudentListPage";
+import ParentStudentCreatePage from "pages/CRM/parent-student/ParentStudentCreatePage";
+import ParentStudentUpdatePage from "pages/CRM/parent-student/ParentStudentUpdatePage";
+import ParentStudentDetailPage from "pages/CRM/parent-student/ParentStudentDetailPage";
+
 /* IMPORT:Branch */
 import BranchListPage from "pages/System/branch/BranchListPage";
 import BranchCreatePage from "pages/System/branch/BranchCreatePage";
@@ -69,12 +81,18 @@ export const Routers = () => {
         {/* BLOCK:router */}
 
         {/* BLOCK:Teacher */}
-        <Route path="/teacher/list" element={<TeacherListPage />} />
-        <Route path="/teacher/create" element={<TeacherCreatePage />} />
-        <Route path="/teacher/update/:id" element={<TeacherUpdatePage />} />
-        <Route path="/teacher/detail/:id" element={<TeacherDetailPage />} />
-        <Route path="/teacher/:id/certificate/create" element={<TeacherCertificateFormPage />} />
-        <Route path="/teacher/:id/certificate/update/:certificateId" element={<TeacherCertificateFormPage />} />
+        <Route path='/teacher/list' element={<TeacherListPage />} />
+        <Route path='/teacher/create' element={<TeacherCreatePage />} />
+        <Route path='/teacher/update/:id' element={<TeacherUpdatePage />} />
+        <Route path='/teacher/detail/:id' element={<TeacherDetailPage />} />
+        <Route
+          path='/teacher/:id/certificate/create'
+          element={<TeacherCertificateFormPage />}
+        />
+        <Route
+          path='/teacher/:id/certificate/update/:certificateId'
+          element={<TeacherCertificateFormPage />}
+        />
 
         {/* BLOCK:Course */}
         <Route path='/course/list' element={<CourseListPage />} />
@@ -92,22 +110,67 @@ export const Routers = () => {
         />
 
         {/* BLOCK:student */}
-        <Route path="/student/list" element={<StudentListPage />} />
-        <Route path="/student/create" element={<StudentCreatePage />} />
-        <Route path="/student/update/:id" element={<StudentUpdatePage />} />
-        <Route path="/student/detail/:id" element={<StudentDetailPage />} />
+        <Route path='/student/list' element={<StudentListPage />} />
+        <Route path='/student/create' element={<StudentCreatePage />} />
+        <Route path='/student/update/:id' element={<StudentUpdatePage />} />
+        <Route path='/student/detail/:id' element={<StudentDetailPage />} />
+
+        {/* BLOCK:Parent */}
+        <Route path='/student/parent/list' element={<ParentListPage />} />
+        <Route path='/student/parent/create' element={<ParentCreatePage />} />
+        <Route
+          path='/student/parent/update/:id'
+          element={<ParentUpdatePage />}
+        />
+        <Route
+          path='/student/parent/detail/:id'
+          element={<ParentDetailPage />}
+        />
+
+        {/* BLOCK:ParentStudent */}
+        <Route
+          path='/student/parent-student/list'
+          element={<ParentStudentListPage />}
+        />
+        <Route
+          path='/student/parent-student/create'
+          element={<ParentStudentCreatePage />}
+        />
+        <Route
+          path='/student/parent-student/update/:id'
+          element={<ParentStudentUpdatePage />}
+        />
+        <Route
+          path='/student/parent-student/detail/:id'
+          element={<ParentStudentDetailPage />}
+        />
 
         {/* BLOCK:Branch */}
-        <Route path="/system/branch/list" element={<BranchListPage />} />
-        <Route path="/system/branch/create" element={<BranchCreatePage />} />
-        <Route path="/system/branch/update/:id" element={<BranchUpdatePage />} />
-        <Route path="/system/branch/detail/:id" element={<BranchDetailPage />} />
+        <Route path='/system/branch/list' element={<BranchListPage />} />
+        <Route path='/system/branch/create' element={<BranchCreatePage />} />
+        <Route
+          path='/system/branch/update/:id'
+          element={<BranchUpdatePage />}
+        />
+        <Route
+          path='/system/branch/detail/:id'
+          element={<BranchDetailPage />}
+        />
 
         {/* BLOCK:Business */}
-        <Route path="/system/business/list" element={<BusinessListPage />} />
-        <Route path="/system/business/create" element={<BusinessCreatePage />} />
-        <Route path="/system/business/update/:id" element={<BusinessUpdatePage />} />
-        <Route path="/system/business/detail/:id" element={<BusinessDetailPage />} />
+        <Route path='/system/business/list' element={<BusinessListPage />} />
+        <Route
+          path='/system/business/create'
+          element={<BusinessCreatePage />}
+        />
+        <Route
+          path='/system/business/update/:id'
+          element={<BusinessUpdatePage />}
+        />
+        <Route
+          path='/system/business/detail/:id'
+          element={<BusinessDetailPage />}
+        />
       </Route>
 
       <Route
