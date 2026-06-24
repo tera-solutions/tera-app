@@ -2,6 +2,7 @@ export * from "./attendance";
 export * from "./class-room";
 export * from "./course";
 export * from "./evaluation";
+export * from "./level";
 export * from "./lesson";
 export * from "./lesson-plan";
 export * from "./student";
