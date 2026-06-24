@@ -13,6 +13,7 @@ export * from "./curriculum";
 export * from "./evaluation";
 export * from "./exam";
 export * from "./homework";
+export * from "./level";
 export * from "./lesson";
 export * from "./lesson-material";
 export * from "./lesson-plan";
