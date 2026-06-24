@@ -6,7 +6,6 @@ const getApiUrl = (): string => {
   ) {
     return (import.meta as any).env.VITE_TERA_API || "";
   }
-
   return process.env.EXPO_PUBLIC_API_URL || process.env.VITE_TERA_API || "";
 };
 
