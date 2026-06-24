@@ -40,4 +40,14 @@ export const ParentAPI = {
     await api
       .post(`${endpoint}/crm/parent/export`, params)
       .then((result) => result.data),
+
+  suspend: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/crm/parent/suspend/${id}`, params)
+      .then((result) => result.data),
+
+  restore: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/crm/parent/restore/${id}`, params)
+      .then((result) => result.data),
 };

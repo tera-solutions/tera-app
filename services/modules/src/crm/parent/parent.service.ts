@@ -91,6 +91,36 @@ export const useParentDelete = () => {
   });
 };
 
+export const useParentSuspend = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => ParentAPI.suspend(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["parent", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["parent", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useParentRestore = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => ParentAPI.restore(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["parent", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["parent", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const useParentExport = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -114,5 +144,7 @@ export const ParentService = {
   useParentUpdate,
   useUpsertParent,
   useParentDelete,
+  useParentSuspend,
+  useParentRestore,
   useParentExport,
 };
