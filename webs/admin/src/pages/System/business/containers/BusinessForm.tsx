@@ -174,8 +174,7 @@ const BusinessForm = observer(
       }, [prefixValue]);
 
       const queryClient = useQueryClient();
-      const { mutate: onSubmit, isPending } =
-        BusinessService.useUpsertBusiness();
+      const { mutate: onSubmit, isPending } = BusinessService.useUpsertBusiness();
 
       useEffect(() => {
         if (dataDetail?.id) {
@@ -194,9 +193,7 @@ const BusinessForm = observer(
             district: dataDetail.district ?? "",
             ward: dataDetail.ward ?? "",
             zip_code: dataDetail.zip_code ?? "",
-            manager_id: dataDetail.manager_id
-              ? String(dataDetail.manager_id)
-              : "",
+            manager_id: dataDetail.manager_id ? String(dataDetail.manager_id) : "",
           });
         } else {
           reset(defaultValues);
@@ -229,9 +226,7 @@ const BusinessForm = observer(
           {
             onSuccess: () => {
               queryClient.invalidateQueries({ queryKey: ["business", "list"] });
-              queryClient.invalidateQueries({
-                queryKey: ["business", "detail"],
-              });
+              queryClient.invalidateQueries({ queryKey: ["business", "detail"] });
               notification.success({
                 message: isUpdate
                   ? t("common.update_success")
@@ -280,11 +275,11 @@ const BusinessForm = observer(
           isDisabled={isView}
         >
           {/* Tab bar */}
-          <div className='flex border-b border-gray-200 mb-4 overflow-x-auto overflow-y-hidden scrollbar-none'>
+          <div className="flex border-b border-gray-200 mb-4 overflow-x-auto overflow-y-hidden scrollbar-none">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
-                type='button'
+                type="button"
                 onClick={() => setActiveTab(tab.key)}
                 className={`relative px-4 py-2 text-[13px] font-medium border-b-2 -mb-px transition-colors whitespace-nowrap flex items-center gap-1.5 ${
                   activeTab === tab.key
@@ -294,7 +289,7 @@ const BusinessForm = observer(
               >
                 {tab.label}
                 {tabErrors[tab.key] && (
-                  <span className='w-1.5 h-1.5 rounded-full bg-red-500 shrink-0' />
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
                 )}
               </button>
             ))}
@@ -302,17 +297,15 @@ const BusinessForm = observer(
 
           {/* Tab 1: Thông tin cơ bản */}
           <div className={activeTab === "basic" ? "block" : "hidden"}>
-            <Row className='grid grid-cols-1 sm:grid-cols-2 gap-x-4'>
+            <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
               <Col>
                 <FormTeraItem
                   label={t("business.code")}
-                  name='business_code'
+                  name="business_code"
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.code"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.code") })}
                     disabled={isView || isUpdate}
                   />
                 </FormTeraItem>
@@ -320,26 +313,19 @@ const BusinessForm = observer(
               <Col>
                 <FormTeraItem
                   label={t("business.name")}
-                  name='name'
+                  name="name"
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.name"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.name") })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
               <Col>
-                <FormTeraItem
-                  label={t("business.short_name")}
-                  name='short_name'
-                >
+                <FormTeraItem label={t("business.short_name")} name="short_name">
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.short_name"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.short_name") })}
                     disabled={isView}
                   />
                 </FormTeraItem>
@@ -347,33 +333,27 @@ const BusinessForm = observer(
               <Col>
                 <FormTeraItem
                   label={t("business.prefix")}
-                  name='prefix'
+                  name="prefix"
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.prefix"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.prefix") })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
               <Col>
-                <FormTeraItem label={t("business.tax_code")} name='tax_code'>
+                <FormTeraItem label={t("business.tax_code")} name="tax_code">
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.tax_code"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.tax_code") })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
-              <Col className='sm:col-span-2'>
-                <FormTeraItem label={t("business.website")} name='website'>
+              <Col className="sm:col-span-2">
+                <FormTeraItem label={t("business.website")} name="website">
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.website"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.website") })}
                     disabled={isView}
                   />
                 </FormTeraItem>
@@ -383,17 +363,15 @@ const BusinessForm = observer(
 
           {/* Tab 2: Thông tin liên hệ */}
           <div className={activeTab === "contact" ? "block" : "hidden"}>
-            <Row className='grid grid-cols-1 sm:grid-cols-2 gap-x-4'>
+            <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
               <Col>
                 <FormTeraItem
                   label={t("business.phone")}
-                  name='phone'
+                  name="phone"
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.phone"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.phone") })}
                     disabled={isView}
                   />
                 </FormTeraItem>
@@ -401,13 +379,11 @@ const BusinessForm = observer(
               <Col>
                 <FormTeraItem
                   label={t("business.email")}
-                  name='email'
+                  name="email"
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.email"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.email") })}
                     disabled={isView}
                   />
                 </FormTeraItem>
@@ -415,13 +391,11 @@ const BusinessForm = observer(
               <Col>
                 <FormTeraItem
                   label={t("business.province")}
-                  name='province'
+                  name="province"
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.province"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.province") })}
                     disabled={isView}
                   />
                 </FormTeraItem>
@@ -429,47 +403,39 @@ const BusinessForm = observer(
               <Col>
                 <FormTeraItem
                   label={t("business.district")}
-                  name='district'
+                  name="district"
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.district"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.district") })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
               <Col>
-                <FormTeraItem label={t("business.ward")} name='ward'>
+                <FormTeraItem label={t("business.ward")} name="ward">
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.ward"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.ward") })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
               <Col>
-                <FormTeraItem label={t("business.zip_code")} name='zip_code'>
+                <FormTeraItem label={t("business.zip_code")} name="zip_code">
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.zip_code"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.zip_code") })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
-              <Col className='sm:col-span-2'>
+              <Col className="sm:col-span-2">
                 <FormTeraItem
                   label={t("business.address")}
-                  name='address'
+                  name="address"
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Input
-                    placeholder={t("form.enter_value", {
-                      key: t("business.address"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.address") })}
                     disabled={isView}
                   />
                 </FormTeraItem>
@@ -479,7 +445,7 @@ const BusinessForm = observer(
 
           {/* Tab 3: Thông tin quản lý */}
           <div className={activeTab === "management" ? "block" : "hidden"}>
-            <Row className='grid grid-cols-1 sm:grid-cols-2 gap-x-4'>
+            <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
               {!isUpdate && (
                 <Col>
                   <FormTeraItem
@@ -515,14 +481,12 @@ const BusinessForm = observer(
                 </Col>
               )}
               <Col>
-                <FormTeraItem label={t("business.manager")} name='manager_id'>
+                <FormTeraItem label={t("business.manager")} name="manager_id">
                   <UserSelect
                     value={managerIdValue}
                     selectedUser={dataDetail?.manager}
                     disabled={isView}
-                    placeholder={t("form.enter_value", {
-                      key: t("business.manager"),
-                    })}
+                    placeholder={t("form.enter_value", { key: t("business.manager") })}
                     onChange={(id) =>
                       form.setValue("manager_id", id, {
                         shouldDirty: true,

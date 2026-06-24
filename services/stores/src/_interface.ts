@@ -1,7 +1,13 @@
 import { ModalProps } from "tera-dls";
 import * as CSS from "csstype";
+import { IMetaOption } from "./globalStore";
 
 export interface IGlobalStore {
+  metadata: Record<string, Record<string, IMetaOption[]>>;
+  setMetadata: (data: any) => void;
+  getOptions: (name: string) => IMetaOption[];
+  getMetaItem: (name: string, value?: string | null) => IMetaOption | undefined;
+  getMetaLabel: (name: string, value?: string | null) => string;
   device: string;
   authenticated: boolean;
   user: any;

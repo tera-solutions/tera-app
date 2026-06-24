@@ -66,9 +66,9 @@ const BusinessTable = observer(
     } | null>(null);
     const [reason, setReason] = useState("");
 
-    const statusOptions = (
-      globalStore.getOptions("business_status") ?? []
-    ).filter((opt: any) => opt.value !== "suspended");
+    const statusOptions = (globalStore.getOptions("business_status") ?? []).filter(
+      (opt: any) => opt.value !== "suspended",
+    );
 
     const invalidateBusiness = () => {
       queryClient.invalidateQueries({ queryKey: ["business", "list"] });
@@ -120,9 +120,7 @@ const BusinessTable = observer(
             { id: record.id },
             {
               onSuccess: () => {
-                queryClient.invalidateQueries({
-                  queryKey: ["business", "list"],
-                });
+                queryClient.invalidateQueries({ queryKey: ["business", "list"] });
               },
               onError: (error: any) => {
                 notification.error({
@@ -160,7 +158,7 @@ const BusinessTable = observer(
         })),
       {
         key: "delete",
-        label: <span className='text-red-500'>{t("button.delete")}</span>,
+        label: <span className="text-red-500">{t("button.delete")}</span>,
         onClick: () => handleDelete(record),
       },
     ];
@@ -169,7 +167,7 @@ const BusinessTable = observer(
       <span style={{ color: "#111827" }}>{children}</span>
     );
 
-    const emptyCell = <span className='text-gray-300'>—</span>;
+    const emptyCell = <span className="text-gray-300">—</span>;
 
     const columns = [
       {
@@ -185,10 +183,10 @@ const BusinessTable = observer(
         key: "name",
         width: 200,
         render: (name: string, record: IBusiness) => (
-          <div className='flex flex-col gap-0.5'>
+          <div className="flex flex-col gap-0.5">
             <span>{name}</span>
             {record.short_name && (
-              <span className='text-[12px] text-gray-400'>
+              <span className="text-[12px] text-gray-400">
                 {record.short_name}
               </span>
             )}
@@ -230,15 +228,11 @@ const BusinessTable = observer(
         key: "address",
         width: 220,
         render: (_: any, record: IBusiness) => {
-          const parts = [
-            record.address,
-            record.district,
-            record.province,
-          ].filter(Boolean);
+          const parts = [record.address, record.district, record.province].filter(
+            Boolean,
+          );
           return parts.length ? (
-            <span className='text-[13px] text-gray-700'>
-              {parts.join(", ")}
-            </span>
+            <span className="text-[13px] text-gray-700">{parts.join(", ")}</span>
           ) : (
             emptyCell
           );
@@ -263,14 +257,11 @@ const BusinessTable = observer(
           const item = globalStore.getMetaItem("business_status", status);
           return (
             <span
-              className='inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[12px] font-medium'
-              style={{
-                color: item?.color,
-                backgroundColor: item?.backgroundColor,
-              }}
+              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[12px] font-medium"
+              style={{ color: item?.color, backgroundColor: item?.backgroundColor }}
             >
               <span
-                className='w-1.5 h-1.5 rounded-full shrink-0'
+                className="w-1.5 h-1.5 rounded-full shrink-0"
                 style={{ backgroundColor: item?.color }}
               />
               {item?.label ?? status ?? "—"}
@@ -284,7 +275,7 @@ const BusinessTable = observer(
         width: 80,
         align: "center" as const,
         render: (_: any, record: IBusiness) => (
-          <ActionDropdown dropdownItems={itemsAction(record)} trigger='click' />
+          <ActionDropdown dropdownItems={itemsAction(record)} trigger="click" />
         ),
       },
     ];
@@ -316,7 +307,7 @@ const BusinessTable = observer(
       <>
         <div style={{ width: "100%", overflowX: "auto", colorScheme: "light" }}>
           <TableTera
-            rowKey='id'
+            rowKey="id"
             columns={columns}
             data={tableData}
             scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
@@ -339,35 +330,35 @@ const BusinessTable = observer(
           centered
           width={500}
           footer={
-            <div className='flex justify-end gap-2'>
+            <div className="flex justify-end gap-2">
               <button
-                type='button'
+                type="button"
                 onClick={() => setPendingStatus(null)}
-                className='px-4 py-1.5 text-[13px] border border-gray-300 rounded hover:bg-gray-50 transition-colors'
+                className="px-4 py-1.5 text-[13px] border border-gray-300 rounded hover:bg-gray-50 transition-colors"
               >
                 {t("button.cancel")}
               </button>
               <button
-                type='button'
+                type="button"
                 onClick={handleConfirmStatus}
                 disabled={!reason.trim() || isUpdating}
-                className='px-4 py-1.5 text-[13px] bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+                className="px-4 py-1.5 text-[13px] bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isUpdating ? t("common.processing") : t("button.save")}
               </button>
             </div>
           }
         >
-          <div className='flex flex-col gap-1.5'>
-            <label className='text-[13px] text-gray-600 font-medium'>
-              {t("common.reason")} <span className='text-red-500'>*</span>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[13px] text-gray-600 font-medium">
+              {t("common.reason")} <span className="text-red-500">*</span>
             </label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder={t("common.reason_placeholder")}
               rows={3}
-              className='w-full border border-gray-300 rounded px-3 py-2 text-[13px] focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500 resize-none'
+              className="w-full border border-gray-300 rounded px-3 py-2 text-[13px] focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500 resize-none"
             />
           </div>
         </Modal>
