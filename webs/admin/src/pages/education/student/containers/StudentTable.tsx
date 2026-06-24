@@ -254,18 +254,19 @@ const StudentTable = observer(
       },
       {
         title: <HeaderTitle>{t("student.level")}</HeaderTitle>,
-        dataIndex: "level",
         key: "level",
         width: 100,
         align: "center" as const,
-        render: (value: string) =>
-          value ? (
+        render: (_: any, record: IStudent) => {
+          const levelName = record.level?.name;
+          return levelName ? (
             <span className='inline-block px-2 py-0.5 text-xs rounded bg-indigo-50 text-indigo-700'>
-              {t(`student.level_${value}`, value)}
+              {levelName}
             </span>
           ) : (
             <span className='text-gray-300'>—</span>
-          ),
+          );
+        },
       },
       {
         title: <HeaderTitle>{t("student.branch")}</HeaderTitle>,

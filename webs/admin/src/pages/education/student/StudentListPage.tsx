@@ -13,15 +13,13 @@ import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { useStores } from "@tera/stores/useStores";
 
 /* Import: services */
-import { BranchService } from "@tera/modules";
+import { BranchService, LevelService } from "@tera/modules";
 
 /* Import: pages */
 import SortSelect from "_common/components/SortSelect";
 import FilterSelect from "_common/components/FilterSelect";
 import StudentTable from "./containers/StudentTable";
 import StudentFormModal from "./StudentFormModal";
-
-const LEVELS = ["beginner", "intermediate", "advanced", "expert"];
 
 const StudentListPage = observer(() => {
   const { t } = useTranslation();
@@ -48,6 +46,11 @@ const StudentListPage = observer(() => {
   });
   const branches: any[] = branchData?.data?.items ?? [];
 
+  const { data: levelData } = LevelService.useLevelList({
+    params: { page: 1, per_page: 100 },
+  });
+  const levels: any[] = levelData?.data?.items ?? [];
+
   const statusOptions = globalStore.getOptions("student_status") ?? [];
   const statusTabs = [
     { key: "", label: t("common.all") },
@@ -58,7 +61,7 @@ const StudentListPage = observer(() => {
     ...params,
     search: keyword || undefined,
     status: activeStatus || undefined,
-    level: levelFilter || undefined,
+    level_id: levelFilter || undefined,
     branch_id: branchFilter || undefined,
     sort_by: sortBy || undefined,
     sort_dir: sortBy ? sortDir : undefined,
@@ -160,9 +163,9 @@ const StudentListPage = observer(() => {
             className="w-full xmd:w-auto xmd:min-w-[110px] xmd:order-2"
             value={levelFilter}
             placeholder={t("student.all_levels")}
-            options={LEVELS.map((lv) => ({
-              value: lv,
-              label: t(`student.level_${lv}`),
+            options={levels.map((lv) => ({
+              value: String(lv.id),
+              label: lv.name,
             }))}
             onChange={(v) => {
               setLevelFilter(v);

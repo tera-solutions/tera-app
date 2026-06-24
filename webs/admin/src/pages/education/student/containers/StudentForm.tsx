@@ -24,15 +24,21 @@ import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import { useStores } from "@tera/stores/useStores";
 
 /* Import: services */
-import { StudentService, BranchService, BusinessService } from "@tera/modules";
+import {
+  StudentService,
+  BranchService,
+  BusinessService,
+  ParentService,
+  ParentStudentService,
+  LevelService,
+} from "@tera/modules";
 
 /* Import: pages */
 import { IStudentForm } from "pages/education/student/_interface";
+import { syncParentStudentLinks } from "_common/utils/parentStudentLinks";
 
 const SELECT_CLASS =
   "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
-
-const LEVELS = ["beginner", "intermediate", "advanced", "expert"];
 
 const defaultValues: IStudentForm = {
   code: "",
@@ -44,7 +50,7 @@ const defaultValues: IStudentForm = {
   dob: "",
   email: "",
   phone: "",
-  level: "",
+  level_id: "",
   status: "",
   enrollment_date: "",
   admission_source: "",
@@ -88,6 +94,46 @@ const StudentForm = observer(
         params: { page: 1, per_page: 100 },
       });
       const businesses: any[] = businessData?.data?.items ?? [];
+
+      // Nguồn dữ liệu liên kết PH↔HV (chỉ fetch khi đã có học viên)
+      const { data: linkData } = ParentStudentService.useParentStudentList(
+        { params: { student_id: dataDetail?.id, per_page: 100 } },
+        { enabled: !!dataDetail?.id },
+      );
+      const linkItems: any[] = useMemo(() => {
+        if (!dataDetail?.id) return [];
+        // Lọc client-side phòng backend KHÔNG lọc theo student_id (trả về tất cả link)
+        return (linkData?.data?.items ?? []).filter(
+          (l: any) =>
+            Number(l.student_id ?? l.student?.id) === Number(dataDetail.id),
+        );
+      }, [linkData, dataDetail]);
+
+      const { data: parentData } = ParentService.useParentList({
+        params: { page: 1, per_page: 100, status: "active" },
+      });
+      const parentOptions: any[] = useMemo(() => {
+        // chỉ cho chọn phụ huynh đang hoạt động (lọc cả client phòng backend bỏ qua param)
+        const list = (parentData?.data?.items ?? []).filter(
+          (p: any) => !p.status || p.status === "active",
+        );
+        // giữ option cho phụ huynh đã link dù không nằm trong list active / 100 dòng đầu
+        const merged = [...list];
+        linkItems.forEach((l: any) => {
+          const p = l?.parent;
+          const pid = p?.id ?? l?.parent_id;
+          if (pid && !merged.some((m: any) => m.id === pid)) {
+            merged.push(p ?? { id: pid, name: `#${pid}` });
+          }
+        });
+        return merged;
+      }, [parentData, linkItems]);
+
+      // Trình độ là FK level_id → catalog edu/level/list
+      const { data: levelData } = LevelService.useLevelList({
+        params: { page: 1, per_page: 100 },
+      });
+      const levels: any[] = levelData?.data?.items ?? [];
 
       const genderOptions = globalStore.getOptions("gender") ?? [];
       const statusOptions = globalStore.getOptions("student_status") ?? [];
@@ -138,6 +184,26 @@ const StudentForm = observer(
               .test("status-required", t("validate.required"), (value) =>
                 isUpdateRef.current ? true : !!value,
               ),
+            // Phụ huynh: khi "tạo mới" yêu cầu họ tên, quan hệ, SĐT
+            parents: yup.array().of(
+              yup.object({
+                name: yup.string().when("mode", {
+                  is: "new",
+                  then: (s) => s.required(t("validate.required")),
+                  otherwise: (s) => s.optional(),
+                }),
+                relation: yup.string().when("mode", {
+                  is: "new",
+                  then: (s) => s.required(t("validate.required")),
+                  otherwise: (s) => s.optional(),
+                }),
+                phone: yup.string().when("mode", {
+                  is: "new",
+                  then: (s) => s.required(t("validate.required")),
+                  otherwise: (s) => s.optional(),
+                }),
+              }),
+            ),
           }),
         [t],
       );
@@ -153,7 +219,7 @@ const StudentForm = observer(
       const businessIdValue = watch("business_id");
       const branchIdValue = watch("branch_id");
       const genderValue = watch("gender");
-      const levelValue = watch("level");
+      const levelValue = watch("level_id");
       const statusValue = watch("status");
       const avatarValue = watch("avatar" as any);
 
@@ -166,51 +232,98 @@ const StudentForm = observer(
       const { mutate: onSubmit, isPending } = StudentService.useUpsertStudent();
 
       useEffect(() => {
-        if (dataDetail?.id) {
-          reset({
-            code: dataDetail.code ?? "",
-            name: dataDetail.name ?? "",
-            avatar: dataDetail.avatar ?? "",
-            business_id: dataDetail.business_id ? String(dataDetail.business_id) : "",
-            branch_id: dataDetail.branch_id ? String(dataDetail.branch_id) : "",
-            gender: dataDetail.gender ?? "",
-            dob: dataDetail.dob ? String(dataDetail.dob).split("T")[0] : "",
-            email: dataDetail.email ?? "",
-            phone: dataDetail.phone ?? "",
-            level: dataDetail.level ?? "",
-            status: dataDetail.status ?? "",
-            enrollment_date: dataDetail.enrollment_date
-              ? String(dataDetail.enrollment_date).split("T")[0]
-              : "",
-            admission_source: dataDetail.admission_source ?? "",
-            nationality: dataDetail.nationality ?? "",
-            language: dataDetail.language ?? "",
-            address: dataDetail.address ?? "",
-            province: dataDetail.province ?? "",
-            district: dataDetail.district ?? "",
-            note: dataDetail.note ?? "",
-            parents:
-              dataDetail.parents?.map((p: any) => ({
-                name: p.name ?? "",
-                relation: p.relation ?? "",
-                phone: p.phone ?? "",
-                email: p.email ?? "",
-              })) ?? [],
-          });
-        } else {
+        if (!dataDetail?.id) {
           reset(defaultValues);
+          return;
         }
-      }, [dataDetail, reset]);
+        // Đợi danh sách link tải xong rồi mới reset (tránh reset 2 lần / mất rows)
+        if (!linkData) return;
+        reset({
+          code: dataDetail.code ?? "",
+          name: dataDetail.name ?? "",
+          avatar: dataDetail.avatar ?? "",
+          business_id: dataDetail.business_id ? String(dataDetail.business_id) : "",
+          branch_id: dataDetail.branch_id ? String(dataDetail.branch_id) : "",
+          gender: dataDetail.gender ?? "",
+          dob: dataDetail.dob ? String(dataDetail.dob).split("T")[0] : "",
+          email: dataDetail.email ?? "",
+          phone: dataDetail.phone ?? "",
+          level_id: dataDetail.level_id
+            ? String(dataDetail.level_id)
+            : dataDetail.level?.id
+              ? String(dataDetail.level.id)
+              : "",
+          status: dataDetail.status ?? "",
+          enrollment_date: dataDetail.enrollment_date
+            ? String(dataDetail.enrollment_date).split("T")[0]
+            : "",
+          admission_source: dataDetail.admission_source ?? "",
+          nationality: dataDetail.nationality ?? "",
+          language: dataDetail.language ?? "",
+          address: dataDetail.address ?? "",
+          province: dataDetail.province ?? "",
+          district: dataDetail.district ?? "",
+          note: dataDetail.note ?? "",
+          // Rows lấy từ link list (mang theo link_id + contacts để không mất khi lưu)
+          parents: linkItems.map((l: any) => ({
+            link_id: l.id,
+            mode: "existing",
+            parent_id: l.parent_id
+              ? String(l.parent_id)
+              : l.parent?.id
+                ? String(l.parent.id)
+                : "",
+            name: l.parent?.name ?? "",
+            relation: l.relation ?? "",
+            phone: l.parent?.phone ?? "",
+            email: l.parent?.email ?? "",
+            is_primary_contact: !!l.is_primary_contact,
+            is_billing_contact: !!l.is_billing_contact,
+            is_pickup_authorized: !!l.is_pickup_authorized,
+            note: l.note ?? "",
+          })),
+        });
+      }, [dataDetail, linkData, linkItems, reset]);
 
       const handleSubmitForm = (values: IStudentForm) => {
-        const parents = (values.parents ?? [])
-          .filter((p) => p?.name?.trim())
+        // Quan hệ PH↔HV KHÔNG còn nhúng trong payload student → đồng bộ riêng
+        // qua crm/parent-student/* sau khi lưu học viên (xem parentStudentLinks).
+        const newParentBusinessId = values.business_id
+          ? Number(values.business_id)
+          : dataDetail?.business_id;
+        const newParentBranchId = values.branch_id
+          ? Number(values.branch_id)
+          : dataDetail?.branch_id;
+
+        const linkRows = (values.parents ?? [])
+          .filter((p) =>
+            p?.mode === "new" ? !!p?.name?.trim() : !!p?.parent_id,
+          )
           .map((p) => ({
-            name: p.name?.trim(),
+            link_id: p.link_id ? Number(p.link_id) : undefined,
+            mode: p.mode,
+            counterpart_id:
+              p.mode === "new" ? undefined : Number(p.parent_id),
+            new_parent:
+              p.mode === "new"
+                ? {
+                    name: p.name,
+                    phone: p.phone,
+                    email: p.email,
+                    business_id: newParentBusinessId,
+                    branch_id: newParentBranchId,
+                  }
+                : undefined,
             relation: p.relation || undefined,
-            phone: p.phone?.trim() || undefined,
-            email: p.email?.trim() || undefined,
+            is_primary_contact: !!p.is_primary_contact,
+            is_billing_contact: !!p.is_billing_contact,
+            is_pickup_authorized: !!p.is_pickup_authorized,
+            note: p.note,
           }));
+        const originalLinkIds = linkItems
+          .map((l: any) => l.id)
+          .filter(Boolean);
+
         const params = {
           code: values.code?.trim() || undefined,
           name: values.name?.trim() || undefined,
@@ -229,7 +342,7 @@ const StudentForm = observer(
           dob: values.dob || undefined,
           email: values.email?.trim() || undefined,
           phone: values.phone?.trim() || undefined,
-          level: values.level || undefined,
+          level_id: values.level_id ? Number(values.level_id) : undefined,
           status: isUpdate ? undefined : values.status || undefined,
           enrollment_date: values.enrollment_date || undefined,
           admission_source: values.admission_source?.trim() || undefined,
@@ -239,20 +352,47 @@ const StudentForm = observer(
           province: values.province?.trim() || undefined,
           district: values.district?.trim() || undefined,
           note: values.note?.trim() || undefined,
-          parents: parents.length ? parents : undefined,
         };
         onSubmit(
           { id: dataDetail?.id, params },
           {
-            onSuccess: () => {
-              queryClient.invalidateQueries({ queryKey: ["student", "list"] });
-              queryClient.invalidateQueries({ queryKey: ["student", "detail"] });
-              notification.success({
-                message: isUpdate
-                  ? t("common.update_success")
-                  : t("common.create_success"),
-              });
-              onSuccess?.();
+            onSuccess: async (res: any) => {
+              const studentId =
+                dataDetail?.id ??
+                res?.data?.id ??
+                res?.data?.student?.id;
+              try {
+                if (studentId) {
+                  await syncParentStudentLinks({
+                    anchor: "student",
+                    anchorId: Number(studentId),
+                    rows: linkRows,
+                    originalLinkIds,
+                  });
+                }
+                queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+                queryClient.invalidateQueries({ queryKey: ["student", "detail"] });
+                queryClient.invalidateQueries({
+                  queryKey: ["parent-student", "list"],
+                });
+                queryClient.invalidateQueries({ queryKey: ["parent", "list"] });
+                notification.success({
+                  message: isUpdate
+                    ? t("common.update_success")
+                    : t("common.create_success"),
+                });
+                onSuccess?.();
+              } catch (error: any) {
+                // Link lỗi giữa chừng: làm mới để retry thấy đúng link đã tạo,
+                // tránh tạo trùng.
+                queryClient.invalidateQueries({
+                  queryKey: ["parent-student", "list"],
+                });
+                queryClient.invalidateQueries({ queryKey: ["student", "detail"] });
+                notification.error({
+                  message: error?.message || t("common.error_message"),
+                });
+              }
             },
             onError: (error: any) => {
               notification.error({
@@ -273,6 +413,7 @@ const StudentForm = observer(
         general: !!(errors.code || errors.name || errors.gender || errors.status),
         contact: !!errors.email,
         study: !!(errors.business_id || errors.branch_id || errors.enrollment_date),
+        parents: !!errors.parents,
       };
 
       const tabs = [
@@ -563,20 +704,22 @@ const StudentForm = observer(
                 </FormTeraItem>
               </Col>
               <Col>
-                <FormTeraItem label={t("student.level")} name="level">
+                <FormTeraItem label={t("student.level")} name="level_id">
                   <div className="w-full overflow-hidden">
+                    {/* Xem chi tiết: lấy trình độ từ chính record student (level_id),
+                        KHÔNG gọi student-level/detail (backend chưa có bảng) */}
                     <select
                       className={SELECT_CLASS}
                       style={{ borderRadius: "3px", color: levelValue ? "#111827" : "#9ca3af" }}
                       disabled={isView}
-                      {...form.register("level")}
+                      {...form.register("level_id")}
                     >
                       <option value="" disabled hidden>
                         {t("form.enter_value", { key: t("student.level") })}
                       </option>
-                      {LEVELS.map((lv) => (
-                        <option key={lv} value={lv} style={{ color: "#111827" }}>
-                          {t(`student.level_${lv}`)}
+                      {levels.map((lv: any) => (
+                        <option key={lv.id} value={String(lv.id)} style={{ color: "#111827" }}>
+                          {lv.name}
                         </option>
                       ))}
                     </select>
@@ -617,38 +760,112 @@ const StudentForm = observer(
             <div className="flex flex-col gap-3">
               {parentFields.map((field, index) => {
                 const relationValue = watch(`parents.${index}.relation` as any);
+                const modeValue =
+                  watch(`parents.${index}.mode` as any) || "new";
+                const parentIdValue = watch(`parents.${index}.parent_id` as any);
+                const isExisting = modeValue === "existing";
                 return (
                   <div
                     key={field.id}
-                    className="relative rounded-lg border border-gray-200 p-3 bg-gray-50"
+                    className="relative rounded-lg border border-gray-200 p-3 pr-10 bg-gray-50"
                   >
                     {!isView && (
                       <button
                         type="button"
                         onClick={() => removeParent(index)}
-                        className="absolute top-2 right-2 h-6 w-6 flex items-center justify-center rounded text-red-500 hover:bg-red-50 transition-colors text-lg leading-none"
+                        className="absolute top-2 right-2 z-10 h-6 w-6 flex items-center justify-center rounded text-red-500 hover:bg-red-50 transition-colors text-lg leading-none"
                       >
                         ×
                       </button>
                     )}
+
+                    {/* Mode toggle: chọn phụ huynh có sẵn / tạo mới */}
+                    {!isView && (
+                      <div className="inline-flex rounded-md border border-gray-200 bg-white p-0.5 mb-3">
+                        {[
+                          { key: "existing", label: t("student.parent_existing") },
+                          { key: "new", label: t("student.parent_new") },
+                        ].map((m) => (
+                          <button
+                            key={m.key}
+                            type="button"
+                            onClick={() =>
+                              form.setValue(
+                                `parents.${index}.mode` as any,
+                                m.key,
+                                { shouldDirty: true },
+                              )
+                            }
+                            className={`px-3 py-1 text-[12px] rounded font-medium transition-colors ${
+                              modeValue === m.key
+                                ? "bg-blue-500 text-white"
+                                : "text-gray-500 hover:text-gray-700"
+                            }`}
+                          >
+                            {m.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
                     <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-                      <Col>
-                        <FormTeraItem
-                          label={t("student.parent_name")}
-                          name={`parents.${index}.name`}
-                        >
-                          <Input
-                            placeholder={t("form.enter_value", {
-                              key: t("student.parent_name"),
-                            })}
-                            disabled={isView}
-                          />
-                        </FormTeraItem>
-                      </Col>
+                      {isExisting ? (
+                        <Col>
+                          <FormTeraItem
+                            label={t("student.parents")}
+                            name={`parents.${index}.parent_id`}
+                          >
+                            <div className="w-full overflow-hidden">
+                              <select
+                                className={SELECT_CLASS}
+                                style={{ borderRadius: "3px", color: parentIdValue ? "#111827" : "#9ca3af" }}
+                                disabled={isView}
+                                {...form.register(`parents.${index}.parent_id` as any)}
+                              >
+                                <option value="" disabled hidden>
+                                  {t("student.select_parent")}
+                                </option>
+                                {parentOptions.map((p: any) => (
+                                  <option key={p.id} value={String(p.id)} style={{ color: "#111827" }}>
+                                    {p.name}
+                                    {p.phone ? ` - ${p.phone}` : ""}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </FormTeraItem>
+                        </Col>
+                      ) : (
+                        <Col>
+                          <FormTeraItem
+                            label={t("student.parent_name")}
+                            name={`parents.${index}.name`}
+                            rules={[{ required: t("validate.required") }]}
+                          >
+                            <Input
+                              placeholder={t("form.enter_value", {
+                                key: t("student.parent_name"),
+                              })}
+                              disabled={isView}
+                            />
+                          </FormTeraItem>
+                          {errors?.parents?.[index]?.name?.message && (
+                            <p className="text-red-500 text-xs -mt-2 mb-2">
+                              {errors.parents[index].name.message}
+                            </p>
+                          )}
+                        </Col>
+                      )}
+                      {/* Quan hệ: luôn hiện (link parent-student yêu cầu relation) */}
                       <Col>
                         <FormTeraItem
                           label={t("student.parent_relation")}
                           name={`parents.${index}.relation`}
+                          rules={
+                            !isExisting
+                              ? [{ required: t("validate.required") }]
+                              : undefined
+                          }
                         >
                           <div className="w-full overflow-hidden">
                             <select
@@ -670,29 +887,44 @@ const StudentForm = observer(
                             </select>
                           </div>
                         </FormTeraItem>
+                        {errors?.parents?.[index]?.relation?.message && (
+                          <p className="text-red-500 text-xs -mt-2 mb-2">
+                            {errors.parents[index].relation.message}
+                          </p>
+                        )}
                       </Col>
-                      <Col>
-                        <FormTeraItem
-                          label={t("student.phone")}
-                          name={`parents.${index}.phone`}
-                        >
-                          <Input
-                            placeholder={t("form.enter_value", { key: t("student.phone") })}
-                            disabled={isView}
-                          />
-                        </FormTeraItem>
-                      </Col>
-                      <Col>
-                        <FormTeraItem
-                          label={t("student.email")}
-                          name={`parents.${index}.email`}
-                        >
-                          <Input
-                            placeholder={t("form.enter_value", { key: t("student.email") })}
-                            disabled={isView}
-                          />
-                        </FormTeraItem>
-                      </Col>
+                      {!isExisting && (
+                        <Col>
+                          <FormTeraItem
+                            label={t("student.phone")}
+                            name={`parents.${index}.phone`}
+                            rules={[{ required: t("validate.required") }]}
+                          >
+                            <Input
+                              placeholder={t("form.enter_value", { key: t("student.phone") })}
+                              disabled={isView}
+                            />
+                          </FormTeraItem>
+                          {errors?.parents?.[index]?.phone?.message && (
+                            <p className="text-red-500 text-xs -mt-2 mb-2">
+                              {errors.parents[index].phone.message}
+                            </p>
+                          )}
+                        </Col>
+                      )}
+                      {!isExisting && (
+                        <Col>
+                          <FormTeraItem
+                            label={t("student.email")}
+                            name={`parents.${index}.email`}
+                          >
+                            <Input
+                              placeholder={t("form.enter_value", { key: t("student.email") })}
+                              disabled={isView}
+                            />
+                          </FormTeraItem>
+                        </Col>
+                      )}
                     </Row>
                   </div>
                 );
@@ -708,7 +940,14 @@ const StudentForm = observer(
                 <button
                   type="button"
                   onClick={() =>
-                    appendParent({ name: "", relation: "", phone: "", email: "" })
+                    appendParent({
+                      mode: "existing",
+                      parent_id: "",
+                      name: "",
+                      relation: "",
+                      phone: "",
+                      email: "",
+                    })
                   }
                   className="flex items-center gap-1.5 text-[13px] text-blue-500 hover:text-blue-600 w-fit transition-colors"
                 >
