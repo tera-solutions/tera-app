@@ -19,6 +19,7 @@ import { useStores } from "@tera/stores/useStores";
 import { BusinessService, UserService } from "@tera/modules";
 
 /* Import: pages */
+import Pagination from "_common/components/Pagination";
 import { IBusiness } from "pages/System/business/_interface";
 
 interface BusinessTableProps {
@@ -312,13 +313,14 @@ const BusinessTable = observer(
             data={tableData}
             scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
             loading={isPending || isDeleting}
-            pagination={{
-              onChange: handleChangePage,
-              total: totalItems,
-              current: currentPage,
-              pageSize: perPage,
-              pageSizeOptions: [20, 50, 100],
-            }}
+            pagination={false}
+          />
+          <Pagination
+            total={totalItems}
+            current={currentPage}
+            pageSize={perPage}
+            onChange={handleChangePage}
+            pageSizeOptions={[20, 50, 100]}
           />
         </div>
 
