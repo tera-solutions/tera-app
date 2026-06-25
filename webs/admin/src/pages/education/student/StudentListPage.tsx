@@ -16,8 +16,8 @@ import { useStores } from "@tera/stores/useStores";
 import { BranchService, LevelService } from "@tera/modules";
 
 /* Import: pages */
-import SortSelect from "_common/components/SortSelect";
-import FilterSelect from "_common/components/FilterSelect";
+import SearchBar from "_common/components/SearchBar";
+import StudentFilter from "./containers/StudentFilter";
 import StudentTable from "./containers/StudentTable";
 import StudentFormModal from "./StudentFormModal";
 
@@ -67,13 +67,6 @@ const StudentListPage = observer(() => {
     sort_dir: sortBy ? sortDir : undefined,
   };
 
-  const sortOptions = [
-    { value: "code", label: t("student.code") },
-    { value: "name", label: t("student.name") },
-    { value: "enrollment_date", label: t("student.enrollment_date") },
-    { value: "created_at", label: t("student.created_at") },
-  ];
-
   const handleStatusChange = (status: string) => {
     setActiveStatus(status);
     setParams((prev: any) => ({ ...prev, page: 1 }));
@@ -118,76 +111,44 @@ const StudentListPage = observer(() => {
         </div>
 
         {/* Search + quick filters row */}
-        <div className="grid grid-cols-2 gap-2 mb-3 xmd:flex xmd:flex-nowrap xmd:items-center">
-          {/* Search + Sắp xếp — mobile cùng 1 hàng; desktop tách ra (contents + order) */}
-          <div className="col-span-2 flex gap-2 items-center xmd:contents">
-            <div className="relative flex-1 min-w-0 xmd:flex-1 xmd:order-1">
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </span>
-              <input
-                value={keyword}
-                onChange={(e) => {
-                  setKeyword(e.target.value);
-                  setParams((p: any) => ({ ...p, page: 1 }));
-                }}
-                placeholder={t("student.search_placeholder")}
-                className="w-full h-9 border border-gray-300 rounded pl-8 pr-3 text-[13px] bg-white focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500"
-              />
-            </div>
-            <div className="shrink-0 xmd:order-4">
-              <SortSelect
-                options={sortOptions}
-                sortBy={sortBy}
-                sortDir={sortDir}
-                placeholder={t("student.sort_by")}
-                defaultDir="asc"
-                onChange={(sb, sd) => {
-                  setSortBy(sb);
-                  setSortDir(sd);
-                  setParams((p: any) => ({ ...p, page: 1 }));
-                }}
-              />
-            </div>
-          </div>
+        <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center">
+          <SearchBar
+            className="xmd:flex-1"
+            value={keyword}
+            placeholder={t("student.search_placeholder")}
+            onChange={(v) => {
+              setKeyword(v);
+              setParams((p: any) => ({ ...p, page: 1 }));
+            }}
+          />
 
-          {/* Trình độ dropdown */}
-          <FilterSelect
-            className="w-full xmd:w-auto xmd:min-w-[110px] xmd:order-2"
-            value={levelFilter}
-            placeholder={t("student.all_levels")}
-            options={levels.map((lv) => ({
+          <StudentFilter
+            levelOptions={levels.map((lv) => ({
               value: String(lv.id),
               label: lv.name,
             }))}
-            onChange={(v) => {
+            branchOptions={branches.map((b) => ({
+              value: String(b.id),
+              label: b.name,
+            }))}
+            level={levelFilter}
+            branch={branchFilter}
+            sortBy={sortBy}
+            sortDir={sortDir}
+            onLevelChange={(v) => {
               setLevelFilter(v);
               setParams((p: any) => ({ ...p, page: 1 }));
             }}
-          />
-
-          {/* Chi nhánh dropdown */}
-          <FilterSelect
-            className="w-full xmd:w-auto xmd:min-w-[150px] xmd:order-3"
-            value={branchFilter}
-            placeholder={t("common.all_branches")}
-            options={branches.map((branch) => ({
-              value: String(branch.id),
-              label: branch.name,
-            }))}
-            onChange={(v) => {
+            onBranchChange={(v) => {
               setBranchFilter(v);
               setParams((p: any) => ({ ...p, page: 1 }));
             }}
+            onSortChange={(sb, sd) => {
+              setSortBy(sb);
+              setSortDir(sd);
+              setParams((p: any) => ({ ...p, page: 1 }));
+            }}
           />
-
         </div>
 
         <StudentTable
