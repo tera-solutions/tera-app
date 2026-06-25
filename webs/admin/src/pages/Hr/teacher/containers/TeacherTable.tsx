@@ -3,13 +3,11 @@ import { ReactNode, useState } from "react";
 import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 import { PaginationProps, notification, DropdownItem, Modal } from "tera-dls";
 import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdown";
 
 /* Import: packages */
 import { TableTera } from "@tera/components/dof";
-import useConfirm from "@tera/commons/hooks/useConfirm";
 import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { IModalProps } from "@tera/commons/interfaces";
 import { TEACHER_PAGE_URL } from "@tera/commons/constants/url";
@@ -19,6 +17,7 @@ import { useStores } from "@tera/stores/useStores";
 import { TeacherService } from "@tera/modules";
 
 /* Import: pages */
+import Pagination from "_common/components/Pagination";
 import { ITeacher } from "pages/Hr/teacher/_interface";
 
 interface TeacherTableProps {
@@ -39,13 +38,8 @@ const TeacherTable = observer(
       advanced: t("teacher.skill_level_advanced"),
       expert: t("teacher.skill_level_expert"),
     };
-    const queryClient = useQueryClient();
-    const confirmDialog = useConfirm();
-
     const isMobile = useIsMobile();
     const { data, isPending } = TeacherService.useTeacherList({ params });
-    const { mutate: onDelete, isPending: isDeleting } =
-      TeacherService.useTeacherDelete();
     const { mutate: onSuspend, isPending: isSuspending } =
       TeacherService.useTeacherSuspend();
     const { mutate: onRestore, isPending: isRestoring } =
@@ -95,29 +89,6 @@ const TeacherTable = observer(
             }),
         },
       );
-    };
-
-    const handleDelete = (record: ITeacher) => {
-      confirmDialog.warning({
-        title: t("common.delete_confirm_title"),
-        content: t("common.delete_confirm_question"),
-        onOk: () =>
-          onDelete(
-            { id: record.id },
-            {
-              onSuccess: () => {
-                queryClient.invalidateQueries({
-                  queryKey: ["teacher", "list"],
-                });
-              },
-              onError: (error: any) => {
-                notification.error({
-                  message: error?.message || t("common.error_message"),
-                });
-              },
-            },
-          ),
-      });
     };
 
     const itemsAction = (record: ITeacher): DropdownItem[] => [
@@ -360,14 +331,15 @@ const TeacherTable = observer(
             columns={visibleColumns}
             data={tableData}
             scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
-            loading={isPending || isDeleting}
-            pagination={{
-              onChange: handleChangePage,
-              total: totalItems,
-              current: currentPage,
-              pageSize: perPage,
-              pageSizeOptions: [20, 50, 100],
-            }}
+            loading={isPending}
+            pagination={false}
+          />
+          <Pagination
+            total={totalItems}
+            current={currentPage}
+            pageSize={perPage}
+            onChange={handleChangePage}
+            pageSizeOptions={[20, 50, 100]}
           />
         </div>
 
@@ -377,7 +349,8 @@ const TeacherTable = observer(
           onCancel={() => setPendingStatus(null)}
           closeIcon={false}
           centered
-          width={500}
+          width={isMobile ? "92%" : 500}
+          className='max-w-[500px]!'
           footer={
             <div className='flex justify-end gap-2'>
               <button
