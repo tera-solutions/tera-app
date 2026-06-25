@@ -1,255 +1,335 @@
+import { observer } from "mobx-react-lite";
+import { useState } from "react";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
+
 import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
-import { yupResolver } from "@hookform/resolvers/yup";
-// import { useGoogleLogin } from '@react-oauth/google';
-
-import Template from "@tera/components/web/Template";
-import { CryptoJSAesEncrypt } from "@tera/commons/utils/hashHelper";
-import { throttle } from "lodash";
-import { useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import backgroundRightLogin from "@tera/themes/images/uiNew/bg-right-login.png";
-import teraLogo from "@tera/themes/images/uiNew/tera-logo.png";
-import PasswordIcon from "@tera/themes/images/Icons/PasswordIcon";
-import UserIcon from "@tera/themes/images/Icons/UserIcon";
-
-import {
-  Button,
-  Col,
-  EyeOutlined,
-  EyeSlashOutlined,
-  Form,
-  FormItem,
-  Input,
-  InputPassword,
-  notification,
-  updateQueryParams,
-} from "tera-dls";
-import * as yup from "yup";
 import { AuthApi } from "@tera/api/auth/auth";
 import { useStores } from "@tera/stores/useStores";
+import {
+  AcademicCapOutlined,
+  Button,
+  HeartOutlined,
+  LifebuoyOutlined,
+  notification,
+  ShieldCheckOutlined,
+} from "tera-dls";
 
-const schema = yup.object().shape({
-  username: yup.string().required("Vui lòng nhập tài khoản").trim(),
-  password: yup.string().required("Vui lòng nhâp mật khẩu").trim(),
-});
+import { tokenStorage } from "_common/constants/auth";
+import {
+  LoginFieldErrors,
+  validateLogin,
+  validateLoginField,
+} from "_common/validations/login";
 
-const Content = () => {
+import loginBg from "@/assets/login-bg.png";
+
+import InputEmail from "./components/InputEmail";
+import InputPassword from "./components/InputPassword";
+import RememberMe from "./components/RememberMe";
+
+const ERROR_MESSAGES = {
+  invalidCredentials: "Email hoặc mật khẩu không đúng",
+  locked: "Tài khoản đã bị khóa. Vui lòng liên hệ admin",
+  connection: "Lỗi kết nối. Vui lòng thử lại",
+  timeout: "Yêu cầu hết thời gian. Vui lòng thử lại",
+};
+
+const resolveErrorMessage = (error: any): string => {
+  if (error?.code === "ECONNABORTED" || /timeout/i.test(error?.message ?? "")) {
+    return ERROR_MESSAGES.timeout;
+  }
+
+  const status: number | undefined =
+    error?.response?.status ?? error?.data?.code ?? error?.status;
+
+  if (status === 401) return ERROR_MESSAGES.invalidCredentials;
+  if (status === 403) return ERROR_MESSAGES.locked;
+  if (typeof status === "number" && status >= 500) {
+    return ERROR_MESSAGES.connection;
+  }
+
+  if (!error?.response && error?.data == null) return ERROR_MESSAGES.connection;
+
+  const backendMsg =
+    (typeof error?.data?.msg === "string" && error.data.msg) ||
+    (typeof error?.data?.msg?.message === "string" && error.data.msg.message) ||
+    (typeof error?.data?.message === "string" && error.data.message);
+  return backendMsg || ERROR_MESSAGES.invalidCredentials;
+};
+
+const GoogleIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+    <path
+      fill="#FFC107"
+      d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.4 1 7.4 2.8l5.7-5.7C33.6 6.5 29.1 4.5 24 4.5 13.2 4.5 4.5 13.2 4.5 24S13.2 43.5 24 43.5 43.5 34.8 43.5 24c0-1.2-.1-2.3-.3-3.5z"
+    />
+    <path
+      fill="#FF3D00"
+      d="m6.3 14.7 6.6 4.8C14.7 16 19 13 24 13c2.8 0 5.4 1 7.4 2.8l5.7-5.7C33.6 6.5 29.1 4.5 24 4.5 16.3 4.5 9.7 8.9 6.3 14.7z"
+    />
+    <path
+      fill="#4CAF50"
+      d="M24 43.5c5.2 0 9.6-2 13-5.2l-6-5.1C29 35 26.6 35.9 24 35.9c-5.3 0-9.7-3.6-11.3-8.4l-6.6 5.1C9.6 39 16.2 43.5 24 43.5z"
+    />
+    <path
+      fill="#1976D2"
+      d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.4l6 5.1c-.4.4 6.3-4.6 6.3-14.5 0-1.2-.1-2.3-.3-3.5z"
+    />
+  </svg>
+);
+
+const MicrosoftIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 23 23" aria-hidden="true">
+    <path fill="#F25022" d="M0 0h11v11H0z" />
+    <path fill="#7FBA00" d="M12 0h11v11H12z" />
+    <path fill="#00A4EF" d="M0 12h11v11H0z" />
+    <path fill="#FFB900" d="M12 12h11v11H12z" />
+  </svg>
+);
+
+const FOOTER_ITEMS = [
+  {
+    icon: <ShieldCheckOutlined />,
+    title: "Bảo mật tuyệt đối",
+    desc: "Thông tin của bạn luôn được bảo vệ",
+  },
+  {
+    icon: <LifebuoyOutlined />,
+    title: "Hỗ trợ giáo viên 24/7",
+    desc: "Đội ngũ luôn sẵn sàng hỗ trợ bạn",
+  },
+  {
+    icon: <HeartOutlined />,
+    title: "Vì sự phát triển của học viên",
+    desc: "Đồng hành cùng giáo viên mỗi ngày",
+  },
+];
+
+const LoginFooter = () => (
+  <footer className="relative z-10 hidden shrink-0 text-white xmd:block">
+    <svg
+      className="absolute inset-0 h-full w-full"
+      viewBox="0 0 1440 160"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="loginFooterGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#27a6e7" />
+          <stop offset="100%" stopColor="#0b86cf" />
+        </linearGradient>
+      </defs>
+      <path
+        fill="url(#loginFooterGrad)"
+        d="M0,0 C480,64 960,64 1440,0 L1440,160 L0,160 Z"
+      />
+    </svg>
+
+    <div className="relative mx-auto flex max-w-6xl flex-col items-center justify-center gap-12 px-6 pb-5 pt-12 text-center sm:flex-row sm:gap-24 sm:pb-7 sm:pt-14">
+      {FOOTER_ITEMS.map((item) => (
+        <div key={item.title} className="flex items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 [&_svg]:h-5 [&_svg]:w-5">
+            {item.icon}
+          </span>
+          <div className="text-left leading-tight">
+            <p className="text-sm font-semibold">{item.title}</p>
+            <p className="text-xs text-white/70">{item.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </footer>
+);
+
+const Content = observer(() => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-    mode: "onChange",
-  });
-  const {
-    globalStore: { updateUser, updateAccessId },
+    globalStore: { authenticated, updateUser, updateAccessId },
   } = useStores();
 
-  const [visible, setVisible] = useState<boolean>(false);
-  const [errorAnimation, setErrorAnimation] = useState<boolean>(false);
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [errors, setErrors] = useState<LoginFieldErrors>({});
 
-  // const { authStore } = useStates();
+  const { mutate, isPending: isLoading } = useMutationLegacy({
+    mutationFn: (variables: { username: string; password: string }) =>
+      AuthApi.login(variables),
+    onSuccess: async (res: any) => {
+      const data = res?.data ?? {};
+      const accessToken = data.token ?? data.access_token ?? data.accessToken;
+      const refreshToken = data.refresh_token ?? data.refreshToken;
 
-  const navigate = useNavigate();
-  // const location = useLocation();
-  // const params: { [key: string]: any } = getQueryParams(location.search);
+      tokenStorage.saveTokens({
+        accessToken,
+        refreshToken,
+        remember: rememberMe,
+      });
 
-  const isError = !!errors?.username || !!errors?.password;
+      data.access_id && updateAccessId(data.access_id);
+      updateUser(data);
 
-  // const login = useGoogleLogin({
-  //   onSuccess: (tokenResponse) => console.log(tokenResponse.access_token),
-  // });
-
-  const handleError = useCallback(
-    throttle(() => {
-      setErrorAnimation(true);
-      const id = setTimeout(() => {
-        setErrorAnimation(false);
-        clearTimeout(id);
-      }, 600);
-    }, 600),
-    [isError, setErrorAnimation],
-  );
-  const { mutate, isLoading } = useMutationLegacy({
-    mutationFn: (variables) => AuthApi.login(variables),
-    onSuccess: (res) => {
-      res?.data?.access_id && updateAccessId(res?.data?.access_id);
-      if (!!res?.data?.verify_auth) {
-        setTimeout(() => {
-          navigate(`/auth/otp/${res?.data?.user?.id}`);
-        }, 200);
-      } else {
-        const bodyParams = {
-          access_id: res?.data?.access_id,
-        };
-        const queryParams = updateQueryParams({
-          client_id: "tera",
-          req: JSON.stringify(CryptoJSAesEncrypt(bodyParams)),
-        });
-        // setTimeout(() => {
-        //   navigate(`/auth/check-auth${queryParams}`);
-        // }, 10);
-
-        updateUser(res?.data);
-
-        setTimeout(() => {
-          navigate("/");
-        }, 200);
-
-        // if (params?.callback) {
-        //   // window.open(`${params?.callback}${queryParams}`, '_self');
-        //   // console.log('params?.callback', params?.callback);
-        // } else {
-        //   console.log('authStore?.redirect_url', authStore?.redirect_url);
-        //   navigate(
-        //     `${authStore?.redirect_url}/auth/check-auth${queryParams}`,
-        //   );
-
-        //   // window.open(
-        //   //   `${authStore?.redirect_url}/auth/check-auth${queryParams}`,
-        //   //   '_self',
-        //   // );
-        // }
+      try {
+        const profile = await AuthApi.getProfile();
+        const user = profile?.data?.user ?? profile?.data ?? profile;
+        updateUser({ user });
+      } catch {
+        // Profile is non-blocking for redirect; the store already holds the token.
       }
+
+      const returnUrl = searchParams.get("returnUrl");
+      navigate(returnUrl || "/dashboard", { replace: true });
     },
-
     onError: (error: any) => {
-      if (error?.data?.code === 501) {
-        notification.error({
-          message: error?.data?.msg,
-        });
-        return;
-      }
-      if (error?.data?.code === 403) {
-        notification.error({
-          message: error?.data?.msg,
-        });
-        return;
-      }
-
-      console.log("error", error);
-
-      const { field, message } = error?.data?.msg;
-
-      if (field && message) {
-        setError(field, {
-          type: "error",
-          message,
-        });
-        handleError();
-      }
+      notification.error({ message: resolveErrorMessage(error) });
     },
   });
 
-  const handleLogin = (values) => {
-    if (isLoading) return;
-    mutate(values);
+  const handleBlur = async (field: "identifier" | "password") => {
+    const message = await validateLoginField(field, { identifier, password });
+    setErrors((prev) => ({ ...prev, [field]: message }));
   };
 
+  const handleSubmit = async () => {
+    if (isLoading) return;
+    const fieldErrors = await validateLogin({ identifier, password });
+    setErrors(fieldErrors);
+    if (Object.keys(fieldErrors).length > 0) return;
+    mutate({ username: identifier.trim(), password });
+  };
+
+  if (authenticated) {
+    return (
+      <Navigate to={searchParams.get("returnUrl") || "/dashboard"} replace />
+    );
+  }
+
   return (
-    <Template>
-      <Col
-        className={`w-[476px] rounded-[30px] flex items-center ${
-          errorAnimation ? "animation-ring" : ""
-        }`}
-        style={{
-          background: `url(${backgroundRightLogin}), #BEE8EE80`,
-          backgroundSize: "50% cover",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <div className=" w-full px-[30px]">
-          <div className="mb-[60px] w-full flex justify-center">
-            <img src={teraLogo} className="w-[270px] h-[140px] " />
-          </div>
-          <Form onSubmit={handleSubmit(handleLogin, handleError)}>
-            <FormItem
-              name={"username"}
-              label=""
-              className="mb-5"
-              messages={errors?.username?.message}
-              isError={!!errors?.username}
-            >
-              <Input
-                maxLength={320}
-                autoFocus
-                placeholder="Vui lòng nhập tài khoản"
-                prefix={
-                  <div className="border-r-[2px] px-3 pr-4 border-r-gray-700">
-                    <UserIcon viewBox="0 0 23 23" width={23} height={23} />
-                  </div>
-                }
-                className="py-2.5 pl-[90px] text-xl text-white caret-white rounded-[10px] font-normal placeholder:text-[#FFFFFF4D] placeholder:text-base"
-                style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
-                {...register("username")}
-              />
-            </FormItem>
-            <FormItem
-              name={"password"}
-              label=""
-              messages={errors?.password?.message}
-              isError={!!errors?.password}
-            >
-              <InputPassword
-                maxLength={16}
-                placeholder="Vui lòng nhập mật khẩu"
-                prefix={
-                  <div className="border-r-[2px] border-r-gray-700 px-3 pr-4 grid place-items-center">
-                    <PasswordIcon viewBox="0 0 21 26" width={23} height={23} />
-                  </div>
-                }
-                className="bg-[#00000066] py-2.5 pl-[90px] text-xl text-white caret-white rounded-[10px] font-normal placeholder:text-[#FFFFFF4D] placeholder:text-base"
-                style={{ backgroundColor: "rgba(0, 0, 0, 0.25)" }}
-                suffixProps={{
-                  className: "[&>*:first-child]:h-auto [&>*:first-child]:mr-5",
-                }}
-                visibilityToggle={{ visible, onVisibleChange: setVisible }}
-                iconRender={(visible) => (
-                  <div className="text-gray-700">
-                    {visible ? (
-                      <EyeSlashOutlined
-                        onClick={() => setVisible(false)}
-                        className="w-6 h-6 cursor-pointer"
-                      />
-                    ) : (
-                      <EyeOutlined
-                        onClick={() => setVisible(true)}
-                        className="w-6 h-6 cursor-pointer"
-                      />
-                    )}
-                  </div>
-                )}
-                {...register("password")}
-              />
-            </FormItem>
-            <div className="mb-[20px]">
-              <span
-                className="text-[15px] cursor-pointer italic leading-[15px] "
-                style={{ color: "#005880" }}
-                onClick={() => {
-                  navigate("/auth/forgot-password");
-                }}
-              >
-                Quên mật khẩu?
+    <div className="relative flex h-dvh w-full flex-col overflow-hidden bg-[#F3F7FC]">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 z-0 hidden bg-contain bg-left bg-no-repeat xmd:block"
+        style={{ backgroundImage: `url(${loginBg})` }}
+      />
+      <div className="relative z-20 min-h-0 w-full flex-1 overflow-y-auto">
+        <div className="flex min-h-full items-center justify-center p-4 sm:p-6 xmd:justify-end xmd:pr-24!">
+          <div className="w-full max-w-[min(660px,100%)] rounded-3xl bg-white p-8 shadow-[0_8px_40px_rgba(15,23,42,0.08)] sm:p-12 lg:p-14">
+            <div className="mb-5 flex flex-col items-center text-center sm:mb-6">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand text-white [&_svg]:h-7 [&_svg]:w-7">
+                <AcademicCapOutlined />
+              </div>
+              <h1 className="text-2xl font-bold text-slate-800">Đăng nhập</h1>
+              <p className="mt-1 text-sm text-slate-500">
+                Chào mừng bạn trở lại với Hana Edu
+              </p>
+              <span className="mt-2 inline-block rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-brand">
+                Dành cho Giáo viên
               </span>
             </div>
-            <Button
-              htmlType="submit"
-              loading={isLoading}
-              className={
-                "bg-[#0095D9] w-full flex justify-center text-[#FFF] font-medium text-xl h-[50px] rounded-[10px] hover:bg-[#007fd9]"
-              }
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit();
+              }}
+              className="flex flex-col gap-4"
+              noValidate
             >
-              Đăng nhập
-            </Button>
-          </Form>
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                  Email hoặc số điện thoại
+                </label>
+                <InputEmail
+                  value={identifier}
+                  onChange={(v) => setIdentifier(v)}
+                  onBlur={() => handleBlur("identifier")}
+                  error={errors.identifier}
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                  Mật khẩu
+                </label>
+                <InputPassword
+                  value={password}
+                  onChange={(v) => setPassword(v)}
+                  onBlur={() => handleBlur("password")}
+                  onEnter={handleSubmit}
+                  error={errors.password}
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <RememberMe
+                  checked={rememberMe}
+                  onChange={setRememberMe}
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  disabled={isLoading}
+                  onClick={() => navigate("/auth/forgot-password")}
+                  className="text-sm font-medium text-brand hover:underline"
+                >
+                  Quên mật khẩu?
+                </button>
+              </div>
+
+              <Button
+                htmlType="submit"
+                loading={isLoading}
+                disabled={isLoading}
+                className="h-11 w-full justify-center rounded-xl bg-brand text-base font-medium text-white hover:bg-brand-dark"
+              >
+                Đăng nhập
+              </Button>
+            </form>
+
+            <div className="my-5 flex items-center gap-3 text-xs text-slate-400 sm:my-6">
+              <span className="h-px flex-1 bg-slate-200" />
+              hoặc đăng nhập bằng
+              <span className="h-px flex-1 bg-slate-200" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {/* TODO(OAuth): wire to Google OAuth route when implemented. */}
+              <button
+                type="button"
+                className="flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                <GoogleIcon />
+                Google
+              </button>
+              {/* TODO(OAuth): wire to Microsoft OAuth route when implemented. */}
+              <button
+                type="button"
+                className="flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                <MicrosoftIcon />
+                Microsoft
+              </button>
+            </div>
+
+            <p className="mt-5 text-center text-sm text-slate-500 sm:mt-6">
+              Chưa có tài khoản?{" "}
+              <Link
+                to="/auth/register"
+                className="font-medium text-brand hover:underline"
+              >
+                Đăng ký ngay
+              </Link>
+            </p>
+          </div>
         </div>
-      </Col>
-    </Template>
+      </div>
+
+      <LoginFooter />
+    </div>
   );
-};
+});
 
 export default Content;
