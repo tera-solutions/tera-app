@@ -19,6 +19,7 @@ import { useStores } from "@tera/stores/useStores";
 import { StudentService } from "@tera/modules";
 
 /* Import: pages */
+import Pagination from "_common/components/Pagination";
 import { IStudent } from "pages/education/student/_interface";
 
 const StudentTable = observer(
@@ -372,13 +373,14 @@ const StudentTable = observer(
             data={tableData}
             scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
             loading={isPending || isDeleting || isRestoring}
-            pagination={{
-              onChange: handleChangePage,
-              total: totalItems,
-              current: currentPage,
-              pageSize: perPage,
-              pageSizeOptions: [20, 50, 100],
-            }}
+            pagination={false}
+          />
+          <Pagination
+            total={totalItems}
+            current={currentPage}
+            pageSize={perPage}
+            onChange={handleChangePage}
+            pageSizeOptions={[20, 50, 100]}
           />
         </div>
 

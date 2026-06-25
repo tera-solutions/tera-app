@@ -1,79 +1,79 @@
 /* Import: library */
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useForm } from "react-hook-form";
-import { Row } from "tera-dls";
-
-/* Import: packages */
-import Filter from "@tera/components/web/Filter";
-import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
-import { Input } from "@tera/components/dof/Control";
-import { ListParams } from "@tera/commons/interfaces";
 
 /* Import: pages */
-import { IStudent } from "pages/education/student/_interface";
+import FilterSelect from "_common/components/FilterSelect";
+import SortSelect from "_common/components/SortSelect";
+
+interface Option {
+  value: string;
+  label: string;
+}
 
 interface StudentFilterProps {
-  open: boolean;
-  initialValue: ListParams<IStudent>;
-  onClose: () => void;
-  onFilter: (value: IStudent) => void;
+  levelOptions: Option[];
+  branchOptions: Option[];
+  level: string;
+  branch: string;
+  sortBy: string;
+  sortDir: "asc" | "desc";
+  onLevelChange: (value: string) => void;
+  onBranchChange: (value: string) => void;
+  onSortChange: (sortBy: string, sortDir: "asc" | "desc") => void;
 }
 
-function StudentFilter({
-  open,
-  onClose,
-  onFilter,
-  initialValue,
-}: StudentFilterProps) {
+/**
+ * Bộ lọc nhanh danh sách học viên (Trình độ + Chi nhánh + Sắp xếp).
+ * Inline — không phải drawer. Status tabs + search nằm ngoài (ở list page).
+ */
+const StudentFilter = ({
+  levelOptions,
+  branchOptions,
+  level,
+  branch,
+  sortBy,
+  sortDir,
+  onLevelChange,
+  onBranchChange,
+  onSortChange,
+}: StudentFilterProps) => {
   const { t } = useTranslation();
 
-  const form = useForm<IStudent>();
-
-  useEffect(() => {
-    form.reset(initialValue.filters);
-  }, [initialValue, form]);
-
-  const handleSubmitForm = (value: IStudent) => {
-    onFilter(value);
-    onClose();
-  };
-
-  const handleReset = () => {
-    const defaultValues: IStudent = {
-      code: undefined,
-      name: undefined,
-    };
-    form.reset(defaultValues);
-    onFilter(defaultValues);
-    onClose();
-  };
+  const sortOptions = [
+    { value: "code", label: t("student.code") },
+    { value: "name", label: t("student.name") },
+    { value: "enrollment_date", label: t("student.enrollment_date") },
+    { value: "created_at", label: t("student.created_at") },
+  ];
 
   return (
-    <Filter
-      open={open}
-      onClose={onClose}
-      onCancel={onClose}
-      onFilter={() => form.handleSubmit(handleSubmitForm)()}
-    >
-      <FormTera form={form} onSubmit={form.handleSubmit(handleSubmitForm)}>
-        <Row className="grid gap-y-0">
-          <FormTeraItem label={t("student.code")} name="code">
-            <Input placeholder={t("student.code")} />
-          </FormTeraItem>
-          <FormTeraItem label={t("student.name")} name="name">
-            <Input placeholder={t("student.name")} />
-          </FormTeraItem>
-        </Row>
-        <span
-          className="text-red-500 text-sm font-normal cursor-pointer"
-          onClick={handleReset}
-        >
-          {t("button.clear_filter")}
-        </span>
-      </FormTera>
-    </Filter>
+    <div className="flex flex-wrap items-center gap-2 xmd:flex-nowrap">
+      <FilterSelect
+        className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[110px]"
+        value={level}
+        placeholder={t("student.all_levels")}
+        options={levelOptions}
+        onChange={onLevelChange}
+      />
+      <FilterSelect
+        className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
+        value={branch}
+        placeholder={t("common.all_branches")}
+        options={branchOptions}
+        onChange={onBranchChange}
+      />
+      <div className="shrink-0">
+        <SortSelect
+          options={sortOptions}
+          sortBy={sortBy}
+          sortDir={sortDir}
+          placeholder={t("student.sort_by")}
+          defaultDir="asc"
+          onChange={onSortChange}
+        />
+      </div>
+    </div>
   );
-}
+};
 
 export default StudentFilter;
