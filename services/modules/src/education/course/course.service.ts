@@ -69,7 +69,8 @@ export const useUpsertCourse = () => {
       return CourseAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["course", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["course", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
