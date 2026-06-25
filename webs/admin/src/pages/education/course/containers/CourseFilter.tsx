@@ -25,9 +25,11 @@ interface CourseFilterProps {
 }
 
 const RANGE_INPUT =
-  "w-16 h-7 text-[13px] outline-none bg-transparent placeholder:text-gray-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
+  "h-7 text-[13px] outline-none bg-transparent placeholder:text-gray-300 flex-1 min-w-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 const DATE_INPUT =
-  "h-7 text-[13px] outline-none bg-transparent text-gray-700 [&::-webkit-calendar-picker-indicator]:opacity-60";
+  "h-7 text-[13px] outline-none bg-transparent text-gray-700 flex-1 min-w-0 [&::-webkit-calendar-picker-indicator]:opacity-60";
+const RANGE_BOX =
+  "w-full xmd:w-auto xmd:shrink-0 flex items-center gap-1 h-9 px-2 border border-gray-300 rounded bg-white min-w-0";
 
 /**
  * Bộ lọc nhanh danh sách khóa học:
@@ -53,7 +55,7 @@ const CourseFilter = ({
   return (
     <div className="flex flex-wrap items-center gap-2 xmd:flex-nowrap">
       {/* Thời lượng — number range */}
-      <div className="flex items-center gap-1 h-9 px-2 border border-gray-300 rounded bg-white shrink-0">
+      <div className={RANGE_BOX}>
         <span className="text-[12px] text-gray-400 shrink-0">
           {t("course.duration_label")}
         </span>
@@ -62,20 +64,20 @@ const CourseFilter = ({
           value={value.durationMin}
           placeholder={t("common.from")}
           onChange={(e) => onChange({ durationMin: e.target.value })}
-          className={RANGE_INPUT}
+          className={`${RANGE_INPUT} xmd:flex-none xmd:w-16`}
         />
-        <span className="text-gray-300">–</span>
+        <span className="text-gray-300 shrink-0">–</span>
         <input
           type="number"
           value={value.durationMax}
           placeholder={t("common.to")}
           onChange={(e) => onChange({ durationMax: e.target.value })}
-          className={RANGE_INPUT}
+          className={`${RANGE_INPUT} xmd:flex-none xmd:w-16`}
         />
       </div>
 
       {/* Giá/buổi — currency range */}
-      <div className="flex items-center gap-1 h-9 px-2 border border-gray-300 rounded bg-white shrink-0">
+      <div className={RANGE_BOX}>
         <span className="text-[12px] text-gray-400 shrink-0">
           {t("course.price_amount")}
         </span>
@@ -84,21 +86,21 @@ const CourseFilter = ({
           value={value.priceMin}
           placeholder={t("common.from")}
           onChange={(e) => onChange({ priceMin: e.target.value })}
-          className={`${RANGE_INPUT} w-20`}
+          className={`${RANGE_INPUT} xmd:flex-none xmd:w-20`}
         />
-        <span className="text-gray-300">–</span>
+        <span className="text-gray-300 shrink-0">–</span>
         <input
           type="number"
           value={value.priceMax}
           placeholder={t("common.to")}
           onChange={(e) => onChange({ priceMax: e.target.value })}
-          className={`${RANGE_INPUT} w-20`}
+          className={`${RANGE_INPUT} xmd:flex-none xmd:w-20`}
         />
         <span className="text-[12px] text-gray-400 shrink-0">₫</span>
       </div>
 
       {/* Người tạo — select user */}
-      <div className="flex-1 min-w-[160px] xmd:flex-none xmd:w-auto xmd:min-w-[170px]">
+      <div className="w-full xmd:flex-none xmd:w-auto xmd:min-w-[170px]">
         <UserSelect
           value={value.createdBy}
           selectedUser={value.selectedCreatedBy}
@@ -110,38 +112,38 @@ const CourseFilter = ({
         />
       </div>
 
-      {/* Ngày tạo — date range */}
-      <div className="flex items-center gap-1 h-9 px-2 border border-gray-300 rounded bg-white shrink-0">
-        <span className="text-[12px] text-gray-400 shrink-0">
-          {t("course.created_at")}
-        </span>
-        <input
-          type="date"
-          value={value.createdFrom}
-          title={t("common.from")}
-          onChange={(e) => onChange({ createdFrom: e.target.value })}
-          className={DATE_INPUT}
-        />
-        <span className="text-gray-300">–</span>
-        <input
-          type="date"
-          value={value.createdTo}
-          title={t("common.to")}
-          onChange={(e) => onChange({ createdTo: e.target.value })}
-          className={DATE_INPUT}
-        />
-      </div>
-
-      {/* Sắp xếp */}
-      <div className="shrink-0">
-        <SortSelect
-          options={sortOptions}
-          sortBy={sortBy}
-          sortDir={sortDir}
-          defaultDir="desc"
-          placeholder={t("course.sort_by")}
-          onChange={onSortChange}
-        />
+      {/* Ngày tạo + Sắp xếp — mobile: chung 1 hàng; desktop: tách inline */}
+      <div className="w-full flex items-center gap-2 xmd:contents">
+        <div className={RANGE_BOX}>
+          <span className="text-[12px] text-gray-400 shrink-0">
+            {t("course.created_at")}
+          </span>
+          <input
+            type="date"
+            value={value.createdFrom}
+            title={t("common.from")}
+            onChange={(e) => onChange({ createdFrom: e.target.value })}
+            className={DATE_INPUT}
+          />
+          <span className="text-gray-300 shrink-0">–</span>
+          <input
+            type="date"
+            value={value.createdTo}
+            title={t("common.to")}
+            onChange={(e) => onChange({ createdTo: e.target.value })}
+            className={DATE_INPUT}
+          />
+        </div>
+        <div className="shrink-0">
+          <SortSelect
+            options={sortOptions}
+            sortBy={sortBy}
+            sortDir={sortDir}
+            defaultDir="desc"
+            placeholder={t("course.sort_by")}
+            onChange={onSortChange}
+          />
+        </div>
       </div>
     </div>
   );
