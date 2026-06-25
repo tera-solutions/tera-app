@@ -17,6 +17,7 @@ import { BRANCH_PAGE_URL } from "@tera/commons/constants/url";
 import { BranchService, UserService } from "@tera/modules";
 
 /* Import: pages */
+import Pagination from "_common/components/Pagination";
 import { IBranch } from "pages/System/branch/_interface";
 
 interface BranchTableProps {
@@ -306,13 +307,14 @@ const BranchTable = ({ params, setParams, setModalData }: BranchTableProps) => {
           data={tableData}
           scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
           loading={isPending || isDeleting}
-          pagination={{
-            onChange: handleChangePage,
-            total: totalItems,
-            current: currentPage,
-            pageSize: perPage,
-            pageSizeOptions: [20, 50, 100],
-          }}
+          pagination={false}
+        />
+        <Pagination
+          total={totalItems}
+          current={currentPage}
+          pageSize={perPage}
+          onChange={handleChangePage}
+          pageSizeOptions={[20, 50, 100]}
         />
       </div>
 
@@ -322,7 +324,8 @@ const BranchTable = ({ params, setParams, setModalData }: BranchTableProps) => {
         onCancel={() => setPendingStatus(null)}
         closeIcon={false}
         centered
-        width={500}
+        width={isMobile ? "92%" : 500}
+        className="max-w-[500px]!"
         footer={
           <div className="flex justify-end gap-2">
             <button
