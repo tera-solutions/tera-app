@@ -14,9 +14,8 @@ import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { BranchService, TeacherService } from "@tera/modules";
 
 /* Import: pages */
-import UserSelect from "_common/components/UserSelect";
-import MultiSelect from "_common/components/MultiSelect";
-import FilterSelect from "_common/components/FilterSelect";
+import SearchTeacher from "./containers/SearchTeacher";
+import TeacherFilter from "./containers/TeacherFilter";
 import TeacherTable from "./containers/TeacherTable";
 import TeacherFormModal from "./TeacherFormModal";
 
@@ -120,94 +119,45 @@ const TeacherListPage = () => {
         </div>
 
         {/* Search + quick filters row */}
-        <div className='grid grid-cols-2 gap-2 mb-3 xmd:flex xmd:flex-nowrap xmd:items-center'>
-          {/* Search input */}
-          <div className='relative col-span-2 min-w-0 xmd:flex-1'>
-            <span className='absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400'>
-              <svg
-                className='w-4 h-4'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
-                />
-              </svg>
-            </span>
-            <input
-              value={keyword}
-              onChange={(e) => {
-                setKeyword(e.target.value);
-                setParams((p: any) => ({ ...p, page: 1 }));
-              }}
-              placeholder={t("teacher.search_placeholder")}
-              className='w-full h-9 border border-gray-300 rounded pl-8 pr-3 text-[13px] bg-white focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500'
-            />
-          </div>
-
-          {/* Loại GV dropdown */}
-          <FilterSelect
-            className='w-full xmd:w-auto xmd:min-w-[130px]'
-            value={typeFilter}
-            placeholder={t("teacher.all_types")}
-            options={[
-              { value: "part_time", label: t("teacher.type_part_time") },
-              { value: "full_time", label: t("teacher.type_full_time") },
-              { value: "assistant", label: t("teacher.type_assistant") },
-              { value: "freelancer", label: t("teacher.type_freelancer") },
-            ]}
+        <div className='flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center'>
+          <SearchTeacher
+            className='xmd:flex-1'
+            value={keyword}
             onChange={(v) => {
-              setTypeFilter(v);
-              setParams((p: any) => ({ ...p, page: 1 }));
-            }}
-          />
-
-          {/* Chi nhánh dropdown */}
-          <FilterSelect
-            className='w-full xmd:w-auto xmd:min-w-[150px]'
-            value={branchFilter}
-            placeholder={t("common.all_branches")}
-            options={branches.map((branch) => ({
-              value: String(branch.id),
-              label: branch.name,
-            }))}
-            onChange={(v) => {
-              setBranchFilter(v);
+              setKeyword(v);
               resetPage();
             }}
           />
 
-          {/* Người quản lý */}
-          <div className='w-full xmd:w-auto xmd:min-w-[170px] col-span-2 xmd:col-span-1'>
-            <UserSelect
-              value={managerFilter}
-              selectedUser={selectedManager}
-              placeholder={t("teacher.all_managers")}
-              allowClear
-              onChange={(id, user) => {
-                setManagerFilter(id);
-                setSelectedManager(user ?? null);
-                resetPage();
-              }}
-            />
-          </div>
-
-          {/* Chuyên môn (multi-select) */}
-          <div className='w-full xmd:w-auto xmd:min-w-[160px] col-span-2 xmd:col-span-1'>
-            <MultiSelect
-              options={skillOptions}
-              value={skillsFilter}
-              placeholder={t("teacher.all_skills")}
-              onChange={(vals) => {
-                setSkillsFilter(vals);
-                resetPage();
-              }}
-            />
-          </div>
+          <TeacherFilter
+            branchOptions={branches.map((branch) => ({
+              value: String(branch.id),
+              label: branch.name,
+            }))}
+            skillOptions={skillOptions}
+            type={typeFilter}
+            branch={branchFilter}
+            manager={managerFilter}
+            selectedManager={selectedManager}
+            skills={skillsFilter}
+            onTypeChange={(v) => {
+              setTypeFilter(v);
+              resetPage();
+            }}
+            onBranchChange={(v) => {
+              setBranchFilter(v);
+              resetPage();
+            }}
+            onManagerChange={(id, user) => {
+              setManagerFilter(id);
+              setSelectedManager(user ?? null);
+              resetPage();
+            }}
+            onSkillsChange={(vals) => {
+              setSkillsFilter(vals);
+              resetPage();
+            }}
+          />
         </div>
 
         <TeacherTable
