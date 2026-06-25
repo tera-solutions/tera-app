@@ -9,7 +9,6 @@ import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdow
 
 /* Import: packages */
 import { TableTera } from "@tera/components/dof";
-import useConfirm from "@tera/commons/hooks/useConfirm";
 import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { ITableProps } from "@tera/commons/interfaces";
 import { STUDENT_PAGE_URL } from "@tera/commons/constants/url";
@@ -26,14 +25,11 @@ const StudentTable = observer(
   ({ params, setParams, setModalData }: ITableProps<IStudent>) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const confirm = useConfirm();
     const queryClient = useQueryClient();
     const isMobile = useIsMobile();
     const { globalStore } = useStores();
 
     const { data, isPending } = StudentService.useStudentList({ params });
-    const { mutate: onDelete, isPending: isDeleting } =
-      StudentService.useStudentDelete();
     const { mutate: onSuspend, isPending: isSuspending } =
       StudentService.useStudentSuspend();
     const { mutate: onRestore, isPending: isRestoring } =
@@ -169,30 +165,6 @@ const StudentTable = observer(
             },
           ]
         : []),
-      {
-        key: "delete",
-        label: <span className='text-red-500'>{t("button.delete")}</span>,
-        onClick: () => {
-          confirm.warning({
-            title: t("common.delete_confirm_title"),
-            content: t("common.delete_confirm_question"),
-            onOk: () =>
-              onDelete(
-                { id: record?.id },
-                {
-                  onSuccess: () =>
-                    queryClient.invalidateQueries({
-                      queryKey: ["student", "list"],
-                    }),
-                  onError: (error: any) =>
-                    notification.error({
-                      message: error?.message || t("common.error_message"),
-                    }),
-                },
-              ),
-          });
-        },
-      },
     ];
 
     const HeaderTitle = ({ children }: { children: ReactNode }) => (
@@ -372,7 +344,7 @@ const StudentTable = observer(
             columns={columns}
             data={tableData}
             scroll={{ x: "max-content", y: "calc(100vh - 340px)" }}
-            loading={isPending || isDeleting || isRestoring}
+            loading={isPending || isRestoring}
             pagination={false}
           />
           <Pagination
@@ -393,7 +365,8 @@ const StudentTable = observer(
           onCancel={() => setPendingSuspend(null)}
           closeIcon={false}
           centered
-          width={500}
+          width={isMobile ? "92%" : 500}
+          className='max-w-[500px]!'
           footer={
             <div className='flex justify-end gap-2'>
               <button
