@@ -9,12 +9,30 @@ import RegisterPage from "pages/Auth/Register";
 import LoginPage from "pages/Auth/Login";
 
 import Dashboard from "pages/Dashboard";
+import Placeholder from "pages/Placeholder";
 
 import CheckAuth from "routers/CheckAuth";
 import MiddlewareRouter from "routers/MiddlewareRouter";
 
 import BasicLayout from "_common/components/Layout/BasicLayout";
+import { PATHS } from "_common/components/Layout/Menu/menus";
 import UnAuthLayout from "_common/components/Layout/UnAuthLayout";
+
+const PLACEHOLDER_PATHS = [
+  PATHS.classes,
+  PATHS.schedule,
+  PATHS.lessonPlans,
+  PATHS.homework,
+  PATHS.grading,
+  PATHS.attendance,
+  PATHS.students,
+  PATHS.reports,
+  PATHS.comments,
+  PATHS.notifications,
+  PATHS.messages,
+  PATHS.more,
+  PATHS.profile,
+];
 
 export const Routers = () => {
   return (
@@ -23,12 +41,15 @@ export const Routers = () => {
         path="/"
         element={
           <MiddlewareRouter>
-            <BasicLayout module="eshop" />
+            <BasicLayout />
           </MiddlewareRouter>
         }
       >
-        <Route index element={<Navigate to="/dashboard" />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route index element={<Navigate to={PATHS.dashboard} />} />
+        <Route path={PATHS.dashboard} element={<Dashboard />} />
+        {PLACEHOLDER_PATHS.map((path) => (
+          <Route key={path} path={path} element={<Placeholder />} />
+        ))}
       </Route>
 
       <Route

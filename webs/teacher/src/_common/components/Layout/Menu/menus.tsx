@@ -1,17 +1,31 @@
+import { ReactNode } from "react";
 import {
+  AcademicCapOutlined,
+  BellOutlined,
   BoltOutlined,
   BookmarkOutlined,
+  BookOpenOutlined,
   BuildingLibraryOutlined,
+  CalendarDaysOutlined,
+  ChartBarOutlined,
+  ChatBubbleLeftRightOutlined,
+  ChatBubbleOvalLeftOutlined,
   CircleStackOutlined,
+  ClipboardDocumentCheckOutlined,
   CogOutlined,
   DocumentDuplicateOutlined,
   DocumentOutlined,
+  DocumentTextOutlined,
   EllipsisHorizontalOutlined,
   HomeModernOutlined,
+  HomeOutlined,
   ListBulletOutlined,
+  PencilSquareOutlined,
   PrinterOutlined,
   RectangleGroupOutlined,
+  SquaresPlusOutlined,
   UserOutlined,
+  UsersOutlined,
   WrenchScrewdriverOutlined,
 } from "tera-dls";
 
@@ -210,3 +224,135 @@ export const moreMenu: TypeMoreMenu[] = [
 ];
 
 export const ConfigPrintRouter: IRouteProps[] = [];
+
+export const PATHS = {
+  dashboard: "/dashboard",
+  classes: "/classes",
+  schedule: "/schedule",
+  lessonPlans: "/lesson-plans",
+  homework: "/homework",
+  grading: "/grading",
+  attendance: "/attendance",
+  students: "/students",
+  reports: "/reports",
+  comments: "/comments",
+  notifications: "/notifications",
+  messages: "/messages",
+  more: "/more",
+  profile: "/profile",
+} as const;
+
+export interface MenuItem {
+  key: string;
+  title: string;
+  path: string;
+  icon: ReactNode;
+}
+
+export const MENU: MenuItem[] = [
+  {
+    key: "dashboard",
+    title: "Trang chủ",
+    path: PATHS.dashboard,
+    icon: <HomeOutlined />,
+  },
+  {
+    key: "classes",
+    title: "Lớp học",
+    path: PATHS.classes,
+    icon: <UsersOutlined />,
+  },
+  {
+    key: "schedule",
+    title: "Lịch dạy",
+    path: PATHS.schedule,
+    icon: <CalendarDaysOutlined />,
+  },
+  {
+    key: "lesson-plans",
+    title: "Giáo án",
+    path: PATHS.lessonPlans,
+    icon: <BookOpenOutlined />,
+  },
+  {
+    key: "homework",
+    title: "Bài tập",
+    path: PATHS.homework,
+    icon: <DocumentTextOutlined />,
+  },
+  {
+    key: "grading",
+    title: "Chấm bài",
+    path: PATHS.grading,
+    icon: <PencilSquareOutlined />,
+  },
+  {
+    key: "attendance",
+    title: "Điểm danh",
+    path: PATHS.attendance,
+    icon: <ClipboardDocumentCheckOutlined />,
+  },
+  {
+    key: "students",
+    title: "Học viên",
+    path: PATHS.students,
+    icon: <AcademicCapOutlined />,
+  },
+  {
+    key: "reports",
+    title: "Báo cáo",
+    path: PATHS.reports,
+    icon: <ChartBarOutlined />,
+  },
+  {
+    key: "comments",
+    title: "Nhận xét",
+    path: PATHS.comments,
+    icon: <ChatBubbleLeftRightOutlined />,
+  },
+  {
+    key: "notifications",
+    title: "Thông báo",
+    path: PATHS.notifications,
+    icon: <BellOutlined />,
+  },
+  {
+    key: "more",
+    title: "Khác",
+    path: PATHS.more,
+    icon: <SquaresPlusOutlined />,
+  },
+];
+
+export const BOTTOM_NAV: MenuItem[] = [
+  {
+    key: "dashboard",
+    title: "Trang chủ",
+    path: PATHS.dashboard,
+    icon: <HomeOutlined />,
+  },
+  {
+    key: "classes",
+    title: "Lớp học",
+    path: PATHS.classes,
+    icon: <UsersOutlined />,
+  },
+  {
+    key: "notifications",
+    title: "Thông báo",
+    path: PATHS.notifications,
+    icon: <BellOutlined />,
+  },
+  {
+    key: "messages",
+    title: "Tin nhắn",
+    path: PATHS.messages,
+    icon: <ChatBubbleOvalLeftOutlined />,
+  },
+  {
+    key: "profile",
+    title: "Cá nhân",
+    path: PATHS.profile,
+    icon: <UserOutlined />,
+  },
+];

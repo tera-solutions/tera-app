@@ -1,3 +1,32 @@
 @import "@tera/assets/styles/main.css";
 
 @source "./**/*.{ts,tsx}";
+
+@theme {
+  --color-brand: #0ea5e9;
+  --color-brand-dark: #0284c7;
+
+  --spacing-sidebar: 240px;
+  --spacing-sidebar-collapsed: 72px;
+  --spacing-topbar: 64px;
+  --spacing-bottomnav: 64px;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  label[for],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [role="button"][aria-disabled="true"],
+  input:disabled,
+  select:disabled {
+    cursor: not-allowed;
+  }
+}

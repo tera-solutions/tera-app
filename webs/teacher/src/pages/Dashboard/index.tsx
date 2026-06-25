@@ -1,249 +1,548 @@
-import DefaultImage from "@tera/components/web/DefaultImage";
-import Icon from "@tera/components/web/Icon";
+import { ReactNode } from "react";
+import { observer } from "mobx-react-lite";
 import {
-  BTN_PRIMARY,
-  BTN_PRIMARY_LIGHT,
-  HEADING_CLASS_NAME,
-  TITLE_CLASS_NAME,
-} from "@tera/commons/constants/common";
-import TableTera from "@tera/components/dof/TableTera";
-import { useNavigate } from "react-router-dom";
-import ImageNonVerified from "@tera/themes/images/pages/dashboard/non-verified.png";
-import ImageLevel1 from "@tera/themes/images/pages/package/level-1.png";
-import { Button, Col, formatCurrency, formatNumber, Row } from "tera-dls";
+  AcademicCapOutlined,
+  ArrowRightOnRectangleOutlined,
+  ArrowTrendingUpOutlined,
+  BellOutlined,
+  BookOpenOutlined,
+  CalendarDaysOutlined,
+  ChartBarOutlined,
+  ChatBubbleLeftRightOutlined,
+  ClipboardDocumentCheckOutlined,
+  DocumentTextOutlined,
+  PencilSquareOutlined,
+  SquaresPlusOutlined,
+  UsersOutlined,
+} from "tera-dls";
 
-const Dashboard = () => {
-  const navigate = useNavigate();
-  const columns = [
-    {
-      title: "Hình ảnh",
-      dataIndex: "image",
-      render: (image) => (
-        <DefaultImage src={image} alt="image" className="rounded w-10 h-10" />
-      ),
-    },
-    {
-      title: "Tên sản phẩm",
-      dataIndex: "name",
-    },
-    {
-      title: "Danh mục",
-      dataIndex: "category",
-    },
-    {
-      title: "Số lượng bánh",
-      dataIndex: "quantity",
-      render: (quantity) => formatNumber(quantity),
-    },
-    {
-      title: "Giá",
-      dataIndex: "price",
-      render: (price) => formatCurrency(price),
-    },
-    {
-      title: "Doanh thu",
-      dataIndex: "revenue",
-      render: (revenue) => formatCurrency(revenue),
-    },
-  ];
+import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
+import { AuthApi } from "@tera/api/auth/auth";
+import { useStores } from "@tera/stores/useStores";
+
+import { PATHS } from "_common/components/Layout/Menu/menus";
+import { HERO_GRADIENT } from "_common/constants/dashboard";
+import { tokenStorage } from "_common/constants/auth";
+import { useStates } from "_common/hooks/useStates";
+import { getUserDisplay } from "_common/utils/user";
+
+import DashboardCard from "./components/DashboardCard";
+import QuickActionCard from "./components/QuickActionCard";
+import StatCard from "./components/StatCard";
+import {
+  ATTENDANCE_SUMMARY,
+  COMPLETION_RATE,
+  GRADING_QUEUE,
+  HOMEROOM_CLASSES,
+  MY_CLASSES,
+  NOTIFICATIONS,
+  RECENT_LESSON_PLANS,
+  STATS,
+  STUDENTS,
+  TODAY_SCHEDULE,
+  TODOS,
+  type ClassItem,
+  type ScheduleItem,
+  type TodoItem,
+} from "./mock";
+
+const STAT_ICONS: Record<string, ReactNode> = {
+  students: <AcademicCapOutlined />,
+  classes: <UsersOutlined />,
+  sessions: <CalendarDaysOutlined />,
+  completion: <ChartBarOutlined />,
+};
+
+const STAT_ICON_STYLES: Record<string, string> = {
+  students: "bg-sky-50 text-sky-500",
+  classes: "bg-emerald-50 text-emerald-500",
+  sessions: "bg-violet-50 text-violet-500",
+  completion: "bg-amber-50 text-amber-500",
+};
+
+const QUICK_ACTIONS = [
+  {
+    label: "Điểm danh",
+    icon: <ClipboardDocumentCheckOutlined />,
+    to: PATHS.attendance,
+    iconClassName: "bg-sky-50 text-sky-500",
+  },
+  {
+    label: "Nhập điểm",
+    icon: <PencilSquareOutlined />,
+    to: PATHS.grading,
+    iconClassName: "bg-emerald-50 text-emerald-500",
+  },
+  {
+    label: "Bài tập",
+    icon: <DocumentTextOutlined />,
+    to: PATHS.homework,
+    badge: 3,
+    iconClassName: "bg-orange-50 text-orange-500",
+  },
+  {
+    label: "Nhận xét",
+    icon: <ChatBubbleLeftRightOutlined />,
+    to: PATHS.comments,
+    iconClassName: "bg-violet-50 text-violet-500",
+  },
+  {
+    label: "Lịch dạy",
+    icon: <CalendarDaysOutlined />,
+    to: PATHS.schedule,
+    iconClassName: "bg-sky-50 text-sky-500",
+  },
+  {
+    label: "Giáo án",
+    icon: <BookOpenOutlined />,
+    to: PATHS.lessonPlans,
+    iconClassName: "bg-rose-50 text-rose-500",
+  },
+  {
+    label: "Báo cáo",
+    icon: <ChartBarOutlined />,
+    to: PATHS.reports,
+    iconClassName: "bg-amber-50 text-amber-500",
+  },
+  {
+    label: "Khác",
+    icon: <SquaresPlusOutlined />,
+    to: PATHS.more,
+    iconClassName: "bg-slate-100 text-slate-500",
+  },
+];
+
+const TODO_TONES: Record<TodoItem["tone"], string> = {
+  sky: "bg-sky-50 text-sky-600",
+  amber: "bg-amber-50 text-amber-600",
+  violet: "bg-violet-50 text-violet-600",
+  rose: "bg-rose-50 text-rose-600",
+};
+
+const ProgressRing = ({ value }: { value: number }) => {
+  const radius = 42;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (value / 100) * circumference;
   return (
-    <div className="p-6">
-      <h1 className={HEADING_CLASS_NAME}>Bảng điều khiển</h1>
-      <div className="flex flex-col gap-8">
-        <Row className="grid-cols-4 gap-8">
-          <div className="flex gap-2.5 justify-between p-6 rounded-xl bg-blue-100">
-            <div>
-              <p className="text-xl">Các sản phẩm</p>
-              <p className="leading-[60px] text-[24px] text-gray-700">10</p>
-            </div>
-            <div className="w-[55px] h-[55px] rounded-full shadow-inner	flex">
-              <Icon.IconBox className="m-auto" />
-            </div>
-          </div>
-          <div className="flex gap-2.5 justify-between p-6 rounded-xl bg-green-100">
-            <div>
-              <p className="text-xl">Tổng đơn hàng</p>
-              <p className="leading-[60px] text-[24px] text-gray-700">10</p>
-            </div>
-            <div className="w-[55px] h-[55px] rounded-full shadow-inner	flex">
-              <Icon.IconDocument className="m-auto" />
-            </div>
-          </div>
-          <div className="flex gap-2.5 justify-between p-6 rounded-xl bg-yellow-100">
-            <div>
-              <p className="text-xl">Xếp hạng</p>
-              <p className="leading-[60px] text-[24px] text-gray-700">5</p>
-            </div>
-            <div className="w-[55px] h-[55px] rounded-full shadow-inner	flex">
-              <Icon.IconStar className="w-8 h-8 text-yellow-500 m-auto" />
-            </div>
-          </div>
-          <div className="flex gap-2.5 justify-between p-6 rounded-xl bg-pink-100">
-            <div>
-              <p className="text-xl">Tổng doanh số </p>
-              <p className="leading-[60px] text-[24px] text-gray-700">10 M</p>
-            </div>
-            <div className="w-[55px] h-[55px] rounded-full shadow-inner	flex">
-              <Icon.IconGrow className="w-8 h-8 text-pink-500 m-auto" />
-            </div>
-          </div>
-        </Row>
-        <div className="flex bg-gray-100 rounded-md px-6 py-5 gap-8">
-          <div className="shrink-0">
-            <p className="text-[#343C6A] text-3xl">Đơn hàng</p>
-            <p className="font-light text-main">Tháng này </p>
-          </div>
-          <Row className="flex-1 grid-cols-4 gap-5">
-            <Col className="flex items-center justify-center gap-5">
-              <Icon.IconCartPlus />
-              <div>
-                <p className="font-light">Đơn hàng mới</p>
-                <p className="text-main text-3xl">999</p>
-              </div>
-            </Col>
-            <Col className="flex items-center justify-center gap-5">
-              <Icon.IconDocumentX className="w-8 h-8" />
-              <div>
-                <p className="font-light">Đã hủy</p>
-                <p className="text-main text-3xl">12</p>
-              </div>
-            </Col>
-            <Col className="flex items-center justify-center gap-5">
-              <Icon.IconTrunc className="w-8 h-8" />
-              <div>
-                <p className="font-light">Đang giao hàng</p>
-                <p className="text-main text-3xl">60</p>
-              </div>
-            </Col>
-            <Col className="flex items-center justify-center gap-5">
-              <Icon.IconDocumentCheck className="w-8 h-8" />
-              <div>
-                <p className="font-light">Đã giao hàng </p>
-                <p className="text-main text-3xl">98</p>
-              </div>
-            </Col>
-          </Row>
-        </div>
-        <Row className="grid-cols-4 gap-8">
-          <Col className="flex flex-col gap-8">
-            <div className="p-4 rounded-md bg-gray-100">
-              <p className={TITLE_CLASS_NAME}>Gói đã mua</p>
-              <div className="flex items-center gap-8 mt-3">
-                <img src={ImageLevel1} alt="level-1" />
-                <div className="flex flex-col gap-2.5">
-                  <p className="text-blue-500">
-                    Gói hiện tại:{" "}
-                    <span className="font-semibold">Shop Bạc</span>
-                  </p>
-                  <ul className="leading-5">
-                    <li>Giới hạn Tải lên Sản phẩm: 50 lần</li>
-                    <li>
-                      Gói hết hạn vào lúc:{" "}
-                      <span className="text-yellow-500">dd/mm/yyyy</span>
-                    </li>
-                  </ul>
-                  <Button className={BTN_PRIMARY_LIGHT}>Gói nâng cấp</Button>
-                </div>
-              </div>
-            </div>
-            <div className="p-4 rounded-md bg-gray-100 flex flex-col items-center">
-              <img src={ImageNonVerified} alt="non-verified" />
-              <Button className={BTN_PRIMARY}>Xác minh ngay</Button>
-            </div>
-          </Col>
-          <Col className="shadow col-span-3 p-4 rounded-md h-full w-full bg-gradient-to-b from-[#C0F5FF4D] to-[#B2DAE600]">
-            <div className="mb-8 flex items-center justify-between">
-              <div>
-                <p className="text-[#343C6A] font-light text-2xl">
-                  Thống kê SL đơn hàng theo trạng thái đơn bán hàng
-                </p>
-                <p className="text-xs text-gray-500">dd/mm/yyyy - dd/mm/yyyy</p>
-              </div>
-            </div>
-          </Col>
-        </Row>
-        <Row className="grid-cols-4 gap-x-8">
-          <Col className="py-8 px-7 flex flex-col gap-3 bg-indigo-100 rounded-md">
-            <p className={TITLE_CLASS_NAME}>Số lượng đã bán</p>
-            <div className="text-[#1B1B28]">
-              <p>Số tiền đã bán của bạn (tháng hiện tại)</p>
-              <p className="text-main text-2xl leading-[60px]">100 M</p>
-            </div>
-            <p className="text-[#1B1B28]">Tháng trước: 990,000 đ</p>
-          </Col>
-          <Row className="col-span-3 grid-cols-4 items-center gap-8">
-            <Col className="p-6 rounded-md bg-blue-100 h-max flex flex-col items-center gap-3 cursor-pointer">
-              <p className="font-light text-main text-2xl">Rút tiền</p>
-              <Icon.IconTrashCurrency />
-            </Col>
-            <Col className="p-6 rounded-md bg-blue-100 h-max flex flex-col items-center gap-3 cursor-pointer">
-              <p className="font-light text-main text-2xl">
-                Thêm sản phẩm mới{" "}
-              </p>
-              <Icon.IconBoxThin />
-            </Col>
-            <Col className="p-6 rounded-md bg-blue-100 h-max flex flex-col items-center gap-3 cursor-pointer">
-              <p className="font-light text-main text-2xl">Cài đặt cửa hàng</p>
-              <Icon.IconStore />
-            </Col>
-            <Col className="p-6 rounded-md bg-blue-100 h-max flex flex-col items-center gap-3 cursor-pointer">
-              <p className="font-light text-main text-2xl">
-                Cài đặt thanh toán
-              </p>
-              <Icon.IconCreditCard />
-            </Col>
-          </Row>
-        </Row>
-        <Row className="grid-cols-4 gap-x-8">
-          <Col className="py-8 px-7 flex flex-col gap-3 bg-indigo-100 rounded-md">
-            <p className={TITLE_CLASS_NAME}>Top danh mục sản phẩm</p>
-            <div className="mt-10 pr-1">
-              <div className="flex justify-between items-center py-2.5 gap-2.5 [&:not(:last-child)]:border-b">
-                <p>Tên danh mục sản phẩm</p>
-                <p>5</p>
-              </div>
-              <div className="flex justify-between items-center py-2.5 gap-2.5 [&:not(:last-child)]:border-b">
-                <p>Tên danh mục sản phẩm</p>
-                <p>5</p>
-              </div>
-              <div className="flex justify-between items-center py-2.5 gap-2.5 [&:not(:last-child)]:border-b">
-                <p>Tên danh mục sản phẩm</p>
-                <p>5</p>
-              </div>
-              <div className="flex justify-between items-center py-2.5 gap-2.5 [&:not(:last-child)]:border-b">
-                <p>Tên danh mục sản phẩm</p>
-                <p>5</p>
-              </div>
-            </div>
-          </Col>
-          <Col className="col-span-3 py-6 px-4 flex flex-col gap-3 bg-gray-100 rounded-md">
-            <p className={TITLE_CLASS_NAME}>10 sản phẩm hàng đầu</p>
-            <TableTera
-              columns={columns}
-              data={[
-                {
-                  image: "https://picsum.photos/200",
-                  name: "Tên sản phẩm",
-                  category: "Danh mục",
-                  quantity: 100,
-                  price: 100000,
-                  revenue: 10000,
-                },
-                {
-                  image: "https://picsum.photos/200",
-                  name: "Tên sản phẩm",
-                  category: "Danh mục",
-                  quantity: 100,
-                  price: 100000,
-                  revenue: 10000,
-                },
-              ]}
-            />
-          </Col>
-        </Row>
+    <div className="relative h-28 w-28 shrink-0">
+      <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
+        <circle
+          cx="50"
+          cy="50"
+          r={radius}
+          fill="none"
+          stroke="#E2E8F0"
+          strokeWidth="8"
+        />
+        <circle
+          cx="50"
+          cy="50"
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          className="text-brand"
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-2xl font-bold text-slate-800">{value}%</span>
+        <span className="text-[10px] text-slate-400">Hoàn thành</span>
       </div>
     </div>
   );
 };
+
+const ScheduleRow = ({ item }: { item: ScheduleItem }) => (
+  <div className="flex items-center gap-3 py-2.5">
+    <div className="w-14 shrink-0 text-center">
+      <p className="text-sm font-semibold text-slate-800">{item.time}</p>
+      <p className="text-[11px] text-slate-400">{item.endTime}</p>
+    </div>
+    <span
+      className={`h-9 w-1 rounded-full ${
+        item.status === "done" ? "bg-slate-200" : "bg-brand"
+      }`}
+    />
+    <div className="min-w-0 flex-1">
+      <p className="truncate text-sm font-medium text-slate-800">
+        {item.className}
+      </p>
+      <p className="truncate text-xs text-slate-400">{item.room}</p>
+    </div>
+    <span
+      className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${
+        item.status === "done"
+          ? "bg-emerald-50 text-emerald-600"
+          : "bg-sky-50 text-sky-600"
+      }`}
+    >
+      {item.status === "done" ? "Đã dạy" : "Sắp diễn ra"}
+    </span>
+  </div>
+);
+
+const ClassRow = ({ item }: { item: ClassItem }) => (
+  <div className="flex items-center gap-3 py-2.5">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sm font-semibold text-brand">
+      {item.level.slice(0, 1)}
+    </div>
+    <div className="min-w-0 flex-1">
+      <p className="truncate text-sm font-medium text-slate-800">{item.name}</p>
+      <p className="text-xs text-slate-400">{item.students} học viên</p>
+    </div>
+  </div>
+);
+
+const TodoRow = ({ item }: { item: TodoItem }) => (
+  <div className="flex items-center justify-between py-2.5">
+    <div className="flex items-center gap-3">
+      <span className={`h-2.5 w-2.5 rounded-full ${TODO_TONES[item.tone]}`} />
+      <span className="text-sm text-slate-700">{item.label}</span>
+    </div>
+    <span
+      className={`flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-xs font-semibold ${TODO_TONES[item.tone]}`}
+    >
+      {item.count}
+    </span>
+  </div>
+);
+
+const NotificationList = () => (
+  <div className="divide-y divide-slate-100">
+    {NOTIFICATIONS.map((n) => (
+      <div key={n.id} className="flex items-start gap-3 py-2.5">
+        <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-brand [&_svg]:h-4 [&_svg]:w-4">
+          <BellOutlined />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium text-slate-800">
+            {n.title}
+          </p>
+          <p className="text-xs text-slate-400">{n.time}</p>
+        </div>
+        {n.unread && (
+          <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-red-500" />
+        )}
+      </div>
+    ))}
+  </div>
+);
+
+const StudentsCard = () => (
+  <DashboardCard
+    title="Học viên"
+    icon={<AcademicCapOutlined />}
+    actionLabel="Tổng số"
+  >
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-3xl font-bold text-slate-800">72</p>
+        <p className="text-xs text-slate-400">học viên đang theo học</p>
+      </div>
+      <div className="flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-600 [&_svg]:h-4 [&_svg]:w-4">
+        <ArrowTrendingUpOutlined />
+        8%
+      </div>
+    </div>
+    <div className="mt-3 flex -space-x-2">
+      {STUDENTS.map((s) => (
+        <span
+          key={s.id}
+          title={s.name}
+          className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-sky-100 text-xs font-semibold text-sky-600"
+        >
+          {s.name.slice(0, 1)}
+        </span>
+      ))}
+      <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-slate-100 text-xs font-semibold text-slate-500">
+        +68
+      </span>
+    </div>
+  </DashboardCard>
+);
+
+const Dashboard = observer(() => {
+  const {
+    globalStore: { user, clear },
+  } = useStores();
+  const {
+    commonStore: { clear: clearCommon },
+  } = useStates();
+  const { name, role, initials } = getUserDisplay(user);
+
+  // Same logout workflow as the admin portal (AuthApi.logout + clear stores);
+  // route guards handle the redirect to login.
+  const handleLogoutCleanup = () => {
+    clear();
+    clearCommon();
+    tokenStorage.clearTokens();
+  };
+
+  const { mutate: onLogout } = useMutationLegacy({
+    mutationFn: AuthApi.logout,
+    onSuccess: handleLogoutCleanup,
+    onError: handleLogoutCleanup,
+  });
+
+  return (
+    <>
+      {/* ===================== MOBILE ===================== */}
+      <div className="xmd:hidden">
+        <div className={`${HERO_GRADIENT} rounded-b-[30%] px-4 pr-10 pb-20 pt-10 text-white`}>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-lg font-bold">Hana Edu ⭐</p>
+              <p className="text-sm font-medium">Xin chào, {name} 👋</p>
+              <p className="mt-0.5 text-xs text-white/80">
+                Chúc cô một ngày dạy học hiệu quả!
+              </p>
+            </div>
+            <div className="relative shrink-0">
+              <div className="h-16 w-16 overflow-hidden rounded-full border-[3px] border-white bg-sky-100 shadow-sm">
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="flex h-full w-full items-center justify-center text-xl font-bold text-brand">
+                    {initials}
+                  </span>
+                )}
+              </div>
+              <span className="absolute -bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-white px-2.5 py-1 shadow-md">
+                <AcademicCapOutlined className="h-3.5 w-3.5 text-brand" />
+                <span className="text-[11px] font-semibold text-brand">
+                  {role}
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="-mt-18 flex flex-col gap-4 px-4 pt-4">
+          <DashboardCard
+            title="Lịch dạy hôm nay"
+            icon={<CalendarDaysOutlined />}
+            actionLabel="Xem tất cả"
+          >
+            <div className="divide-y divide-slate-100">
+              {TODAY_SCHEDULE.map((item) => (
+                <ScheduleRow key={item.id} item={item} />
+              ))}
+            </div>
+          </DashboardCard>
+
+          <div className="grid grid-cols-4 gap-3">
+            {QUICK_ACTIONS.map((action) => (
+              <QuickActionCard key={action.label} {...action} />
+            ))}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <DashboardCard title="Lớp chủ nhiệm" icon={<UsersOutlined />}>
+              <p className="text-3xl font-bold text-slate-800">3</p>
+              <p className="text-xs text-slate-400">
+                {HOMEROOM_CLASSES.map((c) => c.name).join(" · ")}
+              </p>
+            </DashboardCard>
+            <StudentsCard />
+          </div>
+
+          <DashboardCard
+            title="Việc cần làm"
+            icon={<ClipboardDocumentCheckOutlined />}
+          >
+            <div className="divide-y divide-slate-100">
+              {TODOS.map((item) => (
+                <TodoRow key={item.id} item={item} />
+              ))}
+            </div>
+          </DashboardCard>
+
+          <DashboardCard
+            title="Thông báo mới"
+            icon={<BellOutlined />}
+            actionLabel="Xem tất cả"
+          >
+            <NotificationList />
+          </DashboardCard>
+        </div>
+      </div>
+
+      {/* ===================== DESKTOP ===================== */}
+      <div className="hidden xmd:block p-6">
+        <div className="grid grid-cols-4 gap-5">
+          {STATS.map((stat) => (
+            <StatCard
+              key={stat.key}
+              value={stat.value}
+              label={stat.label}
+              icon={STAT_ICONS[stat.key]}
+              iconClassName={STAT_ICON_STYLES[stat.key]}
+            />
+          ))}
+        </div>
+
+        <div className="mt-5 grid grid-cols-4 gap-5">
+          <DashboardCard
+            className="col-span-2"
+            title="Lịch dạy hôm nay"
+            icon={<CalendarDaysOutlined />}
+            actionLabel="Xem tất cả"
+          >
+            <div className="divide-y divide-slate-100">
+              {TODAY_SCHEDULE.map((item) => (
+                <ScheduleRow key={item.id} item={item} />
+              ))}
+            </div>
+          </DashboardCard>
+
+          <DashboardCard
+            title="Điểm danh"
+            icon={<ClipboardDocumentCheckOutlined />}
+          >
+            <p className="text-3xl font-bold text-slate-800">
+              {ATTENDANCE_SUMMARY.present}
+              <span className="text-base font-normal text-slate-400">
+                /{ATTENDANCE_SUMMARY.total}
+              </span>
+            </p>
+            <p className="text-xs text-slate-400">Có mặt hôm nay</p>
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+              <div
+                className="h-full rounded-full bg-brand"
+                style={{ width: `${ATTENDANCE_SUMMARY.rate}%` }}
+              />
+            </div>
+            <p className="mt-2 text-xs font-medium text-emerald-600">
+              Tỷ lệ {ATTENDANCE_SUMMARY.rate}%
+            </p>
+          </DashboardCard>
+
+          <DashboardCard
+            title="Thông báo mới"
+            icon={<BellOutlined />}
+            actionLabel="Xem tất cả"
+          >
+            <NotificationList />
+          </DashboardCard>
+
+          <DashboardCard
+            title="Bài tập cần chấm"
+            icon={<DocumentTextOutlined />}
+            actionLabel="Xem tất cả"
+          >
+            <div className="divide-y divide-slate-100">
+              {GRADING_QUEUE.map((g) => (
+                <div
+                  key={g.id}
+                  className="flex items-center justify-between py-2.5"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-slate-800">
+                      {g.className}
+                    </p>
+                    <p className="text-xs text-slate-400">{g.task}</p>
+                  </div>
+                  <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-orange-50 px-2 text-xs font-semibold text-orange-600">
+                    {g.count}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </DashboardCard>
+
+          <DashboardCard
+            title="Tiến độ học tập"
+            icon={<ChartBarOutlined />}
+            bodyClassName="flex items-center gap-4"
+          >
+            <ProgressRing value={COMPLETION_RATE} />
+            <ul className="flex-1 space-y-2 text-sm">
+              <li className="flex items-center justify-between">
+                <span className="text-slate-500">Đã hoàn thành</span>
+                <span className="font-semibold text-slate-800">85%</span>
+              </li>
+              <li className="flex items-center justify-between">
+                <span className="text-slate-500">Đang học</span>
+                <span className="font-semibold text-slate-800">10%</span>
+              </li>
+              <li className="flex items-center justify-between">
+                <span className="text-slate-500">Chưa bắt đầu</span>
+                <span className="font-semibold text-slate-800">5%</span>
+              </li>
+            </ul>
+          </DashboardCard>
+
+          <DashboardCard
+            title="Giáo án gần đây"
+            icon={<BookOpenOutlined />}
+            actionLabel="Xem tất cả"
+          >
+            <div className="divide-y divide-slate-100">
+              {RECENT_LESSON_PLANS.map((lp) => (
+                <div
+                  key={lp.id}
+                  className="flex items-center justify-between py-2.5"
+                >
+                  <p className="min-w-0 truncate text-sm font-medium text-slate-800">
+                    {lp.name}
+                  </p>
+                  <span className="shrink-0 text-xs text-slate-400">
+                    {lp.updatedAt}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </DashboardCard>
+
+          <DashboardCard
+            title="Lớp học của tôi"
+            icon={<UsersOutlined />}
+            actionLabel="Xem tất cả"
+          >
+            <div className="divide-y divide-slate-100">
+              {MY_CLASSES.map((item) => (
+                <ClassRow key={item.id} item={item} />
+              ))}
+            </div>
+          </DashboardCard>
+
+          <DashboardCard
+            title="Lịch dạy tuần này"
+            icon={<CalendarDaysOutlined />}
+            bodyClassName="grid grid-cols-7 gap-1.5"
+          >
+            {["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((day, idx) => {
+              const sessions = [2, 3, 1, 4, 2, 0, 0][idx];
+              return (
+                <div
+                  key={day}
+                  className="flex flex-col items-center gap-1.5 rounded-lg bg-slate-50 py-2"
+                >
+                  <span className="text-[11px] text-slate-400">{day}</span>
+                  <span
+                    className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold ${
+                      sessions > 0
+                        ? "bg-brand text-white"
+                        : "bg-slate-200 text-slate-400"
+                    }`}
+                  >
+                    {sessions}
+                  </span>
+                </div>
+              );
+            })}
+          </DashboardCard>
+        </div>
+      </div>
+    </>
+  );
+});
 
 export default Dashboard;
