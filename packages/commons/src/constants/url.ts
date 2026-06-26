@@ -364,6 +364,29 @@ export const COURSE_PAGE_URL = {
   },
 };
 
+export const CLASS_ROOM_PAGE_URL = {
+  list: {
+    key: PAGE_KEY.CLASS_ROOM_LIST_VIEW,
+    path: "/course/class/list",
+    shortenUrl: "/course/class/list",
+  },
+  create: {
+    key: PAGE_KEY.CLASS_ROOM_CREATE_VIEW,
+    path: "/course/class/create",
+    shortenUrl: "/course/class/create",
+  },
+  detail: {
+    key: PAGE_KEY.CLASS_ROOM_DETAIL_VIEW,
+    path: (id: number) => "/course/class/detail/" + id,
+    shortenUrl: "/course/class/detail/:id",
+  },
+  update: {
+    key: PAGE_KEY.CLASS_ROOM_UPDATE_VIEW,
+    path: (id: number) => "/course/class/update/" + id,
+    shortenUrl: "/course/class/update/:id",
+  },
+};
+
 
 export const TEACHER_PAGE_URL = {
   list: {

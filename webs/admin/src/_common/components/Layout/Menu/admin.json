@@ -432,9 +432,10 @@
     {
       "id": 27,
       "title": "DS Lớp học",
-      "path": "/course/list",
+      "path": "/course/class/list",
       "icon": "briefcase",
-      "key": "course-class-list",
+      "key": "class",
+      "activeKeys": "class",
       "parentKey": "course",
       "parentGroupKey": "group-course2",
       "permission": ""

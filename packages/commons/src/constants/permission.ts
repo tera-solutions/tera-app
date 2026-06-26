@@ -72,6 +72,12 @@ export const PAGE_KEY = {
   COURSE_UPDATE_VIEW: "edu_course_update_view",
   COURSE_DELETE_VIEW: "edu_course_delete_view",
 
+  CLASS_ROOM_LIST_VIEW: "edu_class_room_list_view",
+  CLASS_ROOM_DETAIL_VIEW: "edu_class_room_detail_view",
+  CLASS_ROOM_CREATE_VIEW: "edu_class_room_create_view",
+  CLASS_ROOM_UPDATE_VIEW: "edu_class_room_update_view",
+  CLASS_ROOM_DELETE_VIEW: "edu_class_room_delete_view",
+
   TEACHER_LIST_VIEW: "hr_teacher_list_view",
   TEACHER_DETAIL_VIEW: "hr_teacher_detail_view",
   TEACHER_CREATE_VIEW: "hr_teacher_create_view",
