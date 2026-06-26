@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { Spin } from "tera-dls";
 
 import { STAT_CARD } from "_common/constants/dashboard";
 
@@ -7,6 +8,7 @@ interface StatCardProps {
   value: string;
   label: string;
   iconClassName?: string;
+  loading?: boolean;
 }
 
 const StatCard = ({
@@ -14,6 +16,7 @@ const StatCard = ({
   value,
   label,
   iconClassName = "bg-sky-50 text-brand",
+  loading,
 }: StatCardProps) => {
   return (
     <div className={STAT_CARD}>
@@ -23,7 +26,11 @@ const StatCard = ({
         {icon}
       </div>
       <div className="leading-tight">
-        <p className="text-2xl font-bold text-slate-800">{value}</p>
+        {loading ? (
+          <Spin spinning size="small" />
+        ) : (
+          <p className="text-2xl font-bold text-slate-800">{value}</p>
+        )}
         <p className="text-xs text-slate-400">{label}</p>
       </div>
     </div>

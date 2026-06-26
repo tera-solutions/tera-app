@@ -31,6 +31,7 @@
     "mobx-persist-store": "catalog:",
     "mobx-react": "catalog:",
     "mobx-react-lite": "catalog:",
+    "moment": "catalog:",
     "react": "catalog:",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",

@@ -1,6 +1,10 @@
 import { ReactNode } from "react";
 
-import { CARD_LINK, CARD_TITLE, SECTION_HEADER } from "_common/constants/dashboard";
+import {
+  CARD_LINK,
+  CARD_TITLE,
+  SECTION_HEADER,
+} from "_common/constants/dashboard";
 
 interface SectionHeaderProps {
   title: string;
