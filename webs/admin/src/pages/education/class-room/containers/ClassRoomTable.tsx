@@ -224,6 +224,14 @@ const ClassRoomTable = observer(
           record.course?.name ?? <span className="text-gray-300">—</span>,
       },
       {
+        title: <HeaderTitle>{t("classroom.lesson_plan")}</HeaderTitle>,
+        key: "lesson_plan",
+        width: 160,
+        render: (_: any, record: IClassRoom) =>
+          (record.lesson_plan as any)?.plan_name ??
+          record.lesson_plan?.name ?? <span className="text-gray-300">—</span>,
+      },
+      {
         title: <HeaderTitle>{t("classroom.teacher")}</HeaderTitle>,
         key: "teacher",
         width: 160,

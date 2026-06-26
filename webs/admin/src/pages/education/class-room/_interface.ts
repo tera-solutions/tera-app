@@ -67,6 +67,7 @@ export interface IClassRoomForm {
   code: string;
   name: string;
   course_id?: number | string;
+  lesson_plan_id?: number | string;
   teacher_id?: number | string;
   assignee_id?: number | string;
   use_course_curriculum?: boolean;

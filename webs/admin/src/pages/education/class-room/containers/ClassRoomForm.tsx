@@ -29,6 +29,7 @@ import {
   ClassRoomService,
   ClassScheduleService,
   CourseService,
+  LessonPlanService,
   TeacherService,
 } from "@tera/modules";
 import { ClassRoomAPI } from "@tera/api";
@@ -62,6 +63,7 @@ const defaultValues: IClassRoomForm = {
   code: "",
   name: "",
   course_id: "",
+  lesson_plan_id: "",
   teacher_id: "",
   assignee_id: "",
   use_course_curriculum: false,
@@ -114,6 +116,11 @@ const ClassRoomForm = observer(
         params: { page: 1, per_page: 100 },
       });
       const courses: any[] = courseData?.data?.items ?? [];
+
+      const { data: lessonPlanData } = LessonPlanService.useLessonPlanList({
+        params: { page: 1, per_page: 100 },
+      });
+      const lessonPlans: any[] = lessonPlanData?.data?.items ?? [];
 
       const { data: teacherData } = TeacherService.useTeacherList({
         params: { page: 1, per_page: 100 },
@@ -214,6 +221,7 @@ const ClassRoomForm = observer(
       } = useFieldArray({ control, name: "schedules" });
 
       const courseIdValue = watch("course_id");
+      const lessonPlanIdValue = watch("lesson_plan_id");
       const teacherIdValue = watch("teacher_id");
       const assigneeIdValue = watch("assignee_id");
       const roomIdValue = watch("room_id");
@@ -231,6 +239,9 @@ const ClassRoomForm = observer(
             code: dataDetail.code ?? "",
             name: dataDetail.name ?? "",
             course_id: dataDetail.course_id ? String(dataDetail.course_id) : "",
+            lesson_plan_id: dataDetail.lesson_plan_id
+              ? String(dataDetail.lesson_plan_id)
+              : "",
             teacher_id: dataDetail.teacher_id
               ? String(dataDetail.teacher_id)
               : "",
@@ -296,6 +307,9 @@ const ClassRoomForm = observer(
           code: isUpdate ? undefined : values.code?.trim() || undefined,
           name: values.name?.trim() || undefined,
           course_id: values.course_id ? Number(values.course_id) : undefined,
+          lesson_plan_id: values.lesson_plan_id
+            ? Number(values.lesson_plan_id)
+            : undefined,
           teacher_id: values.teacher_id ? Number(values.teacher_id) : undefined,
           assignee_id: values.assignee_id
             ? Number(values.assignee_id)
@@ -494,6 +508,40 @@ const ClassRoomForm = observer(
                           >
                             {c.name}
                             {c.code ? ` (${c.code})` : ""}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </FormTeraItem>
+                </Col>
+                <Col>
+                  <FormTeraItem
+                    label={t("classroom.lesson_plan")}
+                    name="lesson_plan_id"
+                  >
+                    <div className="w-full overflow-hidden">
+                      <select
+                        className={SELECT_CLASS}
+                        style={{
+                          borderRadius: "3px",
+                          color: lessonPlanIdValue ? "#111827" : "#9ca3af",
+                        }}
+                        disabled={isView}
+                        {...register("lesson_plan_id")}
+                      >
+                        <option value="" disabled hidden>
+                          {t("form.enter_value", {
+                            key: t("classroom.lesson_plan"),
+                          })}
+                        </option>
+                        {lessonPlans.map((lp) => (
+                          <option
+                            key={lp.id}
+                            value={String(lp.id)}
+                            style={{ color: "#111827" }}
+                          >
+                            {lp.plan_name ?? lp.name}
+                            {lp.plan_code ? ` (${lp.plan_code})` : ""}
                           </option>
                         ))}
                       </select>

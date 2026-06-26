@@ -266,6 +266,13 @@ const ClassRoomDetailContent = observer(
         <InfoRow label={t("classroom.code")} value={classRoom?.code} />
         <InfoRow label={t("classroom.course")} value={classRoom?.course?.name} />
         <InfoRow
+          label={t("classroom.lesson_plan")}
+          value={
+            (classRoom?.lesson_plan as any)?.plan_name ??
+            classRoom?.lesson_plan?.name
+          }
+        />
+        <InfoRow
           label={t("classroom.status")}
           value={
             classRoom?.status ? (
