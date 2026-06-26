@@ -43,7 +43,7 @@
 | [048] | Tin nhắn | — | `has-design` | [🖼](<file:///C:/Users/Admin/Downloads/Hana App/teacher/mobile/tin nhan.png>) | [🔗](https://drive.google.com/file/d/1OHnUCsrCN95wZdFKDBDCdjIcGsbUZvsj/view?usp=drive_link) | [#90](https://trello.com/c/UScerhWS/90-048-teacher-tin-nhắn) |
 | [049] | Hồ sơ cá nhân | `AccountScreen/` | `inprogress` | [🖼](<file:///C:/Users/Admin/Downloads/Hana App/teacher/mobile/ca nhan.png>) | [🔗](https://drive.google.com/file/d/1eGsdeBv1cbnHQMfbjT8dRGvg6FdCPEWN/view?usp=drive_link) | [#89](https://trello.com/c/YBAPsqUb/89-049-teacher-hồ-sơ-cá-nhân) |
 | [061] | Phụ huynh | `ParentScreen/` | `inprogress` | [🖼](<file:///C:/Users/Admin/Downloads/Hana App/teacher/mobile/phu huynh.png>) | [🔗](https://drive.google.com/file/d/1roNgdccXUPpl05ox_8gMza2LOMn3j8_M/view?usp=drive_link) | [#88](https://trello.com/c/QYD14DL9/88-061-teacher-phụ-huynh) |
-| [062] | Chi tiết phụ huynh | `ParentDetailScreen/` | `todo` | — | — | [#93](https://trello.com/c/RIIs72E6/93-062-teacher-chi-tiết-phụ-huynh) |
+| [062] | Chi tiết phụ huynh | `ParentDetailScreen/` | `inprogress` | — | — | [#93](https://trello.com/c/RIIs72E6/93-062-teacher-chi-tiết-phụ-huynh) |
 | [063] | Phòng học | `ClassScreen/` | `inprogress` | — | — | [#83](https://trello.com/c/R8Vl9EPm/83-063-teacher-phòng-học) |
 | [064] | Chi tiết phòng học | — | `todo` | — | — | [#86](https://trello.com/c/ld0CINX0/86-064-teacher-chi-tiết-phòng-học) |
 | [065] | Chi tiết khóa học | — | `todo` | — | — | [#85](https://trello.com/c/NmCgTRsp/85-065-teacher-chi-tiết-khóa-học) |
@@ -85,15 +85,3 @@
 | [075] | Tạo mới bài tập | — | `has-design` | [🖼](<file:///C:/Users/Admin/Downloads/Hana App/teacher/mobile/tao moi bai tap.png>) | [🔗](https://drive.google.com/file/d/1M97Y-wta64xOjewuXA3vDon9WCBpb8j7/view?usp=drive_link) | — |
 | [076] | Thời khóa biểu | `TimetableScreen/` | `inprogress` | [🖼](<file:///C:/Users/Admin/Downloads/Hana App/teacher/mobile/thoi khoa bieu.png>) | [🔗](https://drive.google.com/file/d/105_ql02iukpaj8CYw_GupMdV_kdHIMzv/view?usp=drive_link) | — |
 | [077] | Thông tin cá nhân (chi tiết) | — | `has-design` | [🖼](<file:///C:/Users/Admin/Downloads/Hana App/teacher/mobile/thong tin ca nhan.png>) | [🔗](https://drive.google.com/file/d/1K9X1GUiY02rHijMNf7JaRsh8D2NJyWHZ/view?usp=drive_link) | — |
-
----
-
-## Tổng kết
-
-| Sprint | Tổng | inprogress | has-design | todo |
-|---|---|---|---|---|
-| Sprint 2 | 11 | 7 | 3 | 1 |
-| Sprint 3 | 17 | 5 | 6 | 6 |
-| Sprint 4 | 16 | 0 | 5 | 11 |
-| Sprint 5 | 4 | 1 | 3 | 0 |
-| **Tổng** | **48** | **13** | **17** | **18** |
