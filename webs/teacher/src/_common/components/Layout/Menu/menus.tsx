@@ -240,6 +240,8 @@ export const PATHS = {
   messages: "/messages",
   more: "/more",
   profile: "/profile",
+  lesson: "/lesson",
+  classroom: "/classroom",
 } as const;
 
 export interface MenuItem {
