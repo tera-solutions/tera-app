@@ -53,7 +53,6 @@ module.exports = function (api) {
             '@screens': './src/screens',
             '@states': './src/stores',
             '@hana/teacher/services': './src/services',
-            '@databases': './src/databases',
             '@styles': './src/styles',
             '@modules': './src/modules',
             '@ecommerce': './src/modules/ecommerce',

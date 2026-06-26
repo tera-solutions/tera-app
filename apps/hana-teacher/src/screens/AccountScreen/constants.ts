@@ -83,6 +83,7 @@ export const MENUS = [
     title: 'Thông báo',
     icon: Bell,
     color: '#FBBF24',
+    link: '/setting/notification'
   },
   {
     id: 'setting',

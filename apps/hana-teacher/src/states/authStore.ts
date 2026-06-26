@@ -1,4 +1,3 @@
-import GeneralService from '@databases/general/service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { makePersistable, stopPersisting } from 'mobx-persist-store';
@@ -54,18 +53,4 @@ export class AuthStore {
       }
     });
   };
-
-  async fetchUserFromLocal() {
-    try {
-      const record = await GeneralService.getValue('users'); // Lấy bản ghi key='settings'
-      if (record) {
-        runInAction(() => {
-          this.user = record;
-          this.role = record?.role || this.role;
-        });
-      }
-    } catch (e) {
-      console.error('No users found in local', e);
-    }
-  }
 }

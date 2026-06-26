@@ -1,7 +1,4 @@
 import { useStates } from '@hooks/useStates';
-import GeneralService from '@databases/general/service';
-import { useTableVersion } from '@databases/table_version/hook/useTableVersion';
-import TableVersionService from '@databases/table_version/service';
 import { AuthApi } from '@hana/teacher/services/api/AuthAPI';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
@@ -71,25 +68,12 @@ export const useGetDevice = () => {
     generalStore: { setGeneral, device },
   } = useStates();
 
-  const { version: settings_ver = 0, is_dirty } =
-    useTableVersion('settings') ?? {};
-  console.log('settings_ver', settings_ver, is_dirty);
-
   const result = useQuery({
-    queryKey: ['init_data', settings_ver, is_dirty],
+    queryKey: ['init_data'],
     queryFn: async () => {
-      const parseData = await GeneralService.getValue('settings', settings_ver);
-
-      if (parseData && !is_dirty) {
-        console.tron('==== GET INFO SETTING FROM SQLITE=====', settings_ver);
-        setGeneral(parseData);
-        return { data: parseData, isPending: true };
-      }
       const result = await AuthApi.getDeviceCode();
       if (result) {
         setGeneral(result);
-        GeneralService.upsert('settings', result, settings_ver);
-        TableVersionService.upsert('settings', settings_ver, is_dirty);
       }
 
       return result;
