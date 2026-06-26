@@ -9,6 +9,7 @@ import {
   Users,
 } from 'lucide-react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { ClassItem } from '../../types';
 
@@ -19,6 +20,8 @@ interface Props {
 }
 
 export default function ClassCard({ item }: Props) {
+  const router = useRouter();
+
   return (
     <View
       style={[
@@ -108,6 +111,7 @@ export default function ClassCard({ item }: Props) {
         <ActionButton
           icon={<Users size={22} color="#2196F3" />}
           label="Danh sách HV"
+          onPress={() => router.push(`/student/students?classId=${item.id}`)}
         />
 
         <ActionButton
@@ -128,6 +132,7 @@ export default function ClassCard({ item }: Props) {
         <ActionButton
           icon={<FileText size={22} color="#06B6D4" />}
           label="Báo cáo"
+          onPress={() => router.push(`/edu/classroom-detail?classId=${item.id}`)}
         />
       </View>
     </View>
@@ -137,11 +142,12 @@ export default function ClassCard({ item }: Props) {
 interface ActionButtonProps {
   icon: React.ReactNode;
   label: string;
+  onPress?: () => void;
 }
 
-function ActionButton({ icon, label }: ActionButtonProps) {
+function ActionButton({ icon, label, onPress }: ActionButtonProps) {
   return (
-    <TouchableOpacity style={styles.actionItem}>
+    <TouchableOpacity style={styles.actionItem} onPress={onPress}>
       {icon}
 
       <Text style={styles.actionLabel}>{label}</Text>

@@ -44,27 +44,31 @@ export const MENUS = [
   },
   {
     id: 'teaching',
-    title: 'Lịch dạy của tôi',
+    title: 'Bài kiểm tra',
     icon: CalendarDays,
     color: '#22C55E',
+    link: '/edu/exam'
   },
   {
     id: 'schedule',
-    title: 'Thời khóa biểu',
+    title: 'Phụ huynh',
     icon: Clock3,
     color: '#8B5CF6',
+    link: '/student/parent'
   },
   {
     id: 'evaluation',
-    title: 'Đánh giá của học viên',
+    title: 'Phòng học',
     icon: BookOpen,
     color: '#F59E0B',
+    link: '/edu/room'
   },
   {
     id: 'achievement',
-    title: 'Thành tích & Chứng nhận',
+    title: 'Khóa học',
     icon: Award,
     color: '#EC4899',
+    link: '/edu/course'
   },
   {
     id: 'account',

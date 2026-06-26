@@ -5,12 +5,15 @@ import {
   Users,
   ClipboardList,
 } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 
 import StatsCard from './StatsCard';
 
 import { styles } from './style';
 
 export default function StatsSection() {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       <StatsCard
@@ -27,6 +30,7 @@ export default function StatsSection() {
         value="72"
         title="Học viên"
         subtitle="Tổng số học viên"
+        onPress={() => router.push('/student/students')}
       />
 
       <StatsCard
