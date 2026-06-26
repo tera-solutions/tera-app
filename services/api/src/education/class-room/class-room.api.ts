@@ -40,4 +40,14 @@ export const ClassRoomAPI = {
     await api
       .post(`${endpoint}/edu/class-room/export`, params)
       .then((result) => result.data),
+
+  suspend: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/edu/class-room/suspend/${id}`, params)
+      .then((result) => result.data),
+
+  restore: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/edu/class-room/restore/${id}`, params)
+      .then((result) => result.data),
 };

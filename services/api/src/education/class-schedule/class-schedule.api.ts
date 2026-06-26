@@ -9,28 +9,34 @@ import {
 } from "@tera/api/_interface";
 
 export const ClassScheduleAPI = {
-  getList: async ({ params }: ListPayload) =>
-    await api
-      .get(`${endpoint}/education/class-schedule/list`, params)
-      .then((r) => r.data),
+  // List + Create lồng theo lớp: /edu/class-room/:classId/schedule/*
+  getList: async ({ params }: ListPayload) => {
+    const { class_id, ...rest } = params ?? {};
+    return await api
+      .get(`${endpoint}/edu/class-room/${class_id}/schedule/list`, rest)
+      .then((r) => r.data);
+  },
 
+  create: async ({ params }: CreatePayload) => {
+    const { class_id, ...rest } = params ?? {};
+    return await api
+      .post(`${endpoint}/edu/class-room/${class_id}/schedule/create`, rest)
+      .then((r) => r.data);
+  },
+
+  // Detail + Update + Delete phẳng: /edu/class-schedule/*
   getDetail: async ({ id }: DetailPayload) =>
     await api
-      .get(`${endpoint}/education/class-schedule/detail/${id}`)
-      .then((r) => r.data),
-
-  create: async ({ params }: CreatePayload) =>
-    await api
-      .post(`${endpoint}/education/class-schedule/create`, params)
+      .get(`${endpoint}/edu/class-schedule/detail/${id}`)
       .then((r) => r.data),
 
   update: async ({ id, params }: UpdatePayload) =>
     await api
-      .put(`${endpoint}/education/class-schedule/update/${id}`, params)
+      .put(`${endpoint}/edu/class-schedule/update/${id}`, params)
       .then((r) => r.data),
 
   delete: async ({ id }: DeletePayload) =>
     await api
-      .delete(`${endpoint}/education/class-schedule/delete/${id}`)
+      .delete(`${endpoint}/edu/class-schedule/delete/${id}`)
       .then((r) => r.data),
 };

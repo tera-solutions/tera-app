@@ -69,7 +69,8 @@ export const useUpsertClassRoom = () => {
       return ClassRoomAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["class-room", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -84,6 +85,36 @@ export const useClassRoomDelete = () => {
     mutationFn: (payload: DeletePayload) => ClassRoomAPI.delete(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useClassRoomSuspend = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => ClassRoomAPI.suspend(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["class-room", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useClassRoomRestore = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => ClassRoomAPI.restore(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["class-room", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -115,4 +146,6 @@ export const ClassRoomService = {
   useUpsertClassRoom,
   useClassRoomDelete,
   useClassRoomExport,
+  useClassRoomSuspend,
+  useClassRoomRestore,
 };
