@@ -161,45 +161,60 @@ const ClassRoomTable = observer(
       };
     };
 
+    const pagination = data?.data?.pagination;
+    const currentPage = pagination?.current_page || params?.page || 1;
+    const totalItems = pagination?.total || 0;
+    const perPage = Number(pagination?.per_page || params?.per_page || 20);
+
+    const CopyCodeIcon = ({ code }: { code?: string }) =>
+      code ? (
+        <button
+          type="button"
+          title={t("classroom.copy_code")}
+          onClick={() => handleCopy(code)}
+          className="text-gray-400 hover:text-blue-500 transition-colors shrink-0"
+        >
+          <svg
+            className="w-3.5 h-3.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+            />
+          </svg>
+        </button>
+      ) : null;
+
     const columns = [
       {
-        title: <HeaderTitle>{t("classroom.code")}</HeaderTitle>,
-        dataIndex: "code",
-        key: "code",
-        width: 130,
-        render: (code: string) => (
-          <div className="flex items-center gap-1.5">
-            <span>{code ?? "—"}</span>
-            {code && (
-              <button
-                type="button"
-                title={t("classroom.copy_code")}
-                onClick={() => handleCopy(code)}
-                className="text-gray-400 hover:text-blue-500 transition-colors shrink-0"
-              >
-                <svg
-                  className="w-3.5 h-3.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                  />
-                </svg>
-              </button>
-            )}
-          </div>
-        ),
+        title: <HeaderTitle>{t("common.stt")}</HeaderTitle>,
+        key: "stt",
+        width: 60,
+        align: "center" as const,
+        render: (_: any, __: IClassRoom, index: number) =>
+          (currentPage - 1) * perPage + index + 1,
       },
       {
         title: <HeaderTitle>{t("classroom.name")}</HeaderTitle>,
         dataIndex: "name",
         key: "name",
-        width: 180,
+        width: 200,
+        render: (name: string, record: IClassRoom) => (
+          <div className="flex flex-col">
+            <span className="font-medium text-gray-800">{name ?? "—"}</span>
+            {record.code && (
+              <div className="flex items-center gap-1 text-[12px] text-gray-400">
+                <span>{record.code}</span>
+                <CopyCodeIcon code={record.code} />
+              </div>
+            )}
+          </div>
+        ),
       },
       {
         title: <HeaderTitle>{t("classroom.course")}</HeaderTitle>,
@@ -341,11 +356,6 @@ const ClassRoomTable = observer(
         ),
       },
     ];
-
-    const pagination = data?.data?.pagination;
-    const currentPage = pagination?.current_page || params?.page || 1;
-    const totalItems = pagination?.total || 0;
-    const perPage = Number(pagination?.per_page || params?.per_page || 20);
 
     const handleChangePage: PaginationProps["onChange"] = (page, pageSize) => {
       setParams((prev: any) => {
