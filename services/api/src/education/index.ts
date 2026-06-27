@@ -12,7 +12,7 @@ export * from "./course-pricing";
 export * from "./curriculum";
 export * from "./evaluation";
 export * from "./exam";
-export * from "./homework";
+export * from "./assignment";
 export * from "./level";
 export * from "./lesson";
 export * from "./lesson-material";

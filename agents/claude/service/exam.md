@@ -200,3 +200,6 @@ const { data } = useExamList({
 - `questions: []` — list API trả về array rỗng; câu hỏi chi tiết chỉ có trong detail endpoint.
 - `studentCount` không có trong list response — cần gọi thêm API enrollment để lấy số học viên dự thi.
 - Cache invalidation: create/update/delete invalidate `["exam", "list"]`. Upsert thêm `["exam", "detail"]`.
+
+
+> Xem chi tiết Assignment Service tại [./assignment.md](./assignment.md)
