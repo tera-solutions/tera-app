@@ -12,10 +12,8 @@ import colors from '@tera/commons/constants/colors';
 import { useStates } from '@hooks/useStates';
 import { Button, InputPassword, SelectBox, TextInput } from '@components/ui';
 import { useLogin } from '@hana/teacher/services/auth.service';
-import { syncManager } from '@hana/teacher/services/sync/SyncManager';
 import { useQueryClient } from '@tanstack/react-query';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const LoginScreen = observer(() => {
@@ -53,57 +51,6 @@ const LoginScreen = observer(() => {
           style={styles.teraLogo}
         />
         <View style={styles.form}>
-          <Controller
-            control={control}
-            rules={{
-              required: 'Bắt buộc chọn ngành nghề',
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <SelectBox
-                value={value}
-                onChange={(item) => onChange(item?.value)}
-                items={[
-                  {
-                    value: 'genral',
-                    text: 'Mặc định',
-                  },
-                  {
-                    value: 'agent',
-                    text: 'Đại lý bán hàng',
-                  },
-                  {
-                    value: 'fnb',
-                    text: 'Cửa hàng ăn uống',
-                  },
-                  {
-                    value: 'retail',
-                    text: 'Cửa hàng bán lẻ',
-                  },
-                  {
-                    value: 'online',
-                    text: 'Cửa hàng online',
-                  },
-                  {
-                    value: 'ecommerce',
-                    text: 'Bán hàng kênh',
-                  },
-                  {
-                    value: 'spa',
-                    text: 'Tiệm Spa - Massage - Salon',
-                  },
-                  {
-                    value: 'logistic',
-                    text: 'Logistic',
-                  },
-                  {
-                    value: 'import_export',
-                    text: 'Xuất nhập khẩu',
-                  },
-                ]}
-              />
-            )}
-            name="industry"
-          />
           {errors.username && (
             <Text style={{ color: 'red' }}>{errors.username.message}</Text>
           )}

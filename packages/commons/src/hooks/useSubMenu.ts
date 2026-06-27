@@ -5,19 +5,6 @@ import { useMemo } from "react";
 import { ModuleType } from "@tera/commons/interfaces/router";
 
 // Import các file menu JSON từ path của bạn
-import sale from "@tera/components/web/Layout/Menu/sale.json";
-import purchase from "@tera/components/web/Layout/Menu/purchase.json";
-import admin from "@tera/components/web/Layout/Menu/admin.json";
-import contact from "@tera/components/web/Layout/Menu/contact.json";
-import eshop from "@tera/components/web/Layout/Menu/eshop.json";
-import finance from "@tera/components/web/Layout/Menu/finance.json";
-import hrm from "@tera/components/web/Layout/Menu/hrm.json";
-import logistic from "@tera/components/web/Layout/Menu/logistic.json";
-import marketing from "@tera/components/web/Layout/Menu/marketing.json";
-import operation from "@tera/components/web/Layout/Menu/operation.json";
-import warehouse from "@tera/components/web/Layout/Menu/warehouse.json";
-import master from "@tera/components/web/Layout/Menu/master.json";
-
 const subMenuObject = {
   ["system"]: systemSubMenu,
 };
@@ -39,21 +26,7 @@ const useSubMenu = ({ active, module = "sales" }: UseSubMenuProps) => {
 
   // 1. Xác định dữ liệu nguồn dựa trên Module
   const currentModuleData = useMemo(() => {
-    const menuMap = {
-      sales: sale,
-      purchase: purchase,
-      admin: admin,
-      portal: sale,
-      contact: contact,
-      eshop: eshop,
-      finance: finance,
-      hrm: hrm,
-      logistics: logistic,
-      marketing: marketing,
-      operation: operation,
-      warehouse: warehouse,
-      master: master,
-    };
+    const menuMap = {};
     return menuMap[module] || sale;
   }, [module]);
 

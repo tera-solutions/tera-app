@@ -1,5 +1,4 @@
 import { appVersion } from '@tera/commons/constants/common';
-import GeneralService from '@databases/general/service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { makePersistable, stopPersisting } from 'mobx-persist-store';
@@ -55,32 +54,6 @@ export class GeneralStore {
       this.general = newsValue;
     });
   };
-
-  async fetchSettingsFromLocal() {
-    try {
-      const record = await GeneralService.getValue('settings');
-      if (record) {
-        runInAction(() => {
-          this.device = record?.device_code;
-          this.isSuper = record?.super || this.isSuper;
-          const general = record?.general || [];
-          this.logo = record?.logo_url;
-          const newsValue: any = {};
-
-          general.forEach((item: any) => {
-            newsValue[item.name] = item.value;
-            if (item.value === '0') {
-              newsValue[item.name] = false;
-            }
-          });
-
-          this.general = newsValue;
-        });
-      }
-    } catch (e) {
-      console.error('No settings found in local', e);
-    }
-  }
 
   setIsDbReady = (status: boolean) => {
     runInAction(() => {

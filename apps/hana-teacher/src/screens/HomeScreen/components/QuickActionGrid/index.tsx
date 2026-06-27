@@ -19,9 +19,9 @@ const actions: QuickAction[] = [
     icon: require('@tera/assets/app/element_56.png'),
   },
   {
-    key: 'homework',
+    key: 'assignment',
     title: 'Bài tập',
-    link: '/edu/homework',
+    link: '/edu/assignment',
     icon: require('@tera/assets/app/element_57.png'),
     badge: 6,
   },

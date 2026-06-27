@@ -5,18 +5,26 @@ import {
   Users,
   ClipboardList,
 } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 
 import StatsCard from './StatsCard';
 
 import { styles } from './style';
 
-export default function StatsSection() {
+interface Props {
+  totalClasses?: number;
+  totalStudents?: number;
+}
+
+export default function StatsSection({ totalClasses = 0, totalStudents = 0 }: Props) {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       <StatsCard
         icon={<Users size={24} color="#2196F3" />}
         iconBg="#EAF4FF"
-        value="3"
+        value={String(totalClasses)}
         title="Lớp chủ nhiệm"
         subtitle="Tổng số lớp"
       />
@@ -24,9 +32,10 @@ export default function StatsSection() {
       <StatsCard
         icon={<GraduationCap size={24} color="#22C55E" />}
         iconBg="#ECFDF3"
-        value="72"
+        value={String(totalStudents)}
         title="Học viên"
         subtitle="Tổng số học viên"
+        onPress={() => router.push('/student/students')}
       />
 
       <StatsCard

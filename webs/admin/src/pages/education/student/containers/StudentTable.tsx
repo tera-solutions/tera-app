@@ -15,7 +15,7 @@ import { STUDENT_PAGE_URL } from "@tera/commons/constants/url";
 import { useStores } from "@tera/stores/useStores";
 
 /* Import: services */
-import { StudentService } from "@tera/modules";
+import { StudentService, LevelService } from "@tera/modules";
 
 /* Import: pages */
 import Pagination from "_common/components/Pagination";
@@ -30,6 +30,14 @@ const StudentTable = observer(
     const { globalStore } = useStores();
 
     const { data, isPending } = StudentService.useStudentList({ params });
+
+    // API student chỉ trả level_id (không kèm object level) → map id→tên qua catalog edu/level
+    const { data: levelData } = LevelService.useLevelList({
+      params: { page: 1, per_page: 100 },
+    });
+    const levelMap = new Map<number, string>(
+      (levelData?.data?.items ?? []).map((lv: any) => [lv.id, lv.level_name]),
+    );
     const { mutate: onSuspend, isPending: isSuspending } =
       StudentService.useStudentSuspend();
     const { mutate: onRestore, isPending: isRestoring } =
@@ -231,7 +239,11 @@ const StudentTable = observer(
         width: 100,
         align: "center" as const,
         render: (_: any, record: IStudent) => {
-          const levelName = record.level?.name;
+          const levelName =
+            record.level?.name ??
+            (record.level_id != null
+              ? levelMap.get(Number(record.level_id))
+              : undefined);
           return levelName ? (
             <span className='inline-block px-2 py-0.5 text-xs rounded bg-indigo-50 text-indigo-700'>
               {levelName}

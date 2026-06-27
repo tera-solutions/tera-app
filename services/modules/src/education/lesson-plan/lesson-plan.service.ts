@@ -69,7 +69,8 @@ export const useUpsertLessonPlan = () => {
       return LessonPlanAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["lesson-plan", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["lesson-plan", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
