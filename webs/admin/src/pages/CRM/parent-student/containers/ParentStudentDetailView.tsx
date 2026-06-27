@@ -78,7 +78,7 @@ const ParentStudentDetailView = observer(({ link, loading }: IProps) => {
     const id = link?.student?.level?.id ?? link?.student?.level_id;
     if (id != null) {
       const found = levels.find((lv: any) => Number(lv.id) === Number(id));
-      return found?.name ?? `#${id}`;
+      return found?.level_name ?? found?.name ?? `#${id}`;
     }
     return undefined;
   })();
