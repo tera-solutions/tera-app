@@ -10,6 +10,8 @@ import LoginPage from "pages/Auth/Login";
 
 import Dashboard from "pages/Dashboard";
 import Schedule from "pages/Schedule";
+import Classroom from "pages/Classroom";
+import ClassroomDetail from "pages/ClassroomDetail";
 import Placeholder from "pages/Placeholder";
 
 import CheckAuth from "routers/CheckAuth";
@@ -20,7 +22,6 @@ import { PATHS } from "_common/components/Layout/Menu/menus";
 import UnAuthLayout from "_common/components/Layout/UnAuthLayout";
 
 const PLACEHOLDER_PATHS = [
-  PATHS.classes,
   PATHS.lessonPlans,
   PATHS.homework,
   PATHS.grading,
@@ -48,8 +49,9 @@ export const Routers = () => {
         <Route index element={<Navigate to={PATHS.dashboard} />} />
         <Route path={PATHS.dashboard} element={<Dashboard />} />
         <Route path={PATHS.schedule} element={<Schedule />} />
+        <Route path={PATHS.classroom} element={<Classroom />} />
         <Route path={`${PATHS.lesson}/:id`} element={<Placeholder />} />
-        <Route path={`${PATHS.classroom}/:id`} element={<Placeholder />} />
+        <Route path={`${PATHS.classroom}/:id`} element={<ClassroomDetail />} />
         {PLACEHOLDER_PATHS.map((path) => (
           <Route key={path} path={path} element={<Placeholder />} />
         ))}

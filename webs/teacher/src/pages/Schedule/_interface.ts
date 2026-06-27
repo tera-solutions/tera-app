@@ -1,0 +1,30 @@
+import type { ScheduleStatus } from "_common/types/schedule";
+
+export type { ScheduleStatus, ScheduleItem } from "_common/types/schedule";
+
+export type ScheduleView = "week" | "month" | "day" | "range";
+
+export interface ScheduleSummary {
+  total_classes: number;
+  total_students: number;
+  lessons_this_week: number;
+}
+
+export interface ScheduleDetail {
+  id: number;
+  class_id?: number;
+  class_name: string;
+  level: string;
+  room: string;
+  branch: string;
+  date: string;
+  start_time: string;
+  end_time: string;
+  status: ScheduleStatus;
+  lesson_plan: {
+    id: number;
+    title: string;
+  } | null;
+  student_count: number;
+  attendance_done: boolean;
+}

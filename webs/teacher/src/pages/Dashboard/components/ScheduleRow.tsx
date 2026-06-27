@@ -1,6 +1,5 @@
-import type { ScheduleItem } from "pages/Schedule/_interface";
-
-import { SCHEDULE_STATUS } from "../constants";
+import type { ScheduleItem } from "_common/types/schedule";
+import { SCHEDULE_STATUS } from "_common/constants/schedule";
 
 const ScheduleRow = ({ item }: { item: ScheduleItem }) => {
   const status = SCHEDULE_STATUS[item.status] ?? SCHEDULE_STATUS.upcoming;

@@ -2,7 +2,7 @@ import { useQueryLegacy } from "@tera/commons/hooks/tanstack";
 import EduApi from "_common/api/edu";
 import NotificationApi from "_common/components/Layout/Header/UserNotification/_api";
 
-import { normalizeSessions } from "pages/Schedule/normalize";
+import { normalizeSessions } from "_common/normalize/schedule";
 import {
   normalizeClass,
   normalizeHomework,
