@@ -1,19 +1,11 @@
+import { pick } from "_common/utils/pick";
+
 import type {
   DashboardClassItem,
   DashboardHomeworkItem,
   DashboardLessonPlanItem,
   DashboardNotificationItem,
 } from "./_interface";
-
-const pick = (obj: any, paths: string[]): any => {
-  for (const path of paths) {
-    const value = path
-      .split(".")
-      .reduce((acc, key) => (acc == null ? acc : acc[key]), obj);
-    if (value != null && value !== "") return value;
-  }
-  return undefined;
-};
 
 export const normalizeHomework = (raw: any): DashboardHomeworkItem => ({
   id: Number(pick(raw, ["id", "assignment_id"]) ?? 0),

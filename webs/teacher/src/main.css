@@ -30,3 +30,29 @@
     cursor: not-allowed;
   }
 }
+
+/* tera-dls toasts ship a fixed `min-w-[490px]` on the notice content, which
+   overflows the right edge on small screens. Cap the notice to the viewport. */
+@media (max-width: 640px) {
+  .tera-notification {
+    left: 0;
+    right: 0;
+    padding: 12px;
+  }
+
+  .tera-notification .tera-notification-notice-wrapper,
+  .tera-notification .tera-notification-notice,
+  .tera-notification .min-w-\[490px\] {
+    min-width: 0 !important;
+    width: 100%;
+    max-width: calc(100vw - 24px);
+  }
+}
+
+/* tera-dls Drawer opens by adding `transform-none` to cancel the `translate-x-full`
+   (etc.) close transform. Under Tailwind v4 those translate utilities use the CSS
+   `translate` property, which `transform-none` does NOT reset — so the panel stays
+   slid off-screen. Clear the translate on the open panel. */
+.tera-drawer .transform-none {
+  translate: none !important;
+}

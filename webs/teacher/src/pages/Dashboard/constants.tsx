@@ -14,8 +14,6 @@ import {
 
 import { PATHS } from "_common/components/Layout/Menu/menus";
 
-import type { ScheduleStatus } from "pages/Schedule/_interface";
-
 export interface StatMeta {
   key: string;
   label: string;
@@ -42,27 +40,6 @@ export const STAT_META: Record<
   completion: {
     icon: <ChartBarOutlined />,
     iconClassName: "bg-amber-50 text-amber-500",
-  },
-};
-
-export const SCHEDULE_STATUS: Record<
-  ScheduleStatus,
-  { label: string; badge: string; bar: string }
-> = {
-  upcoming: {
-    label: "Sắp tới",
-    badge: "bg-sky-50 text-sky-600",
-    bar: "bg-brand",
-  },
-  ongoing: {
-    label: "Đang diễn ra",
-    badge: "bg-amber-50 text-amber-600",
-    bar: "bg-amber-400",
-  },
-  done: {
-    label: "Đã xong",
-    badge: "bg-emerald-50 text-emerald-600",
-    bar: "bg-slate-200",
   },
 };
 
