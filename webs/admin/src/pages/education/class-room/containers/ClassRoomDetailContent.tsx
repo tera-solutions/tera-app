@@ -6,14 +6,12 @@ import { useTranslation } from "react-i18next";
 /* Import: packages */
 import { useStores } from "@tera/stores/useStores";
 
-/* Import: services */
-import { ClassScheduleService } from "@tera/modules";
-
 /* Import: pages */
 import {
   IClassRoom,
   IClassRoomStatistics,
 } from "pages/education/class-room/_interface";
+import ClassSessionPanel from "./ClassSessionPanel";
 
 const money = (v?: number | string) =>
   `${Number(v ?? 0).toLocaleString("vi-VN")} ₫`;
@@ -32,6 +30,7 @@ const WEEKDAY_KEY: Record<string, string> = {
 export const getClassRoomDetailTabs = (t: (key: string) => string) => [
   { key: "basic", label: t("classroom.tab_basic") },
   { key: "schedule", label: t("classroom.tab_schedule") },
+  { key: "sessions", label: t("classroom.tab_sessions") },
   { key: "students", label: t("classroom.tab_students") },
   { key: "operational", label: t("classroom.tab_operational") },
   { key: "financial", label: t("classroom.tab_financial") },
@@ -73,13 +72,6 @@ const ClassRoomDetailContent = observer(
   }) => {
     const { t } = useTranslation();
     const { globalStore } = useStores();
-
-    // Lịch học đọc từ endpoint riêng class-schedule (theo class_id)
-    const { data: scheduleData } = ClassScheduleService.useClassScheduleList(
-      { params: { class_id: classRoom?.id } },
-      { enabled: !!classRoom?.id },
-    );
-    const remoteSchedules: any[] = scheduleData?.data ?? [];
 
     const students = statistics?.students ?? {};
     const op = statistics?.operational ?? {};
@@ -175,79 +167,48 @@ const ClassRoomDetailContent = observer(
       );
     }
 
-    // Lịch học: lịch tuần + danh sách buổi học
+    // Lịch học: lịch tuần (đọc từ class.schedules nhúng trong detail)
     if (activeTab === "schedule") {
-      const schedules: any[] = remoteSchedules;
-      const sessions: any[] = Array.isArray((classRoom as any)?.sessions)
-        ? (classRoom as any).sessions
+      const schedules: any[] = Array.isArray(classRoom?.schedules)
+        ? classRoom!.schedules!
         : [];
       return (
-        <div className="flex flex-col gap-4">
-          {/* Lịch tuần */}
-          <div>
-            <p className="text-[13px] font-semibold text-gray-700 mb-2">
-              {t("classroom.weekly_schedule")}
+        <div>
+          <p className="text-[13px] font-semibold text-gray-700 mb-2">
+            {t("classroom.weekly_schedule")}
+          </p>
+          {schedules.length === 0 ? (
+            <p className="text-[13px] text-gray-400 italic">
+              {t("classroom.no_schedule")}
             </p>
-            {schedules.length === 0 ? (
-              <p className="text-[13px] text-gray-400 italic">
-                {t("classroom.no_schedule")}
-              </p>
-            ) : (
-              <div className="flex flex-col gap-1.5">
-                {schedules.map((s, i) => {
-                  const wk = WEEKDAY_KEY[String(s.weekday)];
-                  return (
-                    <div
-                      key={i}
-                      className="flex items-center gap-3 rounded-md border border-gray-100 bg-gray-50 px-3 py-2"
-                    >
-                      <span className="text-[13px] font-medium text-gray-800 w-20 shrink-0">
-                        {wk ? t(wk) : `#${s.weekday ?? "—"}`}
-                      </span>
-                      <span className="text-[13px] text-gray-600">
-                        {(s.start_time ?? "—").slice(0, 5)} -{" "}
-                        {(s.end_time ?? "—").slice(0, 5)}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Danh sách buổi học */}
-          <div>
-            <p className="text-[13px] font-semibold text-gray-700 mb-2">
-              {t("classroom.session_list")}
-            </p>
-            {sessions.length === 0 ? (
-              <p className="text-[13px] text-gray-400 italic">
-                {t("classroom.no_session")}
-              </p>
-            ) : (
-              <div className="flex flex-col gap-1.5">
-                {sessions.map((s, i) => (
+          ) : (
+            <div className="flex flex-col gap-1.5">
+              {schedules.map((s, i) => {
+                const wk = WEEKDAY_KEY[String(s.weekday)];
+                return (
                   <div
-                    key={s.id ?? i}
-                    className="flex items-center justify-between rounded-md border border-gray-100 bg-gray-50 px-3 py-2"
+                    key={i}
+                    className="flex items-center gap-3 rounded-md border border-gray-100 bg-gray-50 px-3 py-2"
                   >
-                    <span className="text-[13px] font-medium text-gray-800">
-                      {s.name ?? s.title ?? `${t("classroom.session_list")} ${i + 1}`}
+                    <span className="text-[13px] font-medium text-gray-800 w-20 shrink-0">
+                      {wk ? t(wk) : `#${s.weekday ?? "—"}`}
                     </span>
-                    <span className="text-[13px] text-gray-500">
-                      {s.date
-                        ? new Date(s.date).toLocaleDateString("vi-VN")
-                        : ""}
-                      {s.start_time ? ` ${s.start_time}` : ""}
-                      {s.end_time ? ` - ${s.end_time}` : ""}
+                    <span className="text-[13px] text-gray-600">
+                      {(s.start_time ?? "—").slice(0, 5)} -{" "}
+                      {(s.end_time ?? "—").slice(0, 5)}
                     </span>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       );
+    }
+
+    // Buổi học (class-session)
+    if (activeTab === "sessions") {
+      return <ClassSessionPanel classId={classRoom?.id} />;
     }
 
     // Thông tin cơ bản
