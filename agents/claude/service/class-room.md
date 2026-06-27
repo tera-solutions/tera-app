@@ -94,6 +94,134 @@
 }
 ```
 
+
+---
+
+## Response: GET /v1/edu/class-room/detail/:id
+
+```json
+{
+  "success": true,
+  "msg": "Thao tác thành công",
+  "code": 200,
+  "errors": null,
+  "data": {
+    "class": {
+      "id": 1,
+      "code": "CLS001",
+      "name": "Lớp 1",
+      "course_id": 1,
+      "course": { "id": 1, "code": "CRS001", "name": "IELTS Foundation (test)" },
+      "teacher_id": null,
+      "teacher": null,
+      "room_id": null,
+      "room": null,
+      "learning_type": "self_learning",
+      "start_date": "2026-07-18",
+      "end_date": null,
+      "status": "upcoming",
+      "min_capacity": null,
+      "max_capacity": 20,
+      "use_course_curriculum": false,
+      "description": null,
+      "schedules": [
+        { "id": 1, "class_id": 1, "weekday": 2, "start_time": "15:00:00", "end_time": "17:00:00" },
+        { "id": 2, "class_id": 1, "weekday": 4, "start_time": "15:00:00", "end_time": "17:00:00" },
+        { "id": 3, "class_id": 1, "weekday": 6, "start_time": "15:00:00", "end_time": "17:00:00" }
+      ],
+      "created_at": "2026-06-27T01:43:23.000000Z",
+      "updated_at": "2026-06-27T01:43:23.000000Z",
+      "deleted_at": null
+    },
+    "statistics": {
+      "students": {
+        "total": 0,
+        "active": 0,
+        "reserved": 0,
+        "completed": 0,
+        "dropped": 0
+      },
+      "operational": {
+        "total_sessions": 0,
+        "completed_sessions": 0,
+        "pending_sessions": 0,
+        "completion_rate": 0,
+        "avg_attendance_rate": 0
+      },
+      "financial": {
+        "total_revenue": 0,
+        "recognized_revenue": 0,
+        "debt": 0,
+        "refunds": 0
+      }
+    }
+  }
+}
+```
+
+> **Lưu ý:** Detail response khác list — data nằm trong `data.class` (không phải `data.items`), kèm thêm `data.statistics`.
+
+**TypeScript interface bổ sung:**
+```typescript
+interface ClassRoomStatistics {
+  students: {
+    total: number;
+    active: number;    // đang học
+    reserved: number;  // bảo lưu
+    completed: number; // hoàn thành
+    dropped: number;   // nghỉ học
+  };
+  operational: {
+    total_sessions: number;
+    completed_sessions: number;
+    pending_sessions: number;
+    completion_rate: number;     // 0-100
+    avg_attendance_rate: number; // 0-100
+  };
+  financial: {
+    total_revenue: number;
+    recognized_revenue: number;
+    debt: number;
+    refunds: number;
+  };
+}
+
+interface ClassRoomDetailResponse {
+  success: boolean;
+  data?: {
+    class: ClassRoomDetailApi;
+    statistics: ClassRoomStatistics;
+  };
+}
+```
+
+**Cách sử dụng:**
+```typescript
+import { useClassRoomDetail } from '@tera/modules/education/class-room';
+import { useLocalSearchParams } from 'expo-router';
+import { ClassRoomDetailResponse } from './types';
+
+function ClassroomDetailScreen() {
+  const { classId } = useLocalSearchParams<{ classId: string }>();
+  const { data, isLoading } = useClassRoomDetail({ id: classId ?? '' });
+
+  const response = data as ClassRoomDetailResponse | undefined;
+  const cls = response?.data?.class;
+  const stats = response?.data?.statistics;
+
+  // Mapping schedule
+  const scheduleText = (cls?.schedules ?? [])
+    .map((s) => WEEKDAY_LABELS[s.weekday ?? 0])
+    .join(', ');
+
+  // Stats
+  const totalStudents = stats?.students?.total ?? 0;
+  const completionRate = stats?.operational?.completion_rate ?? 0;
+  const completedSessions = stats?.operational?.completed_sessions ?? 0;
+  const totalSessions = stats?.operational?.total_sessions ?? 0;
+}
+```
+
 ---
 
 ## TypeScript Interfaces

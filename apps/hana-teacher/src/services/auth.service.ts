@@ -10,15 +10,16 @@ export const useLogout = (callback?: () => void) => {
   return useMutation({
     mutationFn: () => AuthApi.logout(),
     onSuccess: async () => {
-      if (typeof callback === 'function') {
-        callback();
-      }
       Toast.show({
         type: 'success',
         text1: 'Đăng xuất thành công!',
       });
 
       clear();
+
+      if (typeof callback === 'function') {
+        callback();
+      }
     },
     onError: async (error: any) => {
       console.error(error);
@@ -47,9 +48,8 @@ export const useLogin = (callback?: () => void) => {
         text1: 'Đăng nhập thành công!',
       });
       updateUser(res?.data);
-      setIndustry(res?.data?.user?.industry || variables?.industry);
       queryClient.invalidateQueries({
-        queryKey: ['check_connect'],
+        queryKey: ['get_profile'],
       });
     },
     onError: (error: any) => {

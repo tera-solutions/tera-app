@@ -13,7 +13,6 @@ export interface IUIStore {
   industry: IndustryKey;
   business_info: any;
   limit_location: number;
-  fetchBusinessFromLocal: () => void;
   clear: () => void;
   setIndustry: (key: IndustryKey) => void;
   setStore: (data: any) => void;
@@ -56,7 +55,6 @@ export interface IGeneralStore {
   logo?: string;
   version: number;
   clear: () => void;
-  fetchSettingsFromLocal: () => void;
   setGeneral: (data: any) => void;
   setIsDbReady: (status: boolean) => void;
   setIsOffline: (status: boolean) => void;
@@ -72,7 +70,6 @@ export interface IAuthStore {
   token: string;
   role: string;
   clear: () => void;
-  fetchUserFromLocal: () => void;
   updateToken: (token: string) => void;
   updateUser: (user: any) => void;
 }

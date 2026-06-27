@@ -21,6 +21,7 @@ export * from "./lesson-progress";
 export * from "./progress-report";
 export * from "./score";
 export * from "./skill-assessment";
+export * from "./room";
 export * from "./student";
 export * from "./student-document";
 export * from "./student-history";

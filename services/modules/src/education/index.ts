@@ -6,5 +6,6 @@ export * from "./evaluation";
 export * from "./level";
 export * from "./lesson";
 export * from "./lesson-plan";
+export * from "./room";
 export * from "./student";
 export * from "./student-level";
