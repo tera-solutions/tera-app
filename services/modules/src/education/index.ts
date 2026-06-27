@@ -3,6 +3,7 @@ export * from "./class-room";
 export * from "./class-schedule";
 export * from "./course";
 export * from "./evaluation";
+export * from "./exam";
 export * from "./level";
 export * from "./lesson";
 export * from "./lesson-plan";
