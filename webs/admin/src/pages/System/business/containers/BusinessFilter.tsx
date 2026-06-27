@@ -1,12 +1,11 @@
 /* Import: library */
 import { useTranslation } from "react-i18next";
+import moment from "moment";
+import { DatePicker } from "tera-dls";
 
 /* Import: pages */
 import UserSelect from "_common/components/UserSelect";
 import SortSelect from "_common/components/SortSelect";
-
-const DATE_CLASS =
-  "h-9 w-full border border-gray-300 bg-white rounded px-2 text-[13px] xmd:w-auto xmd:min-w-[150px] focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500 cursor-pointer";
 
 interface BusinessFilterProps {
   manager: string;
@@ -53,13 +52,15 @@ const BusinessFilter = ({
           onChange={onManagerChange}
         />
       </div>
-      <input
-        type="date"
-        value={date}
-        onChange={(e) => onDateChange(e.target.value)}
-        title={t("business.created_at")}
-        className={`${DATE_CLASS} flex-1 min-w-[140px] xmd:flex-none`}
-        style={{ color: date ? "#111827" : "#9ca3af" }}
+      <DatePicker
+        className="flex-1 min-w-[140px] xmd:flex-none xmd:w-[160px]"
+        value={date ? moment(date, "YYYY-MM-DD") : undefined}
+        format="DD/MM/YYYY"
+        placeholder={t("business.created_at")}
+        allowClear
+        onChange={(d: any) =>
+          onDateChange(d ? moment(d).format("YYYY-MM-DD") : "")
+        }
       />
       <div className="shrink-0">
         <SortSelect
