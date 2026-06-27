@@ -37,10 +37,27 @@ const EduApi = {
       .get(`${EDU}/class-session/detail/${id}`)
       .then((r) => r?.data?.data),
 
+  classRoomDetail: async (id: number | string): Promise<any> =>
+    await api
+      .get(`${EDU}/class-room/detail/${id}`)
+      .then((r) => r?.data?.data),
+
+  attendanceList: async (
+    params?: Record<string, unknown>,
+  ): Promise<ListResult<any>> =>
+    await api.get(`${EDU}/attendance/list`, params).then((r) => r?.data?.data),
+
   classRoomList: async (
     params?: Record<string, unknown>,
   ): Promise<ListResult<any>> =>
     await api.get(`${EDU}/class-room/list`, params).then((r) => r?.data?.data),
+
+  classRoomSummary: async (
+    params?: Record<string, unknown>,
+  ): Promise<any> =>
+    await api
+      .get(`${EDU}/class-room/summary`, params)
+      .then((r) => r?.data?.data),
 
   studentList: async (
     params?: Record<string, unknown>,
