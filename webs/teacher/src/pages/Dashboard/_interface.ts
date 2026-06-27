@@ -1,4 +1,4 @@
-import type { ScheduleItem } from "pages/Schedule/_interface";
+import type { ScheduleItem } from "_common/types/schedule";
 
 export interface DashboardStats {
   students_enrolled: number;
