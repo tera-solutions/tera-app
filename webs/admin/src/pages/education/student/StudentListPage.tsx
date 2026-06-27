@@ -125,7 +125,9 @@ const StudentListPage = observer(() => {
           <StudentFilter
             levelOptions={levels.map((lv) => ({
               value: String(lv.id),
-              label: lv.name,
+              label: lv.level_code
+                ? `${lv.level_name} (${lv.level_code})`
+                : lv.level_name,
             }))}
             branchOptions={branches.map((b) => ({
               value: String(b.id),
