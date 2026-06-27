@@ -1,15 +1,17 @@
 import { CheckCircle2, Clock3, Users, XCircle } from 'lucide-react-native';
-
 import { Text, TouchableOpacity, View } from 'react-native';
-
 import { styles } from '../style';
 
-export default function AttendanceActionBar() {
+interface Props {
+  attended?: number;
+  total?: number;
+}
+
+export default function AttendanceActionBar({ attended = 0, total = 0 }: Props) {
   return (
     <View style={styles.actionBar}>
       <View style={styles.summaryBox}>
         <Users color="#0066cc" size={32} />
-
         <Text style={styles.summaryText}>Đã điểm danh</Text>
         <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
           <Text
@@ -18,12 +20,10 @@ export default function AttendanceActionBar() {
               { color: '#0066cc', fontSize: 20, fontWeight: 700 },
             ]}
           >
-            18
+            {attended}
           </Text>
-          <Text
-            style={[styles.summaryText, { color: '#0066cc', fontSize: 12 }]}
-          >
-            /22
+          <Text style={[styles.summaryText, { color: '#0066cc', fontSize: 12 }]}>
+            /{total}
           </Text>
         </View>
       </View>
