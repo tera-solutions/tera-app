@@ -3,6 +3,7 @@ import { useQueryLegacy } from "@tera/commons/hooks/tanstack";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { BrowserRouter } from "react-router-dom";
+import { Spin } from "tera-dls";
 import { AuthApi } from "@tera/api";
 
 import { useStores } from "@tera/stores/useStores";
@@ -16,11 +17,16 @@ const Root = observer(() => {
 
   const [isWorkflowDefault, setIsWorkflowDefault] = useState<boolean>(false);
 
+  // ⚠️ Đợi store nạp xong từ localStorage (token/business_id/device) TRƯỚC khi
+  // bắn request — tránh race lúc reload làm request thiếu header → 404/401 (logout).
+  const ready = globalStore.isHydrated;
+
   // 1. Get Device
   useQueryLegacy({
     queryKey: ["get_device"],
     queryFn: AuthApi.getDeviceCode, // Khai báo tường minh
     staleTime: 300000,
+    enabled: ready,
     onSuccess: (data) => {
       globalStore.setInitData(data);
     },
@@ -31,7 +37,7 @@ const Root = observer(() => {
     queryKey: ["get_profile"],
     queryFn: AuthApi.getProfile, // Khai báo tường minh
     staleTime: 300000,
-    enabled: !!globalStore.token,
+    enabled: ready && !!globalStore.token,
     onSuccess: (res) => {
       globalStore.updateUser({ user: res?.data });
       if (
@@ -48,11 +54,20 @@ const Root = observer(() => {
     queryKey: ["get_metadata"],
     queryFn: AuthApi.getMetadata,
     staleTime: 300000,
-    enabled: !!globalStore.token,
+    enabled: ready && !!globalStore.token,
     onSuccess: (res) => {
       globalStore.setMetadata(res?.data);
     },
   });
+
+  // Chưa hydrate xong → hiện loader, KHÔNG render routes (tránh page con bắn query sớm)
+  if (!ready) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        <Spin spinning />
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter basename={basename}>
