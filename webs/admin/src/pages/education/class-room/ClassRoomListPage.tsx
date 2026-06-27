@@ -119,10 +119,11 @@ const ClassRoomListPage = observer(() => {
           ))}
         </div>
 
-        {/* Search + quick filters row */}
-        <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center">
+        {/* Search + quick filters: full width = chung 1 hàng; hẹp lại thì filter giữ
+            nguyên (shrink-0), search co lại; dưới 1280px về layout mobile */}
+        <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:flex-wrap xmd:items-center">
           <SearchBar
-            className="xmd:flex-1"
+            className="w-full xmd:flex-1 xmd:min-w-[200px]"
             value={keyword}
             placeholder={t("classroom.search_placeholder")}
             onChange={(v) => {
