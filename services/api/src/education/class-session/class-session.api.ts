@@ -9,28 +9,47 @@ import {
 } from "@tera/api/_interface";
 
 export const ClassSessionAPI = {
-  getList: async ({ params }: ListPayload) =>
-    await api
-      .get(`${endpoint}/education/class-session/list`, params)
-      .then((r) => r.data),
+  // List + Create + Generate lồng theo lớp: /edu/class-room/:classId/session/*
+  getList: async ({ params }: ListPayload) => {
+    const { class_id, ...rest } = params ?? {};
+    return await api
+      .get(`${endpoint}/edu/class-room/${class_id}/session/list`, rest)
+      .then((r) => r.data);
+  },
 
+  create: async ({ params }: CreatePayload) => {
+    const { class_id, ...rest } = params ?? {};
+    return await api
+      .post(`${endpoint}/edu/class-room/${class_id}/session/create`, rest)
+      .then((r) => r.data);
+  },
+
+  // Sinh buổi học tự động cho lớp
+  generate: async ({ params }: CreatePayload) => {
+    const { class_id, ...rest } = params ?? {};
+    return await api
+      .post(`${endpoint}/edu/class-room/${class_id}/session/generate`, rest)
+      .then((r) => r.data);
+  },
+
+  // Detail + Update + Cancel + Delete phẳng: /edu/class-session/*
   getDetail: async ({ id }: DetailPayload) =>
     await api
-      .get(`${endpoint}/education/class-session/detail/${id}`)
-      .then((r) => r.data),
-
-  create: async ({ params }: CreatePayload) =>
-    await api
-      .post(`${endpoint}/education/class-session/create`, params)
+      .get(`${endpoint}/edu/class-session/detail/${id}`)
       .then((r) => r.data),
 
   update: async ({ id, params }: UpdatePayload) =>
     await api
-      .put(`${endpoint}/education/class-session/update/${id}`, params)
+      .put(`${endpoint}/edu/class-session/update/${id}`, params)
+      .then((r) => r.data),
+
+  cancel: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/edu/class-session/cancel/${id}`, params)
       .then((r) => r.data),
 
   delete: async ({ id }: DeletePayload) =>
     await api
-      .delete(`${endpoint}/education/class-session/delete/${id}`)
+      .delete(`${endpoint}/edu/class-session/delete/${id}`)
       .then((r) => r.data),
 };

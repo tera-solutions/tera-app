@@ -1,6 +1,7 @@
 export * from "./attendance";
 export * from "./class-room";
 export * from "./class-schedule";
+export * from "./class-session";
 export * from "./course";
 export * from "./evaluation";
 export * from "./level";

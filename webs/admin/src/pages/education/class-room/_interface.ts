@@ -55,6 +55,39 @@ export interface IClassRoomStatistics {
   };
 }
 
+export interface IClassSession {
+  id?: number;
+  class_id?: number;
+  schedule_id?: number | null;
+  session_no?: number;
+  code?: string;
+  name?: string;
+  session_date?: string;
+  start_time?: string;
+  end_time?: string;
+  room_id?: number | null;
+  teacher_id?: number | null;
+  teacher?: { id?: number; full_name?: string; avatar?: string | null } | null;
+  substitute_teacher_id?: number | null;
+  substitute_teacher?: { id?: number; full_name?: string } | null;
+  status?: string;
+  attendance_locked?: boolean;
+  revenue_amount?: string;
+  note?: string | null;
+  tags?: any[];
+}
+
+export interface IClassSessionForm {
+  name?: string;
+  session_date?: string;
+  start_time?: string;
+  end_time?: string;
+  teacher_id?: number | string;
+  substitute_teacher_id?: number | string;
+  room_id?: number | string;
+  note?: string;
+}
+
 export interface IClassRoomScheduleForm {
   id?: number;
   weekday?: number | string;

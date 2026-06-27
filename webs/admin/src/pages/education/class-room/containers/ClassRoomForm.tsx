@@ -27,9 +27,9 @@ import { useStores } from "@tera/stores/useStores";
 /* Import: services */
 import {
   ClassRoomService,
-  ClassScheduleService,
   CourseService,
   LessonPlanService,
+  RoomService,
   TeacherService,
 } from "@tera/modules";
 import { ClassRoomAPI } from "@tera/api";
@@ -37,7 +37,6 @@ import { ClassRoomAPI } from "@tera/api";
 /* Import: pages */
 import UserSelect from "_common/components/UserSelect";
 import { IClassRoomForm } from "pages/education/class-room/_interface";
-import { syncClassSchedules } from "_common/utils/classSchedules";
 
 const SELECT_CLASS =
   "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
@@ -86,805 +85,778 @@ const ClassRoomForm = observer(
     any,
     IFormProps & { onSuccess?: () => void; hasSessions?: boolean }
   >(({ dataDetail, type = "create", onSuccess, hasSessions = false }, ref) => {
-      const isView = type === "detail";
-      const isUpdate = type === "update";
-      // Sau khi đã phát sinh buổi học: không cho đổi khóa học + không clone lại chương trình
-      const lockedBySessions = isUpdate && hasSessions;
-      const { t } = useTranslation();
-      const { globalStore } = useStores();
+    const isView = type === "detail";
+    const isUpdate = type === "update";
+    // Sau khi đã phát sinh buổi học: không cho đổi khóa học + không clone lại chương trình
+    const lockedBySessions = isUpdate && hasSessions;
+    const { t } = useTranslation();
+    const { globalStore } = useStores();
 
-      const [activeTab, setActiveTab] = useState("basic");
+    const [activeTab, setActiveTab] = useState("basic");
 
-      const learningTypeOptions =
-        globalStore.getOptions("class_learning_type") ?? [];
+    const learningTypeOptions =
+      globalStore.getOptions("class_learning_type") ?? [];
 
-      // ⚠️ weekday là SỐ (Thứ 2 = 2 ... Thứ 7 = 7, Chủ nhật = 1) — CẦN verify backend
-      const weekdayOptions = useMemo(
-        () => [
-          { value: 2, label: t("classroom.weekday_mon") },
-          { value: 3, label: t("classroom.weekday_tue") },
-          { value: 4, label: t("classroom.weekday_wed") },
-          { value: 5, label: t("classroom.weekday_thu") },
-          { value: 6, label: t("classroom.weekday_fri") },
-          { value: 7, label: t("classroom.weekday_sat") },
-          { value: 1, label: t("classroom.weekday_sun") },
-        ],
-        [t],
-      );
+    // ⚠️ weekday là SỐ (Thứ 2 = 2 ... Thứ 7 = 7, Chủ nhật = 1) — CẦN verify backend
+    const weekdayOptions = useMemo(
+      () => [
+        { value: 2, label: t("classroom.weekday_mon") },
+        { value: 3, label: t("classroom.weekday_tue") },
+        { value: 4, label: t("classroom.weekday_wed") },
+        { value: 5, label: t("classroom.weekday_thu") },
+        { value: 6, label: t("classroom.weekday_fri") },
+        { value: 7, label: t("classroom.weekday_sat") },
+        { value: 1, label: t("classroom.weekday_sun") },
+      ],
+      [t],
+    );
 
-      const { data: courseData } = CourseService.useCourseList({
-        params: { page: 1, per_page: 100 },
+    const { data: courseData } = CourseService.useCourseList({
+      params: { page: 1, per_page: 100 },
+    });
+    const courses: any[] = courseData?.data?.items ?? [];
+
+    const { data: lessonPlanData } = LessonPlanService.useLessonPlanList({
+      params: { page: 1, per_page: 100 },
+    });
+    const lessonPlans: any[] = lessonPlanData?.data?.items ?? [];
+
+    const { data: teacherData } = TeacherService.useTeacherList({
+      params: { page: 1, per_page: 100 },
+    });
+    const teachers: any[] = teacherData?.data?.items ?? [];
+
+    // Phòng học lấy từ catalog edu/room (RoomService), chỉ phòng đang hoạt động
+    const { data: roomData } = RoomService.useRoomList({
+      params: { page: 1, per_page: 100, status: "active" },
+    });
+    const rooms: any[] = useMemo(() => {
+      const map = new Map<number, any>();
+      (roomData?.data?.items ?? []).forEach((r: any) => {
+        if (r?.id) map.set(r.id, r);
       });
-      const courses: any[] = courseData?.data?.items ?? [];
+      // giữ phòng đang gán nếu không có trong catalog (vd đã ngừng hoạt động)
+      const selected = dataDetail?.room;
+      if (selected?.id && !map.has(selected.id)) map.set(selected.id, selected);
+      return [...map.values()];
+    }, [roomData, dataDetail]);
 
-      const { data: lessonPlanData } = LessonPlanService.useLessonPlanList({
-        params: { page: 1, per_page: 100 },
-      });
-      const lessonPlans: any[] = lessonPlanData?.data?.items ?? [];
+    const isUpdateRef = useRef(isUpdate);
+    isUpdateRef.current = isUpdate;
+    const currentIdRef = useRef(dataDetail?.id);
+    currentIdRef.current = dataDetail?.id;
 
-      const { data: teacherData } = TeacherService.useTeacherList({
-        params: { page: 1, per_page: 100 },
-      });
-      const teachers: any[] = teacherData?.data?.items ?? [];
-
-      // Lịch học đọc từ endpoint riêng class-schedule (theo class_id)
-      const { data: scheduleData } = ClassScheduleService.useClassScheduleList(
-        { params: { class_id: dataDetail?.id } },
-        { enabled: !!dataDetail?.id },
-      );
-      const remoteSchedules: any[] = useMemo(
-        () => scheduleData?.data ?? [],
-        [scheduleData],
-      );
-
-      // Không có catalog phòng riêng → lấy distinct room từ data lớp học hiện có
-      const { data: classData } = ClassRoomService.useClassRoomList({
-        params: { page: 1, per_page: 100 },
-      });
-      const rooms: any[] = useMemo(() => {
-        const map = new Map<number, any>();
-        (classData?.data?.items ?? []).forEach((c: any) => {
-          if (c.room?.id) map.set(c.room.id, c.room);
-        });
-        const selected = dataDetail?.room;
-        if (selected?.id && !map.has(selected.id)) map.set(selected.id, selected);
-        return [...map.values()];
-      }, [classData, dataDetail]);
-
-      const isUpdateRef = useRef(isUpdate);
-      isUpdateRef.current = isUpdate;
-      const currentIdRef = useRef(dataDetail?.id);
-      currentIdRef.current = dataDetail?.id;
-
-      const checkCodeRef = useRef(
-        debounce((code: string, resolve: (valid: boolean) => void) => {
-          ClassRoomAPI.getList({ params: { keyword: code, per_page: 5 } })
-            .then((res) => {
-              const items: any[] = res?.data?.items ?? [];
-              resolve(
-                !items.some(
-                  (item) => item.code === code && item.id !== currentIdRef.current,
-                ),
-              );
-            })
-            .catch(() => resolve(true));
-        }, 500),
-      );
-
-      const schema = useMemo(
-        () =>
-          yup.object({
-            code: yup
-              .string()
-              .required(t("validate.required"))
-              .matches(/^[a-zA-Z0-9_-]+$/, t("validate.no_special_chars"))
-              .test("unique-code", t("validate.code_exists"), (value) => {
-                if (!value || isUpdateRef.current) return true;
-                return new Promise((resolve) =>
-                  checkCodeRef.current(value, resolve),
-                );
-              }),
-            name: yup.string().required(t("validate.required")),
-            course_id: yup.string().required(t("validate.required")),
-            learning_type: yup.string().required(t("validate.required")),
-            start_date: yup.string().required(t("validate.required")),
-            schedules: yup
-              .array()
-              .test(
-                "schedule-required",
-                t("classroom.schedule_required"),
-                function (value) {
-                  if (this.parent.learning_type !== "scheduled") return true;
-                  const valid = (value ?? []).filter(
-                    (s: any) => s?.weekday && s?.start_time && s?.end_time,
-                  );
-                  return valid.length >= 1;
-                },
+    const checkCodeRef = useRef(
+      debounce((code: string, resolve: (valid: boolean) => void) => {
+        ClassRoomAPI.getList({ params: { keyword: code, per_page: 5 } })
+          .then((res) => {
+            const items: any[] = res?.data?.items ?? [];
+            resolve(
+              !items.some(
+                (item) =>
+                  item.code === code && item.id !== currentIdRef.current,
               ),
-          }),
-        [t],
-      );
+            );
+          })
+          .catch(() => resolve(true));
+      }, 500),
+    );
 
-      const form = useForm<IClassRoomForm>({
-        mode: "onChange",
-        defaultValues,
-        resolver: yupResolver(schema) as any,
-      });
+    const schema = useMemo(
+      () =>
+        yup.object({
+          code: yup
+            .string()
+            .required(t("validate.required"))
+            .matches(/^[a-zA-Z0-9_-]+$/, t("validate.no_special_chars"))
+            .test("unique-code", t("validate.code_exists"), (value) => {
+              if (!value || isUpdateRef.current) return true;
+              return new Promise((resolve) =>
+                checkCodeRef.current(value, resolve),
+              );
+            }),
+          name: yup.string().required(t("validate.required")),
+          course_id: yup.string().required(t("validate.required")),
+          learning_type: yup.string().required(t("validate.required")),
+          start_date: yup.string().required(t("validate.required")),
+          schedules: yup
+            .array()
+            .test(
+              "schedule-required",
+              t("classroom.schedule_required"),
+              function (value) {
+                if (this.parent.learning_type !== "scheduled") return true;
+                const valid = (value ?? []).filter(
+                  (s: any) => s?.weekday && s?.start_time && s?.end_time,
+                );
+                return valid.length >= 1;
+              },
+            ),
+        }),
+      [t],
+    );
 
-      const { reset, formState, watch, register, control } = form;
-      const errors = formState.errors as any;
+    const form = useForm<IClassRoomForm>({
+      mode: "onChange",
+      defaultValues,
+      resolver: yupResolver(schema) as any,
+    });
 
-      const {
-        fields: scheduleFields,
-        append: appendSchedule,
-        remove: removeSchedule,
-      } = useFieldArray({ control, name: "schedules" });
+    const { reset, formState, watch, register, control } = form;
+    const errors = formState.errors as any;
 
-      const courseIdValue = watch("course_id");
-      const lessonPlanIdValue = watch("lesson_plan_id");
-      const teacherIdValue = watch("teacher_id");
-      const assigneeIdValue = watch("assignee_id");
-      const roomIdValue = watch("room_id");
-      const learningTypeValue = watch("learning_type");
-      const useCurriculumValue = watch("use_course_curriculum" as any);
-      const schedulesValue = watch("schedules");
+    const {
+      fields: scheduleFields,
+      append: appendSchedule,
+      remove: removeSchedule,
+    } = useFieldArray({ control, name: "schedules" });
 
-      const queryClient = useQueryClient();
-      const { mutate: onSubmit, isPending } =
-        ClassRoomService.useUpsertClassRoom();
+    const courseIdValue = watch("course_id");
+    const lessonPlanIdValue = watch("lesson_plan_id");
+    const teacherIdValue = watch("teacher_id");
+    const assigneeIdValue = watch("assignee_id");
+    const roomIdValue = watch("room_id");
+    const learningTypeValue = watch("learning_type");
+    const useCurriculumValue = watch("use_course_curriculum" as any);
+    const schedulesValue = watch("schedules");
 
-      useEffect(() => {
-        if (dataDetail?.id) {
-          reset({
-            code: dataDetail.code ?? "",
-            name: dataDetail.name ?? "",
-            course_id: dataDetail.course_id ? String(dataDetail.course_id) : "",
-            lesson_plan_id: dataDetail.lesson_plan_id
-              ? String(dataDetail.lesson_plan_id)
+    const queryClient = useQueryClient();
+    const { mutate: onSubmit, isPending } =
+      ClassRoomService.useUpsertClassRoom();
+
+    useEffect(() => {
+      if (dataDetail?.id) {
+        reset({
+          code: dataDetail.code ?? "",
+          name: dataDetail.name ?? "",
+          course_id: dataDetail.course_id ? String(dataDetail.course_id) : "",
+          lesson_plan_id: dataDetail.lesson_plan_id
+            ? String(dataDetail.lesson_plan_id)
+            : "",
+          teacher_id: dataDetail.teacher_id
+            ? String(dataDetail.teacher_id)
+            : "",
+          assignee_id: dataDetail.assignee_id
+            ? String(dataDetail.assignee_id)
+            : "",
+          use_course_curriculum: !!dataDetail.use_course_curriculum,
+          description: dataDetail.description ?? "",
+          learning_type: dataDetail.learning_type ?? "",
+          start_date: dataDetail.start_date
+            ? String(dataDetail.start_date).split("T")[0]
+            : "",
+          end_date: dataDetail.end_date
+            ? String(dataDetail.end_date).split("T")[0]
+            : "",
+          room_id: dataDetail.room_id ? String(dataDetail.room_id) : "",
+          min_warning_capacity:
+            dataDetail.min_warning_capacity != null
+              ? String(dataDetail.min_warning_capacity)
               : "",
-            teacher_id: dataDetail.teacher_id
-              ? String(dataDetail.teacher_id)
+          min_capacity:
+            dataDetail.min_capacity != null
+              ? String(dataDetail.min_capacity)
               : "",
-            assignee_id: dataDetail.assignee_id
-              ? String(dataDetail.assignee_id)
+          max_warning_capacity:
+            dataDetail.max_warning_capacity != null
+              ? String(dataDetail.max_warning_capacity)
               : "",
-            use_course_curriculum: !!dataDetail.use_course_curriculum,
-            description: dataDetail.description ?? "",
-            learning_type: dataDetail.learning_type ?? "",
-            start_date: dataDetail.start_date
-              ? String(dataDetail.start_date).split("T")[0]
+          max_capacity:
+            dataDetail.max_capacity != null
+              ? String(dataDetail.max_capacity)
               : "",
-            end_date: dataDetail.end_date
-              ? String(dataDetail.end_date).split("T")[0]
-              : "",
-            room_id: dataDetail.room_id ? String(dataDetail.room_id) : "",
-            min_warning_capacity:
-              dataDetail.min_warning_capacity != null
-                ? String(dataDetail.min_warning_capacity)
-                : "",
-            min_capacity:
-              dataDetail.min_capacity != null
-                ? String(dataDetail.min_capacity)
-                : "",
-            max_warning_capacity:
-              dataDetail.max_warning_capacity != null
-                ? String(dataDetail.max_warning_capacity)
-                : "",
-            max_capacity:
-              dataDetail.max_capacity != null
-                ? String(dataDetail.max_capacity)
-                : "",
-            schedules: remoteSchedules.map((s: any) => ({
-              id: s.id,
-              weekday: s.weekday != null ? String(s.weekday) : "",
-              start_time: toHHMM(s.start_time),
-              end_time: toHHMM(s.end_time),
-            })),
-          });
-        } else {
-          reset(defaultValues);
-        }
-      }, [dataDetail, remoteSchedules, reset]);
-
-      const handleSubmitForm = (values: IClassRoomForm) => {
-        // Validate giờ lịch (kết thúc > bắt đầu)
-        const scheduleRows = (values.schedules ?? []).filter(
-          (s) => s.weekday || s.start_time || s.end_time,
-        );
-        const invalidTime = scheduleRows.some((s) => {
-          const st = s.start_time ? toHHMM(s.start_time) : "";
-          const et = s.end_time ? toHHMM(s.end_time) : "";
-          return st && et && et <= st;
+          schedules: Array.isArray(dataDetail.schedules)
+            ? dataDetail.schedules.map((s: any) => ({
+                id: s.id,
+                weekday: s.weekday != null ? String(s.weekday) : "",
+                start_time: toHHMM(s.start_time),
+                end_time: toHHMM(s.end_time),
+              }))
+            : [],
         });
-        if (invalidTime) {
-          setActiveTab("schedule");
-          notification.error({ message: t("classroom.schedule_time_invalid") });
-          return;
-        }
+      } else {
+        reset(defaultValues);
+      }
+    }, [dataDetail, reset]);
 
-        // ⚠️ KHÔNG nhúng schedules vào payload class-room — ghi riêng qua class-schedule
-        const params = {
-          code: isUpdate ? undefined : values.code?.trim() || undefined,
-          name: values.name?.trim() || undefined,
-          course_id: values.course_id ? Number(values.course_id) : undefined,
-          lesson_plan_id: values.lesson_plan_id
-            ? Number(values.lesson_plan_id)
-            : undefined,
-          teacher_id: values.teacher_id ? Number(values.teacher_id) : undefined,
-          assignee_id: values.assignee_id
-            ? Number(values.assignee_id)
-            : undefined,
-          use_course_curriculum: !!values.use_course_curriculum,
-          description: values.description?.trim() || undefined,
-          learning_type: values.learning_type || undefined,
-          start_date: values.start_date || undefined,
-          end_date: values.end_date || undefined,
-          room_id: values.room_id ? Number(values.room_id) : undefined,
-          min_warning_capacity: values.min_warning_capacity
-            ? Number(values.min_warning_capacity)
-            : undefined,
-          min_capacity: values.min_capacity
-            ? Number(values.min_capacity)
-            : undefined,
-          max_warning_capacity: values.max_warning_capacity
-            ? Number(values.max_warning_capacity)
-            : undefined,
-          max_capacity: values.max_capacity
-            ? Number(values.max_capacity)
-            : undefined,
-        };
+    const handleSubmitForm = (values: IClassRoomForm) => {
+      // Validate giờ lịch (kết thúc > bắt đầu)
+      const scheduleRows = (values.schedules ?? []).filter(
+        (s) => s.weekday || s.start_time || s.end_time,
+      );
+      const invalidTime = scheduleRows.some((s) => {
+        const st = s.start_time ? toHHMM(s.start_time) : "";
+        const et = s.end_time ? toHHMM(s.end_time) : "";
+        return st && et && et <= st;
+      });
+      if (invalidTime) {
+        setActiveTab("schedule");
+        notification.error({ message: t("classroom.schedule_time_invalid") });
+        return;
+      }
 
-        // Rows lịch để sync qua class-schedule (giữ id + chuẩn hóa giờ HH:MM)
-        const syncRows = scheduleRows.map((s) => ({
-          id: s.id,
-          weekday: s.weekday,
-          start_time: s.start_time ? toHHMM(s.start_time) : "",
-          end_time: s.end_time ? toHHMM(s.end_time) : "",
-        }));
-        const originalIds = remoteSchedules
-          .map((s: any) => s.id)
-          .filter((id: any) => id != null);
-
-        onSubmit(
-          { id: dataDetail?.id, params },
-          {
-            onSuccess: async (res: any) => {
-              // Lấy class_id (update: dataDetail.id; create: từ response)
-              const classId =
-                dataDetail?.id ??
-                res?.data?.class?.id ??
-                res?.data?.id ??
-                res?.data?.class_room?.id;
-              try {
-                if (classId) {
-                  await syncClassSchedules({
-                    classId: Number(classId),
-                    rows: syncRows,
-                    originalIds,
-                  });
-                }
-              } catch (e: any) {
-                notification.error({
-                  message: e?.message || t("common.error_message"),
-                });
-              }
-              queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
-              queryClient.invalidateQueries({
-                queryKey: ["class-room", "detail"],
-              });
-              queryClient.invalidateQueries({
-                queryKey: ["class-schedule", "list"],
-              });
-              notification.success({
-                message: isUpdate
-                  ? t("common.update_success")
-                  : t("common.create_success"),
-              });
-              onSuccess?.();
-            },
-            onError: (error: any) => {
-              notification.error({
-                message: error?.message || t("common.error_message"),
-              });
-            },
-          },
-        );
-      };
-
-      const handleInvalid = (errs: any) => {
-        // Nhảy về tab có lỗi đầu tiên
-        if (errs.code || errs.name || errs.course_id) setActiveTab("basic");
-        else if (errs.learning_type || errs.start_date) setActiveTab("config");
-        else if (errs.schedules) setActiveTab("schedule");
-      };
-
-      useImperativeHandle(ref, () => ({
-        isValid: () => formState.isValid,
-        submit: () => form.handleSubmit(handleSubmitForm, handleInvalid)(),
-        isDirty: () => formState.isDirty,
+      // Nhúng schedules vào payload class-room (backend tự lưu)
+      const schedules = scheduleRows.map((s) => ({
+        weekday: s.weekday ? Number(s.weekday) : undefined,
+        start_time: s.start_time ? toHHMM(s.start_time) : undefined,
+        end_time: s.end_time ? toHHMM(s.end_time) : undefined,
       }));
 
-      const scheduleRequired = learningTypeValue === "scheduled";
-
-      const tabErrors: Record<string, boolean> = {
-        basic: !!(errors.code || errors.name || errors.course_id),
-        config: !!(errors.learning_type || errors.start_date),
-        schedule: !!errors.schedules,
+      const params = {
+        code: isUpdate ? undefined : values.code?.trim() || undefined,
+        name: values.name?.trim() || undefined,
+        course_id: values.course_id ? Number(values.course_id) : undefined,
+        lesson_plan_id: values.lesson_plan_id
+          ? Number(values.lesson_plan_id)
+          : undefined,
+        teacher_id: values.teacher_id ? Number(values.teacher_id) : undefined,
+        assignee_id: values.assignee_id
+          ? Number(values.assignee_id)
+          : undefined,
+        use_course_curriculum: !!values.use_course_curriculum,
+        description: values.description?.trim() || undefined,
+        learning_type: values.learning_type || undefined,
+        start_date: values.start_date || undefined,
+        end_date: values.end_date || undefined,
+        room_id: values.room_id ? Number(values.room_id) : undefined,
+        min_warning_capacity: values.min_warning_capacity
+          ? Number(values.min_warning_capacity)
+          : undefined,
+        min_capacity: values.min_capacity
+          ? Number(values.min_capacity)
+          : undefined,
+        max_warning_capacity: values.max_warning_capacity
+          ? Number(values.max_warning_capacity)
+          : undefined,
+        max_capacity: values.max_capacity
+          ? Number(values.max_capacity)
+          : undefined,
+        schedules: schedules.length ? schedules : undefined,
       };
 
-      const tabs = [
-        { key: "basic", label: t("classroom.tab_basic"), required: false },
-        { key: "config", label: t("classroom.tab_config"), required: false },
+      onSubmit(
+        { id: dataDetail?.id, params },
         {
-          key: "schedule",
-          label: t("classroom.tab_schedule"),
-          required: scheduleRequired,
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
+            queryClient.invalidateQueries({
+              queryKey: ["class-room", "detail"],
+            });
+            notification.success({
+              message: isUpdate
+                ? t("common.update_success")
+                : t("common.create_success"),
+            });
+            onSuccess?.();
+          },
+          onError: (error: any) => {
+            notification.error({
+              message: error?.message || t("common.error_message"),
+            });
+          },
         },
-      ];
+      );
+    };
 
-      return (
-        <div>
-          <FormTera
-            form={form}
-            onSubmit={handleSubmitForm}
-            isLoading={isPending}
-            isDisabled={isView}
-          >
-            {/* Tab bar */}
-            <div className="flex border-b border-gray-200 mb-4 overflow-x-auto overflow-y-hidden scrollbar-none">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`relative px-4 py-2 text-[13px] font-medium border-b-2 -mb-px transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                    activeTab === tab.key
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+    const handleInvalid = (errs: any) => {
+      // Nhảy về tab có lỗi đầu tiên
+      if (errs.code || errs.name || errs.course_id) setActiveTab("basic");
+      else if (errs.learning_type || errs.start_date) setActiveTab("config");
+      else if (errs.schedules) setActiveTab("schedule");
+    };
+
+    useImperativeHandle(ref, () => ({
+      isValid: () => formState.isValid,
+      submit: () => form.handleSubmit(handleSubmitForm, handleInvalid)(),
+      isDirty: () => formState.isDirty,
+    }));
+
+    const scheduleRequired = learningTypeValue === "scheduled";
+
+    const tabErrors: Record<string, boolean> = {
+      basic: !!(errors.code || errors.name || errors.course_id),
+      config: !!(errors.learning_type || errors.start_date),
+      schedule: !!errors.schedules,
+    };
+
+    const tabs = [
+      { key: "basic", label: t("classroom.tab_basic"), required: false },
+      { key: "config", label: t("classroom.tab_config"), required: false },
+      {
+        key: "schedule",
+        label: t("classroom.tab_schedule"),
+        required: scheduleRequired,
+      },
+    ];
+
+    return (
+      <div>
+        <FormTera
+          form={form}
+          onSubmit={handleSubmitForm}
+          isLoading={isPending}
+          isDisabled={isView}
+        >
+          {/* Tab bar */}
+          <div className='flex border-b border-gray-200 mb-4 overflow-x-auto overflow-y-hidden scrollbar-none'>
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                type='button'
+                onClick={() => setActiveTab(tab.key)}
+                className={`relative px-4 py-2 text-[13px] font-medium border-b-2 -mb-px transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+                  activeTab === tab.key
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {tab.label}
+                {tab.required && <span className='text-red-500'>*</span>}
+                {tabErrors[tab.key] && (
+                  <span className='w-1.5 h-1.5 rounded-full bg-red-500 shrink-0' />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab 1: Thông tin cơ bản */}
+          <div className={activeTab === "basic" ? "block" : "hidden"}>
+            <Row className='grid grid-cols-1'>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.name")}
+                  name='name'
+                  rules={[{ required: t("validate.required") }]}
                 >
-                  {tab.label}
-                  {tab.required && <span className="text-red-500">*</span>}
-                  {tabErrors[tab.key] && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                  <Input
+                    placeholder={t("form.enter_value", {
+                      key: t("classroom.name"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.code")}
+                  name='code'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Input
+                    placeholder={isUpdate ? "" : "VD: CLS001, CLS002..."}
+                    disabled={isView || isUpdate}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.course")}
+                  name='course_id'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <div className='w-full overflow-hidden'>
+                    <select
+                      className={SELECT_CLASS}
+                      style={{
+                        borderRadius: "3px",
+                        color: courseIdValue ? "#111827" : "#9ca3af",
+                      }}
+                      disabled={isView || lockedBySessions}
+                      {...register("course_id")}
+                    >
+                      <option value='' disabled hidden>
+                        {t("form.enter_value", { key: t("classroom.course") })}
+                      </option>
+                      {courses.map((c) => (
+                        <option
+                          key={c.id}
+                          value={String(c.id)}
+                          style={{ color: "#111827" }}
+                        >
+                          {c.name}
+                          {c.code ? ` (${c.code})` : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.lesson_plan")}
+                  name='lesson_plan_id'
+                >
+                  <div className='w-full overflow-hidden'>
+                    <select
+                      className={SELECT_CLASS}
+                      style={{
+                        borderRadius: "3px",
+                        color: lessonPlanIdValue ? "#111827" : "#9ca3af",
+                      }}
+                      disabled={isView}
+                      {...register("lesson_plan_id")}
+                    >
+                      <option value='' disabled hidden>
+                        {t("form.enter_value", {
+                          key: t("classroom.lesson_plan"),
+                        })}
+                      </option>
+                      {lessonPlans.map((lp) => (
+                        <option
+                          key={lp.id}
+                          value={String(lp.id)}
+                          style={{ color: "#111827" }}
+                        >
+                          {lp.plan_name ?? lp.name}
+                          {lp.plan_code ? ` (${lp.plan_code})` : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("classroom.teacher")} name='teacher_id'>
+                  <div className='w-full overflow-hidden'>
+                    <select
+                      className={SELECT_CLASS}
+                      style={{
+                        borderRadius: "3px",
+                        color: teacherIdValue ? "#111827" : "#9ca3af",
+                      }}
+                      disabled={isView}
+                      {...register("teacher_id")}
+                    >
+                      <option value='' disabled hidden>
+                        {t("form.enter_value", { key: t("classroom.teacher") })}
+                      </option>
+                      {teachers.map((tc) => (
+                        <option
+                          key={tc.id}
+                          value={String(tc.id)}
+                          style={{ color: "#111827" }}
+                        >
+                          {tc.full_name}
+                          {tc.code ? ` (${tc.code})` : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.assignee")}
+                  name='assignee_id'
+                >
+                  <UserSelect
+                    value={assigneeIdValue}
+                    selectedUser={dataDetail?.assignee}
+                    disabled={isView}
+                    placeholder={t("form.enter_value", {
+                      key: t("classroom.assignee"),
+                    })}
+                    onChange={(id) =>
+                      form.setValue("assignee_id", id, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <label className='flex items-center gap-2 text-[13px] text-gray-700 py-1 cursor-pointer'>
+                  <input
+                    type='checkbox'
+                    disabled={isView || lockedBySessions}
+                    checked={!!useCurriculumValue}
+                    onChange={(e) =>
+                      form.setValue(
+                        "use_course_curriculum" as any,
+                        e.target.checked,
+                        { shouldDirty: true },
+                      )
+                    }
+                  />
+                  {t("classroom.use_sample_program")}
+                </label>
+                {lockedBySessions && (
+                  <p className='text-[12px] text-gray-400 mt-0.5'>
+                    {t("classroom.locked_after_sessions")}
+                  </p>
+                )}
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.description")}
+                  name='description'
+                >
+                  <TextArea
+                    rows={3}
+                    placeholder={t("form.enter_value", {
+                      key: t("classroom.description"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+            </Row>
+          </div>
+
+          {/* Tab 2: Cấu hình lớp học */}
+          <div className={activeTab === "config" ? "block" : "hidden"}>
+            <Row className='grid grid-cols-1'>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.learning_type")}
+                  name='learning_type'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <div className='w-full overflow-hidden'>
+                    <select
+                      className={SELECT_CLASS}
+                      style={{
+                        borderRadius: "3px",
+                        color: learningTypeValue ? "#111827" : "#9ca3af",
+                      }}
+                      disabled={isView}
+                      {...register("learning_type")}
+                    >
+                      <option value='' disabled hidden>
+                        {t("form.enter_value", {
+                          key: t("classroom.learning_type"),
+                        })}
+                      </option>
+                      {learningTypeOptions.map((opt: any) => (
+                        <option
+                          key={opt.value}
+                          value={opt.value}
+                          style={{ color: "#111827" }}
+                        >
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.open_date")}
+                  name='start_date'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Input type='date' disabled={isView} />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("classroom.end_date")} name='end_date'>
+                  <Input type='date' disabled={isView} />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("classroom.room")} name='room_id'>
+                  <div className='w-full overflow-hidden'>
+                    <select
+                      className={SELECT_CLASS}
+                      style={{
+                        borderRadius: "3px",
+                        color: roomIdValue ? "#111827" : "#9ca3af",
+                      }}
+                      disabled={isView}
+                      {...register("room_id")}
+                    >
+                      <option value='' disabled hidden>
+                        {t("form.enter_value", { key: t("classroom.room") })}
+                      </option>
+                      {rooms.map((r) => (
+                        <option
+                          key={r.id}
+                          value={String(r.id)}
+                          style={{ color: "#111827" }}
+                        >
+                          {r.room_name ?? r.name ?? `#${r.id}`}
+                          {r.room_code ? ` (${r.room_code})` : ""}
+                          {r.capacity != null
+                            ? ` · ${r.capacity} ${t("classroom.seats")}`
+                            : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.min_warning_capacity")}
+                  name='min_warning_capacity'
+                >
+                  <Input
+                    type='number'
+                    min={0}
+                    onKeyDown={preventNegativeKey}
+                    placeholder={t("form.enter_value", {
+                      key: t("classroom.min_warning_capacity"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.min_capacity")}
+                  name='min_capacity'
+                >
+                  <Input
+                    type='number'
+                    min={0}
+                    onKeyDown={preventNegativeKey}
+                    placeholder={t("form.enter_value", {
+                      key: t("classroom.min_capacity"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.max_warning_capacity")}
+                  name='max_warning_capacity'
+                >
+                  <Input
+                    type='number'
+                    min={0}
+                    onKeyDown={preventNegativeKey}
+                    placeholder={t("form.enter_value", {
+                      key: t("classroom.max_warning_capacity"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.max_capacity")}
+                  name='max_capacity'
+                >
+                  <Input
+                    type='number'
+                    min={0}
+                    onKeyDown={preventNegativeKey}
+                    placeholder={t("form.enter_value", {
+                      key: t("classroom.max_capacity"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+            </Row>
+          </div>
+
+          {/* Tab 3: Lịch học */}
+          <div className={activeTab === "schedule" ? "block" : "hidden"}>
+            {errors.schedules && (
+              <p className='text-[13px] text-red-500 mb-3'>
+                {errors.schedules.message}
+              </p>
+            )}
+            {scheduleFields.length === 0 && !errors.schedules && (
+              <p className='text-[13px] text-gray-400 italic mb-3'>
+                {t("classroom.no_schedule")}
+              </p>
+            )}
+            <div className='flex flex-col gap-2'>
+              {scheduleFields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className='flex items-end gap-2 rounded-md border border-gray-200 p-2'
+                >
+                  <div className='flex-1 min-w-0'>
+                    <label className='block text-[12px] text-gray-500 mb-1'>
+                      {t("classroom.weekday")}
+                    </label>
+                    <select
+                      className={SELECT_CLASS}
+                      style={{
+                        borderRadius: "3px",
+                        color: schedulesValue?.[index]?.weekday
+                          ? "#111827"
+                          : "#9ca3af",
+                      }}
+                      disabled={isView}
+                      {...register(`schedules.${index}.weekday` as const)}
+                    >
+                      <option value='' disabled hidden>
+                        {t("classroom.select_weekday")}
+                      </option>
+                      {weekdayOptions.map((w) => (
+                        <option
+                          key={w.value}
+                          value={String(w.value)}
+                          style={{ color: "#111827" }}
+                        >
+                          {w.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className='flex-1 min-w-0'>
+                    <label className='block text-[12px] text-gray-500 mb-1'>
+                      {t("classroom.start_time")}
+                    </label>
+                    <input
+                      type='time'
+                      className={TIME_CLASS}
+                      disabled={isView}
+                      {...register(`schedules.${index}.start_time` as const)}
+                    />
+                  </div>
+                  <div className='flex-1 min-w-0'>
+                    <label className='block text-[12px] text-gray-500 mb-1'>
+                      {t("classroom.end_time")}
+                    </label>
+                    <input
+                      type='time'
+                      className={TIME_CLASS}
+                      disabled={isView}
+                      {...register(`schedules.${index}.end_time` as const)}
+                    />
+                  </div>
+                  {!isView && (
+                    <button
+                      type='button'
+                      onClick={() => removeSchedule(index)}
+                      className='h-9 w-9 shrink-0 flex items-center justify-center rounded-[3px] border border-gray-300 text-red-500 hover:bg-red-50'
+                      title={t("button.delete")}
+                    >
+                      <TrashOutlined className='w-4 h-4' />
+                    </button>
                   )}
-                </button>
+                </div>
               ))}
             </div>
-
-            {/* Tab 1: Thông tin cơ bản */}
-            <div className={activeTab === "basic" ? "block" : "hidden"}>
-              <Row className="grid grid-cols-1">
-                <Col>
-                  <FormTeraItem
-                    label={t("classroom.name")}
-                    name="name"
-                    rules={[{ required: t("validate.required") }]}
-                  >
-                    <Input
-                      placeholder={t("form.enter_value", {
-                        key: t("classroom.name"),
-                      })}
-                      disabled={isView}
-                    />
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem
-                    label={t("classroom.code")}
-                    name="code"
-                    rules={[{ required: t("validate.required") }]}
-                  >
-                    <Input
-                      placeholder={isUpdate ? "" : "VD: CLS001, CLS002..."}
-                      disabled={isView || isUpdate}
-                    />
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem
-                    label={t("classroom.course")}
-                    name="course_id"
-                    rules={[{ required: t("validate.required") }]}
-                  >
-                    <div className="w-full overflow-hidden">
-                      <select
-                        className={SELECT_CLASS}
-                        style={{
-                          borderRadius: "3px",
-                          color: courseIdValue ? "#111827" : "#9ca3af",
-                        }}
-                        disabled={isView || lockedBySessions}
-                        {...register("course_id")}
-                      >
-                        <option value="" disabled hidden>
-                          {t("form.enter_value", { key: t("classroom.course") })}
-                        </option>
-                        {courses.map((c) => (
-                          <option
-                            key={c.id}
-                            value={String(c.id)}
-                            style={{ color: "#111827" }}
-                          >
-                            {c.name}
-                            {c.code ? ` (${c.code})` : ""}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem
-                    label={t("classroom.lesson_plan")}
-                    name="lesson_plan_id"
-                  >
-                    <div className="w-full overflow-hidden">
-                      <select
-                        className={SELECT_CLASS}
-                        style={{
-                          borderRadius: "3px",
-                          color: lessonPlanIdValue ? "#111827" : "#9ca3af",
-                        }}
-                        disabled={isView}
-                        {...register("lesson_plan_id")}
-                      >
-                        <option value="" disabled hidden>
-                          {t("form.enter_value", {
-                            key: t("classroom.lesson_plan"),
-                          })}
-                        </option>
-                        {lessonPlans.map((lp) => (
-                          <option
-                            key={lp.id}
-                            value={String(lp.id)}
-                            style={{ color: "#111827" }}
-                          >
-                            {lp.plan_name ?? lp.name}
-                            {lp.plan_code ? ` (${lp.plan_code})` : ""}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem label={t("classroom.teacher")} name="teacher_id">
-                    <div className="w-full overflow-hidden">
-                      <select
-                        className={SELECT_CLASS}
-                        style={{
-                          borderRadius: "3px",
-                          color: teacherIdValue ? "#111827" : "#9ca3af",
-                        }}
-                        disabled={isView}
-                        {...register("teacher_id")}
-                      >
-                        <option value="" disabled hidden>
-                          {t("form.enter_value", { key: t("classroom.teacher") })}
-                        </option>
-                        {teachers.map((tc) => (
-                          <option
-                            key={tc.id}
-                            value={String(tc.id)}
-                            style={{ color: "#111827" }}
-                          >
-                            {tc.full_name}
-                            {tc.code ? ` (${tc.code})` : ""}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem label={t("classroom.assignee")} name="assignee_id">
-                    <UserSelect
-                      value={assigneeIdValue}
-                      selectedUser={dataDetail?.assignee}
-                      disabled={isView}
-                      placeholder={t("form.enter_value", {
-                        key: t("classroom.assignee"),
-                      })}
-                      onChange={(id) =>
-                        form.setValue("assignee_id", id, {
-                          shouldDirty: true,
-                          shouldValidate: true,
-                        })
-                      }
-                    />
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <label className="flex items-center gap-2 text-[13px] text-gray-700 py-1 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      disabled={isView || lockedBySessions}
-                      checked={!!useCurriculumValue}
-                      onChange={(e) =>
-                        form.setValue(
-                          "use_course_curriculum" as any,
-                          e.target.checked,
-                          { shouldDirty: true },
-                        )
-                      }
-                    />
-                    {t("classroom.use_sample_program")}
-                  </label>
-                  {lockedBySessions && (
-                    <p className="text-[12px] text-gray-400 mt-0.5">
-                      {t("classroom.locked_after_sessions")}
-                    </p>
-                  )}
-                </Col>
-                <Col>
-                  <FormTeraItem
-                    label={t("classroom.description")}
-                    name="description"
-                  >
-                    <TextArea
-                      rows={3}
-                      placeholder={t("form.enter_value", {
-                        key: t("classroom.description"),
-                      })}
-                      disabled={isView}
-                    />
-                  </FormTeraItem>
-                </Col>
-              </Row>
-            </div>
-
-            {/* Tab 2: Cấu hình lớp học */}
-            <div className={activeTab === "config" ? "block" : "hidden"}>
-              <Row className="grid grid-cols-1">
-                <Col>
-                  <FormTeraItem
-                    label={t("classroom.learning_type")}
-                    name="learning_type"
-                    rules={[{ required: t("validate.required") }]}
-                  >
-                    <div className="w-full overflow-hidden">
-                      <select
-                        className={SELECT_CLASS}
-                        style={{
-                          borderRadius: "3px",
-                          color: learningTypeValue ? "#111827" : "#9ca3af",
-                        }}
-                        disabled={isView}
-                        {...register("learning_type")}
-                      >
-                        <option value="" disabled hidden>
-                          {t("form.enter_value", {
-                            key: t("classroom.learning_type"),
-                          })}
-                        </option>
-                        {learningTypeOptions.map((opt: any) => (
-                          <option
-                            key={opt.value}
-                            value={opt.value}
-                            style={{ color: "#111827" }}
-                          >
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem
-                    label={t("classroom.open_date")}
-                    name="start_date"
-                    rules={[{ required: t("validate.required") }]}
-                  >
-                    <Input type="date" disabled={isView} />
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem label={t("classroom.end_date")} name="end_date">
-                    <Input type="date" disabled={isView} />
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem label={t("classroom.room")} name="room_id">
-                    <div className="w-full overflow-hidden">
-                      <select
-                        className={SELECT_CLASS}
-                        style={{
-                          borderRadius: "3px",
-                          color: roomIdValue ? "#111827" : "#9ca3af",
-                        }}
-                        disabled={isView}
-                        {...register("room_id")}
-                      >
-                        <option value="" disabled hidden>
-                          {t("form.enter_value", { key: t("classroom.room") })}
-                        </option>
-                        {rooms.map((r) => (
-                          <option
-                            key={r.id}
-                            value={String(r.id)}
-                            style={{ color: "#111827" }}
-                          >
-                            {r.room_name}
-                            {r.room_code ? ` (${r.room_code})` : ""}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem
-                    label={t("classroom.min_warning_capacity")}
-                    name="min_warning_capacity"
-                  >
-                    <Input
-                      type="number"
-                      min={0}
-                      onKeyDown={preventNegativeKey}
-                      placeholder={t("form.enter_value", {
-                        key: t("classroom.min_warning_capacity"),
-                      })}
-                      disabled={isView}
-                    />
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem
-                    label={t("classroom.min_capacity")}
-                    name="min_capacity"
-                  >
-                    <Input
-                      type="number"
-                      min={0}
-                      onKeyDown={preventNegativeKey}
-                      placeholder={t("form.enter_value", {
-                        key: t("classroom.min_capacity"),
-                      })}
-                      disabled={isView}
-                    />
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem
-                    label={t("classroom.max_warning_capacity")}
-                    name="max_warning_capacity"
-                  >
-                    <Input
-                      type="number"
-                      min={0}
-                      onKeyDown={preventNegativeKey}
-                      placeholder={t("form.enter_value", {
-                        key: t("classroom.max_warning_capacity"),
-                      })}
-                      disabled={isView}
-                    />
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem
-                    label={t("classroom.max_capacity")}
-                    name="max_capacity"
-                  >
-                    <Input
-                      type="number"
-                      min={0}
-                      onKeyDown={preventNegativeKey}
-                      placeholder={t("form.enter_value", {
-                        key: t("classroom.max_capacity"),
-                      })}
-                      disabled={isView}
-                    />
-                  </FormTeraItem>
-                </Col>
-              </Row>
-            </div>
-
-            {/* Tab 3: Lịch học */}
-            <div className={activeTab === "schedule" ? "block" : "hidden"}>
-              {errors.schedules && (
-                <p className="text-[13px] text-red-500 mb-3">
-                  {errors.schedules.message}
-                </p>
-              )}
-              {scheduleFields.length === 0 && !errors.schedules && (
-                <p className="text-[13px] text-gray-400 italic mb-3">
-                  {t("classroom.no_schedule")}
-                </p>
-              )}
-              <div className="flex flex-col gap-2">
-                {scheduleFields.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className="flex items-end gap-2 rounded-md border border-gray-200 p-2"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <label className="block text-[12px] text-gray-500 mb-1">
-                        {t("classroom.weekday")}
-                      </label>
-                      <select
-                        className={SELECT_CLASS}
-                        style={{
-                          borderRadius: "3px",
-                          color: schedulesValue?.[index]?.weekday
-                            ? "#111827"
-                            : "#9ca3af",
-                        }}
-                        disabled={isView}
-                        {...register(`schedules.${index}.weekday` as const)}
-                      >
-                        <option value="" disabled hidden>
-                          {t("classroom.select_weekday")}
-                        </option>
-                        {weekdayOptions.map((w) => (
-                          <option
-                            key={w.value}
-                            value={String(w.value)}
-                            style={{ color: "#111827" }}
-                          >
-                            {w.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <label className="block text-[12px] text-gray-500 mb-1">
-                        {t("classroom.start_time")}
-                      </label>
-                      <input
-                        type="time"
-                        className={TIME_CLASS}
-                        disabled={isView}
-                        {...register(`schedules.${index}.start_time` as const)}
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <label className="block text-[12px] text-gray-500 mb-1">
-                        {t("classroom.end_time")}
-                      </label>
-                      <input
-                        type="time"
-                        className={TIME_CLASS}
-                        disabled={isView}
-                        {...register(`schedules.${index}.end_time` as const)}
-                      />
-                    </div>
-                    {!isView && (
-                      <button
-                        type="button"
-                        onClick={() => removeSchedule(index)}
-                        className="h-9 w-9 shrink-0 flex items-center justify-center rounded-[3px] border border-gray-300 text-red-500 hover:bg-red-50"
-                        title={t("button.delete")}
-                      >
-                        <TrashOutlined className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-              {!isView && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    appendSchedule({
-                      weekday: "",
-                      start_time: "",
-                      end_time: "",
-                    })
-                  }
-                  className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-dashed border-blue-400 px-3 py-1.5 text-[13px] text-blue-600 hover:bg-blue-50"
-                >
-                  <PlusOutlined className="w-4 h-4" />
-                  {t("classroom.add_schedule")}
-                </button>
-              )}
-            </div>
-          </FormTera>
-        </div>
-      );
-    },
-  ),
+            {!isView && (
+              <button
+                type='button'
+                onClick={() =>
+                  appendSchedule({
+                    weekday: "",
+                    start_time: "",
+                    end_time: "",
+                  })
+                }
+                className='mt-3 inline-flex items-center gap-1.5 rounded-md border border-dashed border-blue-400 px-3 py-1.5 text-[13px] text-blue-600 hover:bg-blue-50'
+              >
+                <PlusOutlined className='w-4 h-4' />
+                {t("classroom.add_schedule")}
+              </button>
+            )}
+          </div>
+        </FormTera>
+      </div>
+    );
+  }),
 );
 
 export default ClassRoomForm;
