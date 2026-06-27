@@ -286,6 +286,8 @@ ClassRoomService.useClassRoomRestore()
 ClassRoomService.useClassRoomExport()
 ```
 
+> Đặc tả chi tiết: [`agents/claude/service/class-room.md`](./service/class-room.md)
+
 #### ClassScheduleService _(Pattern B + options)_
 ```typescript
 ClassScheduleService.useClassScheduleList(payload, options?)
