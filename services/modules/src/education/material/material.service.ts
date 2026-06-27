@@ -4,7 +4,7 @@ import {
   useQueryAdapter,
   useMutationAdapter,
 } from "@tera/commons/hooks/queryAdapter";
-import { LessonAPI } from "@tera/api";
+import { MaterialAPI } from "@tera/api";
 import {
   CreatePayload,
   DeletePayload,
@@ -15,30 +15,30 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useLessonList = (payload: ListPayload) => {
+export const useMaterialList = (payload: ListPayload) => {
   return useQueryAdapter({
-    queryKey: ["lesson", "list", payload.params],
-    queryFn: () => LessonAPI.getList(payload),
+    queryKey: ["material", "list", payload.params],
+    queryFn: () => MaterialAPI.getList(payload),
     keepPreviousData: true,
   });
 };
 
-export const useLessonDetail = (payload: DetailPayload) => {
+export const useMaterialDetail = (payload: DetailPayload) => {
   return useQueryAdapter({
-    queryKey: ["lesson", "detail", payload.id],
-    queryFn: () => LessonAPI.getDetail(payload),
+    queryKey: ["material", "detail", payload.id],
+    queryFn: () => MaterialAPI.getDetail(payload),
     enabled: !!payload.id,
   });
 };
 
 // MUTATION
-export const useLessonCreate = () => {
+export const useMaterialCreate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: CreatePayload) => LessonAPI.create(payload),
+    mutationFn: (payload: CreatePayload) => MaterialAPI.create(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lesson", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["material", "list"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -46,13 +46,13 @@ export const useLessonCreate = () => {
   });
 };
 
-export const useLessonUpdate = () => {
+export const useMaterialUpdate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => LessonAPI.update(payload),
+    mutationFn: (payload: UpdatePayload) => MaterialAPI.update(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lesson", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["material", "list"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -60,17 +60,17 @@ export const useLessonUpdate = () => {
   });
 };
 
-export const useUpsertLesson = () => {
+export const useUpsertMaterial = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
     mutationFn: (payload: UpdatePayload) => {
-      if (payload?.id) return LessonAPI.update(payload);
-      return LessonAPI.create(payload);
+      if (payload?.id) return MaterialAPI.update(payload);
+      return MaterialAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lesson", "list"] });
-      queryClient.invalidateQueries({ queryKey: ["lesson", "detail"] });
+      queryClient.invalidateQueries({ queryKey: ["material", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["material", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -78,13 +78,13 @@ export const useUpsertLesson = () => {
   });
 };
 
-export const useLessonDelete = () => {
+export const useMaterialDelete = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => LessonAPI.delete(payload),
+    mutationFn: (payload: DeletePayload) => MaterialAPI.delete(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lesson", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["material", "list"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -92,11 +92,10 @@ export const useLessonDelete = () => {
   });
 };
 
-export const useLessonExport = () => {
+export const useMaterialExport = () => {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => LessonAPI.export(payload),
+    mutationFn: (payload: ExportPayload) => MaterialAPI.export(payload),
     onSuccess: (res) => {
       if (res?.data?.link) {
         window.open(res?.data?.link, "_blank");
@@ -108,12 +107,12 @@ export const useLessonExport = () => {
   });
 };
 
-export const LessonService = {
-  useLessonList,
-  useLessonDetail,
-  useLessonCreate,
-  useLessonUpdate,
-  useUpsertLesson,
-  useLessonDelete,
-  useLessonExport,
+export const MaterialService = {
+  useMaterialList,
+  useMaterialDetail,
+  useMaterialCreate,
+  useMaterialUpdate,
+  useUpsertMaterial,
+  useMaterialDelete,
+  useMaterialExport,
 };

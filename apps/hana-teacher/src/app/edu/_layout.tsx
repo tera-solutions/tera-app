@@ -10,6 +10,7 @@ export default function LessonLayout() {
       <Stack.Screen name="assignment-grading" />
       <Stack.Screen name="classroom-detail" />
       <Stack.Screen name="exam" />
+      <Stack.Screen name="material" />
       <Stack.Screen name="exam-detail" />
       <Stack.Screen name="room" />
     </Stack>

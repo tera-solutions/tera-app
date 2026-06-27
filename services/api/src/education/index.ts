@@ -29,3 +29,4 @@ export * from "./student-level";
 export * from "./student-profile";
 export * from "./student-status";
 export * from "./test";
+export * from "./material";
