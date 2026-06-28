@@ -385,9 +385,9 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
 
         {/* Tab 1: Thông tin cơ bản */}
         <div className={activeTab === "basic" ? "block" : "hidden"}>
-          <Row className="grid grid-cols-1">
+          <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
             {!isView && (
-              <Col>
+              <Col className="sm:col-span-2">
                 <label className="text-[13px] text-gray-600 font-medium mb-2 block text-center">
                   {t("teacher.avatar")}
                 </label>
@@ -501,7 +501,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
                 <Input placeholder={t("form.enter_value", { key: t("teacher.phone") })} disabled={isView} />
               </FormTeraItem>
             </Col>
-            <Col>
+            <Col className="sm:col-span-2">
               <FormTeraItem label={t("teacher.email")} name="email" rules={[{ required: t("validate.required") }]}>
                 <Input placeholder={t("form.enter_value", { key: t("teacher.email") })} disabled={isView} />
               </FormTeraItem>
@@ -598,7 +598,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
 
         {/* Tab 3: Thông tin làm việc */}
         <div className={activeTab === "work" ? "block" : "hidden"}>
-          <Row className="grid grid-cols-1">
+          <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
             <Col>
               <FormTeraItem label={t("teacher.employment_type")} name="employment_type" rules={[{ required: t("validate.required") }]}>
                 <div className="w-full overflow-hidden">
@@ -666,7 +666,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
                 </FormTeraItem>
               </Col>
             )}
-            <Col>
+            <Col className="sm:col-span-2">
               <FormTeraItem label={t("teacher.note")} name="note">
                 <TextArea
                   rows={3}
@@ -676,7 +676,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
               </FormTeraItem>
             </Col>
 
-            <Col>
+            <Col className="sm:col-span-2">
               <div className="mt-1 mb-2 pt-2 border-t border-gray-100">
                 <h3 className="text-[13px] font-semibold text-gray-700">
                   {t("teacher.bank_info")}
