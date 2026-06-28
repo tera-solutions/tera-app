@@ -51,6 +51,7 @@ const money = (v?: number | string) =>
 const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
   const { t } = useTranslation();
   const { globalStore } = useStores();
+  const isMobile = useIsMobile();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
@@ -571,22 +572,25 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
               }}
             />
           </div>
+          {/* Khoảng ngày: desktop dùng RangePicker (popup 2 lịch OK); mobile dùng
+              native <input type="date"> — picker là dialog của OS, KHÔNG tràn màn hình */}
           {isMobile ? (
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="shrink-0 flex items-center gap-1 h-9 border border-gray-300 rounded-[3px] px-2">
               <input
                 type="date"
-                className={DATE_INPUT_CLASS}
+                className="bg-transparent text-[13px] text-gray-700 outline-none w-[100px]"
                 value={fromDate}
-                max={toDate || undefined}
                 onChange={(e) => {
-                  setFromDate(e.target.value);
+                  const v = e.target.value;
+                  setFromDate(v);
+                  if (v && toDate && toDate < v) setToDate("");
                   resetPage();
                 }}
               />
-              <span className="text-gray-400">→</span>
+              <span className="text-gray-300 shrink-0">–</span>
               <input
                 type="date"
-                className={DATE_INPUT_CLASS}
+                className="bg-transparent text-[13px] text-gray-700 outline-none w-[100px]"
                 value={toDate}
                 min={fromDate || undefined}
                 onChange={(e) => {
@@ -610,12 +614,8 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
               placeholder={[t("common.from"), t("common.to")]}
               allowClear
               onChange={(dates: any) => {
-                setFromDate(
-                  dates?.[0] ? moment(dates[0]).format("YYYY-MM-DD") : "",
-                );
-                setToDate(
-                  dates?.[1] ? moment(dates[1]).format("YYYY-MM-DD") : "",
-                );
+                setFromDate(dates?.[0] ? moment(dates[0]).format("YYYY-MM-DD") : "");
+                setToDate(dates?.[1] ? moment(dates[1]).format("YYYY-MM-DD") : "");
                 resetPage();
               }}
             />
