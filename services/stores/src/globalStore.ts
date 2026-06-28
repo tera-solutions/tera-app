@@ -31,6 +31,10 @@ export class GlobalStore {
   // Dữ liệu enum dùng chung từ API metadata, dạng { group: { list_name: IMetaOption[] } }
   metadata: Record<string, Record<string, IMetaOption[]>> = {};
 
+  // Cờ báo store đã nạp xong từ localStorage (token/business_id/device...).
+  // Render app/query phải đợi cờ này = true để tránh bắn request thiếu header (404/401).
+  isHydrated = false;
+
   constructor() {
     makeAutoObservable(this);
     makePersistable(this, {
@@ -38,6 +42,7 @@ export class GlobalStore {
       properties: [
         "token",
         "access_id",
+        "business_id",
         "user",
         "permissions",
         "epics",
@@ -47,8 +52,14 @@ export class GlobalStore {
         "metadata",
       ],
       storage: window.localStorage,
+    }).then((persistable) => {
+      this.setHydrated(persistable.isHydrated);
     });
   }
+
+  setHydrated = (value: boolean) => {
+    this.isHydrated = value;
+  };
 
   pushEvent() {
     const event = new CustomEvent("GlobalStore", {

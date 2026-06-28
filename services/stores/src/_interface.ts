@@ -4,6 +4,8 @@ import { IMetaOption } from "./globalStore";
 
 export interface IGlobalStore {
   metadata: Record<string, Record<string, IMetaOption[]>>;
+  isHydrated: boolean;
+  setHydrated: (value: boolean) => void;
   setMetadata: (data: any) => void;
   getOptions: (name: string) => IMetaOption[];
   getMetaItem: (name: string, value?: string | null) => IMetaOption | undefined;

@@ -2,33 +2,38 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { styles } from '../styles';
+import { LessonPlanStats } from '../types';
 
-export const StatisticCards: React.FC = () => {
-  const stats = [
+interface Props {
+  stats?: LessonPlanStats;
+}
+
+export const StatisticCards: React.FC<Props> = ({ stats }) => {
+  const items = [
     {
       label: 'Tổng giáo án',
-      value: '24',
+      value: String(stats?.total ?? 0),
       icon: 'file-document-outline',
       bg: '#EFF6FF',
       iconColor: '#3B82F6',
     },
     {
-      label: 'Đã giảng',
-      value: '16',
+      label: 'Đã xuất bản',
+      value: String(stats?.published ?? 0),
       icon: 'checkbox-marked-circle-outline',
       bg: '#ECFDF5',
       iconColor: '#10B981',
     },
     {
-      label: 'Sắp tới',
-      value: '6',
+      label: 'Đang duyệt',
+      value: String(stats?.reviewing ?? 0),
       icon: 'clock-outline',
       bg: '#FFF7ED',
       iconColor: '#F97316',
     },
     {
       label: 'Tiến độ',
-      value: '66.7%',
+      value: `${stats?.progressPercent ?? 0}%`,
       icon: 'calendar-month-outline',
       bg: '#F5F3FF',
       iconColor: '#8B5CF6',
@@ -37,7 +42,7 @@ export const StatisticCards: React.FC = () => {
 
   return (
     <View style={styles.statsGrid}>
-      {stats.map((item, idx) => (
+      {items.map((item, idx) => (
         <View key={idx} style={[styles.statCard, { backgroundColor: item.bg }]}>
           <Icon source={item.icon} size={22} color={item.iconColor} />
           <Text style={styles.statValue}>{item.value}</Text>

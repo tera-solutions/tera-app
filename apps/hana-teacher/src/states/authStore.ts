@@ -27,11 +27,14 @@ export class AuthStore {
     return !!this.token;
   }
 
-  clear = () => {
-    this.token = '';
-    this.user = null;
-    stopPersisting(this);
+  clear = async () => {
     console.log('AuthStore state reset completed');
+    runInAction(() => {
+      this.token = '';
+      this.user = null;
+      this.role = 'user';
+    });
+    await AsyncStorage.removeItem('AuthMobileStore');
   };
 
   updateToken = (token: string) => {

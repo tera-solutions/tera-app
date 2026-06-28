@@ -7,6 +7,7 @@ import { styles } from '../../styles';
 
 interface StatsRowProps {
   info: ClassInfo;
+  totalStudents?: number; // override từ API pagination.total
 }
 
 interface StatBoxProps {
@@ -28,13 +29,13 @@ function StatBox({ icon, iconBg, value, label, sublabel }: StatBoxProps) {
   );
 }
 
-export default function StatsRow({ info }: StatsRowProps) {
+export default function StatsRow({ info, totalStudents }: StatsRowProps) {
   return (
     <View style={styles.statsRow}>
       <StatBox
         icon={<Users size={18} color="#2196F3" />}
         iconBg="#EAF4FF"
-        value={String(info.totalStudents)}
+        value={String(totalStudents ?? info.totalStudents)}
         label="Học viên"
         sublabel="Tổng số"
       />

@@ -69,7 +69,8 @@ export const useUpsertAttendance = () => {
       return AttendanceAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["attendance", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["attendance", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);

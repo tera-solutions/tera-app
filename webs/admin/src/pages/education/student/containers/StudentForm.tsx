@@ -47,10 +47,10 @@ const defaultValues: IStudentForm = {
   business_id: "",
   branch_id: "",
   gender: "",
+  level_id: "",
   dob: "",
   email: "",
   phone: "",
-  level_id: "",
   status: "",
   enrollment_date: "",
   admission_source: "",
@@ -219,8 +219,8 @@ const StudentForm = observer(
       const businessIdValue = watch("business_id");
       const branchIdValue = watch("branch_id");
       const genderValue = watch("gender");
-      const levelValue = watch("level_id");
       const statusValue = watch("status");
+      const levelValue = watch("level_id");
       const avatarValue = watch("avatar" as any);
 
       const {
@@ -719,7 +719,9 @@ const StudentForm = observer(
                       </option>
                       {levels.map((lv: any) => (
                         <option key={lv.id} value={String(lv.id)} style={{ color: "#111827" }}>
-                          {lv.name}
+                          {lv.level_code
+                            ? `${lv.level_name} (${lv.level_code})`
+                            : lv.level_name}
                         </option>
                       ))}
                     </select>

@@ -5,7 +5,11 @@ import { useRouter } from 'expo-router';
 
 import { styles } from '../../styles';
 
-export default function ClassDetailHeader() {
+interface Props {
+  title?: string;
+}
+
+export default function ClassDetailHeader({ title }: Props) {
   const router = useRouter();
   return (
     <View style={styles.header}>
@@ -17,7 +21,9 @@ export default function ClassDetailHeader() {
       <TouchableOpacity style={styles.iconButton} onPress={() => router.back()}>
         <Icon source="chevron-left" size={28} color="#FFFFFF" />
       </TouchableOpacity>
-      <Text style={styles.headerTitle}>Chi tiết lớp học</Text>
+      <Text style={styles.headerTitle} numberOfLines={1}>
+        {title ?? 'Chi tiết lớp học'}
+      </Text>
       <TouchableOpacity style={styles.iconButton}>
         <Ellipsis size={20} color="#FFFFFF" />
       </TouchableOpacity>

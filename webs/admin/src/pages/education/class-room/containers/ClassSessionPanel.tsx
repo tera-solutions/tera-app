@@ -39,6 +39,9 @@ import { IClassSession } from "pages/education/class-room/_interface";
 import ClassSessionFormModal from "./ClassSessionFormModal";
 import ClassSessionCalendar from "./ClassSessionCalendar";
 
+const DATE_INPUT_CLASS =
+  "w-full h-9 border border-gray-300 bg-white px-2 text-[13px] rounded-[3px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 box-border";
+
 const time = (v?: string) => (v ? String(v).slice(0, 5) : "—");
 const fmtDate = (v?: string) =>
   v ? new Date(v).toLocaleDateString("vi-VN") : "—";
@@ -50,6 +53,7 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
   const { globalStore } = useStores();
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   const statusOptions = globalStore.getOptions("class_session_status") ?? [];
 

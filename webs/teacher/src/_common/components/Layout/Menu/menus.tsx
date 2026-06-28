@@ -261,7 +261,7 @@ export const MENU: MenuItem[] = [
   {
     key: "classes",
     title: "Lớp học",
-    path: PATHS.classes,
+    path: PATHS.classroom,
     icon: <UsersOutlined />,
   },
   {
@@ -336,7 +336,7 @@ export const BOTTOM_NAV: MenuItem[] = [
   {
     key: "classes",
     title: "Lớp học",
-    path: PATHS.classes,
+    path: PATHS.classroom,
     icon: <UsersOutlined />,
   },
   {

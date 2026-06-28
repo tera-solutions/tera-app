@@ -1,11 +1,15 @@
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, Image, TextInput, TouchableOpacity } from 'react-native';
 
 import { Search, SlidersHorizontal, Plus } from 'lucide-react-native';
 
 import { styles } from './style';
 
-export default function HeaderSection() {
+interface Props {
+  search: string;
+  onSearch: (text: string) => void;
+}
+
+export default function HeaderSection({ search, onSearch }: Props) {
   return (
     <View style={styles.container}>
       <Image
@@ -27,8 +31,12 @@ export default function HeaderSection() {
         <View style={styles.searchBox}>
           <Search size={20} color="#888" />
           <TextInput
+            value={search}
+            onChangeText={onSearch}
             placeholder="Tìm kiếm lớp học, học viên..."
             style={styles.input}
+            returnKeyType="search"
+            clearButtonMode="while-editing"
           />
         </View>
 

@@ -4,6 +4,7 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
+  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -11,26 +12,31 @@ import {
 export const ExamAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
-      .get(`${endpoint}/education/exam/list`, params)
+      .get(`${endpoint}/edu/exam/list`, { ...params, ...params?.filters })
       .then((r) => r.data),
 
   getDetail: async ({ id }: DetailPayload) =>
     await api
-      .get(`${endpoint}/education/exam/detail/${id}`)
+      .get(`${endpoint}/edu/exam/detail/${id}`)
       .then((r) => r.data),
 
   create: async ({ params }: CreatePayload) =>
     await api
-      .post(`${endpoint}/education/exam/create`, params)
+      .post(`${endpoint}/edu/exam/create`, params)
       .then((r) => r.data),
 
   update: async ({ id, params }: UpdatePayload) =>
     await api
-      .put(`${endpoint}/education/exam/update/${id}`, params)
+      .put(`${endpoint}/edu/exam/update/${id}`, params)
       .then((r) => r.data),
 
   delete: async ({ id }: DeletePayload) =>
     await api
-      .delete(`${endpoint}/education/exam/delete/${id}`)
+      .delete(`${endpoint}/edu/exam/delete/${id}`)
+      .then((r) => r.data),
+
+  export: async ({ params }: ExportPayload) =>
+    await api
+      .post(`${endpoint}/edu/exam/export`, params)
       .then((r) => r.data),
 };

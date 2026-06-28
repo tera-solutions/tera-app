@@ -70,6 +70,7 @@ export const useUpsertStudent = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["student", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);

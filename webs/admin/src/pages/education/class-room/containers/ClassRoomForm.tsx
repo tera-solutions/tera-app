@@ -8,12 +8,13 @@ import {
   useState,
 } from "react";
 import { observer } from "mobx-react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Col, Row, notification } from "tera-dls";
+import moment from "moment";
+import { Col, Row, notification, DatePicker as DatePickerTera } from "tera-dls";
 import { PlusOutlined, TrashOutlined } from "tera-dls";
 import debounce from "lodash/debounce";
 
@@ -80,11 +81,14 @@ const defaultValues: IClassRoomForm = {
   schedules: [],
 };
 
+type ClassRoomFormProps = IFormProps & {
+  onSuccess?: () => void;
+  hasSessions?: boolean;
+};
+
 const ClassRoomForm = observer(
-  forwardRef<
-    any,
-    IFormProps & { onSuccess?: () => void; hasSessions?: boolean }
-  >(({ dataDetail, type = "create", onSuccess, hasSessions = false }, ref) => {
+  forwardRef<any, ClassRoomFormProps>(
+    ({ dataDetail, type = "create", onSuccess, hasSessions = false }, ref) => {
     const isView = type === "detail";
     const isUpdate = type === "update";
     // Sau khi đã phát sinh buổi học: không cho đổi khóa học + không clone lại chương trình
@@ -193,65 +197,46 @@ const ClassRoomForm = observer(
               },
             ),
         }),
-      [t],
-    );
+        [t],
+      );
 
-    const form = useForm<IClassRoomForm>({
-      mode: "onChange",
-      defaultValues,
-      resolver: yupResolver(schema) as any,
-    });
+      const form = useForm<IClassRoomForm>({
+        mode: "onChange",
+        defaultValues,
+        resolver: yupResolver(schema) as any,
+      });
 
-    const { reset, formState, watch, register, control } = form;
-    const errors = formState.errors as any;
+      const { reset, formState, watch, register, control } = form;
+      const errors = formState.errors as any;
 
-    const {
-      fields: scheduleFields,
-      append: appendSchedule,
-      remove: removeSchedule,
-    } = useFieldArray({ control, name: "schedules" });
+      const {
+        fields: scheduleFields,
+        append: appendSchedule,
+        remove: removeSchedule,
+      } = useFieldArray({ control, name: "schedules" });
 
-    const courseIdValue = watch("course_id");
-    const lessonPlanIdValue = watch("lesson_plan_id");
-    const teacherIdValue = watch("teacher_id");
-    const assigneeIdValue = watch("assignee_id");
-    const roomIdValue = watch("room_id");
-    const learningTypeValue = watch("learning_type");
-    const useCurriculumValue = watch("use_course_curriculum" as any);
-    const schedulesValue = watch("schedules");
+      const courseIdValue = watch("course_id");
+      const lessonPlanIdValue = watch("lesson_plan_id");
+      const teacherIdValue = watch("teacher_id");
+      const assigneeIdValue = watch("assignee_id");
+      const roomIdValue = watch("room_id");
+      const learningTypeValue = watch("learning_type");
+      const useCurriculumValue = watch("use_course_curriculum" as any);
+      const schedulesValue = watch("schedules");
+      const startDateValue = watch("start_date");
 
-    const queryClient = useQueryClient();
-    const { mutate: onSubmit, isPending } =
-      ClassRoomService.useUpsertClassRoom();
+      const queryClient = useQueryClient();
+      const { mutate: onSubmit, isPending } =
+        ClassRoomService.useUpsertClassRoom();
 
-    useEffect(() => {
-      if (dataDetail?.id) {
-        reset({
-          code: dataDetail.code ?? "",
-          name: dataDetail.name ?? "",
-          course_id: dataDetail.course_id ? String(dataDetail.course_id) : "",
-          lesson_plan_id: dataDetail.lesson_plan_id
-            ? String(dataDetail.lesson_plan_id)
-            : "",
-          teacher_id: dataDetail.teacher_id
-            ? String(dataDetail.teacher_id)
-            : "",
-          assignee_id: dataDetail.assignee_id
-            ? String(dataDetail.assignee_id)
-            : "",
-          use_course_curriculum: !!dataDetail.use_course_curriculum,
-          description: dataDetail.description ?? "",
-          learning_type: dataDetail.learning_type ?? "",
-          start_date: dataDetail.start_date
-            ? String(dataDetail.start_date).split("T")[0]
-            : "",
-          end_date: dataDetail.end_date
-            ? String(dataDetail.end_date).split("T")[0]
-            : "",
-          room_id: dataDetail.room_id ? String(dataDetail.room_id) : "",
-          min_warning_capacity:
-            dataDetail.min_warning_capacity != null
-              ? String(dataDetail.min_warning_capacity)
+      useEffect(() => {
+        if (dataDetail?.id) {
+          reset({
+            code: dataDetail.code ?? "",
+            name: dataDetail.name ?? "",
+            course_id: dataDetail.course_id ? String(dataDetail.course_id) : "",
+            lesson_plan_id: dataDetail.lesson_plan_id
+              ? String(dataDetail.lesson_plan_id)
               : "",
           min_capacity:
             dataDetail.min_capacity != null
@@ -544,63 +529,6 @@ const ClassRoomForm = observer(
                   </div>
                 </FormTeraItem>
               </Col>
-              <Col>
-                <FormTeraItem
-                  label={t("classroom.assignee")}
-                  name='assignee_id'
-                >
-                  <UserSelect
-                    value={assigneeIdValue}
-                    selectedUser={dataDetail?.assignee}
-                    disabled={isView}
-                    placeholder={t("form.enter_value", {
-                      key: t("classroom.assignee"),
-                    })}
-                    onChange={(id) =>
-                      form.setValue("assignee_id", id, {
-                        shouldDirty: true,
-                        shouldValidate: true,
-                      })
-                    }
-                  />
-                </FormTeraItem>
-              </Col>
-              <Col>
-                <label className='flex items-center gap-2 text-[13px] text-gray-700 py-1 cursor-pointer'>
-                  <input
-                    type='checkbox'
-                    disabled={isView || lockedBySessions}
-                    checked={!!useCurriculumValue}
-                    onChange={(e) =>
-                      form.setValue(
-                        "use_course_curriculum" as any,
-                        e.target.checked,
-                        { shouldDirty: true },
-                      )
-                    }
-                  />
-                  {t("classroom.use_sample_program")}
-                </label>
-                {lockedBySessions && (
-                  <p className='text-[12px] text-gray-400 mt-0.5'>
-                    {t("classroom.locked_after_sessions")}
-                  </p>
-                )}
-              </Col>
-              <Col>
-                <FormTeraItem
-                  label={t("classroom.description")}
-                  name='description'
-                >
-                  <TextArea
-                    rows={3}
-                    placeholder={t("form.enter_value", {
-                      key: t("classroom.description"),
-                    })}
-                    disabled={isView}
-                  />
-                </FormTeraItem>
-              </Col>
             </Row>
           </div>
 
@@ -647,12 +575,64 @@ const ClassRoomForm = observer(
                   name='start_date'
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <Input type='date' disabled={isView} />
+                  <Controller
+                    control={control}
+                    name='start_date'
+                    render={({ field }) => (
+                      <DatePickerTera
+                        className='w-full'
+                        format='DD/MM/YYYY'
+                        placeholder='dd/mm/yyyy'
+                        disabled={isView}
+                        allowClear
+                        value={
+                          field.value
+                            ? moment(String(field.value), "YYYY-MM-DD")
+                            : undefined
+                        }
+                        onChange={(date: any) =>
+                          field.onChange(
+                            date ? moment(date).format("YYYY-MM-DD") : "",
+                          )
+                        }
+                      />
+                    )}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
                 <FormTeraItem label={t("classroom.end_date")} name='end_date'>
-                  <Input type='date' disabled={isView} />
+                  <Controller
+                    control={control}
+                    name='end_date'
+                    render={({ field }) => (
+                      <DatePickerTera
+                        className='w-full'
+                        format='DD/MM/YYYY'
+                        placeholder='dd/mm/yyyy'
+                        disabled={isView}
+                        allowClear
+                        disabledDate={(d: any) =>
+                          !!startDateValue &&
+                          d &&
+                          d.isBefore(
+                            moment(String(startDateValue), "YYYY-MM-DD"),
+                            "day",
+                          )
+                        }
+                        value={
+                          field.value
+                            ? moment(String(field.value), "YYYY-MM-DD")
+                            : undefined
+                        }
+                        onChange={(date: any) =>
+                          field.onChange(
+                            date ? moment(date).format("YYYY-MM-DD") : "",
+                          )
+                        }
+                      />
+                    )}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>

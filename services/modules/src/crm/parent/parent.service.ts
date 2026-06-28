@@ -69,7 +69,7 @@ export const useUpsertParent = () => {
       return ParentAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["parent", "list"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
