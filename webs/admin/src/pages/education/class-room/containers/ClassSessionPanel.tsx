@@ -21,6 +21,7 @@ import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdow
 /* Import: packages */
 import { TableTera } from "@tera/components/dof";
 import { useStores } from "@tera/stores/useStores";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
 
 /* Import: services */
 import {
@@ -47,6 +48,7 @@ const money = (v?: number | string) =>
 const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
   const { t } = useTranslation();
   const { globalStore } = useStores();
+  const isMobile = useIsMobile();
   const queryClient = useQueryClient();
 
   const statusOptions = globalStore.getOptions("class_session_status") ?? [];
@@ -566,25 +568,54 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
               }}
             />
           </div>
-          <RangePicker
-            className="shrink-0 w-[240px]"
-            value={
-              fromDate && toDate
-                ? [
-                    moment(fromDate, "YYYY-MM-DD"),
-                    moment(toDate, "YYYY-MM-DD"),
-                  ]
-                : undefined
-            }
-            format="DD/MM/YYYY"
-            placeholder={[t("common.from"), t("common.to")]}
-            allowClear
-            onChange={(dates: any) => {
-              setFromDate(dates?.[0] ? moment(dates[0]).format("YYYY-MM-DD") : "");
-              setToDate(dates?.[1] ? moment(dates[1]).format("YYYY-MM-DD") : "");
-              resetPage();
-            }}
-          />
+          {/* Khoảng ngày: desktop dùng RangePicker (popup 2 lịch OK); mobile dùng
+              native <input type="date"> — picker là dialog của OS, KHÔNG tràn màn hình */}
+          {isMobile ? (
+            <div className="shrink-0 flex items-center gap-1 h-9 border border-gray-300 rounded-[3px] px-2">
+              <input
+                type="date"
+                className="bg-transparent text-[13px] text-gray-700 outline-none w-[100px]"
+                value={fromDate}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setFromDate(v);
+                  if (v && toDate && toDate < v) setToDate("");
+                  resetPage();
+                }}
+              />
+              <span className="text-gray-300 shrink-0">–</span>
+              <input
+                type="date"
+                className="bg-transparent text-[13px] text-gray-700 outline-none w-[100px]"
+                value={toDate}
+                min={fromDate || undefined}
+                onChange={(e) => {
+                  setToDate(e.target.value);
+                  resetPage();
+                }}
+              />
+            </div>
+          ) : (
+            <RangePicker
+              className="shrink-0 w-[290px]"
+              value={
+                fromDate && toDate
+                  ? [
+                      moment(fromDate, "YYYY-MM-DD"),
+                      moment(toDate, "YYYY-MM-DD"),
+                    ]
+                  : undefined
+              }
+              format="DD/MM/YYYY"
+              placeholder={[t("common.from"), t("common.to")]}
+              allowClear
+              onChange={(dates: any) => {
+                setFromDate(dates?.[0] ? moment(dates[0]).format("YYYY-MM-DD") : "");
+                setToDate(dates?.[1] ? moment(dates[1]).format("YYYY-MM-DD") : "");
+                resetPage();
+              }}
+            />
+          )}
         </div>
       </div>
 
