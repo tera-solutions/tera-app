@@ -53,7 +53,6 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
   const { globalStore } = useStores();
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
-  const isMobile = useIsMobile();
 
   const statusOptions = globalStore.getOptions("class_session_status") ?? [];
 
