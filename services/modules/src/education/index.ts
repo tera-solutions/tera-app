@@ -12,3 +12,4 @@ export * from "./lesson-plan";
 export * from "./student";
 export * from "./student-level";
 export * from "./material";
+export * from "./room";
