@@ -21,6 +21,7 @@ import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdow
 /* Import: packages */
 import { TableTera } from "@tera/components/dof";
 import { useStores } from "@tera/stores/useStores";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
 
 /* Import: services */
 import {
@@ -38,6 +39,9 @@ import { IClassSession } from "pages/education/class-room/_interface";
 import ClassSessionFormModal from "./ClassSessionFormModal";
 import ClassSessionCalendar from "./ClassSessionCalendar";
 
+const DATE_INPUT_CLASS =
+  "w-full h-9 border border-gray-300 bg-white px-2 text-[13px] rounded-[3px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 box-border";
+
 const time = (v?: string) => (v ? String(v).slice(0, 5) : "—");
 const fmtDate = (v?: string) =>
   v ? new Date(v).toLocaleDateString("vi-VN") : "—";
@@ -48,6 +52,7 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
   const { t } = useTranslation();
   const { globalStore } = useStores();
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   const statusOptions = globalStore.getOptions("class_session_status") ?? [];
 
@@ -566,25 +571,55 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
               }}
             />
           </div>
-          <RangePicker
-            className="shrink-0 w-[240px]"
-            value={
-              fromDate && toDate
-                ? [
-                    moment(fromDate, "YYYY-MM-DD"),
-                    moment(toDate, "YYYY-MM-DD"),
-                  ]
-                : undefined
-            }
-            format="DD/MM/YYYY"
-            placeholder={[t("common.from"), t("common.to")]}
-            allowClear
-            onChange={(dates: any) => {
-              setFromDate(dates?.[0] ? moment(dates[0]).format("YYYY-MM-DD") : "");
-              setToDate(dates?.[1] ? moment(dates[1]).format("YYYY-MM-DD") : "");
-              resetPage();
-            }}
-          />
+          {isMobile ? (
+            <div className="flex items-center gap-1.5 shrink-0">
+              <input
+                type="date"
+                className={DATE_INPUT_CLASS}
+                value={fromDate}
+                max={toDate || undefined}
+                onChange={(e) => {
+                  setFromDate(e.target.value);
+                  resetPage();
+                }}
+              />
+              <span className="text-gray-400">→</span>
+              <input
+                type="date"
+                className={DATE_INPUT_CLASS}
+                value={toDate}
+                min={fromDate || undefined}
+                onChange={(e) => {
+                  setToDate(e.target.value);
+                  resetPage();
+                }}
+              />
+            </div>
+          ) : (
+            <RangePicker
+              className="shrink-0 w-[290px]"
+              value={
+                fromDate && toDate
+                  ? [
+                      moment(fromDate, "YYYY-MM-DD"),
+                      moment(toDate, "YYYY-MM-DD"),
+                    ]
+                  : undefined
+              }
+              format="DD/MM/YYYY"
+              placeholder={[t("common.from"), t("common.to")]}
+              allowClear
+              onChange={(dates: any) => {
+                setFromDate(
+                  dates?.[0] ? moment(dates[0]).format("YYYY-MM-DD") : "",
+                );
+                setToDate(
+                  dates?.[1] ? moment(dates[1]).format("YYYY-MM-DD") : "",
+                );
+                resetPage();
+              }}
+            />
+          )}
         </div>
       </div>
 
