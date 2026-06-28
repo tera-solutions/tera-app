@@ -8,12 +8,20 @@ import {
   useState,
 } from "react";
 import { observer } from "mobx-react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Col, Row, notification, PlusCircleOutlined, UserOutlined } from "tera-dls";
+import moment from "moment";
+import {
+  Col,
+  Row,
+  notification,
+  PlusCircleOutlined,
+  UserOutlined,
+  DatePicker as DatePickerTera,
+} from "tera-dls";
 
 /* Import: packages */
 import { IFormProps, IFileUpload } from "@tera/commons/interfaces";
@@ -214,7 +222,7 @@ const StudentForm = observer(
         resolver: yupResolver(schema) as any,
       });
 
-      const { reset, formState, watch } = form;
+      const { reset, formState, watch, control } = form;
       const errors = formState.errors as any;
       const businessIdValue = watch("business_id");
       const branchIdValue = watch("branch_id");
@@ -554,7 +562,30 @@ const StudentForm = observer(
                   name="dob"
                   rules={!isUpdate ? [{ required: t("validate.required") }] : undefined}
                 >
-                  <Input type="date" disabled={isView} />
+                  <Controller
+                    control={control}
+                    name="dob"
+                    render={({ field }) => (
+                      <DatePickerTera
+                        className="w-full"
+                        format="DD/MM/YYYY"
+                        placeholder="dd/mm/yyyy"
+                        disabled={isView}
+                        allowClear
+                        disabledDate={(d: any) => d && d.isAfter(moment(), "day")}
+                        value={
+                          field.value
+                            ? moment(String(field.value), "YYYY-MM-DD")
+                            : undefined
+                        }
+                        onChange={(date: any) =>
+                          field.onChange(
+                            date ? moment(date).format("YYYY-MM-DD") : "",
+                          )
+                        }
+                      />
+                    )}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -734,7 +765,29 @@ const StudentForm = observer(
                   name="enrollment_date"
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <Input type="date" disabled={isView} />
+                  <Controller
+                    control={control}
+                    name="enrollment_date"
+                    render={({ field }) => (
+                      <DatePickerTera
+                        className="w-full"
+                        format="DD/MM/YYYY"
+                        placeholder="dd/mm/yyyy"
+                        disabled={isView}
+                        allowClear
+                        value={
+                          field.value
+                            ? moment(String(field.value), "YYYY-MM-DD")
+                            : undefined
+                        }
+                        onChange={(date: any) =>
+                          field.onChange(
+                            date ? moment(date).format("YYYY-MM-DD") : "",
+                          )
+                        }
+                      />
+                    )}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
