@@ -81,11 +81,14 @@ const defaultValues: IClassRoomForm = {
   schedules: [],
 };
 
+type ClassRoomFormProps = IFormProps & {
+  onSuccess?: () => void;
+  hasSessions?: boolean;
+};
+
 const ClassRoomForm = observer(
-  forwardRef<
-    any,
-    IFormProps & { onSuccess?: () => void; hasSessions?: boolean }
-  >(({ dataDetail, type = "create", onSuccess, hasSessions = false }, ref) => {
+  forwardRef<any, ClassRoomFormProps>(
+    ({ dataDetail, type = "create", onSuccess, hasSessions = false }, ref) => {
     const isView = type === "detail";
     const isUpdate = type === "update";
     // Sau khi đã phát sinh buổi học: không cho đổi khóa học + không clone lại chương trình
@@ -190,25 +193,10 @@ const ClassRoomForm = observer(
                 const valid = (value ?? []).filter(
                   (s: any) => s?.weekday && s?.start_time && s?.end_time,
                 );
-              }),
-            name: yup.string().required(t("validate.required")),
-            course_id: yup.string().required(t("validate.required")),
-            learning_type: yup.string().required(t("validate.required")),
-            start_date: yup.string().required(t("validate.required")),
-            schedules: yup
-              .array()
-              .test(
-                "schedule-required",
-                t("classroom.schedule_required"),
-                function (value) {
-                  if (this.parent.learning_type !== "scheduled") return true;
-                  const valid = (value ?? []).filter(
-                    (s: any) => s?.weekday && s?.start_time && s?.end_time,
-                  );
-                  return valid.length >= 1;
-                },
-              ),
-          }),
+                return valid.length >= 1;
+              },
+            ),
+        }),
         [t],
       );
 
@@ -536,99 +524,45 @@ const ClassRoomForm = observer(
                           {tc.full_name}
                           {tc.code ? ` (${tc.code})` : ""}
                         </option>
-                        {learningTypeOptions.map((opt: any) => (
-                          <option
-                            key={opt.value}
-                            value={opt.value}
-                            style={{ color: "#111827" }}
-                          >
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem
-                    label={t("classroom.open_date")}
-                    name="start_date"
-                    rules={[{ required: t("validate.required") }]}
-                  >
-                    <Controller
-                      control={control}
-                      name="start_date"
-                      render={({ field }) => (
-                        <DatePickerTera
-                          className="w-full"
-                          format="DD/MM/YYYY"
-                          placeholder="dd/mm/yyyy"
-                          disabled={isView}
-                          allowClear
-                          value={
-                            field.value
-                              ? moment(String(field.value), "YYYY-MM-DD")
-                              : undefined
-                          }
-                          onChange={(date: any) =>
-                            field.onChange(
-                              date ? moment(date).format("YYYY-MM-DD") : "",
-                            )
-                          }
-                        />
-                      )}
-                    />
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem label={t("classroom.end_date")} name="end_date">
-                    <Controller
-                      control={control}
-                      name="end_date"
-                      render={({ field }) => (
-                        <DatePickerTera
-                          className="w-full"
-                          format="DD/MM/YYYY"
-                          placeholder="dd/mm/yyyy"
-                          disabled={isView}
-                          allowClear
-                          disabledDate={(d: any) =>
-                            !!startDateValue &&
-                            d &&
-                            d.isBefore(
-                              moment(String(startDateValue), "YYYY-MM-DD"),
-                              "day",
-                            )
-                          }
-                          value={
-                            field.value
-                              ? moment(String(field.value), "YYYY-MM-DD")
-                              : undefined
-                          }
-                          onChange={(date: any) =>
-                            field.onChange(
-                              date ? moment(date).format("YYYY-MM-DD") : "",
-                            )
-                          }
-                        />
-                      )}
-                    />
-                  </FormTeraItem>
-                </Col>
-                <Col>
-                  <FormTeraItem label={t("classroom.room")} name="room_id">
-                    <div className="w-full overflow-hidden">
-                      <select
-                        className={SELECT_CLASS}
-                        style={{
-                          borderRadius: "3px",
-                          color: roomIdValue ? "#111827" : "#9ca3af",
-                        }}
-                        disabled={isView}
-                        {...register("room_id")}
-                      >
-                        <option value="" disabled hidden>
-                          {t("form.enter_value", { key: t("classroom.room") })}
+                      ))}
+                    </select>
+                  </div>
+                </FormTeraItem>
+              </Col>
+            </Row>
+          </div>
+
+          {/* Tab 2: Cấu hình lớp học */}
+          <div className={activeTab === "config" ? "block" : "hidden"}>
+            <Row className='grid grid-cols-1'>
+              <Col>
+                <FormTeraItem
+                  label={t("classroom.learning_type")}
+                  name='learning_type'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <div className='w-full overflow-hidden'>
+                    <select
+                      className={SELECT_CLASS}
+                      style={{
+                        borderRadius: "3px",
+                        color: learningTypeValue ? "#111827" : "#9ca3af",
+                      }}
+                      disabled={isView}
+                      {...register("learning_type")}
+                    >
+                      <option value='' disabled hidden>
+                        {t("form.enter_value", {
+                          key: t("classroom.learning_type"),
+                        })}
+                      </option>
+                      {learningTypeOptions.map((opt: any) => (
+                        <option
+                          key={opt.value}
+                          value={opt.value}
+                          style={{ color: "#111827" }}
+                        >
+                          {opt.label}
                         </option>
                       ))}
                     </select>
@@ -641,12 +575,64 @@ const ClassRoomForm = observer(
                   name='start_date'
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <Input type='date' disabled={isView} />
+                  <Controller
+                    control={control}
+                    name='start_date'
+                    render={({ field }) => (
+                      <DatePickerTera
+                        className='w-full'
+                        format='DD/MM/YYYY'
+                        placeholder='dd/mm/yyyy'
+                        disabled={isView}
+                        allowClear
+                        value={
+                          field.value
+                            ? moment(String(field.value), "YYYY-MM-DD")
+                            : undefined
+                        }
+                        onChange={(date: any) =>
+                          field.onChange(
+                            date ? moment(date).format("YYYY-MM-DD") : "",
+                          )
+                        }
+                      />
+                    )}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
                 <FormTeraItem label={t("classroom.end_date")} name='end_date'>
-                  <Input type='date' disabled={isView} />
+                  <Controller
+                    control={control}
+                    name='end_date'
+                    render={({ field }) => (
+                      <DatePickerTera
+                        className='w-full'
+                        format='DD/MM/YYYY'
+                        placeholder='dd/mm/yyyy'
+                        disabled={isView}
+                        allowClear
+                        disabledDate={(d: any) =>
+                          !!startDateValue &&
+                          d &&
+                          d.isBefore(
+                            moment(String(startDateValue), "YYYY-MM-DD"),
+                            "day",
+                          )
+                        }
+                        value={
+                          field.value
+                            ? moment(String(field.value), "YYYY-MM-DD")
+                            : undefined
+                        }
+                        onChange={(date: any) =>
+                          field.onChange(
+                            date ? moment(date).format("YYYY-MM-DD") : "",
+                          )
+                        }
+                      />
+                    )}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
