@@ -321,23 +321,23 @@ export const CART_URL = "/cart";
 export const LESSON_PAGE_URL = {
   list: {
     key: PAGE_KEY.LESSON_LIST_VIEW,
-    path: "/lesson/list",
-    shortenUrl: "/lesson/list",
+    path: "/course/lesson/list",
+    shortenUrl: "/course/lesson/list",
   },
   create: {
     key: PAGE_KEY.LESSON_CREATE_VIEW,
-    path: "/lesson/create",
-    shortenUrl: "/lesson/create",
+    path: "/course/lesson/create",
+    shortenUrl: "/course/lesson/create",
   },
   detail: {
     key: PAGE_KEY.LESSON_DETAIL_VIEW,
-    path: (id: string) => "/lesson/detail/" + id,
-    shortenUrl: "/lesson/detail/:id",
+    path: (id: string) => "/course/lesson/detail/" + id,
+    shortenUrl: "/course/lesson/detail/:id",
   },
   update: {
     key: PAGE_KEY.LESSON_UPDATE_VIEW,
-    path: (id: string) => "/lesson/update/" + id,
-    shortenUrl: "/lesson/update/:id",
+    path: (id: string) => "/course/lesson/update/" + id,
+    shortenUrl: "/course/lesson/update/:id",
   },
 };
 

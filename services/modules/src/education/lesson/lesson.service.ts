@@ -6,10 +6,7 @@ import {
 } from "@tera/commons/hooks/queryAdapter";
 import { LessonAPI } from "@tera/api";
 import {
-  CreatePayload,
-  DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -31,43 +28,14 @@ export const useLessonDetail = (payload: DetailPayload) => {
   });
 };
 
-// MUTATION
-export const useLessonCreate = () => {
+// MUTATION — helper invalidate dùng chung
+const useLessonMutation = (
+  mutationFn: (payload: UpdatePayload) => Promise<any>,
+) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: CreatePayload) => LessonAPI.create(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lesson", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
-export const useLessonUpdate = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => LessonAPI.update(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lesson", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
-export const useUpsertLesson = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => {
-      if (payload?.id) return LessonAPI.update(payload);
-      return LessonAPI.create(payload);
-    },
+    mutationFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lesson", "list"] });
       queryClient.invalidateQueries({ queryKey: ["lesson", "detail"] });
@@ -78,42 +46,32 @@ export const useUpsertLesson = () => {
   });
 };
 
-export const useLessonDelete = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => LessonAPI.delete(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lesson", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
+// Sinh bài học cho 1 lớp — payload.id = classId
+export const useLessonGenerate = () =>
+  useLessonMutation((payload) => LessonAPI.generate(payload));
 
-export const useLessonExport = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => LessonAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
+export const useLessonUpdate = () =>
+  useLessonMutation((payload) => LessonAPI.update(payload));
+
+export const useLessonReschedule = () =>
+  useLessonMutation((payload) => LessonAPI.reschedule(payload));
+
+export const useLessonCancel = () =>
+  useLessonMutation((payload) => LessonAPI.cancel(payload));
+
+export const useLessonLock = () =>
+  useLessonMutation((payload) => LessonAPI.lock(payload));
+
+export const useLessonUnlock = () =>
+  useLessonMutation((payload) => LessonAPI.unlock(payload));
 
 export const LessonService = {
   useLessonList,
   useLessonDetail,
-  useLessonCreate,
+  useLessonGenerate,
   useLessonUpdate,
-  useUpsertLesson,
-  useLessonDelete,
-  useLessonExport,
+  useLessonReschedule,
+  useLessonCancel,
+  useLessonLock,
+  useLessonUnlock,
 };
