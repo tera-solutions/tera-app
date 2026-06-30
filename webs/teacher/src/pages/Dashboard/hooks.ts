@@ -1,18 +1,13 @@
+import { useMemo } from "react";
 import { useQueryLegacy } from "@tera/commons/hooks/tanstack";
-import EduApi from "_common/api/edu";
+import { DashboardService } from "@tera/modules";
 import NotificationApi from "_common/components/Layout/Header/UserNotification/_api";
 
-import { normalizeSessions } from "_common/normalize/schedule";
-import {
-  normalizeClass,
-  normalizeHomework,
-  normalizeLessonPlan,
-  normalizeNotification,
-} from "./normalize";
+import { toScheduleItems } from "_common/utils/schedule";
+import { toNotification } from "./_utils";
 import type { DashboardSummary } from "./_interface";
 
 export const DASHBOARD_KEYS = {
-  summary: ["teacher", "dashboard", "summary"] as const,
   notifications: ["teacher", "dashboard", "notifications"] as const,
 };
 
@@ -23,33 +18,30 @@ const EMPTY_STATS = {
   completion_rate: 0,
 };
 
-/**
- * Whole dashboard in one request — `GET /v1/edu/dashboard/summary` (teacher-scoped).
- * Every widget calls this; React Query dedupes to a single fetch by the shared key.
- */
-export const useDashboardSummary = () =>
-  useQueryLegacy<DashboardSummary>({
-    queryKey: DASHBOARD_KEYS.summary,
-    queryFn: () =>
-      EduApi.dashboardSummary().then((d) => ({
-        stats: { ...EMPTY_STATS, ...(d?.stats ?? {}) },
-        schedule_today: normalizeSessions(d?.schedule_today ?? []),
-        schedule_week: d?.schedule_week ?? [],
-        homework_pending: (d?.homework_pending ?? []).map(normalizeHomework),
-        lesson_plans: (d?.lesson_plans ?? []).map(normalizeLessonPlan),
-        my_classes: (d?.my_classes ?? []).map(normalizeClass),
-        attendance: d?.attendance ?? null,
-      })),
-  });
+export const useDashboardSummary = () => {
+  const query = DashboardService.useDashboardSummary();
+  const data = useMemo<DashboardSummary | undefined>(() => {
+    if (!query.data) return undefined;
+    const d = query.data?.data ?? {};
+    return {
+      stats: { ...EMPTY_STATS, ...(d.stats ?? {}) },
+      schedule_today: toScheduleItems(d.schedule_today),
+      schedule_week: d.schedule_week ?? [],
+      homework_pending: d.homework_pending ?? [],
+      lesson_plans: d.lesson_plans ?? [],
+      my_classes: d.my_classes ?? [],
+      attendance: d.attendance ?? null,
+    };
+  }, [query.data]);
+  return { ...query, data };
+};
 
 export const useDashboardNotifications = () =>
   useQueryLegacy({
     queryKey: DASHBOARD_KEYS.notifications,
     queryFn: () =>
       NotificationApi.getList({ page: 1, limit: 5 }).then((res: any) => {
-        const items = (res?.data ?? res?.items ?? res ?? []).map(
-          normalizeNotification,
-        );
+        const items = (res?.data ?? res?.items ?? res ?? []).map(toNotification);
         return {
           data: items,
           unread_count: items.filter(

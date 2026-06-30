@@ -1,15 +1,14 @@
 import { useMemo } from "react";
 
 import WidgetState from "_common/components/WidgetState";
+import { AttendanceService } from "@tera/modules/education";
 
-import type { AttendanceRecord, AttendanceStatus } from "../_interface";
+import type { AttendanceStatus } from "../_interface";
 import { ATTENDANCE_STYLE } from "../constants";
+import { toAttendanceRecords } from "../_utils";
 
 interface AttendancePanelProps {
-  records: AttendanceRecord[];
-  loading?: boolean;
-  isError?: boolean;
-  onRetry?: () => void;
+  classId: number | null;
 }
 
 const SUMMARY: { key: AttendanceStatus; label: string; tone: string }[] = [
@@ -18,12 +17,15 @@ const SUMMARY: { key: AttendanceStatus; label: string; tone: string }[] = [
   { key: "late", label: "Muộn", tone: "text-amber-600" },
 ];
 
-const AttendancePanel = ({
-  records,
-  loading,
-  isError,
-  onRetry,
-}: AttendancePanelProps) => {
+const AttendancePanel = ({ classId }: AttendancePanelProps) => {
+  const listParams = { class_id: classId ?? 0, per_page: 100 };
+  const query = AttendanceService.useAttendanceList({ params: listParams });
+  const { isLoading: loading, isError, refetch } = query;
+  const records = useMemo(
+    () => toAttendanceRecords(query.data?.data?.items),
+    [query.data],
+  );
+
   const counts = useMemo(() => {
     const map: Record<string, number> = {};
     records.forEach((r) => {
@@ -40,7 +42,7 @@ const AttendancePanel = ({
       isError={isError}
       isEmpty={!loading && records.length === 0}
       emptyText="Chưa có dữ liệu điểm danh"
-      onRetry={onRetry}
+      onRetry={() => refetch()}
     >
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-2">

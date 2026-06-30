@@ -18,9 +18,7 @@ import useIsMobile from "@tera/commons/hooks/useIsMobile";
 
 import Card from "_common/components/Card";
 
-import { useScheduleCalendar, useTeacherCounts } from "./hooks";
-import type { CalendarParams } from "./_api";
-import type { ScheduleItem, ScheduleStatus, ScheduleView } from "./_interface";
+import type { CalendarParams, ScheduleItem, ScheduleStatus, ScheduleView } from "./_interface";
 import { DEFAULT_STATUSES } from "./constants";
 import ScheduleToolbar from "./components/ScheduleToolbar";
 import WeekCalendar from "./components/WeekCalendar";
@@ -35,6 +33,15 @@ import HomeroomCard from "./components/HomeroomCard";
 import StudentCard from "./components/StudentCard";
 import MonthStatsCard from "./components/MonthStatsCard";
 import MiniCalendar from "./components/MiniCalendar";
+import { ClassRoomService, StudentService, TimetableService } from "@tera/modules/education";
+import { toCalendarItems } from "_common/utils/schedule";
+import {
+  buildBranchOptions,
+  buildClassOptions,
+  computeMonthStats,
+  homeroomNames,
+  scheduleDateSet,
+} from "./_utils";
 
 const Schedule = () => {
   const isMobile = useIsMobile();
@@ -99,16 +106,32 @@ const Schedule = () => {
     [monthRange],
   );
 
-  const { data, isLoading, isError, refetch } = useScheduleCalendar(viewParams);
-  const { data: monthData, isLoading: isMonthLoading } =
-    useScheduleCalendar(monthParams);
-  const {
-    totalClasses,
-    totalStudents,
-    classNames: homeroomNames,
-    isClassesLoading,
-    isStudentsLoading,
-  } = useTeacherCounts();
+  const viewQuery = TimetableService.useTimetableCalendar(viewParams);
+  const { isLoading, isError, refetch } = viewQuery;
+  const data = useMemo(
+    () => toCalendarItems(viewQuery.data?.data),
+    [viewQuery.data],
+  );
+
+  const monthQuery = TimetableService.useTimetableCalendar(monthParams);
+  const isMonthLoading = monthQuery.isLoading;
+  const monthData = useMemo(
+    () => toCalendarItems(monthQuery.data?.data),
+    [monthQuery.data],
+  );
+
+  const classes = ClassRoomService.useClassRoomList({
+    params: { per_page: 20 },
+  });
+
+  const students = StudentService.useStudentList({ params: { per_page: 1 } });
+
+  const homeroomList = homeroomNames(classes.data?.data?.items);
+
+  const totalClasses = classes.data?.data?.pagination?.total ?? 0;
+  const totalStudents= students.data?.data?.pagination?.total ?? 0;
+  const isClassesLoading= classes.isLoading;
+  const isStudentsLoading= students.isLoading;
 
   const viewSchedules = useMemo<ScheduleItem[]>(() => data ?? [], [data]);
   const monthSchedules = useMemo<ScheduleItem[]>(
@@ -128,31 +151,23 @@ const Schedule = () => {
     });
   }, [viewSchedules, search, classId, statuses, branch]);
 
-  const classOptions = useMemo<FilterOption[]>(() => {
-    const map = new Map<number, string>();
-    monthSchedules.forEach((item) => {
-      if (item.class_id && !map.has(item.class_id))
-        map.set(item.class_id, item.class_name);
-    });
-    return Array.from(map, ([value, label]) => ({ value, label }));
-  }, [monthSchedules]);
+  const classOptions = useMemo<FilterOption[]>(
+    () => buildClassOptions(monthSchedules),
+    [monthSchedules],
+  );
 
-  const branchOptions = useMemo<FilterOption[]>(() => {
-    const set = new Set<string>();
-    monthSchedules.forEach((item) => item.branch && set.add(item.branch));
-    return Array.from(set, (value) => ({ value, label: value }));
-  }, [monthSchedules]);
+  const branchOptions = useMemo<FilterOption[]>(
+    () => buildBranchOptions(monthSchedules),
+    [monthSchedules],
+  );
 
-  const monthStats = useMemo(() => {
-    const total = monthSchedules.length;
-    const completed = monthSchedules.filter(
-      (item) => item.status === "done",
-    ).length;
-    return { total, completed };
-  }, [monthSchedules]);
+  const monthStats = useMemo(
+    () => computeMonthStats(monthSchedules),
+    [monthSchedules],
+  );
 
   const scheduleDates = useMemo(
-    () => new Set(monthSchedules.map((item) => item.date)),
+    () => scheduleDateSet(monthSchedules),
     [monthSchedules],
   );
 
@@ -380,7 +395,7 @@ const Schedule = () => {
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <HomeroomCard
           count={totalClasses}
-          classNames={homeroomNames}
+          classNames={homeroomList}
           loading={isClassesLoading}
         />
         <StudentCard count={totalStudents} loading={isStudentsLoading} />

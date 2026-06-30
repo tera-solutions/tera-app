@@ -1,4 +1,6 @@
 export * from "./absence-reason";
+export * from "./dashboard";
+export * from "./timetable";
 export * from "./attendance";
 export * from "./attendance-session";
 export * from "./class-capacity";

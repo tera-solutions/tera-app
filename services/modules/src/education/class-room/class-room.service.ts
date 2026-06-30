@@ -31,6 +31,13 @@ export const useClassRoomDetail = (payload: DetailPayload) => {
   });
 };
 
+export const useClassRoomSummary = (params?: Record<string, unknown>) => {
+  return useQueryAdapter({
+    queryKey: ["class-room", "summary", params],
+    queryFn: () => ClassRoomAPI.getSummary(params),
+  });
+};
+
 // MUTATION
 export const useClassRoomCreate = () => {
   const { t } = useTranslation();
@@ -141,6 +148,7 @@ export const useClassRoomExport = () => {
 export const ClassRoomService = {
   useClassRoomList,
   useClassRoomDetail,
+  useClassRoomSummary,
   useClassRoomCreate,
   useClassRoomUpdate,
   useUpsertClassRoom,

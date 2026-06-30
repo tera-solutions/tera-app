@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AcademicCapOutlined,
@@ -15,7 +16,9 @@ import moment from "moment";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 
 import { SCHEDULE_STATUS } from "_common/constants/schedule";
-import { useScheduleDetail } from "../hooks";
+import { ClassSessionService } from "@tera/modules/education";
+
+import { toSessionDetail } from "../_utils";
 
 interface ScheduleDetailDrawerProps {
   scheduleId: number | null;
@@ -47,7 +50,11 @@ const ScheduleDetailDrawer = ({
   onClose,
 }: ScheduleDetailDrawerProps) => {
   const navigate = useNavigate();
-  const { data: detail, isLoading } = useScheduleDetail(scheduleId);
+  const query = ClassSessionService.useClassSessionDetail({
+    id: scheduleId ?? "",
+  });
+  const { isLoading } = query;
+  const detail = useMemo(() => toSessionDetail(query.data), [query.data]);
 
   const status = detail
     ? (SCHEDULE_STATUS[detail.status] ?? SCHEDULE_STATUS.upcoming)
@@ -83,7 +90,9 @@ const ScheduleDetailDrawer = ({
                     <p className="truncate text-lg font-bold text-slate-800">
                       {detail.class_name}
                     </p>
-                    <p className="text-sm text-slate-400">{detail.level}</p>
+                    <p className="text-sm text-slate-400">
+                      {detail.session_name}
+                    </p>
                   </div>
                   {status && (
                     <span
@@ -108,18 +117,20 @@ const ScheduleDetailDrawer = ({
                   <InfoRow
                     icon={<MapPinOutlined />}
                     label="Phòng học"
-                    value={detail.room}
+                    value={detail.room || "Chưa cập nhật"}
                   />
                   <InfoRow
                     icon={<AcademicCapOutlined />}
-                    label="Số học viên"
-                    value={`${detail.student_count} học viên`}
+                    label="Giáo viên"
+                    value={detail.teacher_name || "Chưa phân công"}
                   />
-                  <InfoRow
-                    icon={<BookOpenOutlined />}
-                    label="Giáo án"
-                    value={detail.lesson_plan?.title ?? "Chưa có giáo án"}
-                  />
+                  {detail.session_no != null && (
+                    <InfoRow
+                      icon={<BookOpenOutlined />}
+                      label="Buổi học"
+                      value={`Buổi ${detail.session_no}`}
+                    />
+                  )}
                 </div>
               </>
             ) : (

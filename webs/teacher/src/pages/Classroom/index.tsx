@@ -24,14 +24,14 @@ import type {
   ClassroomView,
 } from "./_interface";
 import { PER_PAGE } from "./constants";
-import { summarize } from "./normalize";
-import { useClassroomList, useClassroomSummary } from "./hooks";
+import { toClassrooms, toClassroomSummary, summarize } from "./_utils";
 import ClassroomToolbar, {
   type LevelOption,
 } from "./components/ClassroomToolbar";
 import StatisticCard from "./components/StatisticCard";
 import ClassroomCard from "./components/ClassroomCard";
 import ClassroomGridCard from "./components/ClassroomGridCard";
+import { ClassRoomService } from "@tera/modules/education";
 
 const Classroom = () => {
   const [view, setView] = useState<ClassroomView>("list");
@@ -40,12 +40,27 @@ const Classroom = () => {
   const [level, setLevel] = useState<string | "">("");
   const [limit, setLimit] = useState(PER_PAGE);
 
-  const { data, isLoading, isError, refetch } = useClassroomList({
-    per_page: limit,
+  const listQuery = ClassRoomService.useClassRoomList({
+    params: { per_page: limit },
   });
+  const { isLoading, isError, refetch } = listQuery;
+  const data = useMemo(
+    () => ({
+      items: toClassrooms(listQuery.data?.data?.items),
+      total:
+        listQuery.data?.data?.pagination?.total ??
+        listQuery.data?.data?.items?.length ??
+        0,
+    }),
+    [listQuery.data],
+  );
 
-  const { data: summaryData, isLoading: isSummaryLoading } =
-    useClassroomSummary();
+  const summaryQuery = ClassRoomService.useClassRoomSummary();
+  const isSummaryLoading = summaryQuery.isLoading;
+  const summaryData = useMemo(
+    () => toClassroomSummary(summaryQuery.data?.data),
+    [summaryQuery.data],
+  );
 
   const classrooms = useMemo(() => data?.items ?? [], [data]);
   const total = data?.total ?? classrooms.length;

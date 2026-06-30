@@ -1,7 +1,7 @@
 import { BellOutlined } from "tera-dls";
 
 import type { DashboardNotificationItem } from "../_interface";
-import { formatNotificationTime } from "../utils";
+import { formatNotificationTime } from "../_utils";
 
 const NotificationRow = ({ item }: { item: DashboardNotificationItem }) => (
   <div className="flex items-start gap-3 py-2.5">

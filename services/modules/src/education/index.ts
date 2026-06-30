@@ -13,3 +13,5 @@ export * from "./student";
 export * from "./student-level";
 export * from "./material";
 export * from "./room";
+export * from "./dashboard";
+export * from "./timetable";

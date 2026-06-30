@@ -1,6 +1,11 @@
 export type ClassroomView = "list" | "grid";
 
-export type ClassroomStatus = "active" | "inactive";
+export type ClassroomStatus =
+  | "draft"
+  | "upcoming"
+  | "active"
+  | "suspended"
+  | "completed";
 
 export interface Classroom {
   id: number;

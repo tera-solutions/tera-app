@@ -50,4 +50,9 @@ export const ClassRoomAPI = {
     await api
       .post(`${endpoint}/edu/class-room/restore/${id}`, params)
       .then((result) => result.data),
+
+  getSummary: async (params?: Record<string, unknown>) =>
+    await api
+      .get(`${endpoint}/edu/class-room/summary`, params)
+      .then((result) => result.data),
 };

@@ -1,0 +1,90 @@
+import { toTime } from "_common/utils/schedule";
+
+import type {
+  Classroom,
+  ClassroomStatus,
+  ClassroomSummary,
+} from "./_interface";
+
+/** `schedules[].weekday`: 2=Thứ 2 … 7=Thứ 7, 8=CN. */
+const WEEKDAY_LABEL: Record<number, string> = {
+  2: "Thứ 2",
+  3: "Thứ 3",
+  4: "Thứ 4",
+  5: "Thứ 5",
+  6: "Thứ 6",
+  7: "Thứ 7",
+  8: "CN",
+};
+
+interface ScheduleRow {
+  weekday?: number;
+  start_time?: string;
+  end_time?: string;
+}
+
+/** Distinct day labels from `schedules[]`, e.g. "Thứ 2, Thứ 4, Thứ 6". */
+const scheduleDays = (schedules: ScheduleRow[]): string =>
+  Array.from(
+    new Set(schedules.map((s) => WEEKDAY_LABEL[s.weekday ?? 0]).filter(Boolean)),
+  ).join(", ");
+
+const toRate = (value: number | null | undefined): number =>
+  Math.max(0, Math.min(100, Math.round(value ?? 0)));
+
+export const toClassroom = (raw: any): Classroom => {
+  const schedules: ScheduleRow[] = Array.isArray(raw?.schedules)
+    ? raw.schedules
+    : [];
+  const firstSlot = schedules[0] ?? {};
+
+  return {
+    id: raw.id ?? 0,
+    name: raw.name ?? "",
+    category: "",
+    level: raw.course?.name ?? "",
+    room: raw.room?.name ?? "",
+    branch: raw.branch?.name ?? raw.business?.name ?? "",
+    schedule_days: scheduleDays(schedules),
+    start_time: toTime(firstSlot.start_time),
+    end_time: toTime(firstSlot.end_time),
+    student_count: 0,
+    max_students: raw.max_capacity ?? 0,
+    completion_rate: 0,
+    status: (raw.status ?? "upcoming") as ClassroomStatus,
+    cover_image: raw.avatar ?? "",
+  };
+};
+
+export const toClassrooms = (raw: any[] | null | undefined): Classroom[] =>
+  (raw ?? []).map(toClassroom);
+
+/**
+ * Map `/edu/class-room/summary`. The endpoint has no completion field, so
+ * `avg_completion_rate` is left undefined for the caller to fill from the list.
+ */
+export const toClassroomSummary = (
+  raw: any,
+): Omit<ClassroomSummary, "avg_completion_rate"> & {
+  avg_completion_rate?: number;
+} => ({
+  total_classes_managed: raw?.total ?? 0,
+  total_students: raw?.total_students ?? 0,
+  active_classes: raw?.by_status?.active ?? 0,
+  avg_completion_rate: undefined,
+});
+
+/** Derive the summary widgets from the loaded classroom list. */
+export const summarize = (classes: Classroom[]): ClassroomSummary => {
+  const rated = classes.filter((c) => c.completion_rate > 0);
+  return {
+    total_classes_managed: classes.length,
+    total_students: classes.reduce((sum, c) => sum + c.student_count, 0),
+    active_classes: classes.filter((c) => c.status === "active").length,
+    avg_completion_rate: rated.length
+      ? toRate(
+          rated.reduce((sum, c) => sum + c.completion_rate, 0) / rated.length,
+        )
+      : 0,
+  };
+};
