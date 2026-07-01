@@ -15,11 +15,6 @@ import { PATHS } from "_common/components/Layout/Menu/menus";
 
 import type { DetailTab } from "./_interface";
 import { DETAIL_TABS } from "./constants";
-import {
-  useClassAttendance,
-  useClassroomDetail,
-  useClassSessions,
-} from "./hooks";
 import ClassroomInfoCard from "./components/ClassroomInfoCard";
 import OverviewStats from "./components/OverviewStats";
 import ResultSummaryCard from "./components/ResultSummaryCard";
@@ -29,6 +24,8 @@ import StudentListPanel from "./components/StudentListPanel";
 import AttendancePanel from "./components/AttendancePanel";
 import SessionListPanel from "./components/SessionListPanel";
 import ComingSoon from "./components/ComingSoon";
+import { toClassroomDetail, toClassSessions } from "./_utils";
+import { ClassRoomService, TimetableService } from "@tera/modules/education";
 
 const SESSION_RANGE = {
   date_from: moment().subtract(6, "months").format("YYYY-MM-DD"),
@@ -45,26 +42,26 @@ const ClassroomDetail = () => {
 
   const [tab, setTab] = useState<DetailTab>("students");
 
-  const {
-    data: detailData,
-    isLoading,
-    isError,
-    refetch,
-  } = useClassroomDetail(classId);
+  const detailQuery = ClassRoomService.useClassRoomDetail({ id: classId ?? "" });
+  const { isLoading, isError, refetch } = detailQuery;
+  const detailData = useMemo(
+    () => (detailQuery.data ? toClassroomDetail(detailQuery.data.data) : undefined),
+    [detailQuery.data],
+  );
 
+  const sessionsQuery = TimetableService.useTimetableCalendar({
+    class_id: classId ?? 0,
+    ...SESSION_RANGE,
+  });
   const {
-    data: sessions = [],
     isLoading: isSessionsLoading,
     isError: isSessionsError,
     refetch: refetchSessions,
-  } = useClassSessions(classId, SESSION_RANGE);
-
-  const {
-    data: attendance = [],
-    isLoading: isAttendanceLoading,
-    isError: isAttendanceError,
-    refetch: refetchAttendance,
-  } = useClassAttendance(classId, tab === "attendance");
+  } = sessionsQuery;
+  const sessions = useMemo(
+    () => toClassSessions(sessionsQuery.data?.data),
+    [sessionsQuery.data],
+  );
 
   const detail = detailData?.detail;
   const statistics = detailData?.statistics;
@@ -92,14 +89,7 @@ const ClassroomDetail = () => {
       case "students":
         return <StudentListPanel classId={classId} />;
       case "attendance":
-        return (
-          <AttendancePanel
-            records={attendance}
-            loading={isAttendanceLoading}
-            isError={isAttendanceError}
-            onRetry={() => refetchAttendance()}
-          />
-        );
+        return <AttendancePanel classId={classId} />;
       case "schedule":
         return (
           <SessionListPanel

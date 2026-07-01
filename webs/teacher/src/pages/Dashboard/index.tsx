@@ -18,7 +18,7 @@ const Dashboard = () => {
       <div className="xmd:hidden">
         <DashboardHero />
 
-        <div className="-mt-18 flex flex-col gap-4 px-4 pt-4">
+        <div className="-mt-sidebar-collapsed flex flex-col gap-4 px-4 pt-4">
           <StatsRow />
           <QuickActions />
           <ScheduleTodayWidget />

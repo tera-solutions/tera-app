@@ -1,14 +1,16 @@
 import type { ClassroomStatus } from "./_interface";
 
-export const STATUS_OPTIONS: { value: ClassroomStatus; label: string }[] = [
-  { value: "active", label: "Đang hoạt động" },
-  { value: "inactive", label: "Ngừng hoạt động" },
-];
-
 export const STATUS_LABEL: Record<ClassroomStatus, string> = {
+  draft: "Nháp",
+  upcoming: "Sắp khai giảng",
   active: "Đang hoạt động",
-  inactive: "Ngừng hoạt động",
+  suspended: "Tạm ngưng",
+  completed: "Đã kết thúc",
 };
+
+export const STATUS_OPTIONS: { value: ClassroomStatus; label: string }[] = (
+  Object.entries(STATUS_LABEL) as [ClassroomStatus, string][]
+).map(([value, label]) => ({ value, label }));
 
 export const PER_PAGE = 20;
 

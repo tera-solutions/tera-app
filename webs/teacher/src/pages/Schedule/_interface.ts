@@ -4,6 +4,13 @@ export type { ScheduleStatus, ScheduleItem } from "_common/types/schedule";
 
 export type ScheduleView = "week" | "month" | "day" | "range";
 
+export interface CalendarParams {
+  date_from: string;
+  date_to: string;
+  class_id?: number;
+  teacher_id?: number;
+}
+
 export interface ScheduleSummary {
   total_classes: number;
   total_students: number;

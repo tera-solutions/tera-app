@@ -18,9 +18,10 @@ import {
 } from "tera-dls";
 import moment from "moment";
 
-import { useClassStudents } from "../hooks";
 import type { ClassStudent, StudentRowStatus } from "../_interface";
 import { getStudentStatus, STUDENT_STATUS_OPTIONS } from "../constants";
+import { StudentService } from "@tera/modules/education";
+import { toClassStudentResult } from "../_utils";
 
 const COLUMNS = [
   "STT",
@@ -66,18 +67,26 @@ const StudentListPanel = ({ classId }: { classId: number | null }) => {
   // Reset to the first page whenever the filters change.
   useEffect(() => setPage(1), [debouncedSearch, status]);
 
-  const { data, isLoading, isError, refetch } = useClassStudents(classId, {
+  const listParams = {
+    class_id: classId ?? 0,
     search: debouncedSearch || undefined,
     status: status || undefined,
     page,
     per_page: PER_PAGE,
-  });
+  };
+  
+  const query = StudentService.useStudentList({ params: listParams });
+  const { isLoading, isError, refetch } = query;
+  const data = useMemo(
+    () => toClassStudentResult(query.data?.data),
+    [query.data],
+  );
 
-  const students = useMemo(() => data?.items ?? [], [data]);
-  const total = data?.total ?? 0;
+  const students = data.items;
+  const total = data.total;
   // The endpoint currently fixes its own page size; trust the response so the
   // range text and pager stay correct whether or not `per_page` is honoured.
-  const perPage = data?.per_page || PER_PAGE;
+  const perPage = data.per_page || PER_PAGE;
   const selectedStatus = STUDENT_STATUS_OPTIONS.find((o) => o.value === status);
 
   const from = total === 0 ? 0 : (page - 1) * perPage + 1;
