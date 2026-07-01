@@ -1,19 +1,20 @@
-
 import { endpoint } from "@tera/api/_endpoint";
 import api from "@tera/api/drivers";
 import {
-  CreatePayload,
-  DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
 
+/**
+ * Lesson (Bài học) — 8 endpoint thật (Postman), KHÔNG phải CRUD generic:
+ * list / detail / generate / update / reschedule / cancel / lock / unlock.
+ * Bài học được SINH (generate) theo lớp, không tạo lẻ; xóa = hủy (cancel).
+ */
 export const LessonAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
-      .get(`${endpoint}/edu/lesson/list`, {...params, ...params?.filters})
+      .get(`${endpoint}/edu/lesson/list`, { ...params, ...params?.filters })
       .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
@@ -21,9 +22,10 @@ export const LessonAPI = {
       .get(`${endpoint}/edu/lesson/detail/${id}`)
       .then((result) => result.data),
 
-  create: async ({ params }: CreatePayload) =>
+  // Sinh bài học cho 1 lớp — id = classId
+  generate: async ({ id, params }: UpdatePayload) =>
     await api
-      .post(`${endpoint}/edu/lesson/create`, params)
+      .post(`${endpoint}/edu/lesson/generate/${id}`, params)
       .then((result) => result.data),
 
   update: async ({ id, params }: UpdatePayload) =>
@@ -31,13 +33,27 @@ export const LessonAPI = {
       .put(`${endpoint}/edu/lesson/update/${id}`, params)
       .then((result) => result.data),
 
-  delete: async ({ id }: DeletePayload) =>
+  // Đổi lịch (ngày + giờ) 1 bài học
+  reschedule: async ({ id, params }: UpdatePayload) =>
     await api
-      .delete(`${endpoint}/edu/lesson/delete/${id}`)
+      .post(`${endpoint}/edu/lesson/reschedule/${id}`, params)
       .then((result) => result.data),
-  
-  export: async ({ params }: ExportPayload) =>
+
+  // Hủy buổi học (kèm lý do)
+  cancel: async ({ id, params }: UpdatePayload) =>
     await api
-      .post(`${endpoint}/edu/lesson/export`, params)
+      .post(`${endpoint}/edu/lesson/cancel/${id}`, params)
+      .then((result) => result.data),
+
+  // Khóa buổi học — KHÔNG body (chỉ khóa được buổi đã hoàn thành)
+  lock: async ({ id }: DetailPayload) =>
+    await api
+      .post(`${endpoint}/edu/lesson/lock/${id}`)
+      .then((result) => result.data),
+
+  // Mở khóa — cần lý do
+  unlock: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/edu/lesson/unlock/${id}`, params)
       .then((result) => result.data),
 };

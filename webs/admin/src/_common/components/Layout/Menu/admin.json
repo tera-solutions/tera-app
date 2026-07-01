@@ -441,6 +441,17 @@
       "permission": ""
     },
     {
+      "id": 271,
+      "title": "DS Bài học",
+      "path": "/course/lesson/list",
+      "icon": "briefcase",
+      "key": "lesson",
+      "activeKeys": "lesson",
+      "parentKey": "course",
+      "parentGroupKey": "group-course2",
+      "permission": ""
+    },
+    {
       "id": 28,
       "title": "Thời khóa biểu",
       "path": "/course/list",

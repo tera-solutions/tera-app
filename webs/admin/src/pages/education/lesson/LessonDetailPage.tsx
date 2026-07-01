@@ -1,18 +1,16 @@
 /* Import: library */
-import { useRef } from "react";
-import { observer } from "mobx-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
-  Spin,
   ArrowSmallLeftSolid,
   Breadcrumb,
+  PencilSquareOutlined,
   Button,
-  ArrowLeftOutlined,
+  Spin,
 } from "tera-dls";
 
 /* Import: packages */
-import { IFormRef } from "@tera/commons/interfaces";
+import { LESSON_PAGE_URL } from "@tera/commons/constants/url";
 
 /* Import: services */
 import { LessonService } from "@tera/modules";
@@ -20,20 +18,17 @@ import { LessonService } from "@tera/modules";
 /* Import: pages */
 import LessonForm from "./containers/LessonForm";
 
-const LessonDetailPage = observer(() => {
+const LessonDetailPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { id } = useParams();
 
-  const { t } = useTranslation();
-
-  const actionRef = useRef<IFormRef>(null);
-
-  const { data, isPending } =
-    LessonService.useLessonDetail({ id });
+  const { data, isLoading } = LessonService.useLessonDetail({ id });
+  const lesson = data?.data?.lesson ?? data?.data;
 
   return (
     <div className="tera-page-form gap-0! relative">
-      <div className="sticky top-11.25 z-10 bg-[#F3F3F9]">
+      <div className="sticky top-11.5 z-10 bg-[#F3F3F9]">
         <div className="page-header-v2">
           <div className="page-header-v2__breadcrumb">
             <div
@@ -48,47 +43,44 @@ const LessonDetailPage = observer(() => {
                 {
                   title: (
                     <a onClick={() => navigate(-1)}>
-                      <span className="text-blue-400! hover:text-blue-600!">
+                      <span className="!text-blue-400 hover:!text-blue-600">
                         {t("lesson.list")}
                       </span>
                     </a>
                   ),
                 },
-                {
-                  title: t("lesson.detail"),
-                },
+                { title: t("lesson.detail") },
               ]}
             />
           </div>
         </div>
       </div>
 
-      <div className="w-full max-w-3xl mx-auto">
-        <div className="bg-white rounded-[5px] w-full p-4">
-          <Spin spinning={isPending}>
-            <LessonForm
-              type="detail"
-              dataDetail={data?.data}
-              ref={actionRef}
-            />
-          </Spin>
-        </div>
+      <div className="w-full max-w-3xl mx-auto max-xmd:pb-[60px]">
+        {!lesson?.is_locked &&
+          lesson?.status !== "completed" &&
+          lesson?.status !== "cancelled" && (
+            <div className="flex justify-end mb-2 mr-4">
+              <Button
+                onClick={() =>
+                  navigate(LESSON_PAGE_URL.update.path(String(id)))
+                }
+                className="rounded-xsm!"
+              >
+                <PencilSquareOutlined className="w-4 h-4 mr-1" />
+                {t("button.edit")}
+              </Button>
+            </div>
+          )}
 
-        <div className="flex justify-between gap-2 mt-4">
-          <Button
-            onClick={() => navigate(-1)}
-            type="light"
-            className="btn-info px-3"
-          >
-            <ArrowLeftOutlined className="w-4 h-4 stroke-2" />
-            <span className="font-normal text-[16px] leading-4.5">
-              {t("button.back")}
-            </span>
-          </Button>
+        <div className="bg-white rounded-[5px] w-full p-4">
+          <Spin spinning={isLoading}>
+            <LessonForm dataDetail={lesson} type="detail" />
+          </Spin>
         </div>
       </div>
     </div>
   );
-});
+};
 
 export default LessonDetailPage;
