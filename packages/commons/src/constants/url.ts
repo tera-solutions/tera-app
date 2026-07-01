@@ -445,6 +445,29 @@ export const BRANCH_PAGE_URL = {
   },
 };
 
+export const USER_PAGE_URL = {
+  list: {
+    key: "",
+    path: "/system/user/list",
+    shortenUrl: "/system/user/list",
+  },
+  create: {
+    key: "",
+    path: "/system/user/create",
+    shortenUrl: "/system/user/create",
+  },
+  detail: {
+    key: "",
+    path: (id: number) => "/system/user/detail/" + id,
+    shortenUrl: "/system/user/detail/:id",
+  },
+  update: {
+    key: "",
+    path: (id: number) => "/system/user/update/" + id,
+    shortenUrl: "/system/user/update/:id",
+  },
+};
+
 export const BUSINESS_PAGE_URL = {
   list: {
     key: "",

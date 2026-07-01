@@ -61,6 +61,12 @@ import ParentStudentCreatePage from "pages/CRM/parent-student/ParentStudentCreat
 import ParentStudentUpdatePage from "pages/CRM/parent-student/ParentStudentUpdatePage";
 import ParentStudentDetailPage from "pages/CRM/parent-student/ParentStudentDetailPage";
 
+/* IMPORT:User */
+import UserListPage from "pages/System/user/UserListPage";
+import UserCreatePage from "pages/System/user/UserCreatePage";
+import UserUpdatePage from "pages/System/user/UserUpdatePage";
+import UserDetailPage from "pages/System/user/UserDetailPage";
+
 /* IMPORT:Branch */
 import BranchListPage from "pages/System/branch/BranchListPage";
 import BranchCreatePage from "pages/System/branch/BranchCreatePage";
@@ -168,6 +174,12 @@ export const Routers = () => {
           path='/student/parent-student/detail/:id'
           element={<ParentStudentDetailPage />}
         />
+
+        {/* BLOCK:User */}
+        <Route path='/system/user/list' element={<UserListPage />} />
+        <Route path='/system/user/create' element={<UserCreatePage />} />
+        <Route path='/system/user/update/:id' element={<UserUpdatePage />} />
+        <Route path='/system/user/detail/:id' element={<UserDetailPage />} />
 
         {/* BLOCK:Branch */}
         <Route path='/system/branch/list' element={<BranchListPage />} />

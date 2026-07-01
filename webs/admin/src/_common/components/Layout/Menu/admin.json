@@ -48,8 +48,8 @@
     {
       "id": "r9",
       "code": "system",
-      "title": "Doanh Nghiệp",
-      "shortTitle": "DN",
+      "title": "Hệ thống",
+      "shortTitle": "HT",
       "path": "/system/business/list",
       "icon": "menu10",
       "key": "system",
@@ -511,6 +511,17 @@
       "parentKey": "system",
       "parentGroupKey": "group-system",
       "activeKeys": "branch",
+      "permission": ""
+    },
+    {
+      "id": 42,
+      "title": "DS Người Dùng",
+      "path": "/system/user/list",
+      "icon": "briefcase",
+      "key": "user",
+      "parentKey": "system",
+      "parentGroupKey": "group-system",
+      "activeKeys": "user",
       "permission": ""
     }
   ],
