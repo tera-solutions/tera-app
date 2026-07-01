@@ -9,7 +9,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -91,15 +90,58 @@ export const useUserDelete = () => {
   });
 };
 
-export const useUserExport = () => {
+export const useUserActivate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => UserAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
+    mutationFn: (payload: DetailPayload) => UserAPI.activate(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["user", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useUserDeactivate = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: DetailPayload) => UserAPI.deactivate(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["user", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useUserUnlock = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: DetailPayload) => UserAPI.unlock(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["user", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useUserResetPassword = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: DetailPayload) => UserAPI.resetPassword(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -114,5 +156,8 @@ export const UserService = {
   useUserUpdate,
   useUpsertUser,
   useUserDelete,
-  useUserExport,
+  useUserActivate,
+  useUserDeactivate,
+  useUserUnlock,
+  useUserResetPassword,
 };
