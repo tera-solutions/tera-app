@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { AuthAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useAuthList = (payload: ListPayload) => {
+export const useAuthList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["auth", "list", payload.params],
     queryFn: () => AuthAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useAuthDetail = (payload: DetailPayload) => {
+export const useAuthDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["auth", "detail", payload.id],
     queryFn: () => AuthAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

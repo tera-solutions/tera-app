@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { RoleAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useRoleList = (payload: ListPayload) => {
+export const useRoleList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["role", "list", payload.params],
     queryFn: () => RoleAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useRoleDetail = (payload: DetailPayload) => {
+export const useRoleDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["role", "detail", payload.id],
     queryFn: () => RoleAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

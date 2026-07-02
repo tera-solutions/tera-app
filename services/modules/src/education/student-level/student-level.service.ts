@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { StudentLevelAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useStudentLevelList = (payload: ListPayload) => {
+export const useStudentLevelList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["student-level", "list", payload.params],
     queryFn: () => StudentLevelAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useStudentLevelDetail = (payload: DetailPayload) => {
+export const useStudentLevelDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["student-level", "detail", payload.id],
     queryFn: () => StudentLevelAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

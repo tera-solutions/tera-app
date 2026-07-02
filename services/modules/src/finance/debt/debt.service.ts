@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { DebtAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useDebtList = (payload: ListPayload) => {
+export const useDebtList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["debt", "list", payload.params],
     queryFn: () => DebtAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useDebtDetail = (payload: DetailPayload) => {
+export const useDebtDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["debt", "detail", payload.id],
     queryFn: () => DebtAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

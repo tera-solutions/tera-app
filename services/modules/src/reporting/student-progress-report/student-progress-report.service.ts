@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { StudentProgressReportAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useStudentProgressReportList = (payload: ListPayload) => {
+export const useStudentProgressReportList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["student-progress-report", "list", payload.params],
     queryFn: () => StudentProgressReportAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useStudentProgressReportDetail = (payload: DetailPayload) => {
+export const useStudentProgressReportDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["student-progress-report", "detail", payload.id],
     queryFn: () => StudentProgressReportAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

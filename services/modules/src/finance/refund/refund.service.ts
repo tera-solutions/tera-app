@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { RefundAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useRefundList = (payload: ListPayload) => {
+export const useRefundList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["refund", "list", payload.params],
     queryFn: () => RefundAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useRefundDetail = (payload: DetailPayload) => {
+export const useRefundDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["refund", "detail", payload.id],
     queryFn: () => RefundAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

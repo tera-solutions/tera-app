@@ -3,7 +3,6 @@ import { endpoint } from "@tera/api/_endpoint";
 import api from "@tera/api/drivers";
 import {
   CreatePayload,
-  DeletePayload,
   DetailPayload,
   ExportPayload,
   ListPayload,
@@ -31,11 +30,11 @@ export const LessonPlanAPI = {
       .put(`${endpoint}/edu/lesson-plan/update/${id}`, params)
       .then((result) => result.data),
 
-  delete: async ({ id }: DeletePayload) =>
+  archive: async ({ id }: DetailPayload) =>
     await api
-      .delete(`${endpoint}/edu/lesson-plan/delete/${id}`)
+      .post(`${endpoint}/edu/lesson-plan/archive/${id}`)
       .then((result) => result.data),
-  
+
   export: async ({ params }: ExportPayload) =>
     await api
       .post(`${endpoint}/edu/lesson-plan/export`, params)

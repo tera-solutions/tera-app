@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { ClassSessionAPI } from "@tera/api";
 import {
@@ -16,7 +17,7 @@ import {
 // QUERY
 export const useClassSessionList = (
   payload: ListPayload,
-  options?: { enabled?: boolean },
+  options?: QueryHookOptions,
 ) => {
   return useQueryAdapter({
     queryKey: ["class-session", "list", payload.params],
@@ -26,11 +27,15 @@ export const useClassSessionList = (
   });
 };
 
-export const useClassSessionDetail = (payload: DetailPayload) => {
+export const useClassSessionDetail = (
+  payload: DetailPayload,
+  options?: QueryHookOptions,
+) => {
   return useQueryAdapter({
     queryKey: ["class-session", "detail", payload.id],
     queryFn: () => ClassSessionAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

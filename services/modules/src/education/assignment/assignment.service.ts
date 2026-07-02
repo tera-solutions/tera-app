@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { AssignmentAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useAssignmentList = (payload: ListPayload) => {
+export const useAssignmentList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["assignment", "list", payload.params],
     queryFn: () => AssignmentAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useAssignmentDetail = (payload: DetailPayload) => {
+export const useAssignmentDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["assignment", "detail", payload.id],
     queryFn: () => AssignmentAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

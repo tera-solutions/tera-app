@@ -1,36 +1,31 @@
+import { FileAPI, stripExtension } from "@tera/api/common/FileAPI";
 import { endpoint } from "@tera/api/_endpoint";
 import api from "@tera/api/drivers";
-import {
-  CreatePayload,
-  DeletePayload,
-  DetailPayload,
-  ListPayload,
-  UpdatePayload,
-} from "@tera/api/_interface";
+
+export interface AttachMaterialPayload {
+  lessonId: number | string;
+  file_id: number | string;
+  material_type: "pdf" | "video" | "audio" | "slide" | "worksheet" | "homework";
+}
+
+export interface DetachMaterialPayload {
+  id: number | string;
+}
 
 export const LessonMaterialAPI = {
-  getList: async ({ params }: ListPayload) =>
+  upload: (file: File) =>
+    FileAPI.upload(file, { title: stripExtension(file.name) }),
+
+  attach: async ({ lessonId, file_id, material_type }: AttachMaterialPayload) =>
     await api
-      .get(`${endpoint}/education/lesson-material/list`, params)
+      .post(`${endpoint}/edu/lesson-plan/lesson/${lessonId}/material/attach`, {
+        file_id,
+        material_type,
+      })
       .then((r) => r.data),
 
-  getDetail: async ({ id }: DetailPayload) =>
+  detach: async ({ id }: DetachMaterialPayload) =>
     await api
-      .get(`${endpoint}/education/lesson-material/detail/${id}`)
-      .then((r) => r.data),
-
-  create: async ({ params }: CreatePayload) =>
-    await api
-      .post(`${endpoint}/education/lesson-material/create`, params)
-      .then((r) => r.data),
-
-  update: async ({ id, params }: UpdatePayload) =>
-    await api
-      .put(`${endpoint}/education/lesson-material/update/${id}`, params)
-      .then((r) => r.data),
-
-  delete: async ({ id }: DeletePayload) =>
-    await api
-      .delete(`${endpoint}/education/lesson-material/delete/${id}`)
+      .delete(`${endpoint}/edu/lesson-plan/material/delete/${id}`)
       .then((r) => r.data),
 };

@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { RoomAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useRoomList = (payload: ListPayload) => {
+export const useRoomList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["room", "list", payload.params],
     queryFn: () => RoomAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useRoomDetail = (payload: DetailPayload) => {
+export const useRoomDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["room", "detail", payload.id],
     queryFn: () => RoomAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

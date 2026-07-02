@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { PaymentAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const usePaymentList = (payload: ListPayload) => {
+export const usePaymentList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["payment", "list", payload.params],
     queryFn: () => PaymentAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const usePaymentDetail = (payload: DetailPayload) => {
+export const usePaymentDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["payment", "detail", payload.id],
     queryFn: () => PaymentAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

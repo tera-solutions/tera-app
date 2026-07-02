@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { WalletTransactionAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useWalletTransactionList = (payload: ListPayload) => {
+export const useWalletTransactionList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["wallet-transaction", "list", payload.params],
     queryFn: () => WalletTransactionAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useWalletTransactionDetail = (payload: DetailPayload) => {
+export const useWalletTransactionDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["wallet-transaction", "detail", payload.id],
     queryFn: () => WalletTransactionAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

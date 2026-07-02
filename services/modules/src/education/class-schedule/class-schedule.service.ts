@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { ClassScheduleAPI } from "@tera/api";
 import {
@@ -16,7 +17,7 @@ import {
 // QUERY
 export const useClassScheduleList = (
   payload: ListPayload,
-  options?: { enabled?: boolean },
+  options?: QueryHookOptions,
 ) => {
   return useQueryAdapter({
     queryKey: ["class-schedule", "list", payload.params],
@@ -26,11 +27,12 @@ export const useClassScheduleList = (
   });
 };
 
-export const useClassScheduleDetail = (payload: DetailPayload) => {
+export const useClassScheduleDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["class-schedule", "detail", payload.id],
     queryFn: () => ClassScheduleAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { ParentStudentAPI } from "@tera/api";
 import {
@@ -18,21 +19,22 @@ const KEY = "parent-student";
 // QUERY
 export const useParentStudentList = (
   payload: ListPayload,
-  options?: { enabled?: boolean },
+  options?: QueryHookOptions,
 ) => {
   return useQueryAdapter({
     queryKey: [KEY, "list", payload.params],
     queryFn: () => ParentStudentAPI.getList(payload),
     keepPreviousData: true,
-    ...(options?.enabled !== undefined ? { enabled: options.enabled } : {}),
+    ...options,
   });
 };
 
-export const useParentStudentDetail = (payload: DetailPayload) => {
+export const useParentStudentDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: [KEY, "detail", payload.id],
     queryFn: () => ParentStudentAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

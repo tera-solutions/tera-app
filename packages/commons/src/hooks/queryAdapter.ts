@@ -25,6 +25,19 @@ export interface QueryAdapterOptions<
 }
 
 // ==========================
+// QUERY HOOK OPTIONS (caller-supplied overrides)
+// ==========================
+export interface QueryHookOptions<TData = any, TError = Error> {
+  enabled?: boolean;
+  staleTime?: number;
+  gcTime?: number;
+  refetchOnWindowFocus?: boolean;
+  refetchOnMount?: boolean;
+  onSuccess?: (data: TData) => void;
+  onError?: (err: TError) => void;
+}
+
+// ==========================
 // QUERY ADAPTER
 // ==========================
 export function useQueryAdapter<

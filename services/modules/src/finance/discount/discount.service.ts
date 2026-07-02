@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { DiscountAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useDiscountList = (payload: ListPayload) => {
+export const useDiscountList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["discount", "list", payload.params],
     queryFn: () => DiscountAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useDiscountDetail = (payload: DetailPayload) => {
+export const useDiscountDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["discount", "detail", payload.id],
     queryFn: () => DiscountAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

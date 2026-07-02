@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { NotificationAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useNotificationList = (payload: ListPayload) => {
+export const useNotificationList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["notification", "list", payload.params],
     queryFn: () => NotificationAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useNotificationDetail = (payload: DetailPayload) => {
+export const useNotificationDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["notification", "detail", payload.id],
     queryFn: () => NotificationAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

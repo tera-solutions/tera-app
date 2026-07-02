@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { BusinessAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useBusinessList = (payload: ListPayload) => {
+export const useBusinessList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["business", "list", payload.params],
     queryFn: () => BusinessAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useBusinessDetail = (payload: DetailPayload) => {
+export const useBusinessDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["business", "detail", payload.id],
     queryFn: () => BusinessAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 
