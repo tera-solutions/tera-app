@@ -56,3 +56,43 @@
 .tera-drawer .transform-none {
   translate: none !important;
 }
+
+/* tera-dls popup close animation (Select/dropdown panels) can get stuck in the
+   `opacity-motion-leave` phase without ever reaching `-leave-active`, leaving an
+   invisible panel mounted on top of the page that still intercepts clicks. Once a
+   popup begins leaving it must never be interactive again. */
+.opacity-motion-leave {
+  pointer-events: none !important;
+}
+
+/* tera-dls modals (antd/rc-dialog) take a fixed `width`, which overflows small
+   screens and defaults to a cramped auto width. Cap the panel to the viewport so
+   any width becomes responsive, and let a tall form body scroll in place. */
+.tera-modal {
+  max-width: calc(100vw - 24px);
+}
+
+.tera-modal-body {
+  max-height: 72vh;
+  overflow-y: auto;
+}
+
+/* tera-dls compiles its `dark:` variants as `prefers-color-scheme: dark` media
+   queries, but this app is light-only. On an OS set to dark mode those variants
+   turn tera-dls text (modal titles, form labels, etc.) white/near-white, making
+   it vanish on the app's light surfaces. Re-assert readable dark text. */
+@media (prefers-color-scheme: dark) {
+  .dark\:text-white,
+  .dark\:text-gray-100,
+  .dark\:text-gray-200 {
+    color: var(--color-gray-900, #111827) !important;
+  }
+
+  .dark\:text-gray-300 {
+    color: var(--color-gray-800, #1f2937) !important;
+  }
+
+  .dark\:text-gray-400 {
+    color: var(--color-gray-600, #4b5563) !important;
+  }
+}

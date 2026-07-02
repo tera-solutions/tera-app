@@ -1,10 +1,10 @@
-import { IConfirmStore } from "states/_interface";
-import { useStates } from "./useStates";
+import { IConfirmStore } from "@tera/stores/_interface";
+import { useStores } from "@tera/stores/useStores";
 
 function useConfirm() {
   const {
     confirmStore: { setOpenConfirm },
-  } = useStates();
+  } = useStores();
 
   const confirm = {
     success({ align, content, onCancel, onOk, ...props }: IConfirmStore) {
