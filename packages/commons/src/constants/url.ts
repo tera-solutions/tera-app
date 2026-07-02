@@ -364,6 +364,29 @@ export const COURSE_PAGE_URL = {
   },
 };
 
+export const ENROLLMENT_PAGE_URL = {
+  list: {
+    key: "",
+    path: "/student/enrollment/list",
+    shortenUrl: "/student/enrollment/list",
+  },
+  create: {
+    key: "",
+    path: "/student/enrollment/create",
+    shortenUrl: "/student/enrollment/create",
+  },
+  detail: {
+    key: "",
+    path: (id: number) => "/student/enrollment/detail/" + id,
+    shortenUrl: "/student/enrollment/detail/:id",
+  },
+  update: {
+    key: "",
+    path: (id: number) => "/student/enrollment/update/" + id,
+    shortenUrl: "/student/enrollment/update/:id",
+  },
+};
+
 export const CLASS_ROOM_PAGE_URL = {
   list: {
     key: PAGE_KEY.CLASS_ROOM_LIST_VIEW,

@@ -31,6 +31,12 @@ import CourseCreatePage from "pages/education/course/CourseCreatePage";
 import CourseUpdatePage from "pages/education/course/CourseUpdatePage";
 import CourseDetailPage from "pages/education/course/CourseDetailPage";
 
+/* IMPORT:Enrollment */
+import EnrollmentListPage from "pages/education/enrollment/EnrollmentListPage";
+import EnrollmentCreatePage from "pages/education/enrollment/EnrollmentCreatePage";
+import EnrollmentUpdatePage from "pages/education/enrollment/EnrollmentUpdatePage";
+import EnrollmentDetailPage from "pages/education/enrollment/EnrollmentDetailPage";
+
 /* IMPORT:ClassRoom */
 import ClassRoomListPage from "pages/education/class-room/ClassRoomListPage";
 import ClassRoomCreatePage from "pages/education/class-room/ClassRoomCreatePage";
@@ -114,6 +120,21 @@ export const Routers = () => {
         <Route path='/course/create' element={<CourseCreatePage />} />
         <Route path='/course/update/:id' element={<CourseUpdatePage />} />
         <Route path='/course/detail/:id' element={<CourseDetailPage />} />
+
+        {/* BLOCK:Enrollment */}
+        <Route path="/student/enrollment/list" element={<EnrollmentListPage />} />
+        <Route
+          path="/student/enrollment/create"
+          element={<EnrollmentCreatePage />}
+        />
+        <Route
+          path="/student/enrollment/update/:id"
+          element={<EnrollmentUpdatePage />}
+        />
+        <Route
+          path="/student/enrollment/detail/:id"
+          element={<EnrollmentDetailPage />}
+        />
 
         {/* BLOCK:ClassRoom */}
         <Route path="/course/class/list" element={<ClassRoomListPage />} />
