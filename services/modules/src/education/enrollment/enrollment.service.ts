@@ -7,9 +7,7 @@ import {
 import { EnrollmentAPI } from "@tera/api";
 import {
   CreatePayload,
-  DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -53,6 +51,7 @@ export const useEnrollmentUpdate = () => {
     mutationFn: (payload: UpdatePayload) => EnrollmentAPI.update(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["enrollment", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["enrollment", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -69,7 +68,8 @@ export const useUpsertEnrollment = () => {
       return EnrollmentAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["enrollment", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["enrollment", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -77,13 +77,14 @@ export const useUpsertEnrollment = () => {
   });
 };
 
-export const useEnrollmentDelete = () => {
+export const useEnrollmentSuspend = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => EnrollmentAPI.delete(payload),
+    mutationFn: (payload: UpdatePayload) => EnrollmentAPI.suspend(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["enrollment", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["enrollment", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -91,15 +92,44 @@ export const useEnrollmentDelete = () => {
   });
 };
 
-export const useEnrollmentExport = () => {
+export const useEnrollmentTransfer = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => EnrollmentAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
+    mutationFn: (payload: UpdatePayload) => EnrollmentAPI.transfer(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["enrollment", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["enrollment", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useEnrollmentRefund = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: DetailPayload) => EnrollmentAPI.refund(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["enrollment", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["enrollment", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useEnrollmentCancel = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => EnrollmentAPI.cancel(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["enrollment", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["enrollment", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -113,6 +143,8 @@ export const EnrollmentService = {
   useEnrollmentCreate,
   useEnrollmentUpdate,
   useUpsertEnrollment,
-  useEnrollmentDelete,
-  useEnrollmentExport,
+  useEnrollmentSuspend,
+  useEnrollmentTransfer,
+  useEnrollmentRefund,
+  useEnrollmentCancel,
 };

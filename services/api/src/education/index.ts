@@ -12,6 +12,7 @@ export * from "./course";
 export * from "./course-level";
 export * from "./course-pricing";
 export * from "./curriculum";
+export * from "./enrollment";
 export * from "./evaluation";
 export * from "./exam";
 export * from "./assignment";

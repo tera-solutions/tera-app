@@ -169,12 +169,13 @@
     },
     {
       "id": 3,
-      "title": "Đăng ký mới",
-      "path": "/warehouse",
+      "title": "Ghi danh khóa học",
+      "path": "/student/enrollment/list",
       "icon": "briefcase",
-      "key": "warehouse",
+      "key": "enrollment",
+      "activeKeys": "enrollment",
       "parentKey": "student",
-      "parentGroupKey": "group-service",
+      "parentGroupKey": "group-student",
       "permission": ""
     },
     {
