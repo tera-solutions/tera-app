@@ -16,6 +16,9 @@ import { TeacherService } from "@tera/modules";
 /* Import: pages */
 import TeacherForm from "./containers/TeacherForm";
 import TeacherCertificate from "./containers/TeacherCertificate";
+import TeacherReview from "./containers/TeacherReview";
+import TeacherClass from "./containers/TeacherClass";
+import TeacherSession from "./containers/TeacherSession";
 
 const TeacherFormModal = observer(({ open, onClose, id, type }: IModalProps) => {
   const [currentType, setCurrentType] = useState(type);
@@ -227,7 +230,34 @@ const TeacherFormModal = observer(({ open, onClose, id, type }: IModalProps) => 
             )}
 
 
-            {["class", "session", "review", "attendance", "activity"].includes(activeTab) && (
+            {activeTab === "class" && (
+              <div>
+                <SectionHeader title={t("teacher.tab_class")} />
+                <div className="mt-2">
+                  <TeacherClass teacherId={teacher?.id} />
+                </div>
+              </div>
+            )}
+
+            {activeTab === "review" && (
+              <div>
+                <SectionHeader title={t("teacher.tab_review")} />
+                <div className="mt-2">
+                  <TeacherReview teacherId={teacher?.id} />
+                </div>
+              </div>
+            )}
+
+            {activeTab === "session" && (
+              <div>
+                <SectionHeader title={t("teacher.tab_session")} />
+                <div className="mt-2">
+                  <TeacherSession teacherId={teacher?.id} />
+                </div>
+              </div>
+            )}
+
+            {["attendance", "activity"].includes(activeTab) && (
               <div>
                 <SectionHeader title={tabItems.find((t) => t.key === activeTab)?.label ?? ""} />
                 <EmptyTab />

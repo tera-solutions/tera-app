@@ -19,6 +19,9 @@ import { TeacherService } from "@tera/modules";
 
 /* Import: containers */
 import TeacherCertificate from "./containers/TeacherCertificate";
+import TeacherReview from "./containers/TeacherReview";
+import TeacherClass from "./containers/TeacherClass";
+import TeacherSession from "./containers/TeacherSession";
 
 const TeacherDetailPage = observer(() => {
   const navigate = useNavigate();
@@ -270,21 +273,27 @@ const TeacherDetailPage = observer(() => {
                 {activeTab === "class" && (
                   <div>
                     <SectionHeader title={t("teacher.tab_class")} />
-                    <EmptyTab />
+                    <div className="mt-2">
+                      <TeacherClass teacherId={teacher?.id} />
+                    </div>
                   </div>
                 )}
 
                 {activeTab === "session" && (
                   <div>
                     <SectionHeader title={t("teacher.tab_session")} />
-                    <EmptyTab />
+                    <div className="mt-2">
+                      <TeacherSession teacherId={teacher?.id} />
+                    </div>
                   </div>
                 )}
 
                 {activeTab === "review" && (
                   <div>
                     <SectionHeader title={t("teacher.tab_review")} />
-                    <EmptyTab />
+                    <div className="mt-2">
+                      <TeacherReview teacherId={teacher?.id} />
+                    </div>
                   </div>
                 )}
 
