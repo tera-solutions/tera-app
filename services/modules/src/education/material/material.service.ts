@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { MaterialAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useMaterialList = (payload: ListPayload) => {
+export const useMaterialList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["material", "list", payload.params],
     queryFn: () => MaterialAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useMaterialDetail = (payload: DetailPayload) => {
+export const useMaterialDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["material", "detail", payload.id],
     queryFn: () => MaterialAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

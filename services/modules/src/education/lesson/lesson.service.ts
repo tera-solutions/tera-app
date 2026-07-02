@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { LessonAPI } from "@tera/api";
 import {
@@ -12,19 +13,24 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useLessonList = (payload: ListPayload) => {
+export const useLessonList = (
+  payload: ListPayload,
+  options?: QueryHookOptions,
+) => {
   return useQueryAdapter({
     queryKey: ["lesson", "list", payload.params],
     queryFn: () => LessonAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useLessonDetail = (payload: DetailPayload) => {
+export const useLessonDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["lesson", "detail", payload.id],
     queryFn: () => LessonAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 
@@ -59,6 +65,9 @@ export const useLessonReschedule = () =>
 export const useLessonCancel = () =>
   useLessonMutation((payload) => LessonAPI.cancel(payload));
 
+export const useLessonComplete = () =>
+  useLessonMutation((payload: DetailPayload) => LessonAPI.complete(payload));
+
 export const useLessonLock = () =>
   useLessonMutation((payload) => LessonAPI.lock(payload));
 
@@ -72,6 +81,7 @@ export const LessonService = {
   useLessonUpdate,
   useLessonReschedule,
   useLessonCancel,
+  useLessonComplete,
   useLessonLock,
   useLessonUnlock,
 };

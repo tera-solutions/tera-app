@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { StaffAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useStaffList = (payload: ListPayload) => {
+export const useStaffList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["staff", "list", payload.params],
     queryFn: () => StaffAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useStaffDetail = (payload: DetailPayload) => {
+export const useStaffDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["staff", "detail", payload.id],
     queryFn: () => StaffAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

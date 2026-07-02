@@ -23,15 +23,23 @@ instance.interceptors.response.use(
   },
 );
 
+const toQueryString = (params: any) => {
+  if (!params || typeof params !== "object") return "";
+  const { filters, ...rest } = params;
+  const merged =
+    filters && typeof filters === "object" ? { ...rest, ...filters } : rest;
+  return `?${qs.stringify(merged)}`;
+};
+
 const get = (endpoints?: any, params?: any, headers?: any) => {
   if (_.isEmpty(headers)) {
     return instance
-      .get(`${endpoints}${params ? `?${qs.stringify(params)}` : ""}`)
+      .get(`${endpoints}${params ? toQueryString(params) : ""}`)
       .then(_requestResponse)
       .catch(_requestError);
   }
   return instance
-    .get(`${endpoints}${params ? `?${qs.stringify(params)}` : ""}`, {
+    .get(`${endpoints}${params ? toQueryString(params) : ""}`, {
       timeout: 30000,
       ...headers,
     })

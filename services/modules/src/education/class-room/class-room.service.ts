@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { ClassRoomAPI } from "@tera/api";
 import {
@@ -15,26 +16,35 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useClassRoomList = (payload: ListPayload) => {
+export const useClassRoomList = (
+  payload: ListPayload,
+  options?: QueryHookOptions,
+) => {
   return useQueryAdapter({
     queryKey: ["class-room", "list", payload.params],
     queryFn: () => ClassRoomAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useClassRoomDetail = (payload: DetailPayload) => {
+export const useClassRoomDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["class-room", "detail", payload.id],
     queryFn: () => ClassRoomAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 
-export const useClassRoomSummary = (params?: Record<string, unknown>) => {
+export const useClassRoomSummary = (
+  params?: Record<string, unknown>,
+  options?: QueryHookOptions,
+) => {
   return useQueryAdapter({
     queryKey: ["class-room", "summary", params],
     queryFn: () => ClassRoomAPI.getSummary(params),
+    ...options,
   });
 };
 

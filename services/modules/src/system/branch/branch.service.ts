@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { BranchAPI } from "@tera/api";
 import {
@@ -14,19 +15,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useBranchList = (payload: ListPayload) => {
+export const useBranchList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["branch", "list", payload.params],
     queryFn: () => BranchAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useBranchDetail = (payload: DetailPayload) => {
+export const useBranchDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["branch", "detail", payload.id],
     queryFn: () => BranchAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

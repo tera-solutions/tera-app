@@ -20,3 +20,5 @@ export const authEndpoint = `${BASE_API}/api/auth`;
 export const auth2Endpoint = `${BASE_API}/api/auth`;
 
 export const adminEndpoint = `${BASE_API}/api/admin`;
+
+export const fileEndpoint = `${BASE_API}/api/file`;

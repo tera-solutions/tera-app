@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { ClassUtilizationReportAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useClassUtilizationReportList = (payload: ListPayload) => {
+export const useClassUtilizationReportList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["class-utilization-report", "list", payload.params],
     queryFn: () => ClassUtilizationReportAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useClassUtilizationReportDetail = (payload: DetailPayload) => {
+export const useClassUtilizationReportDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["class-utilization-report", "detail", payload.id],
     queryFn: () => ClassUtilizationReportAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

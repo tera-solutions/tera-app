@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { TeacherAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useTeacherList = (payload: ListPayload) => {
+export const useTeacherList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["teacher", "list", payload.params],
     queryFn: () => TeacherAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useTeacherDetail = (payload: DetailPayload) => {
+export const useTeacherDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["teacher", "detail", payload.id],
     queryFn: () => TeacherAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 
@@ -136,11 +139,12 @@ export const useTeacherResign = () => {
   });
 };
 
-export const useTeacherCertificateList = (payload: DetailPayload) => {
+export const useTeacherCertificateList = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["teacher", "certificate", "list", payload.id],
     queryFn: () => TeacherAPI.getCertificateList(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

@@ -7,8 +7,8 @@ import {
 } from "@tera/api/_interface";
 
 /**
- * Lesson (Bài học) — 8 endpoint thật (Postman), KHÔNG phải CRUD generic:
- * list / detail / generate / update / reschedule / cancel / lock / unlock.
+ * Lesson (Bài học), KHÔNG phải CRUD generic:
+ * list / detail / generate / update / reschedule / cancel / complete / lock / unlock.
  * Bài học được SINH (generate) theo lớp, không tạo lẻ; xóa = hủy (cancel).
  */
 export const LessonAPI = {
@@ -43,6 +43,12 @@ export const LessonAPI = {
   cancel: async ({ id, params }: UpdatePayload) =>
     await api
       .post(`${endpoint}/edu/lesson/cancel/${id}`, params)
+      .then((result) => result.data),
+
+  // Kết thúc buổi học — KHÔNG body
+  complete: async ({ id }: DetailPayload) =>
+    await api
+      .post(`${endpoint}/edu/lesson/complete/${id}`)
       .then((result) => result.data),
 
   // Khóa buổi học — KHÔNG body (chỉ khóa được buổi đã hoàn thành)

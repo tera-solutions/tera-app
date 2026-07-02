@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { RevenueReportAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useRevenueReportList = (payload: ListPayload) => {
+export const useRevenueReportList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["revenue-report", "list", payload.params],
     queryFn: () => RevenueReportAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useRevenueReportDetail = (payload: DetailPayload) => {
+export const useRevenueReportDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["revenue-report", "detail", payload.id],
     queryFn: () => RevenueReportAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

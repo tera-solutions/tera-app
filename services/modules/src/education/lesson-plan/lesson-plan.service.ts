@@ -3,11 +3,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { LessonPlanAPI } from "@tera/api";
 import {
   CreatePayload,
-  DeletePayload,
   DetailPayload,
   ExportPayload,
   ListPayload,
@@ -15,19 +15,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useLessonPlanList = (payload: ListPayload) => {
+export const useLessonPlanList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["lesson-plan", "list", payload.params],
     queryFn: () => LessonPlanAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useLessonPlanDetail = (payload: DetailPayload) => {
+export const useLessonPlanDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["lesson-plan", "detail", payload.id],
     queryFn: () => LessonPlanAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 
@@ -78,11 +80,11 @@ export const useUpsertLessonPlan = () => {
   });
 };
 
-export const useLessonPlanDelete = () => {
+export const useLessonPlanArchive = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => LessonPlanAPI.delete(payload),
+    mutationFn: (payload: DetailPayload) => LessonPlanAPI.archive(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lesson-plan", "list"] });
     },
@@ -114,6 +116,6 @@ export const LessonPlanService = {
   useLessonPlanCreate,
   useLessonPlanUpdate,
   useUpsertLessonPlan,
-  useLessonPlanDelete,
+  useLessonPlanArchive,
   useLessonPlanExport,
 };

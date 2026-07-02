@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { PermissionAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const usePermissionList = (payload: ListPayload) => {
+export const usePermissionList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["permission", "list", payload.params],
     queryFn: () => PermissionAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const usePermissionDetail = (payload: DetailPayload) => {
+export const usePermissionDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["permission", "detail", payload.id],
     queryFn: () => PermissionAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 

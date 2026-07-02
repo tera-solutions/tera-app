@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   useQueryAdapter,
   useMutationAdapter,
+  QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { LeadConversionReportAPI } from "@tera/api";
 import {
@@ -15,19 +16,21 @@ import {
 } from "@tera/api/_interface";
 
 // QUERY
-export const useLeadConversionReportList = (payload: ListPayload) => {
+export const useLeadConversionReportList = (payload: ListPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["lead-conversion-report", "list", payload.params],
     queryFn: () => LeadConversionReportAPI.getList(payload),
     keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useLeadConversionReportDetail = (payload: DetailPayload) => {
+export const useLeadConversionReportDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["lead-conversion-report", "detail", payload.id],
     queryFn: () => LeadConversionReportAPI.getDetail(payload),
     enabled: !!payload.id,
+    ...options,
   });
 };
 
