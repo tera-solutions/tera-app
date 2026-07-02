@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import PageLoading from "@tera/components/web/PageLoading";
+import ModalConfirm from "@tera/components/web/ModalConfirm";
 import { useStores } from "@tera/stores/useStores";
 
 import { PAGE_BG } from "_common/constants/dashboard";
@@ -13,6 +14,7 @@ import DesktopLayout from "./DesktopLayout";
 const BasicLayout = observer(() => {
   const {
     globalStore: { authenticated },
+    confirmStore: { openConfirm },
   } = useStores();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -34,6 +36,8 @@ const BasicLayout = observer(() => {
       </main>
 
       <BottomNav />
+
+      {openConfirm && <ModalConfirm />}
     </div>
   );
 });
