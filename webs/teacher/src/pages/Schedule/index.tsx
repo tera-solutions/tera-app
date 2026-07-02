@@ -17,6 +17,7 @@ import {
 import useIsMobile from "@tera/commons/hooks/useIsMobile";
 
 import Card from "_common/components/Card";
+import { useUrlFilters } from "_common/hooks/useUrlFilters";
 
 import type { CalendarParams, ScheduleItem, ScheduleStatus, ScheduleView } from "./_interface";
 import { DEFAULT_STATUSES } from "./constants";
@@ -53,11 +54,23 @@ const Schedule = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const [search, setSearch] = useState("");
-  const [classId, setClassId] = useState<number | "">("");
-  const [branch, setBranch] = useState<string | "">("");
-  const [statuses, setStatuses] =
-    useState<ScheduleStatus[]>(DEFAULT_STATUSES);
+  const [scheduleFilters, setScheduleFilters] = useUrlFilters({
+    search: { type: "string", default: "" },
+    classId: { type: "number", default: undefined as number | undefined },
+    branch: { type: "string", default: "" },
+    statuses: { type: "string[]", default: DEFAULT_STATUSES as string[] },
+  });
+  const search = scheduleFilters.search;
+  const classId: number | "" =
+    scheduleFilters.classId === undefined ? "" : scheduleFilters.classId;
+  const branch = scheduleFilters.branch;
+  const statuses = scheduleFilters.statuses as ScheduleStatus[];
+  const setSearch = (value: string) => setScheduleFilters({ search: value });
+  const setClassId = (value: number | "") =>
+    setScheduleFilters({ classId: value === "" ? undefined : value });
+  const setBranch = (value: string | "") => setScheduleFilters({ branch: value });
+  const setStatuses = (updater: (prev: ScheduleStatus[]) => ScheduleStatus[]) =>
+    setScheduleFilters({ statuses: updater(statuses) });
 
   // On mobile the week/month grids and filter sidebar are hidden, so the day
   // view would strand users on an empty single day. Show the week as a scrollable

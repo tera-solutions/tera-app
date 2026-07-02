@@ -27,7 +27,9 @@ const StatCard = ({
       </div>
       <div className="leading-tight">
         {loading ? (
-          <Spin spinning size="small" />
+          <span className="flex h-8 items-center">
+            <Spin spinning size="small" />
+          </span>
         ) : (
           <p className="text-2xl font-bold text-slate-800">{value}</p>
         )}

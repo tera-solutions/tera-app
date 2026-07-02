@@ -43,7 +43,7 @@ export const toClassroom = (raw: any): Classroom => {
     name: raw.name ?? "",
     category: "",
     level: raw.course?.name ?? "",
-    room: raw.room?.name ?? "",
+    room: raw.room?.room_name ?? raw.room?.name ?? "",
     branch: raw.branch?.name ?? raw.business?.name ?? "",
     schedule_days: scheduleDays(schedules),
     start_time: toTime(firstSlot.start_time),
@@ -53,6 +53,8 @@ export const toClassroom = (raw: any): Classroom => {
     completion_rate: 0,
     status: (raw.status ?? "upcoming") as ClassroomStatus,
     cover_image: raw.avatar ?? "",
+    course_id: raw.course_id ?? raw.course?.id ?? null,
+    lesson_plan_id: raw.lesson_plan_id ?? raw.lesson_plan?.id ?? null,
   };
 };
 

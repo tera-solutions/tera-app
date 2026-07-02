@@ -24,6 +24,8 @@ import { getClassStatus, LEARNING_TYPE_LABEL } from "../constants";
 interface ClassroomInfoCardProps {
   detail: ClassroomDetail;
   maxStudents: number;
+  lessonPlan?: { id: number; name: string };
+  onViewLessonPlan?: () => void;
   onEdit: () => void;
   onExport: () => void;
 }
@@ -52,6 +54,8 @@ const fmtDate = (value: string) =>
 const ClassroomInfoCard = ({
   detail,
   maxStudents,
+  lessonPlan,
+  onViewLessonPlan,
   onEdit,
   onExport,
 }: ClassroomInfoCardProps) => {
@@ -172,7 +176,19 @@ const ClassroomInfoCard = ({
             <InfoRow
               icon={<BookOpenOutlined />}
               label="Giáo án"
-              value={detail.lesson_plan_name || "—"}
+              value={
+                lessonPlan ? (
+                  <button
+                    type="button"
+                    onClick={onViewLessonPlan}
+                    className="text-brand hover:underline"
+                  >
+                    {lessonPlan.name || "—"}
+                  </button>
+                ) : (
+                  detail.lesson_plan_name || "—"
+                )
+              }
             />
             <InfoRow
               icon={<ClockOutlined />}
