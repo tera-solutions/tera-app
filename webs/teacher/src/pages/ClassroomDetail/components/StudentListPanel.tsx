@@ -7,8 +7,6 @@ import {
   Empty,
   ExclamationTriangleOutlined,
   EyeOutlined,
-  Input,
-  MagnifyingGlassOutlined,
   notification,
   Pagination,
   PlusOutlined,
@@ -17,6 +15,9 @@ import {
   UserOutlined,
 } from "tera-dls";
 import moment from "moment";
+
+import SearchInput from "_common/components/SearchInput";
+import { useUrlFilters } from "_common/hooks/useUrlFilters";
 
 import type { ClassStudent, StudentRowStatus } from "../_interface";
 import { getStudentStatus, STUDENT_STATUS_OPTIONS } from "../constants";
@@ -54,27 +55,33 @@ const Avatar = ({ student }: { student: ClassStudent }) =>
   );
 
 const StudentListPanel = ({ classId }: { classId: number | null }) => {
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [status, setStatus] = useState<StudentRowStatus | "">("");
-  const [page, setPage] = useState(1);
+  // Prefixed keys avoid colliding with other ClassroomDetail tab panels that
+  // may sync their own filters (search/status/page) to the same URL.
+  const [filters, setFilters] = useUrlFilters({
+    student_search: { type: "string", default: "" },
+    student_status: { type: "string", default: "" as StudentRowStatus | "" },
+    student_page: { type: "number", default: 1 },
+  });
+  const [searchDraft, setSearchDraft] = useState(filters.student_search);
 
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search.trim()), 400);
+    const t = setTimeout(() => {
+      const trimmed = searchDraft.trim();
+      if (trimmed !== filters.student_search) {
+        setFilters({ student_search: trimmed, student_page: 1 });
+      }
+    }, 400);
     return () => clearTimeout(t);
-  }, [search]);
-
-  // Reset to the first page whenever the filters change.
-  useEffect(() => setPage(1), [debouncedSearch, status]);
+  }, [searchDraft]);
 
   const listParams = {
     class_id: classId ?? 0,
-    search: debouncedSearch || undefined,
-    status: status || undefined,
-    page,
+    search: filters.student_search || undefined,
+    status: filters.student_status || undefined,
+    page: filters.student_page,
     per_page: PER_PAGE,
   };
-  
+
   const query = StudentService.useStudentList({ params: listParams });
   const { isLoading, isError, refetch } = query;
   const data = useMemo(
@@ -87,10 +94,12 @@ const StudentListPanel = ({ classId }: { classId: number | null }) => {
   // The endpoint currently fixes its own page size; trust the response so the
   // range text and pager stay correct whether or not `per_page` is honoured.
   const perPage = data.per_page || PER_PAGE;
-  const selectedStatus = STUDENT_STATUS_OPTIONS.find((o) => o.value === status);
+  const selectedStatus = STUDENT_STATUS_OPTIONS.find(
+    (o) => o.value === filters.student_status,
+  );
 
-  const from = total === 0 ? 0 : (page - 1) * perPage + 1;
-  const to = Math.min(page * perPage, total);
+  const from = total === 0 ? 0 : (filters.student_page - 1) * perPage + 1;
+  const to = Math.min(filters.student_page * perPage, total);
 
   const body = () => {
     if (isLoading)
@@ -228,22 +237,24 @@ const StudentListPanel = ({ classId }: { classId: number | null }) => {
       </div>
 
       <div className="mb-3 flex flex-col gap-3 sm:flex-row">
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+        <SearchInput
+          value={searchDraft}
+          onChange={(e) => setSearchDraft(e.target.value)}
           placeholder="Tìm kiếm học viên..."
-          prefix={<MagnifyingGlassOutlined className="h-4 w-4 text-slate-400" />}
-          className="pl-10 sm:max-w-xs"
+          wrapperClassName="sm:max-w-xs"
         />
         <div className="sm:w-48">
           <Select
-            value={status === "" ? undefined : status}
+            value={filters.student_status === "" ? undefined : filters.student_status}
             selectedValue={selectedStatus}
             placeholder="Tất cả trạng thái"
             allowClear
             options={STUDENT_STATUS_OPTIONS}
             onChange={(value) =>
-              setStatus((value as StudentRowStatus | undefined) ?? "")
+              setFilters({
+                student_status: (value as StudentRowStatus | undefined) ?? "",
+                student_page: 1,
+              })
             }
           />
         </div>
@@ -272,9 +283,9 @@ const StudentListPanel = ({ classId }: { classId: number | null }) => {
           {total > perPage && (
             <Pagination
               total={total}
-              current={page}
+              current={filters.student_page}
               pageSize={perPage}
-              onChange={(p) => setPage(p ?? 1)}
+              onChange={(p) => setFilters({ student_page: p ?? 1 })}
             />
           )}
         </div>

@@ -1,14 +1,9 @@
 import classNames from "classnames";
 import moment from "moment";
-import {
-  Checkbox,
-  Input,
-  MagnifyingGlassOutlined,
-  RangePicker,
-  Select,
-} from "tera-dls";
+import { Checkbox, RangePicker, Select } from "tera-dls";
 
 import { CARD } from "_common/constants/dashboard";
+import SearchInput from "_common/components/SearchInput";
 import { SCHEDULE_STATUS } from "_common/constants/schedule";
 
 import type { ScheduleStatus } from "../_interface";
@@ -70,12 +65,10 @@ const FilterSidebar = ({
 
   return (
     <div className={`${CARD} flex flex-col gap-4 p-4`}>
-      <Input
+      <SearchInput
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
         placeholder="Tìm kiếm lớp học..."
-        prefix={<MagnifyingGlassOutlined className="h-4 w-4 text-slate-400" />}
-        className="pl-10"
       />
 
       <Field label="Lọc lớp học">

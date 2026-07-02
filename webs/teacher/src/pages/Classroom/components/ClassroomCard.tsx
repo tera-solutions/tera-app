@@ -167,7 +167,7 @@ const ClassroomCard = ({ classroom }: ClassroomCardProps) => {
         <Dropdown
           trigger="click"
           menu={{
-            itemClassName: "text-slate-700 hover:bg-brand!",
+            itemClassName: "text-slate-700 hover:bg-brand! hover:text-white!",
             items: [
               {
                 key: "detail",

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import classNames from "classnames";
 import {
   AcademicCapOutlined,
@@ -10,13 +10,16 @@ import {
   ExclamationTriangleOutlined,
   ListBulletOutlined,
   notification,
+  Pagination,
   PlusOutlined,
   Spin,
   TableCellsOutlined,
   UsersOutlined,
 } from "tera-dls";
 
+import AnimatedHeight from "_common/components/AnimatedHeight";
 import Card from "_common/components/Card";
+import { useUrlFilters } from "_common/hooks/useUrlFilters";
 
 import type {
   ClassroomStatus,
@@ -34,26 +37,43 @@ import ClassroomGridCard from "./components/ClassroomGridCard";
 import { ClassRoomService } from "@tera/modules/education";
 
 const Classroom = () => {
-  const [view, setView] = useState<ClassroomView>("list");
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<ClassroomStatus | "">("");
-  const [level, setLevel] = useState<string | "">("");
-  const [limit, setLimit] = useState(PER_PAGE);
+  const [filters, setFilters] = useUrlFilters({
+    view: { type: "string", default: "list" as ClassroomView },
+    search: { type: "string", default: "" },
+    status: { type: "string", default: "" as ClassroomStatus | "" },
+    level: { type: "string", default: "" },
+    page: { type: "number", default: 1 },
+    pageSize: { type: "number", default: PER_PAGE },
+  });
+  const [searchDraft, setSearchDraft] = useState(filters.search);
+
+  // Debounce typed text before it lands in the URL/query.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const trimmed = searchDraft.trim();
+      if (trimmed !== filters.search) setFilters({ search: trimmed, page: 1 });
+    }, 400);
+    return () => clearTimeout(t);
+  }, [searchDraft]);
 
   const listQuery = ClassRoomService.useClassRoomList({
-    params: { per_page: limit },
+    params: {
+      page: filters.page,
+      per_page: filters.pageSize,
+      search: filters.search || undefined,
+      filters: { status: filters.status || undefined },
+    },
   });
-  const { isLoading, isError, refetch } = listQuery;
+  const { isLoading, isFetching, isError, refetch } = listQuery;
+  const pagination = listQuery.data?.data?.pagination;
   const data = useMemo(
     () => ({
       items: toClassrooms(listQuery.data?.data?.items),
-      total:
-        listQuery.data?.data?.pagination?.total ??
-        listQuery.data?.data?.items?.length ??
-        0,
+      total: pagination?.total ?? listQuery.data?.data?.items?.length ?? 0,
     }),
     [listQuery.data],
   );
+  const perPage = pagination?.per_page ?? filters.pageSize;
 
   const summaryQuery = ClassRoomService.useClassRoomSummary();
   const isSummaryLoading = summaryQuery.isLoading;
@@ -85,21 +105,20 @@ const Classroom = () => {
     return Array.from(set, (value) => ({ value, label: value }));
   }, [classrooms]);
 
+  // Status and search are filtered server-side; level has no matching API
+  // filter, so it's applied on top of the current page's results.
   const filtered = useMemo(() => {
-    const keyword = search.trim().toLowerCase();
-    return classrooms.filter((c) => {
-      if (
-        keyword &&
-        !`${c.name} ${c.level} ${c.room}`.toLowerCase().includes(keyword)
-      )
-        return false;
-      if (status !== "" && c.status !== status) return false;
-      if (level !== "" && c.level !== level) return false;
-      return true;
-    });
-  }, [classrooms, search, status, level]);
+    if (filters.level === "") return classrooms;
+    return classrooms.filter((c) => c.level === filters.level);
+  }, [classrooms, filters.level]);
 
-  const hasMore = classrooms.length < total;
+  const handleChangePage = (nextPage: number, nextSize: number) => {
+    if (nextSize !== perPage) {
+      setFilters({ pageSize: nextSize, page: 1 });
+    } else {
+      setFilters({ page: nextPage });
+    }
+  };
 
   const handleCreate = () =>
     notification.open({ message: "Tính năng đang được phát triển" });
@@ -137,8 +156,8 @@ const Classroom = () => {
       );
 
     return (
-      <Spin spinning={isLoading}>
-        {view === "list" ? (
+      <Spin spinning={isLoading || isFetching}>
+        {filters.view === "list" ? (
           <div className="flex flex-col gap-3">
             {filtered.map((classroom) => (
               <ClassroomCard key={classroom.id} classroom={classroom} />
@@ -149,17 +168,6 @@ const Classroom = () => {
             {filtered.map((classroom) => (
               <ClassroomGridCard key={classroom.id} classroom={classroom} />
             ))}
-          </div>
-        )}
-
-        {hasMore && (
-          <div className="mt-4 flex justify-center">
-            <Button
-              type="alternative"
-              onClick={() => setLimit((prev) => prev + PER_PAGE)}
-            >
-              Xem thêm
-            </Button>
           </div>
         )}
       </Spin>
@@ -186,13 +194,13 @@ const Classroom = () => {
 
       <div className="mb-4">
         <ClassroomToolbar
-          search={search}
-          status={status}
-          level={level}
+          search={searchDraft}
+          status={filters.status}
+          level={filters.level}
           levelOptions={levelOptions}
-          onSearchChange={setSearch}
-          onStatusChange={setStatus}
-          onLevelChange={setLevel}
+          onSearchChange={setSearchDraft}
+          onStatusChange={(status) => setFilters({ status, page: 1 })}
+          onLevelChange={(level) => setFilters({ level, page: 1 })}
         />
       </div>
 
@@ -247,10 +255,10 @@ const Classroom = () => {
                 key={key}
                 type="button"
                 title={key === "list" ? "Dạng danh sách" : "Dạng lưới"}
-                onClick={() => setView(key)}
+                onClick={() => setFilters({ view: key })}
                 className={classNames(
                   "flex h-8 w-8 items-center justify-center rounded-md transition-colors [&_svg]:h-4 [&_svg]:w-4",
-                  view === key
+                  filters.view === key
                     ? "bg-white text-brand shadow-sm"
                     : "text-slate-500 hover:text-slate-700",
                 )}
@@ -261,7 +269,18 @@ const Classroom = () => {
           </div>
         </div>
 
-        {renderList()}
+        <AnimatedHeight>{renderList()}</AnimatedHeight>
+
+        {total > 0 && (
+          <div className="mt-4 flex justify-end">
+            <Pagination
+              total={total}
+              current={filters.page}
+              pageSize={perPage}
+              onChange={(p, size) => handleChangePage(p ?? 1, size ?? perPage)}
+            />
+          </div>
+        )}
       </Card>
     </div>
   );

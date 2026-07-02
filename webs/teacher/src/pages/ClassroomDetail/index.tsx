@@ -4,12 +4,12 @@ import moment from "moment";
 import classNames from "classnames";
 import {
   ArrowPathOutlined,
-  ChevronRightOutlined,
   ExclamationTriangleOutlined,
   notification,
   Spin,
 } from "tera-dls";
 
+import Breadcrumb from "_common/components/Breadcrumb";
 import { CARD } from "_common/constants/dashboard";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 
@@ -25,7 +25,11 @@ import AttendancePanel from "./components/AttendancePanel";
 import SessionListPanel from "./components/SessionListPanel";
 import ComingSoon from "./components/ComingSoon";
 import { toClassroomDetail, toClassSessions } from "./_utils";
-import { ClassRoomService, TimetableService } from "@tera/modules/education";
+import {
+  ClassRoomService,
+  LessonPlanService,
+  TimetableService,
+} from "@tera/modules/education";
 
 const SESSION_RANGE = {
   date_from: moment().subtract(6, "months").format("YYYY-MM-DD"),
@@ -48,6 +52,32 @@ const ClassroomDetail = () => {
     () => (detailQuery.data ? toClassroomDetail(detailQuery.data.data) : undefined),
     [detailQuery.data],
   );
+
+  // 1 classroom -> 1 lesson plan. Prefer the direct FK when the class-room
+  // response carries one; fall back to a course_id-based lookup otherwise.
+  const lessonPlanId = detailData?.detail.lesson_plan_id ?? undefined;
+  const courseId = detailData?.detail.course_id ?? undefined;
+
+  const lessonPlanDetailQuery = LessonPlanService.useLessonPlanDetail({
+    id: lessonPlanId ?? "",
+  });
+  const lessonPlanListQuery = LessonPlanService.useLessonPlanList({
+    params: {
+      per_page: 1,
+      filters: { course_id: lessonPlanId ? undefined : courseId },
+    },
+  });
+
+  const lessonPlan = useMemo(() => {
+    if (lessonPlanId) {
+      const payload = lessonPlanDetailQuery.data?.data;
+      const plan = payload?.plan ?? payload;
+      return plan?.id ? { id: plan.id, name: plan.plan_name } : undefined;
+    }
+    if (!courseId) return undefined;
+    const item = lessonPlanListQuery.data?.data?.items?.[0];
+    return item ? { id: item.id, name: item.plan_name } : undefined;
+  }, [lessonPlanId, courseId, lessonPlanDetailQuery.data, lessonPlanListQuery.data]);
 
   const sessionsQuery = TimetableService.useTimetableCalendar({
     class_id: classId ?? 0,
@@ -106,17 +136,12 @@ const ClassroomDetail = () => {
 
   return (
     <div className="p-4 xmd:p-6">
-      <div className="mb-4 flex items-center gap-1.5 text-sm text-slate-400 [&_svg]:h-4 [&_svg]:w-4">
-        <button
-          type="button"
-          onClick={() => navigate(PATHS.classroom)}
-          className="hover:text-brand"
-        >
-          Lớp học
-        </button>
-        <ChevronRightOutlined />
-        <span className="font-medium text-slate-600">Chi tiết lớp học</span>
-      </div>
+      <Breadcrumb
+        items={[
+          { label: "Lớp học", onClick: () => navigate(PATHS.classroom) },
+          { label: "Chi tiết lớp học" },
+        ]}
+      />
 
       {notFound ? (
         <div className="flex h-[50vh] flex-col items-center justify-center gap-2 text-center">
@@ -149,6 +174,10 @@ const ClassroomDetail = () => {
               <ClassroomInfoCard
                 detail={detail}
                 maxStudents={detail.max_students}
+                lessonPlan={lessonPlan}
+                onViewLessonPlan={() =>
+                  navigate(`${PATHS.lessonPlans}/${lessonPlan?.id}`)
+                }
                 onEdit={todo}
                 onExport={todo}
               />
@@ -189,12 +218,14 @@ const ClassroomDetail = () => {
                 </div>
               </div>
             </div>
+          ) : isLoading ? (
+            // `Spin` only centers its spinner when it has children to overlay —
+            // an empty/falsy child renders the bare icon un-centered.
+            <div className="h-[50vh]" />
           ) : (
-            !isLoading && (
-              <p className="py-20 text-center text-sm text-slate-400">
-                Không tải được chi tiết lớp học
-              </p>
-            )
+            <p className="py-20 text-center text-sm text-slate-400">
+              Không tải được chi tiết lớp học
+            </p>
           )}
         </Spin>
       )}

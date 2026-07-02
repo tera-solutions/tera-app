@@ -1,6 +1,7 @@
-import { Input, MagnifyingGlassOutlined, Select } from "tera-dls";
+import { Select } from "tera-dls";
 
 import Card from "_common/components/Card";
+import SearchInput from "_common/components/SearchInput";
 
 import type { ClassroomStatus } from "../_interface";
 import { STATUS_OPTIONS } from "../constants";
@@ -35,12 +36,11 @@ const ClassroomToolbar = ({
   return (
     <Card>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Input
+        <SearchInput
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Tìm kiếm lớp học, học viên..."
-          prefix={<MagnifyingGlassOutlined className="h-4 w-4 text-slate-400" />}
-          className="pl-10 sm:max-w-sm"
+          wrapperClassName="sm:max-w-sm"
         />
         <div className="sm:w-48">
           <Select

@@ -22,6 +22,8 @@ export interface Classroom {
   completion_rate: number;
   status: ClassroomStatus;
   cover_image: string;
+  course_id: number | null;
+  lesson_plan_id: number | null;
 }
 
 export interface ClassroomSummary {
