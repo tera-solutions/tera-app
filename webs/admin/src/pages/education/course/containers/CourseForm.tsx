@@ -414,6 +414,10 @@ const CourseForm = forwardRef<
                 >
                   <Input
                     type="number"
+                    min={0}
+                    onKeyDown={(e: any) => {
+                      if (["-", "+", "e", "E"].includes(e.key)) e.preventDefault();
+                    }}
                     placeholder={t("form.enter_value", {
                       key: t("course.duration_minutes"),
                     })}
@@ -429,6 +433,10 @@ const CourseForm = forwardRef<
                 >
                   <Input
                     type="number"
+                    min={0}
+                    onKeyDown={(e: any) => {
+                      if (["-", "+", "e", "E"].includes(e.key)) e.preventDefault();
+                    }}
                     placeholder={t("form.enter_value", {
                       key: t("course.price_per_lesson"),
                     })}

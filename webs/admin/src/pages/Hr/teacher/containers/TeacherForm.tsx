@@ -12,11 +12,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Col, Row, notification, PlusCircleOutlined, UserOutlined } from "tera-dls";
+import moment from "moment";
+import { Col, Row, notification, PlusCircleOutlined, UserOutlined, DatePicker } from "tera-dls";
 import debounce from "lodash/debounce";
 
 /* Import: packages */
 import { IFormProps, IFileUpload } from "@tera/commons/interfaces";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import Input from "@tera/components/dof/Control/Input";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import UploadFiles from "@tera/components/dof/UploadFiles";
@@ -32,6 +34,11 @@ import { ITeacherForm } from "pages/Hr/teacher/_interface";
 
 const SELECT_CLASS =
   "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
+
+// Chặn nhập số âm / ký tự khoa học ở input number (lương)
+const preventNegativeKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (["-", "+", "e", "E"].includes(e.key)) e.preventDefault();
+};
 
 const defaultValues: ITeacherForm = {
   code: "",
@@ -219,6 +226,8 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
     const employmentTypeValue = watch("employment_type" as any);
     const managerIdValue = watch("manager_id" as any);
     const avatarValue = watch("avatar" as any);
+    const joinedAtValue = watch("joined_at" as any);
+    const isMobile = useIsMobile();
 
     const {
       fields: skillFields,
@@ -618,17 +627,39 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
             </Col>
             <Col>
               <FormTeraItem label={t("teacher.joined_at")} name="joined_at" rules={[{ required: t("validate.required") }]}>
-                <Input type="date" disabled={isView} />
+                {isMobile ? (
+                  <Input type="date" disabled={isView} />
+                ) : (
+                  <DatePicker
+                    className="w-full"
+                    value={
+                      joinedAtValue
+                        ? moment(String(joinedAtValue), "YYYY-MM-DD")
+                        : undefined
+                    }
+                    format="DD/MM/YYYY"
+                    placeholder="DD/MM/YYYY"
+                    disabled={isView}
+                    allowClear
+                    onChange={(date: any) =>
+                      form.setValue(
+                        "joined_at",
+                        date ? moment(date).format("YYYY-MM-DD") : "",
+                        { shouldDirty: true, shouldValidate: true },
+                      )
+                    }
+                  />
+                )}
               </FormTeraItem>
             </Col>
             <Col>
               <FormTeraItem label={t("teacher.salary_per_hour")} name="hourly_rate" rules={[{ required: t("validate.required") }]}>
-                <Input type="number" placeholder={t("form.enter_value", { key: t("teacher.salary_per_hour") })} disabled={isView} />
+                <Input type="number" min={0} onKeyDown={preventNegativeKey} placeholder={t("form.enter_value", { key: t("teacher.salary_per_hour") })} disabled={isView} />
               </FormTeraItem>
             </Col>
             <Col>
               <FormTeraItem label={t("teacher.monthly_salary")} name="monthly_salary">
-                <Input type="number" placeholder={t("form.enter_value", { key: t("teacher.monthly_salary") })} disabled={isView} />
+                <Input type="number" min={0} onKeyDown={preventNegativeKey} placeholder={t("form.enter_value", { key: t("teacher.monthly_salary") })} disabled={isView} />
               </FormTeraItem>
             </Col>
             <Col>
