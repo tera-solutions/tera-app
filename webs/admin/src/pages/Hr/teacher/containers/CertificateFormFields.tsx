@@ -1,6 +1,13 @@
 import { useTranslation } from "react-i18next";
-import { notification, PaperClipOutlined, TrashOutlined } from "tera-dls";
+import moment from "moment";
+import {
+  notification,
+  PaperClipOutlined,
+  TrashOutlined,
+  DatePicker,
+} from "tera-dls";
 import { IFileUpload } from "@tera/commons/interfaces";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import UploadFiles from "@tera/components/dof/UploadFiles";
 import { ICertificate } from "pages/Hr/teacher/_interface";
 
@@ -23,6 +30,7 @@ interface Props {
 
 const CertificateFormFields = ({ form, onChange }: Props) => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   return (
     <div className='flex flex-col gap-3'>
@@ -57,24 +65,67 @@ const CertificateFormFields = ({ form, onChange }: Props) => {
           <label className='text-[13px] text-gray-600 font-medium'>
             {t("teacher.certificate_issued_date")}
           </label>
-          <input
-            type='date'
-            value={form.issued_date ?? ""}
-            onChange={(e) => onChange({ issued_date: e.target.value })}
-            className={INPUT_CLASS}
-          />
+          {isMobile ? (
+            <input
+              type='date'
+              value={form.issued_date ?? ""}
+              onChange={(e) => onChange({ issued_date: e.target.value })}
+              className={INPUT_CLASS}
+            />
+          ) : (
+            <DatePicker
+              className='w-full'
+              format='DD/MM/YYYY'
+              placeholder='DD/MM/YYYY'
+              allowClear
+              value={
+                form.issued_date
+                  ? moment(form.issued_date, "YYYY-MM-DD")
+                  : undefined
+              }
+              onChange={(date: any) =>
+                onChange({
+                  issued_date: date ? moment(date).format("YYYY-MM-DD") : "",
+                })
+              }
+            />
+          )}
         </div>
         <div className='flex flex-col gap-1.5'>
           <label className='text-[13px] text-gray-600 font-medium'>
             {t("teacher.certificate_expired_date")}
           </label>
-          <input
-            type='date'
-            value={form.expired_date ?? ""}
-            min={form.issued_date || undefined}
-            onChange={(e) => onChange({ expired_date: e.target.value })}
-            className={INPUT_CLASS}
-          />
+          {isMobile ? (
+            <input
+              type='date'
+              value={form.expired_date ?? ""}
+              min={form.issued_date || undefined}
+              onChange={(e) => onChange({ expired_date: e.target.value })}
+              className={INPUT_CLASS}
+            />
+          ) : (
+            <DatePicker
+              className='w-full'
+              format='DD/MM/YYYY'
+              placeholder='DD/MM/YYYY'
+              allowClear
+              disabledDate={(d: any) =>
+                form.issued_date
+                  ? d && d.isBefore(moment(form.issued_date, "YYYY-MM-DD"), "day")
+                  : false
+              }
+              value={
+                form.expired_date
+                  ? moment(form.expired_date, "YYYY-MM-DD")
+                  : undefined
+              }
+              onChange={(date: any) =>
+                onChange({
+                  expired_date: date ? moment(date).format("YYYY-MM-DD") : "",
+                })
+              }
+            />
+          )}
         </div>
       </div>
       <div className='flex flex-col gap-1.5'>
