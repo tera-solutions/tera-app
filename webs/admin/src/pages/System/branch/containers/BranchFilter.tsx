@@ -56,6 +56,7 @@ const BranchFilter = ({
   return (
     <div className="flex flex-wrap items-center gap-2 xmd:flex-nowrap">
       <FilterSelect
+        allowClear
         className="flex-1 min-w-[140px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
         value={business}
         placeholder={t("branch.all_business")}
@@ -63,6 +64,7 @@ const BranchFilter = ({
         onChange={onBusinessChange}
       />
       <FilterSelect
+        allowClear
         className="flex-1 min-w-[140px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
         value={province}
         placeholder={t("branch.all_provinces")}

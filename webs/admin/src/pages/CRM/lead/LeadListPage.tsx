@@ -157,6 +157,7 @@ const LeadListPage = observer(() => {
           />
           <div className="w-full grid grid-cols-2 gap-2 xmd:w-auto xmd:flex xmd:flex-wrap xmd:items-center xmd:ml-auto">
           <FilterSelect
+            allowClear
             className="w-full xmd:w-[160px]"
             options={sourceOptions}
             value={sourceFilter}
