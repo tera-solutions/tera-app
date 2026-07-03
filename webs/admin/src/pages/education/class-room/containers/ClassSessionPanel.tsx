@@ -528,6 +528,7 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
             }}
           />
           <FilterSelect
+            allowClear
             className="shrink-0 w-[136px]"
             value={status}
             placeholder={t("classroom.all_status")}
@@ -541,6 +542,7 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
             }}
           />
           <FilterSelect
+            allowClear
             className="shrink-0 w-[136px]"
             value={teacher}
             placeholder={t("classroom.all_teachers")}
@@ -551,6 +553,7 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
             }}
           />
           <FilterSelect
+            allowClear
             className="shrink-0 w-[136px]"
             value={room}
             placeholder={t("classroom.all_rooms")}

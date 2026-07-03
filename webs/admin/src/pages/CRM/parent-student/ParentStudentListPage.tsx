@@ -121,6 +121,7 @@ const ParentStudentListPage = observer(() => {
 
           {/* Chi nhánh */}
           <FilterSelect
+            allowClear
             className="w-full xmd:w-auto xmd:shrink-0 xmd:min-w-[120px] xmd:order-2"
             value={branchFilter}
             placeholder={t("common.all_branches")}
@@ -136,6 +137,7 @@ const ParentStudentListPage = observer(() => {
 
           {/* Quan hệ */}
           <FilterSelect
+            allowClear
             className="w-full xmd:w-auto xmd:shrink-0 xmd:min-w-[120px] xmd:order-3"
             value={relationFilter}
             placeholder={t("parent_student.all_relations")}
@@ -151,6 +153,7 @@ const ParentStudentListPage = observer(() => {
 
           {/* Người liên hệ chính */}
           <FilterSelect
+            allowClear
             className="w-full xmd:w-auto xmd:shrink-0 xmd:min-w-[120px] xmd:order-4"
             value={primaryFilter}
             placeholder={t("parent_student.is_primary_contact")}
@@ -163,6 +166,7 @@ const ParentStudentListPage = observer(() => {
 
           {/* Người nhận hóa đơn */}
           <FilterSelect
+            allowClear
             className="w-full xmd:w-auto xmd:shrink-0 xmd:min-w-[120px] xmd:order-5"
             value={billingFilter}
             placeholder={t("parent_student.is_billing_contact")}
@@ -175,6 +179,7 @@ const ParentStudentListPage = observer(() => {
 
           {/* Trạng thái HV */}
           <FilterSelect
+            allowClear
             className="w-full xmd:w-auto xmd:shrink-0 xmd:min-w-[120px] xmd:order-6"
             value={studentStatusFilter}
             placeholder={t("parent_student.student_status")}
@@ -190,6 +195,7 @@ const ParentStudentListPage = observer(() => {
 
           {/* Trạng thái PH */}
           <FilterSelect
+            allowClear
             className="w-full xmd:w-auto xmd:shrink-0 xmd:min-w-[120px] xmd:order-7"
             value={parentStatusFilter}
             placeholder={t("parent_student.parent_status")}

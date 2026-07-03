@@ -59,6 +59,7 @@ const TeacherFilter = ({
         placeholder={t("teacher.all_types")}
         options={typeOptions}
         onChange={onTypeChange}
+        allowClear
       />
       <FilterSelect
         className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
@@ -66,6 +67,7 @@ const TeacherFilter = ({
         placeholder={t("common.all_branches")}
         options={branchOptions}
         onChange={onBranchChange}
+        allowClear
       />
       <div className="flex-1 min-w-[150px] xmd:flex-none xmd:w-auto xmd:min-w-[170px]">
         <UserSelect

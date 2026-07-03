@@ -49,6 +49,7 @@ const UserFilter = ({
   return (
     <div className="flex flex-wrap items-center gap-2 xmd:flex-nowrap">
       <FilterSelect
+        allowClear
         className="flex-1 min-w-[140px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
         value={role}
         placeholder={t("user.all_roles")}
@@ -56,6 +57,7 @@ const UserFilter = ({
         onChange={onRoleChange}
       />
       <FilterSelect
+        allowClear
         className="flex-1 min-w-[140px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
         value={branch}
         placeholder={t("user.all_branches")}

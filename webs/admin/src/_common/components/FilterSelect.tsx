@@ -17,6 +17,11 @@ interface FilterSelectProps {
   /** class cho wrapper (width / xmd:order…) — thay cho class của native <select> cũ */
   className?: string;
   disabled?: boolean;
+  /**
+   * Khi bật: ẩn dòng "Tất cả" (placeholder) trong menu, thay bằng nút × trên ô
+   * để xóa lựa chọn về placeholder. Khi tắt (mặc định): "Tất cả" là 1 dòng đầu menu.
+   */
+  allowClear?: boolean;
 }
 
 /**
@@ -31,6 +36,7 @@ const FilterSelect = ({
   onChange,
   className = "",
   disabled,
+  allowClear,
 }: FilterSelectProps) => {
   const btnRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -91,7 +97,23 @@ const FilterSelect = ({
         >
           {label}
         </span>
-        <ChevronDownOutlined className="w-4 h-4 shrink-0 text-gray-400" />
+        {allowClear && value && !disabled ? (
+          <span
+            role="button"
+            tabIndex={-1}
+            title={placeholder}
+            onClick={(e) => {
+              e.stopPropagation();
+              onChange("");
+              setOpen(false);
+            }}
+            className="flex items-center justify-center w-4 h-4 shrink-0 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 text-base leading-none"
+          >
+            ×
+          </span>
+        ) : (
+          <ChevronDownOutlined className="w-4 h-4 shrink-0 text-gray-400" />
+        )}
       </button>
 
       {open &&
@@ -108,7 +130,7 @@ const FilterSelect = ({
             }}
             className="bg-white border border-gray-200 rounded shadow-lg max-h-60 overflow-auto py-1"
           >
-            {placeholder && (
+            {placeholder && !allowClear && (
               <div
                 onClick={() => {
                   onChange("");

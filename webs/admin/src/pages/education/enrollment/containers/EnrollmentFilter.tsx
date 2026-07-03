@@ -71,6 +71,7 @@ const EnrollmentFilter = ({
   return (
     <>
       <FilterSelect
+        allowClear
         className="flex-1 min-w-[150px]"
         value={studentId}
         placeholder={t("enrollment.all_students")}
@@ -78,6 +79,7 @@ const EnrollmentFilter = ({
         onChange={onStudentChange}
       />
       <FilterSelect
+        allowClear
         className="flex-1 min-w-[140px]"
         value={classId}
         placeholder={t("enrollment.all_classes")}
@@ -85,6 +87,7 @@ const EnrollmentFilter = ({
         onChange={onClassChange}
       />
       <FilterSelect
+        allowClear
         className="flex-1 min-w-[140px]"
         value={courseId}
         placeholder={t("enrollment.all_courses")}
@@ -101,6 +104,7 @@ const EnrollmentFilter = ({
         />
       </div>
       <FilterSelect
+        allowClear
         className="flex-1 min-w-[130px]"
         value={debt}
         placeholder={t("enrollment.all_debt")}

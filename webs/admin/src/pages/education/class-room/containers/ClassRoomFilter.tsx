@@ -91,6 +91,7 @@ const ClassRoomFilter = ({
   return (
     <div className="grid grid-cols-2 gap-2 xmd:contents">
       <FilterSelect
+        allowClear
         className="min-w-0 xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
         value={value.course}
         placeholder={t("classroom.all_courses")}
@@ -98,6 +99,7 @@ const ClassRoomFilter = ({
         onChange={(v) => onChange({ course: v })}
       />
       <FilterSelect
+        allowClear
         className="min-w-0 xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
         value={value.teacher}
         placeholder={t("classroom.all_teachers")}
@@ -116,6 +118,7 @@ const ClassRoomFilter = ({
         />
       </div>
       <FilterSelect
+        allowClear
         className="min-w-0 xmd:flex-none xmd:w-auto xmd:min-w-[130px]"
         value={value.weekday}
         placeholder={t("classroom.all_weekdays")}
@@ -124,6 +127,7 @@ const ClassRoomFilter = ({
       />
       {/* Ca học — mobile: full-width 1 hàng (tránh ô trống vì 5 select lẻ) */}
       <FilterSelect
+        allowClear
         className="col-span-2 xmd:col-span-1 min-w-0 xmd:flex-none xmd:w-auto xmd:min-w-[130px]"
         value={value.shift}
         placeholder={t("classroom.all_shifts")}
