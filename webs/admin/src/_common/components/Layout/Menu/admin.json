@@ -168,6 +168,18 @@
       "activeKeys": "parent-student"
     },
     {
+      "id": 51,
+      "title": "DS Khách hàng tiềm năng",
+      "icon": "briefcase",
+      "path": "/student/lead/list",
+      "status": "active",
+      "code": "p4",
+      "key": "lead",
+      "parentKey": "student",
+      "parentGroupKey": "group-student",
+      "activeKeys": "lead"
+    },
+    {
       "id": 3,
       "title": "Ghi danh khóa học",
       "path": "/student/enrollment/list",

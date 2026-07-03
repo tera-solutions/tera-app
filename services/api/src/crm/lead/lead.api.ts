@@ -1,11 +1,8 @@
-
 import { endpoint } from "@tera/api/_endpoint";
 import api from "@tera/api/drivers";
 import {
   CreatePayload,
-  DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -13,7 +10,7 @@ import {
 export const LeadAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
-      .get(`${endpoint}/crm/lead/list`, {...params, ...params?.filters})
+      .get(`${endpoint}/crm/lead/list`, { ...params, ...params?.filters })
       .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
@@ -31,13 +28,13 @@ export const LeadAPI = {
       .put(`${endpoint}/crm/lead/update/${id}`, params)
       .then((result) => result.data),
 
-  delete: async ({ id }: DeletePayload) =>
+  suspend: async ({ id, params }: UpdatePayload) =>
     await api
-      .delete(`${endpoint}/crm/lead/delete/${id}`)
+      .post(`${endpoint}/crm/lead/suspend/${id}`, params)
       .then((result) => result.data),
-  
-  export: async ({ params }: ExportPayload) =>
+
+  restore: async ({ id, params }: UpdatePayload) =>
     await api
-      .post(`${endpoint}/crm/lead/export`, params)
+      .post(`${endpoint}/crm/lead/restore/${id}`, params)
       .then((result) => result.data),
 };

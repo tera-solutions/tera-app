@@ -8,9 +8,7 @@ import {
 import { LeadAPI } from "@tera/api";
 import {
   CreatePayload,
-  DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -72,7 +70,8 @@ export const useUpsertLead = () => {
       return LeadAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["lead", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["lead", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -80,13 +79,14 @@ export const useUpsertLead = () => {
   });
 };
 
-export const useLeadDelete = () => {
+export const useLeadSuspend = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => LeadAPI.delete(payload),
+    mutationFn: (payload: UpdatePayload) => LeadAPI.suspend(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lead", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["lead", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -94,15 +94,14 @@ export const useLeadDelete = () => {
   });
 };
 
-export const useLeadExport = () => {
+export const useLeadRestore = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => LeadAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
+    mutationFn: (payload: UpdatePayload) => LeadAPI.restore(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lead", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["lead", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -116,6 +115,6 @@ export const LeadService = {
   useLeadCreate,
   useLeadUpdate,
   useUpsertLead,
-  useLeadDelete,
-  useLeadExport,
+  useLeadSuspend,
+  useLeadRestore,
 };

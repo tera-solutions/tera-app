@@ -169,6 +169,29 @@ export const PARENT_PAGE_URL = {
   },
 };
 
+export const LEAD_PAGE_URL = {
+  list: {
+    key: "",
+    path: "/student/lead/list",
+    shortenUrl: "/student/lead/list",
+  },
+  create: {
+    key: "",
+    path: "/student/lead/create",
+    shortenUrl: "/student/lead/create",
+  },
+  detail: {
+    key: "",
+    path: (id: number) => "/student/lead/detail/" + id,
+    shortenUrl: "/student/lead/detail/:id",
+  },
+  update: {
+    key: "",
+    path: (id: number) => "/student/lead/update/" + id,
+    shortenUrl: "/student/lead/update/:id",
+  },
+};
+
 export const PARENT_STUDENT_PAGE_URL = {
   list: {
     key: "",

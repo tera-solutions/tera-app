@@ -61,6 +61,12 @@ import ParentCreatePage from "pages/CRM/parent/ParentCreatePage";
 import ParentUpdatePage from "pages/CRM/parent/ParentUpdatePage";
 import ParentDetailPage from "pages/CRM/parent/ParentDetailPage";
 
+/* IMPORT:Lead */
+import LeadListPage from "pages/CRM/lead/LeadListPage";
+import LeadCreatePage from "pages/CRM/lead/LeadCreatePage";
+import LeadUpdatePage from "pages/CRM/lead/LeadUpdatePage";
+import LeadDetailPage from "pages/CRM/lead/LeadDetailPage";
+
 /* IMPORT:ParentStudent */
 import ParentStudentListPage from "pages/CRM/parent-student/ParentStudentListPage";
 import ParentStudentCreatePage from "pages/CRM/parent-student/ParentStudentCreatePage";
@@ -177,6 +183,12 @@ export const Routers = () => {
           path='/student/parent/detail/:id'
           element={<ParentDetailPage />}
         />
+
+        {/* BLOCK:Lead */}
+        <Route path='/student/lead/list' element={<LeadListPage />} />
+        <Route path='/student/lead/create' element={<LeadCreatePage />} />
+        <Route path='/student/lead/update/:id' element={<LeadUpdatePage />} />
+        <Route path='/student/lead/detail/:id' element={<LeadDetailPage />} />
 
         {/* BLOCK:ParentStudent */}
         <Route
