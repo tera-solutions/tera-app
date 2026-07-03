@@ -30,7 +30,7 @@ interface CourseFilterProps {
 const RANGE_INPUT =
   "h-7 text-[13px] outline-none bg-transparent placeholder:text-gray-300 flex-1 min-w-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none";
 const DATE_INPUT_MOBILE =
-  "w-full h-9 border border-gray-300 bg-white px-2 text-[13px] rounded-[3px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 box-border";
+  "w-full min-w-0 h-9 border border-gray-300 bg-white px-2 text-[13px] rounded-[3px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 box-border";
 const RANGE_BOX =
   "w-full xmd:w-auto xmd:shrink-0 flex items-center gap-1 h-9 px-2 border border-gray-300 rounded bg-white min-w-0";
 
@@ -68,7 +68,7 @@ const CourseFilter = ({
           value={value.durationMin}
           placeholder={t("common.from")}
           onChange={(e) => onChange({ durationMin: e.target.value })}
-          className={`${RANGE_INPUT} xmd:flex-none xmd:w-16`}
+          className={`${RANGE_INPUT} xmd:flex-none xmd:w-12`}
         />
         <span className="text-gray-300 shrink-0">–</span>
         <input
@@ -76,7 +76,7 @@ const CourseFilter = ({
           value={value.durationMax}
           placeholder={t("common.to")}
           onChange={(e) => onChange({ durationMax: e.target.value })}
-          className={`${RANGE_INPUT} xmd:flex-none xmd:w-16`}
+          className={`${RANGE_INPUT} xmd:flex-none xmd:w-12`}
         />
       </div>
 
@@ -90,7 +90,7 @@ const CourseFilter = ({
           value={value.priceMin}
           placeholder={t("common.from")}
           onChange={(e) => onChange({ priceMin: e.target.value })}
-          className={`${RANGE_INPUT} xmd:flex-none xmd:w-20`}
+          className={`${RANGE_INPUT} xmd:flex-none xmd:w-16`}
         />
         <span className="text-gray-300 shrink-0">–</span>
         <input
@@ -98,7 +98,7 @@ const CourseFilter = ({
           value={value.priceMax}
           placeholder={t("common.to")}
           onChange={(e) => onChange({ priceMax: e.target.value })}
-          className={`${RANGE_INPUT} xmd:flex-none xmd:w-20`}
+          className={`${RANGE_INPUT} xmd:flex-none xmd:w-16`}
         />
         <span className="text-[12px] text-gray-400 shrink-0">₫</span>
       </div>
@@ -140,7 +140,7 @@ const CourseFilter = ({
           </div>
         ) : (
           <RangePicker
-            className="shrink-0 w-[290px]"
+            className="shrink-0 w-[270px]"
             value={
               value.createdFrom && value.createdTo
                 ? [
