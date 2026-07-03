@@ -1,0 +1,781 @@
+/* Import: library */
+import {
+  useEffect,
+  useImperativeHandle,
+  forwardRef,
+  useMemo,
+  useState,
+} from "react";
+import { observer } from "mobx-react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
+import moment from "moment";
+import { Col, Row, notification, PlusCircleOutlined, DatePicker } from "tera-dls";
+
+/* Import: packages */
+import { IFormProps } from "@tera/commons/interfaces";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
+import { useStores } from "@tera/stores/useStores";
+import Input from "@tera/components/dof/Control/Input";
+import TextArea from "@tera/components/dof/Control/TextArea";
+import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+
+/* Import: services */
+import {
+  LeadService,
+  StudentService,
+  CourseService,
+  BranchService,
+  BusinessService,
+} from "@tera/modules";
+
+/* Import: pages */
+import UserSelect from "_common/components/UserSelect";
+import MultiSelect from "_common/components/MultiSelect";
+import { ILeadForm } from "pages/CRM/lead/_interface";
+
+const SELECT_CLASS =
+  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
+const INPUT_CLASS =
+  "w-full h-9 border border-gray-300 rounded px-3 text-[13px] bg-white focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500 disabled:bg-gray-100";
+
+const defaultValues: ILeadForm = {
+  name: "",
+  gender: "",
+  dob: "",
+  email: "",
+  phone: "",
+  source: "",
+  status: "",
+  business_id: "",
+  branch_id: "",
+  owner_id: "",
+  note: "",
+  tag_ids: [],
+  course_ids: [],
+  guardians: [],
+  students: [],
+};
+
+const toNum = (v: any) => {
+  const n = Number(String(v ?? "").trim());
+  return Number.isFinite(n) && String(v ?? "").trim() !== "" ? n : undefined;
+};
+
+const LeadForm = observer(
+  forwardRef<any, IFormProps & { onSuccess?: () => void }>(
+    ({ dataDetail, type = "create", onSuccess }, ref) => {
+      const isView = type === "detail";
+      const isUpdate = type === "update";
+      const { t } = useTranslation();
+      const { globalStore } = useStores();
+      const queryClient = useQueryClient();
+      const isMobile = useIsMobile();
+
+      const [activeTab, setActiveTab] = useState("basic");
+
+      const genderOptions = globalStore.getOptions("gender") ?? [];
+      const statusOptions = globalStore.getOptions("lead_status") ?? [];
+      const relationOptions = globalStore.getOptions("guardian_relation") ?? [];
+      // ⚠️ TODO: NGUỒN TAG CHƯA XÁC ĐỊNH — metadata KHÔNG có `lead_tag` (đã check /auth/metadata
+      // 2026-07-02) nên options hiện RỖNG. Tag của lead cần catalog/endpoint riêng (chưa biết).
+      // Khi có nguồn tag thì thay `getOptions("lead_tag")` bằng nguồn đó. Xem memory `lead-tag-source-unknown`.
+      const tagOptions = (globalStore.getOptions("lead_tag") ?? []).map(
+        (o: any) => ({ value: String(o.value), label: o.label }),
+      );
+
+      const { data: courseData } = CourseService.useCourseList({
+        params: { page: 1, per_page: 100 },
+      });
+      const courseOptions = useMemo(
+        () =>
+          (courseData?.data?.items ?? []).map((c: any) => ({
+            value: String(c.id),
+            label: c.code ? `${c.code} - ${c.name}` : c.name,
+          })),
+        [courseData],
+      );
+
+      const { data: studentData } = StudentService.useStudentList({
+        params: { page: 1, per_page: 100 },
+      });
+      // Options học viên = 100 dòng đầu + merge các HV đã liên kết (giữ tên khi
+      // xem/sửa dù HV nằm ngoài 100 dòng đầu). dataDetail.students có thể là
+      // Student model (s.id) hoặc { student_id, student:{...} }.
+      const students: any[] = useMemo(() => {
+        const list = studentData?.data?.items ?? [];
+        const merged = [...list];
+        (dataDetail?.students ?? []).forEach((s: any) => {
+          const stu = s?.student ?? s;
+          const sid = stu?.id ?? s?.student_id ?? s?.id;
+          if (sid != null && !merged.some((m: any) => Number(m.id) === Number(sid))) {
+            merged.push({
+              id: sid,
+              name: stu?.name ?? stu?.full_name,
+              code: stu?.code,
+            });
+          }
+        });
+        return merged;
+      }, [studentData, dataDetail]);
+
+      const { data: businessData } = BusinessService.useBusinessList({
+        params: { page: 1, per_page: 100, status: "active" },
+      });
+      const businesses: any[] = useMemo(() => {
+        const list = businessData?.data?.items ?? [];
+        const sel = dataDetail?.business;
+        if (sel?.id && !list.some((b: any) => b.id === sel.id))
+          return [...list, sel];
+        return list;
+      }, [businessData, dataDetail]);
+
+      const { data: branchData } = BranchService.useBranchList({
+        params: { page: 1, per_page: 100, status: "active" },
+      });
+      const branches: any[] = useMemo(() => {
+        const list = branchData?.data?.items ?? [];
+        const sel = dataDetail?.branch;
+        if (sel?.id && !list.some((b: any) => b.id === sel.id))
+          return [...list, sel];
+        return list;
+      }, [branchData, dataDetail]);
+
+      const schema = useMemo(
+        () =>
+          yup.object({
+            name: yup.string().required(t("validate.required")),
+            phone: yup.string().required(t("validate.required")),
+            source: yup.string().required(t("validate.required")),
+            owner_id: yup
+              .mixed()
+              .test(
+                "owner-required",
+                t("validate.required"),
+                (v) => v != null && String(v).trim() !== "",
+              ),
+            email: yup
+              .string()
+              .email(t("validate.email_format"))
+              .nullable()
+              .transform((v) => (v === "" ? null : v)),
+            guardians: yup
+              .array()
+              .of(
+                yup.object({
+                  full_name: yup.string().required(t("validate.required")),
+                  relationship: yup.string().required(t("validate.required")),
+                  phone: yup.string().required(t("validate.required")),
+                }),
+              )
+              .min(1, t("validate.required")),
+            students: yup
+              .array()
+              .of(
+                yup.object({
+                  student_id: yup.string().required(t("validate.required")),
+                }),
+              )
+              .min(1, t("validate.required")),
+          }),
+        [t],
+      );
+
+      const form = useForm<ILeadForm>({
+        mode: "onChange",
+        defaultValues,
+        resolver: yupResolver(schema) as any,
+      });
+
+      const { reset, watch, control } = form;
+      const errors = form.formState.errors as any;
+      const genderValue = watch("gender");
+      const dobValue = watch("dob");
+      const statusValue = watch("status");
+      const businessValue = watch("business_id");
+      const branchValue = watch("branch_id");
+      const ownerValue = watch("owner_id");
+      const tagValue = watch("tag_ids") ?? [];
+      const courseValue = watch("course_ids") ?? [];
+      const studentsWatch = watch("students") ?? [];
+
+      const {
+        fields: guardianFields,
+        append: appendGuardian,
+        remove: removeGuardian,
+      } = useFieldArray({ control, name: "guardians" });
+      const {
+        fields: studentFields,
+        append: appendStudent,
+        remove: removeStudent,
+      } = useFieldArray({ control, name: "students" });
+
+      const { mutate: onSubmit, isPending } = LeadService.useUpsertLead();
+
+      useEffect(() => {
+        if (dataDetail?.id) {
+          reset({
+            name: dataDetail.name ?? "",
+            gender: dataDetail.gender ?? "",
+            dob: dataDetail.dob ? String(dataDetail.dob).split("T")[0] : "",
+            email: dataDetail.email ?? "",
+            phone: dataDetail.phone ?? "",
+            source: dataDetail.source ?? "",
+            status: dataDetail.status ?? "",
+            business_id: dataDetail.business_id
+              ? String(dataDetail.business_id)
+              : "",
+            branch_id: dataDetail.branch_id ? String(dataDetail.branch_id) : "",
+            owner_id: dataDetail.owner_id ? String(dataDetail.owner_id) : "",
+            note: dataDetail.note ?? "",
+            tag_ids: (dataDetail.tags ?? []).map((tg: any) =>
+              String(tg?.id ?? tg),
+            ),
+            course_ids: (dataDetail.courses ?? []).map((c: any) =>
+              String(c?.id ?? c),
+            ),
+            guardians: (dataDetail.guardians ?? []).map((g: any) => ({
+              full_name: g?.full_name ?? g?.name ?? "",
+              relationship: g?.relationship ?? g?.relation ?? "",
+              phone: g?.phone ?? "",
+              email: g?.email ?? "",
+            })),
+            students: (dataDetail.students ?? []).map((s: any) => ({
+              student_id: String(s?.student_id ?? s?.student?.id ?? s?.id ?? ""),
+              relationship: s?.relationship ?? s?.relation ?? "",
+            })),
+          });
+        } else {
+          reset(defaultValues);
+        }
+      }, [dataDetail, reset]);
+
+      const handleSubmitForm = (values: ILeadForm) => {
+        // Nhúng guardians[]/students[] thẳng vào body create/update lead.
+        const guardians = (values.guardians ?? [])
+          .filter((g) => g.full_name?.trim())
+          .map((g) => ({
+            full_name: g.full_name?.trim(),
+            relationship: g.relationship || undefined,
+            phone: g.phone?.trim() || undefined,
+            email: g.email?.trim() || undefined,
+          }));
+        const studentsPayload = (values.students ?? [])
+          .filter((s) => s.student_id)
+          .map((s) => ({
+            student_id: toNum(s.student_id),
+            relationship: s.relationship || undefined,
+          }));
+
+        const params: any = {
+          name: values.name?.trim(),
+          gender: values.gender || undefined,
+          dob: values.dob || undefined,
+          email: values.email?.trim() || undefined,
+          phone: values.phone?.trim() || undefined,
+          source: values.source?.trim() || undefined,
+          branch_id: toNum(values.branch_id),
+          owner_id: toNum(values.owner_id),
+          note: values.note?.trim() || undefined,
+          tag_ids: (values.tag_ids ?? []).map(Number),
+          course_ids: (values.course_ids ?? []).map(Number),
+          guardians,
+          students: studentsPayload,
+        };
+        // business_id chỉ gửi khi create (không đổi doanh nghiệp khi update — theo Postman)
+        if (!isUpdate) params.business_id = toNum(values.business_id);
+
+        onSubmit(
+          { id: dataDetail?.id, params },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries({ queryKey: ["lead", "list"] });
+              queryClient.invalidateQueries({ queryKey: ["lead", "detail"] });
+              notification.success({
+                message: isUpdate
+                  ? t("common.update_success")
+                  : t("common.create_success"),
+              });
+              onSuccess?.();
+            },
+            onError: (error: any) =>
+              notification.error({
+                message: error?.message || t("common.error_message"),
+              }),
+          },
+        );
+      };
+
+      useImperativeHandle(ref, () => ({
+        isValid: () => form.formState.isValid,
+        submit: () => form.handleSubmit(handleSubmitForm)(),
+        isDirty: () => form.formState.isDirty,
+      }));
+
+      const tabErrors: Record<string, boolean> = {
+        basic:
+          !!errors.name ||
+          !!errors.email ||
+          !!errors.phone ||
+          !!errors.source ||
+          !!errors.owner_id,
+        guardians: !!errors.guardians,
+        students: !!errors.students,
+      };
+
+      const tabs = [
+        { key: "basic", label: t("lead.tab_basic") },
+        { key: "guardians", label: t("lead.guardians") },
+        { key: "students", label: t("lead.students") },
+      ];
+
+      return (
+        <FormTera
+          form={form}
+          onSubmit={handleSubmitForm}
+          isLoading={isPending}
+          isDisabled={isView}
+        >
+          {/* Tab bar */}
+          <div className="flex border-b border-gray-200 mb-4 overflow-x-auto scrollbar-none">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setActiveTab(tab.key)}
+                className={`relative px-4 py-2 text-[13px] font-medium border-b-2 -mb-px transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+                  activeTab === tab.key
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {tab.label}
+                {tabErrors[tab.key] && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab 1: Thông tin cơ bản */}
+          <div className={activeTab === "basic" ? "block" : "hidden"}>
+            <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+              <Col className="sm:col-span-2">
+                <FormTeraItem
+                  label={t("lead.customer")}
+                  name="name"
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Input
+                    placeholder={t("form.enter_value", { key: t("lead.customer") })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("lead.gender")} name="gender">
+                  <div className="w-full overflow-hidden">
+                    <select
+                      className={SELECT_CLASS}
+                      style={{ borderRadius: "3px", color: genderValue ? "#111827" : "#9ca3af" }}
+                      disabled={isView}
+                      {...form.register("gender")}
+                    >
+                      <option value="" disabled hidden>
+                        {t("form.enter_value", { key: t("lead.gender") })}
+                      </option>
+                      {genderOptions.map((opt: any) => (
+                        <option key={opt.value} value={opt.value} style={{ color: "#111827" }}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("lead.dob")} name="dob">
+                  {isMobile ? (
+                    <Input type="date" disabled={isView} />
+                  ) : (
+                    <DatePicker
+                      className="w-full"
+                      format="DD/MM/YYYY"
+                      placeholder="DD/MM/YYYY"
+                      disabled={isView}
+                      allowClear
+                      disabledDate={(d: any) => d && d.isAfter(moment(), "day")}
+                      value={
+                        dobValue ? moment(String(dobValue), "YYYY-MM-DD") : undefined
+                      }
+                      onChange={(date: any) =>
+                        form.setValue(
+                          "dob",
+                          date ? moment(date).format("YYYY-MM-DD") : "",
+                          { shouldDirty: true, shouldValidate: true },
+                        )
+                      }
+                    />
+                  )}
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("lead.email")} name="email">
+                  <Input
+                    placeholder={t("form.enter_value", { key: t("lead.email") })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("lead.phone")}
+                  name="phone"
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Input
+                    placeholder={t("form.enter_value", { key: t("lead.phone") })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("lead.source")}
+                  name="source"
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Input
+                    placeholder={t("form.enter_value", { key: t("lead.source") })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("lead.owner")}
+                  name="owner_id"
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <UserSelect
+                    value={ownerValue}
+                    selectedUser={
+                      dataDetail?.owner
+                        ? {
+                            id: dataDetail.owner.id,
+                            full_name:
+                              dataDetail.owner.full_name ??
+                              dataDetail.owner.name,
+                          }
+                        : undefined
+                    }
+                    disabled={isView}
+                    placeholder={t("form.enter_value", { key: t("lead.owner") })}
+                    onChange={(id) =>
+                      form.setValue("owner_id", id, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("lead.business")} name="business_id">
+                  <div className="w-full overflow-hidden">
+                    <select
+                      className={SELECT_CLASS}
+                      style={{ borderRadius: "3px", color: businessValue ? "#111827" : "#9ca3af" }}
+                      disabled={isView || isUpdate}
+                      {...form.register("business_id")}
+                    >
+                      <option value="" disabled hidden></option>
+                      {businesses.map((b) => (
+                        <option key={b.id} value={String(b.id)} style={{ color: "#111827" }}>
+                          {b.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("lead.branch")} name="branch_id">
+                  <div className="w-full overflow-hidden">
+                    <select
+                      className={SELECT_CLASS}
+                      style={{ borderRadius: "3px", color: branchValue ? "#111827" : "#9ca3af" }}
+                      disabled={isView}
+                      {...form.register("branch_id")}
+                    >
+                      <option value="" disabled hidden></option>
+                      {branches.map((b) => (
+                        <option key={b.id} value={String(b.id)} style={{ color: "#111827" }}>
+                          {b.name}
+                          {b.code ? ` (${b.code})` : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("lead.tags")} name="tag_ids">
+                  <MultiSelect
+                    options={tagOptions}
+                    value={tagValue}
+                    disabled={isView}
+                    placeholder={t("form.enter_value", { key: t("lead.tags") })}
+                    onChange={(vals) =>
+                      form.setValue("tag_ids", vals, { shouldDirty: true })
+                    }
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("lead.courses")} name="course_ids">
+                  <MultiSelect
+                    options={courseOptions}
+                    value={courseValue}
+                    disabled={isView}
+                    placeholder={t("form.enter_value", { key: t("lead.courses") })}
+                    onChange={(vals) =>
+                      form.setValue("course_ids", vals, { shouldDirty: true })
+                    }
+                  />
+                </FormTeraItem>
+              </Col>
+              {/* Trạng thái CHỈ hiển thị read-only ở chi tiết (đổi status qua Tạm ngưng/Kích hoạt ở list) */}
+              {isView && (
+                <Col>
+                  <FormTeraItem label={t("lead.status")} name="status">
+                    <div className="w-full overflow-hidden">
+                      <select
+                        className={SELECT_CLASS}
+                        style={{ borderRadius: "3px", color: statusValue ? "#111827" : "#9ca3af" }}
+                        disabled
+                        {...form.register("status")}
+                      >
+                        <option value="" disabled hidden></option>
+                        {statusOptions.map((opt: any) => (
+                          <option key={opt.value} value={opt.value} style={{ color: "#111827" }}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </FormTeraItem>
+                </Col>
+              )}
+              <Col className={isView ? undefined : "sm:col-span-2"}>
+                <FormTeraItem label={t("lead.note")} name="note">
+                  <TextArea rows={3} disabled={isView} />
+                </FormTeraItem>
+              </Col>
+            </Row>
+          </div>
+
+          {/* Tab 2: Người giám hộ */}
+          <div className={activeTab === "guardians" ? "block" : "hidden"}>
+            <div className="flex flex-col gap-3">
+              {guardianFields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="relative rounded-lg border border-gray-200 p-3 pr-10 bg-gray-50"
+                >
+                  {!isView && (
+                    <button
+                      type="button"
+                      onClick={() => removeGuardian(index)}
+                      className="absolute top-2 right-2 z-10 h-6 w-6 flex items-center justify-center rounded text-red-500 hover:bg-red-50 transition-colors text-lg leading-none"
+                    >
+                      ×
+                    </button>
+                  )}
+                  <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                    <Col>
+                      <label className="text-[13px] text-gray-600 font-medium mb-1 block">
+                        {t("lead.guardian_name")} <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        className={INPUT_CLASS}
+                        disabled={isView}
+                        {...form.register(`guardians.${index}.full_name` as const)}
+                      />
+                      {errors?.guardians?.[index]?.full_name?.message && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.guardians[index].full_name.message}
+                        </p>
+                      )}
+                    </Col>
+                    <Col>
+                      <label className="text-[13px] text-gray-600 font-medium mb-1 block">
+                        {t("lead.relationship")} <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        className={SELECT_CLASS}
+                        style={{ borderRadius: "3px" }}
+                        disabled={isView}
+                        {...form.register(`guardians.${index}.relationship` as const)}
+                      >
+                        <option value="" disabled hidden></option>
+                        {relationOptions.map((opt: any) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                      {errors?.guardians?.[index]?.relationship?.message && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.guardians[index].relationship.message}
+                        </p>
+                      )}
+                    </Col>
+                    <Col>
+                      <label className="text-[13px] text-gray-600 font-medium mb-1 block">
+                        {t("lead.phone")} <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        className={INPUT_CLASS}
+                        disabled={isView}
+                        {...form.register(`guardians.${index}.phone` as const)}
+                      />
+                      {errors?.guardians?.[index]?.phone?.message && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.guardians[index].phone.message}
+                        </p>
+                      )}
+                    </Col>
+                    <Col>
+                      <label className="text-[13px] text-gray-600 font-medium mb-1 block">
+                        {t("lead.email")}
+                      </label>
+                      <input
+                        className={INPUT_CLASS}
+                        disabled={isView}
+                        {...form.register(`guardians.${index}.email` as const)}
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              ))}
+              {typeof errors?.guardians?.message === "string" && (
+                <p className="text-red-500 text-xs">{errors.guardians.message}</p>
+              )}
+              {!isView && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    appendGuardian({
+                      full_name: "",
+                      relationship: "",
+                      phone: "",
+                      email: "",
+                    })
+                  }
+                  className="flex items-center gap-1.5 text-[13px] text-blue-600 hover:text-blue-700 w-fit"
+                >
+                  <PlusCircleOutlined className="w-4 h-4" />
+                  {t("lead.add_guardian")}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Tab 3: Học viên liên kết */}
+          <div className={activeTab === "students" ? "block" : "hidden"}>
+            <div className="flex flex-col gap-3">
+              {studentFields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="relative rounded-lg border border-gray-200 p-3 pr-10 bg-gray-50"
+                >
+                  {!isView && (
+                    <button
+                      type="button"
+                      onClick={() => removeStudent(index)}
+                      className="absolute top-2 right-2 z-10 h-6 w-6 flex items-center justify-center rounded text-red-500 hover:bg-red-50 transition-colors text-lg leading-none"
+                    >
+                      ×
+                    </button>
+                  )}
+                  <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                    <Col>
+                      <label className="text-[13px] text-gray-600 font-medium mb-1 block">
+                        {t("lead.student")} <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        className={SELECT_CLASS}
+                        style={{ borderRadius: "3px" }}
+                        disabled={isView}
+                        {...form.register(`students.${index}.student_id` as const)}
+                      >
+                        <option value="" disabled hidden></option>
+                        {students
+                          .filter((s) => {
+                            const sid = String(s.id);
+                            // ẩn HV đã chọn ở dòng khác (giữ HV của chính dòng này)
+                            return !studentsWatch.some(
+                              (row: any, i: number) =>
+                                i !== index &&
+                                String(row?.student_id ?? "") === sid,
+                            );
+                          })
+                          .map((s) => (
+                            <option key={s.id} value={String(s.id)}>
+                              {s.code ? `${s.code} - ${s.name}` : s.name}
+                            </option>
+                          ))}
+                      </select>
+                      {errors?.students?.[index]?.student_id?.message && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.students[index].student_id.message}
+                        </p>
+                      )}
+                    </Col>
+                    <Col>
+                      <label className="text-[13px] text-gray-600 font-medium mb-1 block">
+                        {t("lead.relationship")}
+                      </label>
+                      <select
+                        className={SELECT_CLASS}
+                        style={{ borderRadius: "3px" }}
+                        disabled={isView}
+                        {...form.register(`students.${index}.relationship` as const)}
+                      >
+                        <option value="" disabled hidden></option>
+                        {relationOptions.map((opt: any) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </Col>
+                  </Row>
+                </div>
+              ))}
+              {typeof errors?.students?.message === "string" && (
+                <p className="text-red-500 text-xs">{errors.students.message}</p>
+              )}
+              {!isView && (
+                <button
+                  type="button"
+                  onClick={() => appendStudent({ student_id: "", relationship: "" })}
+                  className="flex items-center gap-1.5 text-[13px] text-blue-600 hover:text-blue-700 w-fit"
+                >
+                  <PlusCircleOutlined className="w-4 h-4" />
+                  {t("lead.add_student")}
+                </button>
+              )}
+            </div>
+          </div>
+        </FormTera>
+      );
+    },
+  ),
+);
+
+export default LeadForm;
