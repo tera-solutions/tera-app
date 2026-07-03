@@ -1,6 +1,7 @@
+import StatisticCard from "_common/components/StatisticCard";
+
 import { STAT_META } from "../constants";
 import { useDashboardSummary } from "../hooks";
-import StatCard from "../components/StatCard";
 
 const StatsRow = () => {
   const { data, isLoading, isError } = useDashboardSummary();
@@ -32,7 +33,7 @@ const StatsRow = () => {
   return (
     <div className="grid grid-cols-2 gap-3 xmd:grid-cols-4 xmd:gap-5">
       {cards.map((card) => (
-        <StatCard
+        <StatisticCard
           key={card.key}
           value={isError ? "--" : String(card.value)}
           label={card.label}

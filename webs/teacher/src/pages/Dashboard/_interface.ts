@@ -10,6 +10,7 @@ export interface DashboardStats {
 export interface DashboardWeekDay {
   date: string;
   count: number;
+  completed: number;
 }
 
 export interface DashboardAttendance {

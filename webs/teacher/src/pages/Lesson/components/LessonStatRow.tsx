@@ -5,7 +5,7 @@ import {
   CheckBadgeOutlined,
 } from "tera-dls";
 
-import StatisticCard from "pages/Classroom/components/StatisticCard";
+import StatisticCard from "_common/components/StatisticCard";
 
 import type { LessonDetail } from "../_interface";
 

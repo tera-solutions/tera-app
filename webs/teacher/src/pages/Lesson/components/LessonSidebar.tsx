@@ -2,7 +2,8 @@ import { PencilSquareOutlined } from "tera-dls";
 import moment from "moment";
 
 import Card from "_common/components/Card";
-import ProgressDonut from "pages/Classroom/components/ProgressDonut";
+import DonutStatsCard from "_common/components/DonutStatsCard";
+import { getDonutColor } from "pages/Classroom/constants";
 
 import type { LessonDetail } from "../_interface";
 import LessonNote from "./LessonNote";
@@ -55,15 +56,26 @@ const LessonSidebar = ({ detail, courseName, level }: LessonSidebarProps) => {
         </div>
       </Card>
 
-      <Card>
-        <p className="mb-3 text-sm font-semibold text-slate-700">
-          Tiến độ lớp học
-        </p>
-        <div className="flex flex-col items-center gap-1 py-2">
-          <ProgressDonut value={detail.completion_rate} size={120} />
-          <p className="text-xs text-slate-400">Hoàn thành</p>
-        </div>
-      </Card>
+      <DonutStatsCard
+        title="Tiến độ lớp học"
+        centerValue={`${detail.completion_rate}%`}
+        centerCaption="Hoàn thành"
+        showLegendList={false}
+        legend={[
+          {
+            key: "rate",
+            label: "Hoàn thành",
+            color: getDonutColor(detail.completion_rate),
+            value: detail.completion_rate,
+          },
+          {
+            key: "rest",
+            label: "Còn lại",
+            color: "#e2e8f0",
+            value: 100 - detail.completion_rate,
+          },
+        ]}
+      />
 
       <Card>
         <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-slate-700 [&_svg]:h-4 [&_svg]:w-4 [&_svg]:text-brand">

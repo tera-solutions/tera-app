@@ -27,24 +27,32 @@ const LessonPlanWidget = () => {
         onRetry={refetch}
       >
         <div className="divide-y divide-slate-100">
-          {lessonPlans.map((lp) => (
-            <div
-              key={lp.id}
-              className="flex items-center justify-between py-2.5"
-            >
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-slate-800">
-                  {lp.unit_name}
-                </p>
-                <p className="truncate text-xs text-slate-400">
-                  {lp.class_name}
-                </p>
+          {lessonPlans.map((lp) => {
+            const percent = Math.max(0, Math.min(100, lp.taught_percent));
+            return (
+              <div key={lp.id} className="py-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-slate-800">
+                      {lp.unit_name}
+                    </p>
+                    <p className="truncate text-xs text-slate-400">
+                      {lp.class_name}
+                    </p>
+                  </div>
+                  <span className="shrink-0 text-xs font-medium text-brand">
+                    {percent}%
+                  </span>
+                </div>
+                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                  <div
+                    className="h-full rounded-full bg-brand"
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
               </div>
-              <span className="ml-2 shrink-0 text-xs font-medium text-brand">
-                {lp.taught_percent}%
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </WidgetState>
     </DashboardCard>

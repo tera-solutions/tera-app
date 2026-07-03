@@ -1,10 +1,8 @@
+import { useState } from "react";
 import moment from "moment";
 import {
-  ArrowPathOutlined,
   BookOpenOutlined,
   Dropdown,
-  Empty,
-  ExclamationTriangleOutlined,
   EllipsisVerticalOutlined,
   EyeOutlined,
   LockClosedOutlined,
@@ -12,13 +10,36 @@ import {
   TrashOutlined,
 } from "tera-dls";
 
+import EmptyState from "_common/components/EmptyState";
+import ErrorRetry from "_common/components/ErrorRetry";
+import IconBox from "_common/components/IconBox";
 import StatusBadge from "_common/components/StatusBadge";
 
 import type { Lesson } from "../_interface";
 import { LESSON_STATUS_META } from "../constants";
 
+/** Falls back to the icon box if `src` is missing or fails to load. */
+const LessonAvatar = ({ src }: { src?: string }) => {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return <IconBox icon={<BookOpenOutlined />} sizeClassName="h-11 w-11" />;
+  }
+
+  return (
+    <img
+      src={src}
+      alt=""
+      className="h-11 w-11 shrink-0 rounded-xl object-cover"
+      onError={() => setFailed(true)}
+    />
+  );
+};
+
 interface LessonTableProps {
   lessons: Lesson[];
+  /** Classroom cover image, shown as the avatar for every row (all lessons belong to the same class). */
+  avatarUrl?: string;
   loading?: boolean;
   fetching?: boolean;
   isError?: boolean;
@@ -29,6 +50,7 @@ interface LessonTableProps {
 
 const LessonTable = ({
   lessons,
+  avatarUrl,
   loading,
   fetching,
   isError,
@@ -38,17 +60,12 @@ const LessonTable = ({
 }: LessonTableProps) => {
   if (isError)
     return (
-      <div className="flex h-[40vh] flex-col items-center justify-center gap-2 text-center">
-        <ExclamationTriangleOutlined className="h-7 w-7 text-red-400" />
-        <p className="text-sm text-slate-400">Không tải được danh sách giáo án</p>
-        <button
-          type="button"
-          onClick={onRetry}
-          className="flex items-center gap-1 rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-brand hover:bg-sky-100 [&_svg]:h-3.5 [&_svg]:w-3.5"
-        >
-          <ArrowPathOutlined />
-          Thử lại
-        </button>
+      <div className="flex h-[40vh] items-center justify-center">
+        <ErrorRetry
+          onRetry={onRetry}
+          message="Không tải được danh sách giáo án"
+          iconClassName="h-7 w-7"
+        />
       </div>
     );
 
@@ -61,11 +78,7 @@ const LessonTable = ({
 
   if (!loading && lessons.length === 0)
     return (
-      <Empty
-        className="py-12"
-        classNameImage="w-32 mx-auto"
-        description="Chưa có bài học nào"
-      />
+      <EmptyState classNameImage="w-32 mx-auto" description="Chưa có bài học nào" />
     );
 
   return (
@@ -85,9 +98,7 @@ const LessonTable = ({
                 {String(lesson.lesson_no).padStart(2, "0")}
               </span>
 
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-brand [&_svg]:h-5 [&_svg]:w-5">
-                <BookOpenOutlined />
-              </span>
+              <LessonAvatar src={avatarUrl} />
 
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-1.5 truncate text-sm font-medium text-slate-800">

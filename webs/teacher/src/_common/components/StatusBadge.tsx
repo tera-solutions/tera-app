@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 
+import Badge from "_common/components/Badge";
 import { useMeta } from "_common/hooks/useMeta";
 
 interface StatusBadgeProps {
@@ -20,15 +21,12 @@ const StatusBadge = observer(({ name, value, className }: StatusBadgeProps) => {
 
   const item = getItem(name, value);
   return (
-    <span
-      className={classNames(
-        "inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium",
-        className,
-      )}
+    <Badge
+      className={classNames("px-2.5 py-0.5 text-[11px]", className)}
       style={{ color: item?.color, backgroundColor: item?.backgroundColor }}
     >
       {item?.label ?? value}
-    </span>
+    </Badge>
   );
 });
 

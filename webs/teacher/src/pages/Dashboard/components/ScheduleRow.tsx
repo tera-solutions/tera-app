@@ -1,3 +1,4 @@
+import Badge from "_common/components/Badge";
 import type { ScheduleItem } from "_common/types/schedule";
 import { SCHEDULE_STATUS } from "_common/constants/schedule";
 
@@ -20,11 +21,9 @@ const ScheduleRow = ({ item }: { item: ScheduleItem }) => {
           {[item.level, item.room].filter(Boolean).join(" · ")}
         </p>
       </div>
-      <span
-        className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${status.badge}`}
-      >
+      <Badge className={`px-2.5 py-1 text-[11px] ${status.badge}`}>
         {status.label}
-      </span>
+      </Badge>
     </div>
   );
 };

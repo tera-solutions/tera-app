@@ -12,8 +12,6 @@ export const STATUS_OPTIONS: { value: ClassroomStatus; label: string }[] = (
   Object.entries(STATUS_LABEL) as [ClassroomStatus, string][]
 ).map(([value, label]) => ({ value, label }));
 
-export const PER_PAGE = 20;
-
 /** Deterministic gradient per class so each card keeps a stable cover colour. */
 const COVER_PALETTE = [
   "from-sky-400 to-blue-500",

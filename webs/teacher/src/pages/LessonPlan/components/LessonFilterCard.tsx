@@ -1,37 +1,41 @@
 import moment from "moment";
 import { RangePicker } from "tera-dls";
 
-import { CARD } from "_common/constants/dashboard";
+import CourseSelect from "_common/components/CourseSelect";
+import FilterCard from "_common/components/FilterCard";
+import FilterField from "_common/components/FilterField";
 
 interface LessonFilterCardProps {
+  courseId?: number;
+  onCourseChange?: (courseId: number | string | undefined) => void;
   range?: [moment.Moment, moment.Moment];
   onRangeChange: (range: [moment.Moment, moment.Moment]) => void;
   onRangeClear: () => void;
+  onReset?: () => void;
 }
 
-const Field = ({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) => (
-  <div>
-    <p className="mb-1.5 text-sm font-medium text-slate-700">{label}</p>
-    {children}
-  </div>
-);
-
 const LessonFilterCard = ({
+  courseId,
+  onCourseChange,
   range,
   onRangeChange,
   onRangeClear,
+  onReset,
 }: LessonFilterCardProps) => {
   return (
-    <div className={`${CARD} flex flex-col gap-4 p-4`}>
-      <p className="text-sm font-semibold text-slate-700">Bộ lọc</p>
+    <FilterCard onReset={onReset}>
+      {onCourseChange && (
+        <FilterField label="Khóa học">
+          <CourseSelect
+            value={courseId}
+            onChange={onCourseChange}
+            placeholder="Tất cả khóa học"
+            allowClear
+          />
+        </FilterField>
+      )}
 
-      <Field label="Lọc theo ngày">
+      <FilterField label="Lọc theo ngày">
         <RangePicker
           value={range}
           allowClear={!!range}
@@ -41,17 +45,8 @@ const LessonFilterCard = ({
             else onRangeClear();
           }}
         />
-        {range && (
-          <button
-            type="button"
-            onClick={onRangeClear}
-            className="mt-1.5 text-xs font-medium text-brand hover:underline"
-          >
-            Bỏ lọc khoảng ngày
-          </button>
-        )}
-      </Field>
-    </div>
+      </FilterField>
+    </FilterCard>
   );
 };
 

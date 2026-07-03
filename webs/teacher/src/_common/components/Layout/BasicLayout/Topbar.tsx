@@ -25,7 +25,7 @@ const Topbar = observer(() => {
   const {
     commonStore: { clear: clearCommon },
   } = useStates();
-  const { name, role, initials } = getUserDisplay(user);
+  const { name, roleName, initials } = getUserDisplay(user);
 
   const handleLogoutCleanup = () => {
     clear();
@@ -87,14 +87,22 @@ const Topbar = observer(() => {
           content={
             <div className="w-56 p-1.5">
               <div className="flex items-center gap-2.5 px-2 py-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-sm font-semibold text-white">
-                  {initials}
-                </div>
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={name}
+                    className="size-9 object-cover"
+                  />
+                ) : (
+                  <div className="flex size-9 items-center justify-center rounded-full bg-brand text-sm font-semibold text-white">
+                    {initials}
+                  </div>
+                )}
                 <div className="min-w-0 leading-tight">
                   <p className="truncate text-sm font-medium text-slate-800">
                     {name}
                   </p>
-                  <p className="truncate text-xs text-slate-400">{role}</p>
+                  <p className="truncate text-xs text-slate-400">{roleName}</p>
                 </div>
               </div>
               <div className="my-1 h-px bg-slate-100" />
@@ -113,12 +121,20 @@ const Topbar = observer(() => {
             type="button"
             className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2 hover:bg-slate-50"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-sm font-semibold text-white">
-              {initials}
-            </div>
+            {user?.avatar ? (
+              <img
+                src={user.avatar}
+                alt={name}
+                className="size-9 object-cover"
+              />
+            ) : (
+              <div className="flex size-9 items-center justify-center rounded-full bg-brand text-sm font-semibold text-white">
+                {initials}
+              </div>
+            )}
             <div className="leading-tight text-left">
               <p className="text-sm font-medium text-slate-800">{name}</p>
-              <p className="text-xs text-slate-400">{role}</p>
+              <p className="text-xs text-slate-400">{roleName}</p>
             </div>
             <ChevronDownOutlined className="h-4 w-4 text-slate-400" />
           </button>

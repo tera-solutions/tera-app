@@ -17,7 +17,7 @@ const MyClassesWidget = () => {
       title="Lớp học của tôi"
       icon={<UsersOutlined />}
       actionLabel="Xem tất cả"
-      onAction={() => navigate(PATHS.classes)}
+      onAction={() => navigate(PATHS.classroom)}
     >
       <WidgetState
         isLoading={isLoading}

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import moment from "moment";
-import { Empty } from "tera-dls";
 
+import Badge from "_common/components/Badge";
 import { SCHEDULE_STATUS } from "_common/constants/schedule";
 
 import { getClassColor } from "../constants";
@@ -25,11 +25,7 @@ const DayView = ({ currentDate, schedules, onSelect }: DayViewProps) => {
   );
 
   if (items.length === 0) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <Empty description="Không có lịch dạy trong ngày" />
-      </div>
-    );
+    return <div className="min-h-[40vh]" />;
   }
 
   return (
@@ -61,11 +57,9 @@ const DayView = ({ currentDate, schedules, onSelect }: DayViewProps) => {
                   .join(" · ")}
               </p>
             </div>
-            <span
-              className={`h-fit shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${status.badge}`}
-            >
+            <Badge className={`h-fit px-2 py-0.5 text-[10px] ${status.badge}`}>
               {status.label}
-            </span>
+            </Badge>
           </button>
         );
       })}

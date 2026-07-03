@@ -15,6 +15,9 @@ import ClassroomDetail from "pages/ClassroomDetail";
 import LessonPlan from "pages/LessonPlan";
 import PlanLessons from "pages/LessonPlan/PlanLessons";
 import Lesson from "pages/Lesson";
+import Attendance from "pages/Attendance";
+import Students from "pages/Students";
+import Notifications from "pages/Notifications";
 import Placeholder from "pages/Placeholder";
 
 import CheckAuth from "routers/CheckAuth";
@@ -27,11 +30,8 @@ import UnAuthLayout from "_common/components/Layout/UnAuthLayout";
 const PLACEHOLDER_PATHS = [
   PATHS.homework,
   PATHS.grading,
-  PATHS.attendance,
-  PATHS.students,
   PATHS.reports,
   PATHS.comments,
-  PATHS.notifications,
   PATHS.messages,
   PATHS.more,
   PATHS.profile,
@@ -56,6 +56,9 @@ export const Routers = () => {
         <Route path={`${PATHS.lessonPlans}/:id`} element={<PlanLessons />} />
         <Route path={`${PATHS.lesson}/:id`} element={<Lesson />} />
         <Route path={`${PATHS.classroom}/:id`} element={<ClassroomDetail />} />
+        <Route path={PATHS.attendance} element={<Attendance />} />
+        <Route path={PATHS.students} element={<Students />} />
+        <Route path={PATHS.notifications} element={<Notifications />} />
         {PLACEHOLDER_PATHS.map((path) => (
           <Route key={path} path={path} element={<Placeholder />} />
         ))}

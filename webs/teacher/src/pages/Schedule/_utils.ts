@@ -1,7 +1,6 @@
 import { toScheduleStatus, toTime } from "_common/utils/schedule";
 import type { ScheduleStatus } from "_common/types/schedule";
 
-import type { FilterOption } from "./components/FilterSidebar";
 import type { ScheduleItem } from "./_interface";
 
 export interface SessionDetail {
@@ -35,25 +34,6 @@ export const toSessionDetail = (res: any): SessionDetail | null => {
     teacher_name: d.teacher?.full_name ?? "",
     status: toScheduleStatus(d.status),
   };
-};
-
-/** Distinct class filter options derived from the loaded month schedules. */
-export const buildClassOptions = (schedules: ScheduleItem[]): FilterOption[] => {
-  const map = new Map<number, string>();
-  schedules.forEach((item) => {
-    if (item.class_id && !map.has(item.class_id))
-      map.set(item.class_id, item.class_name);
-  });
-  return Array.from(map, ([value, label]) => ({ value, label }));
-};
-
-/** Distinct branch filter options derived from the loaded month schedules. */
-export const buildBranchOptions = (
-  schedules: ScheduleItem[],
-): FilterOption[] => {
-  const set = new Set<string>();
-  schedules.forEach((item) => item.branch && set.add(item.branch));
-  return Array.from(set, (value) => ({ value, label: value }));
 };
 
 export const computeMonthStats = (schedules: ScheduleItem[]) => ({

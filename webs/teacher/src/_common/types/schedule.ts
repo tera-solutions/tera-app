@@ -9,6 +9,7 @@ export interface ScheduleItem {
   level: string;
   room: string;
   branch: string; // cơ sở
+  branch_id: number | null;
   date: string; // "YYYY-MM-DD"
   start_time: string; // "HH:mm"
   end_time: string; // "HH:mm"

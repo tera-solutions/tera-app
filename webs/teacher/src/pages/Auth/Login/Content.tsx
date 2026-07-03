@@ -5,14 +5,7 @@ import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 import { AuthApi } from "@tera/api/auth/auth";
 import { useStores } from "@tera/stores/useStores";
-import {
-  AcademicCapOutlined,
-  Button,
-  HeartOutlined,
-  LifebuoyOutlined,
-  notification,
-  ShieldCheckOutlined,
-} from "tera-dls";
+import { AcademicCapOutlined, Button, notification } from "tera-dls";
 
 import { tokenStorage } from "_common/constants/auth";
 import {
@@ -21,7 +14,7 @@ import {
   validateLoginField,
 } from "_common/validations/login";
 
-import loginBg from "@/assets/login-bg.png";
+import AuthScene from "../_shared/AuthScene";
 
 import InputEmail from "./components/InputEmail";
 import InputPassword from "./components/InputPassword";
@@ -85,60 +78,6 @@ const MicrosoftIcon = () => (
     <path fill="#00A4EF" d="M0 12h11v11H0z" />
     <path fill="#FFB900" d="M12 12h11v11H12z" />
   </svg>
-);
-
-const FOOTER_ITEMS = [
-  {
-    icon: <ShieldCheckOutlined />,
-    title: "Bảo mật tuyệt đối",
-    desc: "Thông tin của bạn luôn được bảo vệ",
-  },
-  {
-    icon: <LifebuoyOutlined />,
-    title: "Hỗ trợ giáo viên 24/7",
-    desc: "Đội ngũ luôn sẵn sàng hỗ trợ bạn",
-  },
-  {
-    icon: <HeartOutlined />,
-    title: "Vì sự phát triển của học viên",
-    desc: "Đồng hành cùng giáo viên mỗi ngày",
-  },
-];
-
-const LoginFooter = () => (
-  <footer className="relative z-10 hidden shrink-0 text-white xmd:block">
-    <svg
-      className="absolute inset-0 h-full w-full"
-      viewBox="0 0 1440 160"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <defs>
-        <linearGradient id="loginFooterGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#27a6e7" />
-          <stop offset="100%" stopColor="#0b86cf" />
-        </linearGradient>
-      </defs>
-      <path
-        fill="url(#loginFooterGrad)"
-        d="M0,0 C480,64 960,64 1440,0 L1440,160 L0,160 Z"
-      />
-    </svg>
-
-    <div className="relative mx-auto flex max-w-6xl flex-col items-center justify-center gap-12 px-6 pb-5 pt-12 text-center sm:flex-row sm:gap-24 sm:pb-7 sm:pt-14">
-      {FOOTER_ITEMS.map((item) => (
-        <div key={item.title} className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 [&_svg]:h-5 [&_svg]:w-5">
-            {item.icon}
-          </span>
-          <div className="text-left leading-tight">
-            <p className="text-sm font-semibold">{item.title}</p>
-            <p className="text-xs text-white/70">{item.desc}</p>
-          </div>
-        </div>
-      ))}
-    </div>
-  </footer>
 );
 
 const Content = observer(() => {
@@ -206,14 +145,8 @@ const Content = observer(() => {
   }
 
   return (
-    <div className="relative flex h-dvh w-full flex-col overflow-hidden bg-[#F3F7FC]">
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 z-0 hidden bg-contain bg-left bg-no-repeat xmd:block"
-        style={{ backgroundImage: `url(${loginBg})` }}
-      />
-      <div className="relative z-20 min-h-0 w-full flex-1 overflow-y-auto">
-        <div className="flex min-h-full items-center justify-center p-4 sm:p-6 xmd:justify-end xmd:pr-24!">
+    <AuthScene>
+      <div className="flex min-h-full items-center justify-center p-4 sm:p-6 xmd:justify-end xmd:pr-24!">
           <div className="w-full max-w-[min(660px,100%)] rounded-3xl bg-white p-8 shadow-[0_8px_40px_rgba(15,23,42,0.08)] sm:p-12 lg:p-14">
             <div className="mb-5 flex flex-col items-center text-center sm:mb-6">
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand text-white [&_svg]:h-7 [&_svg]:w-7">
@@ -325,10 +258,7 @@ const Content = observer(() => {
             </p>
           </div>
         </div>
-      </div>
-
-      <LoginFooter />
-    </div>
+    </AuthScene>
   );
 });
 

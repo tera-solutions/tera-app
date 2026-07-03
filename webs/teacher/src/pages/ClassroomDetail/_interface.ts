@@ -21,6 +21,12 @@ export interface ClassStatistics {
   operational: ClassOperationalStats;
 }
 
+export interface ScheduleSlot {
+  weekday: number;
+  start_time: string;
+  end_time: string;
+}
+
 export interface ClassroomDetail extends Classroom {
   code: string;
   teacher_name: string;
@@ -29,6 +35,8 @@ export interface ClassroomDetail extends Classroom {
   end_date: string;
   description: string;
   lesson_plan_name: string;
+  /** Weekly recurrence (edu_class_schedules) — source for the generated session list below. */
+  schedules: ScheduleSlot[];
 }
 
 export interface ClassroomDetailResult {

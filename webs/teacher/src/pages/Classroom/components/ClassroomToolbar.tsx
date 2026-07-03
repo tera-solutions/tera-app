@@ -34,7 +34,7 @@ const ClassroomToolbar = ({
   const selectedLevel = levelOptions.find((o) => o.value === level);
 
   return (
-    <Card>
+    <Card animated={false}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <SearchInput
           value={search}

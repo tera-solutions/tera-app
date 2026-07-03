@@ -1,17 +1,16 @@
 import moment from "moment";
 import {
   ArchiveBoxOutlined,
-  ArrowPathOutlined,
   DocumentTextOutlined,
   Dropdown,
-  Empty,
   EllipsisVerticalOutlined,
-  ExclamationTriangleOutlined,
   EyeOutlined,
   PencilSquareOutlined,
   Spin,
 } from "tera-dls";
 
+import EmptyState from "_common/components/EmptyState";
+import ErrorRetry from "_common/components/ErrorRetry";
 import StatusBadge from "_common/components/StatusBadge";
 
 import type { LessonPlan } from "../_interface";
@@ -40,17 +39,12 @@ const LessonPlanTable = ({
 }: LessonPlanTableProps) => {
   if (isError)
     return (
-      <div className="flex h-[40vh] flex-col items-center justify-center gap-2 text-center">
-        <ExclamationTriangleOutlined className="h-7 w-7 text-red-400" />
-        <p className="text-sm text-slate-400">Không tải được danh sách giáo án</p>
-        <button
-          type="button"
-          onClick={onRetry}
-          className="flex items-center gap-1 rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-brand hover:bg-sky-100 [&_svg]:h-3.5 [&_svg]:w-3.5"
-        >
-          <ArrowPathOutlined />
-          Thử lại
-        </button>
+      <div className="flex h-[40vh] items-center justify-center">
+        <ErrorRetry
+          onRetry={onRetry}
+          message="Không tải được danh sách giáo án"
+          iconClassName="h-7 w-7"
+        />
       </div>
     );
 
@@ -63,11 +57,7 @@ const LessonPlanTable = ({
 
   if (!loading && plans.length === 0)
     return (
-      <Empty
-        className="py-12"
-        classNameImage="w-32 mx-auto"
-        description="Chưa có giáo án nào"
-      />
+      <EmptyState classNameImage="w-32 mx-auto" description="Chưa có giáo án nào" />
     );
 
   return (

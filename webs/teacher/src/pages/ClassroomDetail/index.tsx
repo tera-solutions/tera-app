@@ -2,16 +2,13 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import classNames from "classnames";
-import {
-  ArrowPathOutlined,
-  ExclamationTriangleOutlined,
-  notification,
-  Spin,
-} from "tera-dls";
+import { Spin } from "tera-dls";
 
 import Breadcrumb from "_common/components/Breadcrumb";
 import { CARD } from "_common/constants/dashboard";
+import ErrorRetry from "_common/components/ErrorRetry";
 import { PATHS } from "_common/components/Layout/Menu/menus";
+import { todo } from "_common/utils/todo";
 
 import type { DetailTab } from "./_interface";
 import { DETAIL_TABS } from "./constants";
@@ -35,9 +32,6 @@ const SESSION_RANGE = {
   date_from: moment().subtract(6, "months").format("YYYY-MM-DD"),
   date_to: moment().add(6, "months").format("YYYY-MM-DD"),
 };
-
-const todo = () =>
-  notification.open({ message: "Tính năng đang được phát triển" });
 
 const ClassroomDetail = () => {
   const navigate = useNavigate();
@@ -79,16 +73,19 @@ const ClassroomDetail = () => {
     return item ? { id: item.id, name: item.plan_name } : undefined;
   }, [lessonPlanId, courseId, lessonPlanDetailQuery.data, lessonPlanListQuery.data]);
 
-  const sessionsQuery = TimetableService.useTimetableCalendar({
-    class_id: classId ?? 0,
-    ...SESSION_RANGE,
-  });
+  const sessionsQuery = TimetableService.useTimetableCalendar(
+    {
+      class_id: classId ?? 0,
+      ...SESSION_RANGE,
+    },
+    { enabled: tab === "schedule" && !!classId },
+  );
   const {
     isLoading: isSessionsLoading,
     isError: isSessionsError,
     refetch: refetchSessions,
   } = sessionsQuery;
-  const sessions = useMemo(
+  const sortedSessions = useMemo(
     () => toClassSessions(sessionsQuery.data?.data),
     [sessionsQuery.data],
   );
@@ -96,22 +93,6 @@ const ClassroomDetail = () => {
   const detail = detailData?.detail;
   const statistics = detailData?.statistics;
   const notFound = !isLoading && (isError || !detail?.id);
-
-  const sortedSessions = useMemo(
-    () =>
-      [...sessions].sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0)),
-    [sessions],
-  );
-
-  const upcomingSessions = useMemo(() => {
-    const done = ["completed", "done", "cancelled", "canceled"];
-    const pending = sortedSessions.filter(
-      (s) => !done.includes(s.status?.toLowerCase()),
-    );
-    if (pending.length > 0) return pending.slice(0, 5);
-    const today = moment().format("YYYY-MM-DD");
-    return sortedSessions.filter((s) => s.date >= today).slice(0, 5);
-  }, [sortedSessions]);
 
   const renderTab = () => {
     if (!statistics) return null;
@@ -144,28 +125,17 @@ const ClassroomDetail = () => {
       />
 
       {notFound ? (
-        <div className="flex h-[50vh] flex-col items-center justify-center gap-2 text-center">
-          <ExclamationTriangleOutlined className="h-8 w-8 text-red-400" />
-          <p className="text-sm text-slate-500">
-            Không tìm thấy lớp học hoặc bạn không có quyền truy cập
-          </p>
-          <div className="mt-1 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => refetch()}
-              className="flex items-center gap-1 rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-brand hover:bg-sky-100 [&_svg]:h-3.5 [&_svg]:w-3.5"
-            >
-              <ArrowPathOutlined />
-              Thử lại
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate(PATHS.classroom)}
-              className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 hover:bg-slate-100"
-            >
-              Về danh sách lớp
-            </button>
-          </div>
+        <div className="flex h-[50vh] items-center justify-center">
+          <ErrorRetry
+            onRetry={() => refetch()}
+            message="Không tìm thấy lớp học hoặc bạn không có quyền truy cập"
+            iconClassName="h-8 w-8"
+            messageClassName="text-sm text-slate-500"
+            secondaryAction={{
+              label: "Về danh sách lớp",
+              onClick: () => navigate(PATHS.classroom),
+            }}
+          />
         </div>
       ) : (
         <Spin spinning={isLoading}>
@@ -208,12 +178,7 @@ const ClassroomDetail = () => {
 
                 <div className="flex flex-col gap-4">
                   <ResultSummaryCard statistics={statistics} />
-                  <UpcomingSessions
-                    sessions={upcomingSessions}
-                    loading={isSessionsLoading}
-                    isError={isSessionsError}
-                    onRetry={() => refetchSessions()}
-                  />
+                  <UpcomingSessions schedules={detail.schedules} />
                   <ClassNotifications onCreate={todo} />
                 </div>
               </div>

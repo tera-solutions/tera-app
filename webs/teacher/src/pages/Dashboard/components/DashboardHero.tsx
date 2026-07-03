@@ -10,7 +10,7 @@ const DashboardHero = observer(() => {
   const {
     globalStore: { user },
   } = useStores();
-  const { name, role, initials } = getUserDisplay(user);
+  const { name, roleName, initials } = getUserDisplay(user);
 
   return (
     <div
@@ -40,7 +40,7 @@ const DashboardHero = observer(() => {
           </div>
           <span className="absolute -bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-white px-2.5 py-1 shadow-md">
             <AcademicCapOutlined className="h-3.5 w-3.5 text-brand" />
-            <span className="text-[11px] font-semibold text-brand">{role}</span>
+            <span className="text-[11px] font-semibold text-brand">{roleName}</span>
           </span>
         </div>
       </div>

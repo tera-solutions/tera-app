@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import moment from "moment";
 import { Empty } from "tera-dls";
 
+import Badge from "_common/components/Badge";
 import { SCHEDULE_STATUS } from "_common/constants/schedule";
 
 import { getClassColor, WEEKDAY_FULL } from "../constants";
@@ -86,11 +87,9 @@ const RangeView = ({
                         .join(" · ")}
                     </p>
                   </div>
-                  <span
-                    className={`h-fit shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${status.badge}`}
-                  >
+                  <Badge className={`h-fit px-2 py-0.5 text-[10px] ${status.badge}`}>
                     {status.label}
-                  </span>
+                  </Badge>
                 </button>
               );
             })}

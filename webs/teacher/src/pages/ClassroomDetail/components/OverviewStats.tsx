@@ -12,6 +12,7 @@ import {
 } from "tera-dls";
 
 import { CARD } from "_common/constants/dashboard";
+import IconBox from "_common/components/IconBox";
 
 import type { ClassStatistics } from "../_interface";
 
@@ -101,11 +102,7 @@ const OverviewStats = ({ statistics }: OverviewStatsProps) => {
             key={tile.label}
             className="flex items-center gap-3 rounded-xl border border-slate-100 p-3"
           >
-            <div
-              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl [&_svg]:h-5 [&_svg]:w-5 ${tile.tone}`}
-            >
-              {tile.icon}
-            </div>
+            <IconBox icon={tile.icon} colorClassName={tile.tone} />
             <div className="min-w-0">
               <p className="text-lg font-bold text-slate-800">{tile.value}</p>
               <p className="flex items-center gap-1 text-xs text-slate-400">

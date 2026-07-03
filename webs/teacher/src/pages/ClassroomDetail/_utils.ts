@@ -10,6 +10,7 @@ import type {
   ClassStatistics,
   ClassStudent,
   ClassStudentResult,
+  ScheduleSlot,
 } from "./_interface";
 
 const toStatistics = (raw: any): ClassStatistics => {
@@ -33,6 +34,13 @@ const toStatistics = (raw: any): ClassStatistics => {
   };
 };
 
+const toScheduleSlots = (raw: any[] | null | undefined): ScheduleSlot[] =>
+  (raw ?? []).map((item) => ({
+    weekday: item.weekday ?? 0,
+    start_time: toTime(item.start_time),
+    end_time: toTime(item.end_time),
+  }));
+
 export const toClassroomDetail = (raw: any): ClassroomDetailResult => {
   const cls = raw?.class ?? {};
   const statistics = toStatistics(raw?.statistics);
@@ -49,6 +57,7 @@ export const toClassroomDetail = (raw: any): ClassroomDetailResult => {
     end_date: cls.end_date ?? "",
     description: cls.description ?? "",
     lesson_plan_name: cls.lesson_plan?.name ?? "",
+    schedules: toScheduleSlots(cls.schedules),
   };
 
   return { detail, statistics };
