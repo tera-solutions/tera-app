@@ -13,11 +13,7 @@ import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { ENROLLMENT_PAGE_URL } from "@tera/commons/constants/url";
 
 /* Import: services */
-import {
-  StudentService,
-  ClassRoomService,
-  CourseService,
-} from "@tera/modules";
+import { StudentService, ClassRoomService, CourseService } from "@tera/modules";
 
 /* Import: pages */
 import SearchBar from "_common/components/SearchBar";
@@ -91,7 +87,7 @@ const EnrollmentListPage = observer(() => {
   };
 
   return (
-    <div className="p-2.5 max-xmd:pb-[60px]">
+    <div className='p-2.5 max-xmd:pb-[60px]'>
       <HeaderViewList
         title={t("enrollment.title")}
         buttonAddRender={() => (
@@ -101,21 +97,21 @@ const EnrollmentListPage = observer(() => {
                 ? navigate(ENROLLMENT_PAGE_URL.create.path)
                 : setModalData({ open: true, type: "create" })
             }
-            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1"
+            className='rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1'
           >
-            <div className="flex items-center gap-1 shrink-0">
-              <PlusCircleOutlined className="w-5 h-5" />
+            <div className='flex items-center gap-1 shrink-0'>
+              <PlusCircleOutlined className='w-5 h-5' />
               <span>{t("enrollment.enroll")}</span>
             </div>
           </Button>
         )}
       >
         {/* Status tabs */}
-        <div className="flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent">
+        <div className='flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent'>
           {statusTabs.map((tab) => (
             <button
               key={tab.key}
-              type="button"
+              type='button'
               onClick={() => handleStatusChange(tab.key)}
               className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors ${
                 activeStatus === tab.key
@@ -129,9 +125,9 @@ const EnrollmentListPage = observer(() => {
         </div>
 
         {/* Search + filter row */}
-        <div className="relative z-20 flex flex-wrap items-center gap-2 mb-3">
+        <div className='relative z-20 flex flex-wrap items-center gap-2 mb-3'>
           <SearchBar
-            className="w-full xmd:w-[240px] xmd:shrink-0"
+            className='w-full xmd:w-[240px] xmd:shrink-0'
             value={keyword}
             placeholder={t("enrollment.search_placeholder")}
             onChange={(v) => {

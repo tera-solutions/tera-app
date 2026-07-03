@@ -12,6 +12,7 @@ interface MultiSelectProps {
   options: MultiOption[];
   value: string[];
   placeholder?: string;
+  disabled?: boolean;
   onChange: (values: string[]) => void;
 }
 
@@ -22,6 +23,7 @@ const MultiSelect = ({
   options,
   value,
   placeholder,
+  disabled,
   onChange,
 }: MultiSelectProps) => {
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -79,8 +81,9 @@ const MultiSelect = ({
       <button
         ref={btnRef}
         type="button"
-        onClick={() => setOpen((o) => !o)}
-        className={BTN_CLASS}
+        disabled={disabled}
+        onClick={() => !disabled && setOpen((o) => !o)}
+        className={`${BTN_CLASS} ${disabled ? "bg-gray-100 cursor-not-allowed hover:border-gray-300" : ""}`}
       >
         <span className="truncate" style={{ color: value.length ? "#111827" : "#9ca3af" }}>
           {label}
