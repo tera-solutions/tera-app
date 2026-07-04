@@ -48,7 +48,7 @@ function ActionDropdown({
         <Dropdown
           menu={{
             items: dropdownItems,
-            itemClassName: "w-[150px] break-word text-left",
+            itemClassName: "w-[150px] break-word text-left cursor-pointer",
           }}
           {...rest}
         >
@@ -60,7 +60,7 @@ function ActionDropdown({
             htmlType="button"
             type="alternative"
             className={customTwMerge(
-              "rounded-xsm py-[3px] px-[3px] bg-white",
+              "rounded-xsm py-[3px] px-[3px] bg-white cursor-pointer",
               classNameButton,
             )}
             icon={<EllipsisHorizontalOutlined className="text-gray-500" />}

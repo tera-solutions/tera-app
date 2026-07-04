@@ -172,7 +172,7 @@ const ClassRoomTable = observer(
           type="button"
           title={t("classroom.copy_code")}
           onClick={() => handleCopy(code)}
-          className="text-gray-400 hover:text-blue-500 transition-colors shrink-0"
+          className="text-gray-400 hover:text-blue-500 transition-colors shrink-0 cursor-pointer"
         >
           <svg
             className="w-3.5 h-3.5"

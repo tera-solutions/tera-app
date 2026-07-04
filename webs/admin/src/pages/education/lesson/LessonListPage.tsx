@@ -86,7 +86,7 @@ const LessonListPage = () => {
                 ? navigate(LESSON_PAGE_URL.create.path)
                 : setGenerateOpen(true)
             }
-            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1"
+            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer"
           >
             <div className="flex items-center gap-1 shrink-0">
               <PlusCircleOutlined className="w-5 h-5" />
@@ -105,7 +105,7 @@ const LessonListPage = () => {
                 setActiveStatus(tab.key);
                 resetPage();
               }}
-              className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors ${
+              className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors cursor-pointer ${
                 activeStatus === tab.key
                   ? "bg-blue-500 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"

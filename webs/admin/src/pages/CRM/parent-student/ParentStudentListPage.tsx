@@ -79,7 +79,7 @@ const ParentStudentListPage = observer(() => {
                 ? navigate(PARENT_STUDENT_PAGE_URL.create.path)
                 : setModalData({ open: true, type: "create" })
             }
-            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1"
+            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer"
           >
             <div className="flex items-center gap-1 shrink-0">
               <PlusCircleOutlined className="w-5 h-5" />

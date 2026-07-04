@@ -222,6 +222,7 @@ const Dashboard = () => {
               columns={columns}
               data={[
                 {
+                  id: 1,
                   image: "https://picsum.photos/200",
                   name: "Tên sản phẩm",
                   category: "Danh mục",
@@ -230,6 +231,7 @@ const Dashboard = () => {
                   revenue: 10000,
                 },
                 {
+                  id: 2,
                   image: "https://picsum.photos/200",
                   name: "Tên sản phẩm",
                   category: "Danh mục",
