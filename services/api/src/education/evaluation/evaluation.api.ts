@@ -5,7 +5,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -35,9 +34,28 @@ export const EvaluationAPI = {
     await api
       .delete(`${endpoint}/edu/evaluation/delete/${id}`)
       .then((result) => result.data),
-  
-  export: async ({ params }: ExportPayload) =>
+
+  // Gửi duyệt đánh giá (không body)
+  submit: async ({ id }: DetailPayload) =>
     await api
-      .post(`${endpoint}/edu/evaluation/export`, params)
+      .post(`${endpoint}/edu/evaluation/submit/${id}`)
+      .then((result) => result.data),
+
+  // Duyệt đánh giá (không body)
+  approve: async ({ id }: DetailPayload) =>
+    await api
+      .post(`${endpoint}/edu/evaluation/approve/${id}`)
+      .then((result) => result.data),
+
+  // Từ chối đánh giá (không body)
+  reject: async ({ id }: DetailPayload) =>
+    await api
+      .post(`${endpoint}/edu/evaluation/reject/${id}`)
+      .then((result) => result.data),
+
+  // Khoá đánh giá (chốt, không cho sửa — không body)
+  lock: async ({ id }: DetailPayload) =>
+    await api
+      .post(`${endpoint}/edu/evaluation/lock/${id}`)
       .then((result) => result.data),
 };

@@ -10,7 +10,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -56,6 +55,7 @@ export const useEvaluationUpdate = () => {
     mutationFn: (payload: UpdatePayload) => EvaluationAPI.update(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["evaluation", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -72,7 +72,8 @@ export const useUpsertEvaluation = () => {
       return EvaluationAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -94,21 +95,28 @@ export const useEvaluationDelete = () => {
   });
 };
 
-export const useEvaluationExport = () => {
+// Vòng đời đánh giá: submit → approve/reject → lock (không body, invalidate list + detail)
+const useEvaluationAction = (
+  action: (payload: DetailPayload) => Promise<any>,
+) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => EvaluationAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
+    mutationFn: (payload: DetailPayload) => action(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
     },
   });
 };
+
+export const useEvaluationSubmit = () => useEvaluationAction(EvaluationAPI.submit);
+export const useEvaluationApprove = () => useEvaluationAction(EvaluationAPI.approve);
+export const useEvaluationReject = () => useEvaluationAction(EvaluationAPI.reject);
+export const useEvaluationLock = () => useEvaluationAction(EvaluationAPI.lock);
 
 export const EvaluationService = {
   useEvaluationList,
@@ -117,5 +125,8 @@ export const EvaluationService = {
   useEvaluationUpdate,
   useUpsertEvaluation,
   useEvaluationDelete,
-  useEvaluationExport,
+  useEvaluationSubmit,
+  useEvaluationApprove,
+  useEvaluationReject,
+  useEvaluationLock,
 };
