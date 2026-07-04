@@ -32,8 +32,8 @@ export interface StudentSummary {
 export interface StudentFilters {
   search: string;
   class_id: number;
-  level: string[];
-  status: string[];
+  level_id: number;
+  status: string;
   rank: string;
   date_from: string;
   date_to: string;

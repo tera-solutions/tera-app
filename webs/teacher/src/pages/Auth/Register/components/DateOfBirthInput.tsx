@@ -9,6 +9,14 @@ interface DateOfBirthInputProps {
 }
 
 const today = new Date().toISOString().slice(0, 10);
+// Keeps the native picker's range aligned with the min/max-age checks in
+// `_common/validations/register.ts` (18–100 years old).
+const maxBirthDate = today;
+const minBirthDate = new Date(
+  new Date().setFullYear(new Date().getFullYear() - 100),
+)
+  .toISOString()
+  .slice(0, 10);
 
 const DateOfBirthInput = ({
   value,
@@ -22,7 +30,8 @@ const DateOfBirthInput = ({
       <input
         type="date"
         value={value}
-        max={today}
+        max={maxBirthDate}
+        min={minBirthDate}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}

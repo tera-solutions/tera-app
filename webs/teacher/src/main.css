@@ -3,8 +3,9 @@
 @source "./**/*.{ts,tsx}";
 
 @theme {
-  --color-brand: #0ea5e9;
-  --color-brand-dark: #0284c7;
+  --color-brand: #0066cc;
+  --color-brand-dark: #004d99;
+  --color-accent: #fe870c;
 
   --spacing-sidebar: 240px;
   --spacing-sidebar-collapsed: 72px;
@@ -47,6 +48,19 @@
     width: 100%;
     max-width: calc(100vw - 24px);
   }
+}
+
+/* tera-dls Drawer mounts its mask directly (no enter/exit class toggle), so a
+   `transition-opacity` on it never has a "from" state to animate from. A CSS
+   keyframe animation fires on mount regardless, giving the mask a fade-in. */
+@keyframes tera-drawer-mask-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.tera-drawer-mask-fade-in {
+  animation: tera-drawer-mask-fade-in 200ms ease-out;
 }
 
 /* tera-dls Drawer opens by adding `transform-none` to cancel the `translate-x-full`

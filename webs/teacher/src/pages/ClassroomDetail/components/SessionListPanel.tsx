@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import moment from "moment";
-import classNames from "classnames";
 
-import Badge from "_common/components/Badge";
+import StatusBadge from "_common/components/StatusBadge";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import WidgetState from "_common/components/WidgetState";
@@ -15,14 +14,6 @@ interface SessionListPanelProps {
   isError?: boolean;
   onRetry?: () => void;
 }
-
-const STATUS_STYLE: Record<string, { label: string; badge: string }> = {
-  completed: { label: "Đã học", badge: "bg-emerald-50 text-emerald-600" },
-  done: { label: "Đã học", badge: "bg-emerald-50 text-emerald-600" },
-  pending: { label: "Sắp tới", badge: "bg-sky-50 text-brand" },
-  upcoming: { label: "Sắp tới", badge: "bg-sky-50 text-brand" },
-  cancelled: { label: "Đã huỷ", badge: "bg-red-50 text-red-500" },
-};
 
 const SessionListPanel = ({
   sessions,
@@ -74,33 +65,25 @@ const SessionListPanel = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {pagedSessions.map((s) => {
-              const style = STATUS_STYLE[s.status?.toLowerCase()] ?? {
-                label: s.status || "—",
-                badge: "bg-slate-100 text-slate-500",
-              };
-              return (
-                <tr key={s.id} className="text-slate-700">
-                  <td className="px-4 py-3 font-medium">
-                    {s.session_no != null ? `Buổi ${s.session_no}` : "—"}
-                  </td>
-                  <td className="px-4 py-3">{s.name || "—"}</td>
-                  <td className="px-4 py-3 text-slate-500">
-                    {s.date ? moment(s.date, "YYYY-MM-DD").format("DD/MM/YYYY") : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-slate-500">
-                    {s.start_time && s.end_time
-                      ? `${s.start_time} - ${s.end_time}`
-                      : "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge className={classNames("px-2.5 py-0.5 text-[11px]", style.badge)}>
-                      {style.label}
-                    </Badge>
-                  </td>
-                </tr>
-              );
-            })}
+            {pagedSessions.map((s) => (
+              <tr key={s.id} className="text-slate-700">
+                <td className="px-4 py-3 font-medium">
+                  {s.session_no != null ? `Buổi ${s.session_no}` : "—"}
+                </td>
+                <td className="px-4 py-3">{s.name || "—"}</td>
+                <td className="px-4 py-3 text-slate-500">
+                  {s.date ? moment(s.date, "YYYY-MM-DD").format("DD/MM/YYYY") : "—"}
+                </td>
+                <td className="px-4 py-3 text-slate-500">
+                  {s.start_time && s.end_time
+                    ? `${s.start_time} - ${s.end_time}`
+                    : "—"}
+                </td>
+                <td className="px-4 py-3">
+                  <StatusBadge name="class_session_status" value={s.status} />
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

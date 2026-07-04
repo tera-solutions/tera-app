@@ -1,6 +1,6 @@
 import moment from "moment";
 
-import type { ScheduleItem, ScheduleStatus } from "_common/types/schedule";
+import type { ScheduleItem } from "_common/types/schedule";
 
 /** "HH:mm:ss" or "HH:mm" → "HH:mm". */
 export const toTime = (value: string | null | undefined): string =>
@@ -14,26 +14,10 @@ export const toDate = (value: string | null | undefined): string => {
   return m.isValid() ? m.format("YYYY-MM-DD") : "";
 };
 
-/** Backend session status → the four UI statuses. */
-export const toScheduleStatus = (
-  value: string | null | undefined,
-): ScheduleStatus => {
-  switch (value) {
-    case "cancelled":
-    case "canceled":
-      return "cancelled";
-    case "done":
-    case "completed":
-    case "finished":
-    case "ended":
-      return "done";
-    case "ongoing":
-    case "in_progress":
-      return "ongoing";
-    default:
-      return "upcoming";
-  }
-};
+/** Passes the raw `class_session_status` value through unchanged; label/color
+ * are resolved from metadata, so no frontend alias table is needed. */
+export const toScheduleStatus = (value: string | null | undefined): string =>
+  value || "upcoming";
 
 /** Dashboard `schedule_today` rows — flat keys. */
 export const toScheduleItem = (raw: any): ScheduleItem => ({

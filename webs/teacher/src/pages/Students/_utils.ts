@@ -7,7 +7,7 @@ const toStudentListItem = (raw: any): StudentListItem => ({
   avatar: raw.avatar ?? "",
   dob: raw.dob ?? "",
   class_name: raw.class_name ?? raw.class?.name ?? "",
-  class_level: raw.level ?? raw.class?.course?.name ?? "",
+  class_level: raw.level?.name ?? raw.class?.course?.name ?? "",
   phone: raw.phone ?? raw.parent_phone ?? "",
   avg_score: raw.avg_score ?? null,
   status: raw.status ?? "",

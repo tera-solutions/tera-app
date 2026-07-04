@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import classNames from "classnames";
 import moment from "moment";
 import {
   ArchiveBoxOutlined,
@@ -15,6 +14,8 @@ import {
 
 import Card from "_common/components/Card";
 import SearchInput from "_common/components/SearchInput";
+import SortControl from "_common/components/SortControl";
+import StatusTabs from "_common/components/StatusTabs";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import useConfirm from "_common/hooks/useConfirm";
@@ -25,8 +26,8 @@ import { PATHS } from "_common/components/Layout/Menu/menus";
 import StatisticCard from "_common/components/StatisticCard";
 import { LessonPlanService } from "@tera/modules/education";
 
-import type { LessonPlan } from "./_interface";
-import { LESSON_PLAN_STATUS_META } from "./constants";
+import type { LessonPlan, LessonPlanSortBy, LessonPlanSortDir } from "./_interface";
+import { LESSON_PLAN_STATUS_META, SORT_BY_OPTIONS } from "./constants";
 import { summarizePlans, toLessonPlans } from "./_utils";
 import LessonPlanTable from "./components/LessonPlanTable";
 import LessonPlanFormModal from "./components/LessonPlanFormModal";
@@ -38,7 +39,7 @@ const LessonPlanPage = observer(() => {
   const { getLabel, getTabs } = useMeta();
 
   const [filters, setFilters] = useUrlFilters({
-    tab: { type: "string", default: "all" },
+    status: { type: "string", default: "all" },
     courseId: {
       type: "number",
       default: undefined as number | undefined,
@@ -49,6 +50,8 @@ const LessonPlanPage = observer(() => {
     pageSize: { type: "number", default: DEFAULT_PAGE_SIZE },
     dateFrom: { type: "string", default: "" },
     dateTo: { type: "string", default: "" },
+    sortBy: { type: "string", default: "created_at" as LessonPlanSortBy },
+    sortDir: { type: "string", default: "desc" as LessonPlanSortDir },
   });
   const [searchDraft, setSearchDraft] = useDebouncedSearch(filters.search, (trimmed) =>
     setFilters({ search: trimmed, page: 1 }),
@@ -59,7 +62,7 @@ const LessonPlanPage = observer(() => {
   const confirm = useConfirm();
   const { mutate: archive } = LessonPlanService.useLessonPlanArchive();
 
-  const handleTabChange = (key: string) => setFilters({ tab: key, page: 1 });
+  const handleTabChange = (key: string) => setFilters({ status: key, page: 1 });
   const handleCourseChange = (courseId: number | string | undefined) =>
     setFilters({ courseId: courseId as number | undefined, page: 1 });
 
@@ -96,11 +99,13 @@ const LessonPlanPage = observer(() => {
       per_page: filters.pageSize,
       search: filters.search || undefined,
       filters: {
-        status: filters.tab === "all" ? undefined : filters.tab,
+        status: filters.status === "all" ? undefined : filters.status,
         course_id: filters.courseId,
         from_date: filters.dateFrom || undefined,
         to_date: filters.dateTo || undefined,
       },
+      sort_by: filters.sortBy,
+      sort_dir: filters.sortDir,
     },
   });
   const { isLoading, isFetching, isError, refetch } = plansQuery;
@@ -121,6 +126,9 @@ const LessonPlanPage = observer(() => {
       setFilters({ page: nextPage });
     }
   };
+
+  const toggleSortDir = () =>
+    setFilters({ sortDir: filters.sortDir === "asc" ? "desc" : "asc" });
 
   const handleCreate = () => {
     setEditing(null);
@@ -222,29 +230,28 @@ const LessonPlanPage = observer(() => {
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_300px]">
         <Card>
-          <div className="mb-3 flex gap-1 overflow-x-auto border-b border-slate-100 scrollbar-none">
-            {getTabs(LESSON_PLAN_STATUS_META).map((item) => (
-              <button
-                key={item.key}
-                type="button"
-                onClick={() => handleTabChange(item.key)}
-                className={classNames(
-                  "whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition-colors",
-                  filters.tab === item.key
-                    ? "border-brand text-brand"
-                    : "border-transparent text-slate-500 hover:text-slate-700",
-                )}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
+          <StatusTabs
+            className="mb-3"
+            tabs={getTabs(LESSON_PLAN_STATUS_META)}
+            activeKey={filters.status}
+            onChange={handleTabChange}
+          />
 
-          <div className="mb-3">
+          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center">
             <SearchInput
               value={searchDraft}
               onChange={(e) => setSearchDraft(e.target.value)}
               placeholder="Tìm kiếm theo tên hoặc mã giáo án..."
+              wrapperClassName="flex-1"
+            />
+            <SortControl
+              sortBy={filters.sortBy}
+              sortDir={filters.sortDir}
+              options={SORT_BY_OPTIONS}
+              onSortByChange={(value) =>
+                setFilters({ sortBy: value as LessonPlanSortBy, page: 1 })
+              }
+              onToggleDir={toggleSortDir}
             />
           </div>
 

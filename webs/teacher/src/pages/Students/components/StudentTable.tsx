@@ -5,9 +5,10 @@ import Avatar from "_common/components/Avatar";
 import Badge from "_common/components/Badge";
 import EmptyState from "_common/components/EmptyState";
 import ErrorRetry from "_common/components/ErrorRetry";
+import StatusBadge from "_common/components/StatusBadge";
 
 import type { StudentListItem, StudentSortBy, StudentSortDir } from "../_interface";
-import { getRank, getStudentStatusStyle } from "../constants";
+import { getRank, STUDENT_STATUS_META } from "../constants";
 
 interface StudentTableProps {
   items: StudentListItem[];
@@ -77,7 +78,6 @@ const StudentTable = ({
       );
 
     return items.map((student, i) => {
-      const status = getStudentStatusStyle(student.status);
       const rank = getRank(student.avg_score);
       return (
         <tr key={student.id} className="text-slate-700">
@@ -117,9 +117,7 @@ const StudentTable = ({
             </Badge>
           </td>
           <td className="px-4 py-3">
-            <Badge className={`px-2.5 py-0.5 text-[11px] ${status.badge}`}>
-              {status.label}
-            </Badge>
+            <StatusBadge name={STUDENT_STATUS_META} value={student.status} />
           </td>
           <td className="px-4 py-3">
             <div className="flex items-center gap-1">

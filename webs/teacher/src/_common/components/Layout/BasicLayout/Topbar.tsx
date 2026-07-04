@@ -13,10 +13,11 @@ import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 import { AuthApi } from "@tera/api/auth/auth";
 import { useStores } from "@tera/stores/useStores";
 
-import { tokenStorage } from "_common/constants/auth";
 import { useStates } from "_common/hooks/useStates";
 import { getUserDisplay } from "_common/utils/user";
 import { formatDate } from "@tera/commons/utils";
+
+import logo from "@/assets/logo.webp";
 
 const Topbar = observer(() => {
   const {
@@ -30,7 +31,6 @@ const Topbar = observer(() => {
   const handleLogoutCleanup = () => {
     clear();
     clearCommon();
-    tokenStorage.clearTokens();
   };
 
   const { mutate: onLogout } = useMutationLegacy({
@@ -42,9 +42,7 @@ const Topbar = observer(() => {
   return (
     <header className="hidden xmd:flex fixed inset-x-0 top-0 z-50 h-topbar items-center gap-4 border-b border-slate-100 bg-white px-4">
       <div className="flex items-center gap-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand text-lg font-bold text-white">
-          H
-        </div>
+        <img src={logo} alt="Hana Edu" className="h-9 w-9 object-contain" />
         <span className="text-lg font-semibold tracking-wide text-brand">
           Hana Edu ⭐
         </span>

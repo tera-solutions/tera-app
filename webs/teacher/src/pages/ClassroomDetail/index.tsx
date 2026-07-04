@@ -20,6 +20,7 @@ import ClassNotifications from "./components/ClassNotifications";
 import StudentListPanel from "./components/StudentListPanel";
 import AttendancePanel from "./components/AttendancePanel";
 import SessionListPanel from "./components/SessionListPanel";
+import MaterialsPanel from "./components/MaterialsPanel";
 import ComingSoon from "./components/ComingSoon";
 import { toClassroomDetail, toClassSessions } from "./_utils";
 import {
@@ -110,6 +111,8 @@ const ClassroomDetail = () => {
             onRetry={() => refetchSessions()}
           />
         );
+      case "documents":
+        return <MaterialsPanel courseId={courseId} lessonPlanId={lessonPlan?.id} />;
       default:
         return <ComingSoon />;
     }

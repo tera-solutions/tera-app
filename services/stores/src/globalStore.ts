@@ -1,8 +1,22 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 
+// Plain (non-persisted-store) preference read once at boot to pick where the
+// session lives. Login writes "0" when "remember me" is unchecked so the next
+// app boot binds to sessionStorage instead of localStorage, and the token is
+// gone once the browser/tab is closed. Only read on construction: this
+// singleton doesn't rebind mid-session when the flag changes during login.
+const REMEMBER_ME_KEY = "tera_remember_me";
+
+const resolveAuthStorage = (): Storage =>
+  window.localStorage.getItem(REMEMBER_ME_KEY) === "0"
+    ? window.sessionStorage
+    : window.localStorage;
+
 export class GlobalStore {
   token = "";
+
+  refresh_token = "";
 
   access_id = "";
 
@@ -41,6 +55,7 @@ export class GlobalStore {
       name: "GlobalStore",
       properties: [
         "token",
+        "refresh_token",
         "access_id",
         "business_id",
         "user",
@@ -51,7 +66,7 @@ export class GlobalStore {
         "device",
         "metadata",
       ],
-      storage: window.localStorage,
+      storage: resolveAuthStorage(),
     }).then((persistable) => {
       this.setHydrated(persistable.isHydrated);
     });
@@ -59,6 +74,15 @@ export class GlobalStore {
 
   setHydrated = (value: boolean) => {
     this.isHydrated = value;
+  };
+
+  /**
+   * Records the "remember me" choice for the *next* app boot to read. Takes
+   * effect on the following full load/restart, not the current tab session,
+   * since this store's storage binding is fixed at construction.
+   */
+  setRememberMe = (remember: boolean) => {
+    window.localStorage.setItem(REMEMBER_ME_KEY, remember ? "1" : "0");
   };
 
   pushEvent() {
@@ -75,6 +99,7 @@ export class GlobalStore {
 
   clear = () => {
     this.token = "";
+    this.refresh_token = "";
     this.user = null;
   };
 
@@ -101,6 +126,10 @@ export class GlobalStore {
     this.token = token || this.token;
   };
 
+  updateRefreshToken = (refreshToken: string) => {
+    this.refresh_token = refreshToken || this.refresh_token;
+  };
+
   updateAccessId = (access_id: string) => {
     this.access_id = access_id || this.access_id;
   };
@@ -121,6 +150,7 @@ export class GlobalStore {
     this.user = user?.user;
     this.role = "tera_admin"; //user?.user?.role || this.role;
     this.token = user?.token || this.token;
+    this.refresh_token = user?.refresh_token || this.refresh_token;
     this.access_id = user?.access_id || this.access_id;
     this.pushEvent();
   };

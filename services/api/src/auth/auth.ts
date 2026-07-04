@@ -41,6 +41,10 @@ export const AuthApi = {
     await api
       .post(`${auth2Endpoint}/login`, params)
       .then((result) => result.data),
+  refreshToken: async (refreshToken: string) =>
+    await api
+      .post(`${auth2Endpoint}/refresh-token`, { refresh_token: refreshToken })
+      .then((result) => result.data),
   checkLogin: async (params) =>
     await api
       .post(`${authEndpoint}/check-login`, params)

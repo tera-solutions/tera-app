@@ -5,6 +5,9 @@ import type { RegisterErrors, RegisterFormData } from "pages/Auth/Register/types
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^0\d{9}$/;
 
+const MIN_TEACHER_AGE = 18;
+const MAX_AGE = 100;
+
 const isFuture = (value?: string): boolean => {
   if (!value) return false;
   const date = new Date(value);
@@ -12,6 +15,22 @@ const isFuture = (value?: string): boolean => {
   const today = new Date();
   today.setHours(23, 59, 59, 999);
   return date.getTime() > today.getTime();
+};
+
+/** Age in whole years as of today; `null` for an empty/unparseable value. */
+const getAge = (value?: string): number | null => {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+
+  const today = new Date();
+  let age = today.getFullYear() - date.getFullYear();
+  const hadBirthdayThisYear =
+    today.getMonth() > date.getMonth() ||
+    (today.getMonth() === date.getMonth() && today.getDate() >= date.getDate());
+  if (!hadBirthdayThisYear) age--;
+
+  return age;
 };
 
 export const personalSchema = yup.object().shape({
@@ -37,7 +56,24 @@ export const personalSchema = yup.object().shape({
   dob: yup
     .string()
     .required("Vui lòng chọn ngày sinh")
-    .test("not-future", "Ngày sinh không hợp lệ", (value) => !isFuture(value)),
+    .test(
+      "valid-date",
+      "Ngày sinh không hợp lệ",
+      (value) => !Number.isNaN(new Date(value ?? "").getTime()),
+    )
+    .test("not-future", "Ngày sinh không được ở tương lai", (value) => !isFuture(value))
+    .test(
+      "min-age",
+      `Bạn phải đủ ${MIN_TEACHER_AGE} tuổi để đăng ký`,
+      (value) => {
+        const age = getAge(value);
+        return age === null ? true : age >= MIN_TEACHER_AGE;
+      },
+    )
+    .test("max-age", "Ngày sinh không hợp lệ", (value) => {
+      const age = getAge(value);
+      return age === null ? true : age <= MAX_AGE;
+    }),
   password: yup
     .string()
     .required("Mật khẩu không được để trống")

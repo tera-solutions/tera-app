@@ -46,18 +46,15 @@ const Schedule = () => {
   const [filterOpen, setFilterOpen] = useState(false);
 
   const [scheduleFilters, setScheduleFilters] = useUrlFilters({
-    search: { type: "string", default: "" },
     classId: { type: "number", default: undefined as number | undefined },
     branch: { type: "number", default: undefined as number | undefined },
     statuses: { type: "string[]", default: DEFAULT_STATUSES as string[] },
   });
-  const search = scheduleFilters.search;
   const classId: number | "" =
     scheduleFilters.classId === undefined ? "" : scheduleFilters.classId;
   const branch: number | "" =
     scheduleFilters.branch === undefined ? "" : scheduleFilters.branch;
   const statuses = scheduleFilters.statuses as ScheduleStatus[];
-  const setSearch = (value: string) => setScheduleFilters({ search: value });
   const setClassId = (value: number | "") =>
     setScheduleFilters({ classId: value === "" ? undefined : value });
   const setBranch = (value: number | "") =>
@@ -146,16 +143,13 @@ const Schedule = () => {
   );
 
   const schedules = useMemo<ScheduleItem[]>(() => {
-    const keyword = search.trim().toLowerCase();
     return viewSchedules.filter((item) => {
-      if (keyword && !item.class_name.toLowerCase().includes(keyword))
-        return false;
       if (classId !== "" && item.class_id !== classId) return false;
       if (!statuses.includes(item.status)) return false;
       if (branch !== "" && item.branch_id !== branch) return false;
       return true;
     });
-  }, [viewSchedules, search, classId, statuses, branch]);
+  }, [viewSchedules, classId, statuses, branch]);
 
   const monthStats = useMemo(
     () => computeMonthStats(monthSchedules),
@@ -213,7 +207,6 @@ const Schedule = () => {
 
   const handleResetFilters = () => {
     setScheduleFilters({
-      search: "",
       classId: undefined,
       branch: undefined,
       statuses: DEFAULT_STATUSES,
@@ -276,7 +269,6 @@ const Schedule = () => {
   };
 
   const filterProps = {
-    search,
     classId,
     statuses,
     branch,
@@ -284,7 +276,6 @@ const Schedule = () => {
       moment(viewRange.date_from, "YYYY-MM-DD"),
       moment(viewRange.date_to, "YYYY-MM-DD"),
     ]) as [moment.Moment, moment.Moment],
-    onSearchChange: setSearch,
     onClassChange: setClassId,
     onStatusToggle: handleStatusToggle,
     onBranchChange: setBranch,
@@ -298,7 +289,6 @@ const Schedule = () => {
   };
 
   const hasActiveFilters =
-    search.trim() !== "" ||
     classId !== "" ||
     branch !== "" ||
     rangeFilter != null ||

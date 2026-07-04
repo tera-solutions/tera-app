@@ -3,11 +3,15 @@ import type { AttendanceStatus } from "pages/ClassroomDetail/_interface";
 export interface AttendanceClassOption {
   id: number;
   name: string;
+  category: string;
   level: string;
   room: string;
+  branch: string;
   schedule_days: string;
   start_time: string;
   end_time: string;
+  max_students: number;
+  cover_image: string;
 }
 
 export interface AttendanceSession {

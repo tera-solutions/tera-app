@@ -32,8 +32,8 @@ const AuthFooter = () => (
     >
       <defs>
         <linearGradient id="authFooterGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#27a6e7" />
-          <stop offset="100%" stopColor="#0b86cf" />
+          <stop offset="0%" stopColor="var(--color-brand)" />
+          <stop offset="100%" stopColor="var(--color-brand-dark)" />
         </linearGradient>
       </defs>
       <path

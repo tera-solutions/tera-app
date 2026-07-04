@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { observer } from "mobx-react-lite";
 import {
   ArrowUpTrayOutlined,
   Button,
@@ -11,21 +12,23 @@ import {
 import moment from "moment";
 
 import Avatar from "_common/components/Avatar";
-import Badge from "_common/components/Badge";
 import EmptyState from "_common/components/EmptyState";
 import ErrorRetry from "_common/components/ErrorRetry";
 import SearchInput from "_common/components/SearchInput";
+import StatusBadge from "_common/components/StatusBadge";
 import StudentDetailModal from "_common/components/StudentDetailModal";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
+import { useMeta } from "_common/hooks/useMeta";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 import { todo } from "_common/utils/todo";
 
 import type { ClassStudent, StudentRowStatus } from "../_interface";
-import { getStudentStatus, STUDENT_STATUS_OPTIONS } from "../constants";
 import { StudentService } from "@tera/modules/education";
 import { toClassStudentResult } from "../_utils";
+
+const STUDENT_STATUS_META = "student_status";
 
 const COLUMNS = [
   "STT",
@@ -39,7 +42,9 @@ const COLUMNS = [
   "Thao tác",
 ];
 
-const StudentListPanel = ({ classId }: { classId: number | null }) => {
+const StudentListPanel = observer(({ classId }: { classId: number | null }) => {
+  const { getOptions } = useMeta();
+  const statusOptions = getOptions(STUDENT_STATUS_META);
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
 
   // Prefixed keys avoid colliding with other ClassroomDetail tab panels that
@@ -75,7 +80,7 @@ const StudentListPanel = ({ classId }: { classId: number | null }) => {
   // The endpoint currently fixes its own page size; trust the response so the
   // range text and pager stay correct whether or not `per_page` is honoured.
   const perPage = data.per_page || filters.student_per_page;
-  const selectedStatus = STUDENT_STATUS_OPTIONS.find(
+  const selectedStatus = statusOptions.find(
     (o) => o.value === filters.student_status,
   );
 
@@ -125,7 +130,6 @@ const StudentListPanel = ({ classId }: { classId: number | null }) => {
       );
 
     return students.map((student, i) => {
-      const st = getStudentStatus(student.status);
       return (
         <tr key={student.id} className="text-slate-700">
           <td className="px-4 py-3 text-slate-400">{from + i}</td>
@@ -156,9 +160,7 @@ const StudentListPanel = ({ classId }: { classId: number | null }) => {
             {student.attendance_rate != null ? `${student.attendance_rate}%` : "—"}
           </td>
           <td className="px-4 py-3">
-            <Badge className={`px-2.5 py-0.5 text-[11px] ${st.badge}`}>
-              {st.label}
-            </Badge>
+            <StatusBadge name={STUDENT_STATUS_META} value={student.status} />
           </td>
           <td className="px-4 py-3">
             <div className="flex items-center gap-1">
@@ -215,7 +217,7 @@ const StudentListPanel = ({ classId }: { classId: number | null }) => {
           value={searchDraft}
           onChange={(e) => setSearchDraft(e.target.value)}
           placeholder="Tìm kiếm học viên..."
-          wrapperClassName="sm:max-w-xs"
+          wrapperClassName="flex-1"
         />
         <div className="sm:w-48">
           <Select
@@ -223,7 +225,7 @@ const StudentListPanel = ({ classId }: { classId: number | null }) => {
             selectedValue={selectedStatus}
             placeholder="Tất cả trạng thái"
             allowClear
-            options={STUDENT_STATUS_OPTIONS}
+            options={statusOptions}
             onChange={(value) =>
               setFilters({
                 student_status: (value as StudentRowStatus | undefined) ?? "",
@@ -264,6 +266,6 @@ const StudentListPanel = ({ classId }: { classId: number | null }) => {
       />
     </div>
   );
-};
+});
 
 export default StudentListPanel;

@@ -1,6 +1,7 @@
+import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 
-import { SCHEDULE_STATUS } from "_common/constants/schedule";
+import { useMeta } from "_common/hooks/useMeta";
 
 import { getClassColor } from "../constants";
 import type { ScheduleItem } from "../_interface";
@@ -15,14 +16,15 @@ interface ScheduleBlockProps {
 const subtitle = (item: ScheduleItem): string =>
   [item.room, item.teacher_name].filter(Boolean).join(" • ");
 
-const ScheduleBlock = ({
+const ScheduleBlock = observer(({
   item,
   onClick,
   compact,
   style,
 }: ScheduleBlockProps) => {
+  const { getItem } = useMeta();
   const color = getClassColor(item.class_id);
-  const status = SCHEDULE_STATUS[item.status] ?? SCHEDULE_STATUS.upcoming;
+  const status = getItem("class_session_status", item.status);
 
   if (compact) {
     return (
@@ -69,15 +71,13 @@ const ScheduleBlock = ({
         </span>
       )}
       <span
-        className={classNames(
-          "mt-0.5 w-fit rounded px-1.5 py-0.5 text-[9px] font-medium",
-          status.badge,
-        )}
+        className="mt-0.5 w-fit rounded px-1.5 py-0.5 text-[9px] font-medium"
+        style={{ color: status?.color, backgroundColor: status?.backgroundColor }}
       >
-        {status.label}
+        {status?.label ?? item.status}
       </span>
     </button>
   );
-};
+});
 
 export default ScheduleBlock;

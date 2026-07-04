@@ -21,7 +21,7 @@ const TeachingProgressCard = observer(
     const legend = getOptions(LESSON_STATUS_META).map((option) => ({
       key: option.value,
       label: option.label,
-      color: option.backgroundColor || option.color || "#cbd5e1",
+      color: option.color || "#cbd5e1",
       value: lessons.filter((l) => l.status === option.value).length,
     }));
 
