@@ -31,6 +31,8 @@ import { IUserForm } from "pages/System/user/_interface";
 const SELECT_CLASS =
   "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
 
+const TODAY = new Date().toISOString().split("T")[0];
+
 const defaultValues: IUserForm = {
   full_name: "",
   email: "",
@@ -408,7 +410,7 @@ const UserForm = observer(
               </Col>
               <Col>
                 <FormTeraItem label={t("user.dob")} name="dob">
-                  <Input type="date" disabled={isView} />
+                  <Input type="date" max={TODAY} disabled={isView} />
                 </FormTeraItem>
               </Col>
             </Row>

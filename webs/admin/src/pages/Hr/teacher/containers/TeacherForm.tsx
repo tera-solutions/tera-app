@@ -40,6 +40,8 @@ const preventNegativeKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
   if (["-", "+", "e", "E"].includes(e.key)) e.preventDefault();
 };
 
+const TODAY = new Date().toISOString().split("T")[0];
+
 const defaultValues: ITeacherForm = {
   code: "",
   full_name: "",
@@ -480,7 +482,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
             </Col>
             <Col>
               <FormTeraItem label={t("teacher.dob")} name="dob">
-                <Input type="date" disabled={isView} />
+                <Input type="date" max={TODAY} disabled={isView} />
               </FormTeraItem>
             </Col>
             <Col>
