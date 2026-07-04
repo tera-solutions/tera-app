@@ -201,6 +201,24 @@
     "created_at": "Ngày tạo",
     "create_success": "Thêm quan hệ học viên thành công."
   },
+  "attendance": {
+    "title": "DANH SÁCH ĐIỂM DANH",
+    "student": "Học viên",
+    "session": "Buổi học",
+    "session_date": "Ngày học",
+    "checkin_time": "Giờ check-in",
+    "status": "Trạng thái",
+    "note": "Ghi chú",
+    "search_placeholder": "Tìm theo mã/tên học viên...",
+    "status_present": "Có mặt",
+    "status_late": "Đi muộn",
+    "status_absent": "Vắng mặt",
+    "status_excused": "Vắng có phép",
+    "mark_as": "Đánh dấu: {{status}}",
+    "mark_prefix": "Đánh dấu:",
+    "selected_students": "học viên đã chọn",
+    "clear_selection": "Bỏ chọn"
+  },
   "enrollment": {
     "title": "DANH SÁCH GHI DANH KHÓA HỌC",
     "list": "Danh sách ghi danh",
