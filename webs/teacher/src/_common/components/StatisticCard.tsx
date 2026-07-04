@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 
 import { CARD } from "_common/constants/dashboard";
+import IconBox from "_common/components/IconBox";
 import WidgetState from "_common/components/WidgetState";
 
 interface StatisticCardProps {
@@ -24,11 +25,13 @@ const StatisticCard = ({
     <div className={`${CARD} p-4`}>
       <WidgetState isLoading={loading}>
         <div className="flex items-center gap-3">
-          <div
-            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl [&_svg]:h-6 [&_svg]:w-6 ${iconClassName}`}
-          >
-            {icon}
-          </div>
+          <IconBox
+            icon={icon}
+            sizeClassName="h-12 w-12"
+            roundedClassName="rounded-2xl"
+            colorClassName={iconClassName}
+            iconSizeClassName="[&_svg]:h-6 [&_svg]:w-6"
+          />
           <div className="leading-tight">
             <p className="text-2xl font-bold text-slate-800">{value}</p>
             <p className="text-sm font-medium text-slate-600">{label}</p>

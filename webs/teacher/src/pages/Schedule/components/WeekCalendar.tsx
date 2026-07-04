@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import moment from "moment";
 import classNames from "classnames";
-import { Empty } from "tera-dls";
 
 import { WEEKDAY_FULL, toMinutes } from "../constants";
 import type { ScheduleItem } from "../_interface";
@@ -56,14 +55,6 @@ const WeekCalendar = ({
   const today = moment().format("YYYY-MM-DD");
   const focused = currentDate.format("YYYY-MM-DD");
 
-  if (slots.length === 0) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center">
-        <Empty description="Không có lịch dạy trong tuần" />
-      </div>
-    );
-  }
-
   return (
     <div className="overflow-x-auto">
       <div className="min-w-[760px]">
@@ -109,6 +100,17 @@ const WeekCalendar = ({
 
         {/* Slot rows */}
         <div className="border-x border-b border-slate-100">
+          {slots.length === 0 && (
+            <div className="grid min-h-[240px] grid-cols-[72px_repeat(7,1fr)]">
+              <div />
+              {days.map((day) => (
+                <div
+                  key={day.format("YYYY-MM-DD")}
+                  className="border-l border-slate-100"
+                />
+              ))}
+            </div>
+          )}
           {slots.map((slot) => (
             <div
               key={`${slot.start}-${slot.end}`}

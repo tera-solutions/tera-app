@@ -13,6 +13,8 @@ import {
 } from "tera-dls";
 import moment from "moment";
 
+import Badge from "_common/components/Badge";
+import IconBox from "_common/components/IconBox";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 
 import { SCHEDULE_STATUS } from "_common/constants/schedule";
@@ -35,9 +37,13 @@ const InfoRow = ({
   value: React.ReactNode;
 }) => (
   <div className="flex items-start gap-3 py-2.5">
-    <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-brand [&_svg]:h-4 [&_svg]:w-4">
-      {icon}
-    </span>
+    <IconBox
+      icon={icon}
+      sizeClassName="h-8 w-8"
+      roundedClassName="rounded-lg"
+      iconSizeClassName="[&_svg]:h-4 [&_svg]:w-4"
+      className="mt-0.5"
+    />
     <div className="min-w-0">
       <p className="text-xs text-slate-400">{label}</p>
       <p className="text-sm font-medium text-slate-800">{value}</p>
@@ -95,11 +101,9 @@ const ScheduleDetailDrawer = ({
                     </p>
                   </div>
                   {status && (
-                    <span
-                      className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${status.badge}`}
-                    >
+                    <Badge className={`px-2.5 py-1 text-[11px] ${status.badge}`}>
                       {status.label}
-                    </span>
+                    </Badge>
                   )}
                 </div>
 

@@ -2,11 +2,9 @@ import { useMemo, useState } from "react";
 import moment from "moment";
 import classNames from "classnames";
 import {
-  ArrowPathOutlined,
   Button,
   CalendarDaysOutlined,
   Drawer,
-  ExclamationTriangleOutlined,
   FunnelOutlined,
   notification,
   PlusOutlined,
@@ -17,6 +15,7 @@ import {
 import useIsMobile from "@tera/commons/hooks/useIsMobile";
 
 import Card from "_common/components/Card";
+import ErrorRetry from "_common/components/ErrorRetry";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 
 import type { CalendarParams, ScheduleItem, ScheduleStatus, ScheduleView } from "./_interface";
@@ -27,22 +26,14 @@ import MonthCalendar from "./components/MonthCalendar";
 import DayView from "./components/DayView";
 import RangeView from "./components/RangeView";
 import ScheduleDetailDrawer from "./components/ScheduleDetailDrawer";
-import FilterSidebar, {
-  type FilterOption,
-} from "./components/FilterSidebar";
+import FilterSidebar from "./components/FilterSidebar";
 import HomeroomCard from "./components/HomeroomCard";
 import StudentCard from "./components/StudentCard";
 import MonthStatsCard from "./components/MonthStatsCard";
 import MiniCalendar from "./components/MiniCalendar";
 import { ClassRoomService, StudentService, TimetableService } from "@tera/modules/education";
 import { toCalendarItems } from "_common/utils/schedule";
-import {
-  buildBranchOptions,
-  buildClassOptions,
-  computeMonthStats,
-  homeroomNames,
-  scheduleDateSet,
-} from "./_utils";
+import { computeMonthStats, homeroomNames, scheduleDateSet } from "./_utils";
 
 const Schedule = () => {
   const isMobile = useIsMobile();
@@ -57,18 +48,20 @@ const Schedule = () => {
   const [scheduleFilters, setScheduleFilters] = useUrlFilters({
     search: { type: "string", default: "" },
     classId: { type: "number", default: undefined as number | undefined },
-    branch: { type: "string", default: "" },
+    branch: { type: "number", default: undefined as number | undefined },
     statuses: { type: "string[]", default: DEFAULT_STATUSES as string[] },
   });
   const search = scheduleFilters.search;
   const classId: number | "" =
     scheduleFilters.classId === undefined ? "" : scheduleFilters.classId;
-  const branch = scheduleFilters.branch;
+  const branch: number | "" =
+    scheduleFilters.branch === undefined ? "" : scheduleFilters.branch;
   const statuses = scheduleFilters.statuses as ScheduleStatus[];
   const setSearch = (value: string) => setScheduleFilters({ search: value });
   const setClassId = (value: number | "") =>
     setScheduleFilters({ classId: value === "" ? undefined : value });
-  const setBranch = (value: string | "") => setScheduleFilters({ branch: value });
+  const setBranch = (value: number | "") =>
+    setScheduleFilters({ branch: value === "" ? undefined : value });
   const setStatuses = (updater: (prev: ScheduleStatus[]) => ScheduleStatus[]) =>
     setScheduleFilters({ statuses: updater(statuses) });
 
@@ -159,20 +152,10 @@ const Schedule = () => {
         return false;
       if (classId !== "" && item.class_id !== classId) return false;
       if (!statuses.includes(item.status)) return false;
-      if (branch !== "" && item.branch !== branch) return false;
+      if (branch !== "" && item.branch_id !== branch) return false;
       return true;
     });
   }, [viewSchedules, search, classId, statuses, branch]);
-
-  const classOptions = useMemo<FilterOption[]>(
-    () => buildClassOptions(monthSchedules),
-    [monthSchedules],
-  );
-
-  const branchOptions = useMemo<FilterOption[]>(
-    () => buildBranchOptions(monthSchedules),
-    [monthSchedules],
-  );
 
   const monthStats = useMemo(
     () => computeMonthStats(monthSchedules),
@@ -227,6 +210,16 @@ const Schedule = () => {
         ? prev.filter((s) => s !== status)
         : [...prev, status],
     );
+
+  const handleResetFilters = () => {
+    setScheduleFilters({
+      search: "",
+      classId: undefined,
+      branch: undefined,
+      statuses: DEFAULT_STATUSES,
+    });
+    setRangeFilter(null);
+  };
 
   const handleAdd = () =>
     notification.open({ message: "Tính năng đang được phát triển" });
@@ -291,8 +284,6 @@ const Schedule = () => {
       moment(viewRange.date_from, "YYYY-MM-DD"),
       moment(viewRange.date_to, "YYYY-MM-DD"),
     ]) as [moment.Moment, moment.Moment],
-    classOptions,
-    branchOptions,
     onSearchChange: setSearch,
     onClassChange: setClassId,
     onStatusToggle: handleStatusToggle,
@@ -303,6 +294,7 @@ const Schedule = () => {
     },
     onRangeClear: () => setRangeFilter(null),
     rangeActive: !!rangeFilter,
+    onReset: handleResetFilters,
   };
 
   const hasActiveFilters =
@@ -383,17 +375,12 @@ const Schedule = () => {
           </div>
 
           {isError ? (
-            <div className="flex h-[40vh] flex-col items-center justify-center gap-2 text-center">
-              <ExclamationTriangleOutlined className="h-7 w-7 text-red-400" />
-              <p className="text-sm text-slate-400">Không tải được lịch dạy</p>
-              <button
-                type="button"
-                onClick={() => refetch()}
-                className="flex items-center gap-1 rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-brand hover:bg-sky-100 [&_svg]:h-3.5 [&_svg]:w-3.5"
-              >
-                <ArrowPathOutlined />
-                Thử lại
-              </button>
+            <div className="flex h-[40vh] items-center justify-center">
+              <ErrorRetry
+                onRetry={() => refetch()}
+                message="Không tải được lịch dạy"
+                iconClassName="h-7 w-7"
+              />
             </div>
           ) : (
             <Spin spinning={isLoading}>{renderMainView()}</Spin>

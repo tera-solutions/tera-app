@@ -7,7 +7,7 @@ import type {
 } from "./_interface";
 
 /** `schedules[].weekday`: 2=Thứ 2 … 7=Thứ 7, 8=CN. */
-const WEEKDAY_LABEL: Record<number, string> = {
+export const WEEKDAY_LABEL: Record<number, string> = {
   2: "Thứ 2",
   3: "Thứ 3",
   4: "Thứ 4",
@@ -48,11 +48,11 @@ export const toClassroom = (raw: any): Classroom => {
     schedule_days: scheduleDays(schedules),
     start_time: toTime(firstSlot.start_time),
     end_time: toTime(firstSlot.end_time),
-    student_count: 0,
+    student_count: raw.total_students ?? 0,
     max_students: raw.max_capacity ?? 0,
     completion_rate: 0,
     status: (raw.status ?? "upcoming") as ClassroomStatus,
-    cover_image: raw.avatar ?? "",
+    cover_image: raw.avatar_url ?? raw.avatar ?? "",
     course_id: raw.course_id ?? raw.course?.id ?? null,
     lesson_plan_id: raw.lesson_plan_id ?? raw.lesson_plan?.id ?? null,
   };

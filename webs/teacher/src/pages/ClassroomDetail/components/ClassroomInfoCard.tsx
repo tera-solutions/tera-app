@@ -15,6 +15,7 @@ import {
   VideoCameraOutlined,
 } from "tera-dls";
 
+import Badge from "_common/components/Badge";
 import { CARD } from "_common/constants/dashboard";
 import { getCoverGradient } from "pages/Classroom/constants";
 
@@ -100,20 +101,18 @@ const ClassroomInfoCard = ({
         </div>
 
         <div className="p-5">
-          <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-lg font-bold text-slate-800">
                   {detail.name}
                 </h2>
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${status.badge}`}
-                >
+                <Badge className={`px-2.5 py-0.5 text-[11px] ${status.badge}`}>
                   {status.label}
-                </span>
+                </Badge>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Button
                 icon={<PencilSquareOutlined />}
                 onClick={onEdit}
@@ -125,7 +124,7 @@ const ClassroomInfoCard = ({
                 outlined
                 icon={<ArrowDownTrayOutlined />}
                 onClick={onExport}
-                className="text-brand border-brand hover:bg-brand"
+                className="whitespace-nowrap text-brand border-brand hover:bg-brand"
               >
                 Tải danh sách lớp
               </Button>

@@ -2,11 +2,9 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import classNames from "classnames";
 import {
-  ArrowPathOutlined,
   Button,
   CheckOutlined,
   ClipboardDocumentListOutlined,
-  ExclamationTriangleOutlined,
   notification,
   PlayOutlined,
   Spin,
@@ -14,8 +12,10 @@ import {
 
 import Breadcrumb from "_common/components/Breadcrumb";
 import { CARD } from "_common/constants/dashboard";
+import ErrorRetry from "_common/components/ErrorRetry";
 import useConfirm from "_common/hooks/useConfirm";
 import { PATHS } from "_common/components/Layout/Menu/menus";
+import { todo } from "_common/utils/todo";
 import {
   LessonMaterialService,
   LessonPlanService,
@@ -102,9 +102,6 @@ const Lesson = () => {
   };
 
   const notFound = !isLoading && (isError || !detail?.id);
-
-  const todo = () =>
-    notification.open({ message: "Tính năng đang được phát triển" });
 
   // Start has no dedicated endpoint — it's a plain status update.
   const { mutate: updateLesson, isPending: isStarting } =
@@ -225,28 +222,17 @@ const Lesson = () => {
       />
 
       {notFound ? (
-        <div className="flex h-[50vh] flex-col items-center justify-center gap-2 text-center">
-          <ExclamationTriangleOutlined className="h-8 w-8 text-red-400" />
-          <p className="text-sm text-slate-500">
-            Không tìm thấy bài học hoặc bạn không có quyền truy cập
-          </p>
-          <div className="mt-1 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => refetch()}
-              className="flex items-center gap-1 rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-brand hover:bg-sky-100 [&_svg]:h-3.5 [&_svg]:w-3.5"
-            >
-              <ArrowPathOutlined />
-              Thử lại
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate(PATHS.lessonPlans)}
-              className="rounded-full px-3 py-1 text-xs font-medium text-slate-500 hover:bg-slate-100"
-            >
-              Về danh sách giáo án
-            </button>
-          </div>
+        <div className="flex h-[50vh] items-center justify-center">
+          <ErrorRetry
+            onRetry={() => refetch()}
+            message="Không tìm thấy bài học hoặc bạn không có quyền truy cập"
+            iconClassName="h-8 w-8"
+            messageClassName="text-sm text-slate-500"
+            secondaryAction={{
+              label: "Về danh sách giáo án",
+              onClick: () => navigate(PATHS.lessonPlans),
+            }}
+          />
         </div>
       ) : (
         <Spin spinning={isLoading}>

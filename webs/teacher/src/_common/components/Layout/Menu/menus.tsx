@@ -227,7 +227,7 @@ export const ConfigPrintRouter: IRouteProps[] = [];
 
 export const PATHS = {
   dashboard: "/dashboard",
-  classes: "/classes",
+  classroom: "/classroom",
   schedule: "/schedule",
   lessonPlans: "/lesson-plans",
   homework: "/homework",
@@ -241,7 +241,6 @@ export const PATHS = {
   more: "/more",
   profile: "/profile",
   lesson: "/lesson",
-  classroom: "/classroom",
 } as const;
 
 export interface MenuItem {

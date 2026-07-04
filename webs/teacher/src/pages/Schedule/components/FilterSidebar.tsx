@@ -1,48 +1,32 @@
-import classNames from "classnames";
 import moment from "moment";
-import { Checkbox, RangePicker, Select } from "tera-dls";
+import classNames from "classnames";
+import { Checkbox, RangePicker } from "tera-dls";
 
-import { CARD } from "_common/constants/dashboard";
+import BranchSelect from "_common/components/BranchSelect";
+import ClassroomSelect from "_common/components/ClassroomSelect";
+import FilterCard from "_common/components/FilterCard";
+import FilterField from "_common/components/FilterField";
 import SearchInput from "_common/components/SearchInput";
 import { SCHEDULE_STATUS } from "_common/constants/schedule";
 
 import type { ScheduleStatus } from "../_interface";
 import { STATUS_FILTER_OPTIONS } from "../constants";
 
-export interface FilterOption {
-  label: string;
-  value: string | number;
-}
-
 interface FilterSidebarProps {
   search: string;
   classId: number | "";
   statuses: ScheduleStatus[];
-  branch: string | "";
+  branch: number | "";
   range: [moment.Moment, moment.Moment];
-  classOptions: FilterOption[];
-  branchOptions: FilterOption[];
   onSearchChange: (value: string) => void;
   onClassChange: (value: number | "") => void;
   onStatusToggle: (status: ScheduleStatus) => void;
-  onBranchChange: (value: string | "") => void;
+  onBranchChange: (value: number | "") => void;
   onRangeChange: (range: [moment.Moment, moment.Moment]) => void;
   onRangeClear?: () => void;
   rangeActive?: boolean;
+  onReset?: () => void;
 }
-
-const Field = ({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) => (
-  <div>
-    <p className="mb-1.5 text-sm font-medium text-slate-700">{label}</p>
-    {children}
-  </div>
-);
 
 const FilterSidebar = ({
   search,
@@ -50,8 +34,6 @@ const FilterSidebar = ({
   statuses,
   branch,
   range,
-  classOptions,
-  branchOptions,
   onSearchChange,
   onClassChange,
   onStatusToggle,
@@ -59,32 +41,26 @@ const FilterSidebar = ({
   onRangeChange,
   onRangeClear,
   rangeActive,
+  onReset,
 }: FilterSidebarProps) => {
-  const selectedClass = classOptions.find((o) => o.value === classId);
-  const selectedBranch = branchOptions.find((o) => o.value === branch);
-
   return (
-    <div className={`${CARD} flex flex-col gap-4 p-4`}>
+    <FilterCard onReset={onReset}>
       <SearchInput
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
         placeholder="Tìm kiếm lớp học..."
       />
 
-      <Field label="Lọc lớp học">
-        <Select
+      <FilterField label="Lọc lớp học">
+        <ClassroomSelect
           value={classId === "" ? undefined : classId}
-          selectedValue={selectedClass}
           placeholder="Tất cả lớp học"
           allowClear
-          options={classOptions}
-          onChange={(value) =>
-            onClassChange((value as number | undefined) ?? "")
-          }
+          onChange={(value) => onClassChange((value as number | undefined) ?? "")}
         />
-      </Field>
+      </FilterField>
 
-      <Field label="Lọc trạng thái">
+      <FilterField label="Lọc trạng thái">
         <div className="flex flex-col gap-2">
           {STATUS_FILTER_OPTIONS.map((status) => (
             <Checkbox
@@ -98,9 +74,9 @@ const FilterSidebar = ({
             </Checkbox>
           ))}
         </div>
-      </Field>
+      </FilterField>
 
-      <Field label="Lọc theo ngày">
+      <FilterField label="Lọc theo ngày">
         <RangePicker
           value={range}
           allowClear={rangeActive}
@@ -110,30 +86,17 @@ const FilterSidebar = ({
             else onRangeClear?.();
           }}
         />
-        {rangeActive && (
-          <button
-            type="button"
-            onClick={onRangeClear}
-            className="mt-1.5 text-xs font-medium text-brand hover:underline"
-          >
-            Bỏ lọc khoảng ngày
-          </button>
-        )}
-      </Field>
+      </FilterField>
 
-      <Field label="Lọc theo cơ sở">
-        <Select
+      <FilterField label="Lọc theo cơ sở">
+        <BranchSelect
           value={branch === "" ? undefined : branch}
-          selectedValue={selectedBranch}
           placeholder="Tất cả cơ sở"
           allowClear
-          options={branchOptions}
-          onChange={(value) =>
-            onBranchChange((value as string | undefined) ?? "")
-          }
+          onChange={(value) => onBranchChange((value as number | undefined) ?? "")}
         />
-      </Field>
-    </div>
+      </FilterField>
+    </FilterCard>
   );
 };
 

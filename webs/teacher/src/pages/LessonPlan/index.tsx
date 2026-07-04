@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
@@ -10,24 +10,23 @@ import {
   ClockOutlined,
   DocumentTextOutlined,
   notification,
-  Pagination,
   PlusOutlined,
 } from "tera-dls";
 
-import AnimatedHeight from "_common/components/AnimatedHeight";
 import Card from "_common/components/Card";
-import CourseSelect from "_common/components/CourseSelect";
 import SearchInput from "_common/components/SearchInput";
+import TablePagination from "_common/components/TablePagination";
+import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import useConfirm from "_common/hooks/useConfirm";
+import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
 import { useMeta } from "_common/hooks/useMeta";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 import { PATHS } from "_common/components/Layout/Menu/menus";
+import StatisticCard from "_common/components/StatisticCard";
 import { LessonPlanService } from "@tera/modules/education";
 
-import StatisticCard from "pages/Classroom/components/StatisticCard";
-
 import type { LessonPlan } from "./_interface";
-import { LESSON_PLAN_STATUS_META, PER_PAGE } from "./constants";
+import { LESSON_PLAN_STATUS_META } from "./constants";
 import { summarizePlans, toLessonPlans } from "./_utils";
 import LessonPlanTable from "./components/LessonPlanTable";
 import LessonPlanFormModal from "./components/LessonPlanFormModal";
@@ -47,25 +46,18 @@ const LessonPlanPage = observer(() => {
     },
     search: { type: "string", default: "" },
     page: { type: "number", default: 1 },
-    pageSize: { type: "number", default: PER_PAGE },
+    pageSize: { type: "number", default: DEFAULT_PAGE_SIZE },
     dateFrom: { type: "string", default: "" },
     dateTo: { type: "string", default: "" },
   });
-  const [searchDraft, setSearchDraft] = useState(filters.search);
+  const [searchDraft, setSearchDraft] = useDebouncedSearch(filters.search, (trimmed) =>
+    setFilters({ search: trimmed, page: 1 }),
+  );
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<LessonPlan | null>(null);
 
   const confirm = useConfirm();
   const { mutate: archive } = LessonPlanService.useLessonPlanArchive();
-
-  // Debounce typed text before it lands in the URL/query.
-  useEffect(() => {
-    const t = setTimeout(() => {
-      const trimmed = searchDraft.trim();
-      if (trimmed !== filters.search) setFilters({ search: trimmed, page: 1 });
-    }, 400);
-    return () => clearTimeout(t);
-  }, [searchDraft]);
 
   const handleTabChange = (key: string) => setFilters({ tab: key, page: 1 });
   const handleCourseChange = (courseId: number | string | undefined) =>
@@ -83,6 +75,8 @@ const LessonPlanPage = observer(() => {
     });
   const handleRangeClear = () =>
     setFilters({ dateFrom: "", dateTo: "", page: 1 });
+  const handleResetFilters = () =>
+    setFilters({ courseId: undefined, dateFrom: "", dateTo: "", page: 1 });
 
   // Stats/sidebar reflect every plan for the course, independent of the active
   // status tab or the current page.
@@ -228,33 +222,22 @@ const LessonPlanPage = observer(() => {
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_300px]">
         <Card>
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-1 gap-1 overflow-x-auto border-b border-slate-100 scrollbar-none">
-              {getTabs(LESSON_PLAN_STATUS_META).map((item) => (
-                <button
-                  key={item.key}
-                  type="button"
-                  onClick={() => handleTabChange(item.key)}
-                  className={classNames(
-                    "whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition-colors",
-                    filters.tab === item.key
-                      ? "border-brand text-brand"
-                      : "border-transparent text-slate-500 hover:text-slate-700",
-                  )}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="w-48">
-              <CourseSelect
-                value={filters.courseId}
-                onChange={handleCourseChange}
-                placeholder="Tất cả khóa học"
-                allowClear
-              />
-            </div>
+          <div className="mb-3 flex gap-1 overflow-x-auto border-b border-slate-100 scrollbar-none">
+            {getTabs(LESSON_PLAN_STATUS_META).map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => handleTabChange(item.key)}
+                className={classNames(
+                  "whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition-colors",
+                  filters.tab === item.key
+                    ? "border-brand text-brand"
+                    : "border-transparent text-slate-500 hover:text-slate-700",
+                )}
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
 
           <div className="mb-3">
@@ -265,36 +248,34 @@ const LessonPlanPage = observer(() => {
             />
           </div>
 
-          <AnimatedHeight>
-            <LessonPlanTable
-              plans={plans}
-              loading={isLoading}
-              fetching={isFetching}
-              isError={isError}
-              onRetry={() => refetch()}
-              onView={handleView}
-              onEdit={handleEdit}
-              onArchive={handleArchive}
-            />
-          </AnimatedHeight>
+          <LessonPlanTable
+            plans={plans}
+            loading={isLoading}
+            fetching={isFetching}
+            isError={isError}
+            onRetry={() => refetch()}
+            onView={handleView}
+            onEdit={handleEdit}
+            onArchive={handleArchive}
+          />
 
-          {total > 0 && (
-            <div className="mt-4 flex justify-end">
-              <Pagination
-                total={total}
-                current={filters.page}
-                pageSize={perPage}
-                onChange={(p, size) => handleChangePage(p ?? 1, size ?? perPage)}
-              />
-            </div>
-          )}
+          <TablePagination
+            total={total}
+            page={filters.page}
+            perPage={perPage}
+            unit="giáo án"
+            onChange={handleChangePage}
+          />
         </Card>
 
         <div className="hidden flex-col gap-4 xl:flex">
           <LessonFilterCard
+            courseId={filters.courseId}
+            onCourseChange={handleCourseChange}
             range={dateRange}
             onRangeChange={handleRangeChange}
             onRangeClear={handleRangeClear}
+            onReset={handleResetFilters}
           />
           <PlanStatusSidebar stats={stats} />
         </div>

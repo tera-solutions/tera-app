@@ -1,5 +1,8 @@
 import { ReactNode } from "react";
-import { ArrowPathOutlined, ExclamationTriangleOutlined, Spin } from "tera-dls";
+import { Spin } from "tera-dls";
+
+import AnimatedHeight from "_common/components/AnimatedHeight";
+import ErrorRetry from "_common/components/ErrorRetry";
 
 interface WidgetStateProps {
   isLoading?: boolean;
@@ -8,6 +11,7 @@ interface WidgetStateProps {
   emptyText?: string;
   onRetry?: () => void;
   children: ReactNode;
+  animated?: boolean;
 }
 
 const WidgetState = ({
@@ -17,45 +21,39 @@ const WidgetState = ({
   emptyText = "Không có dữ liệu",
   onRetry,
   children,
+  animated = true,
 }: WidgetStateProps) => {
-  if (isLoading) {
-    return (
-      <div className="h-28 w-full">
-        <Spin spinning>
-          <div className="h-28" />
-        </Spin>
-      </div>
-    );
-  }
+  const content = (() => {
+    if (isLoading) {
+      return (
+        <div className="h-28 w-full">
+          <Spin spinning>
+            <div className="h-28" />
+          </Spin>
+        </div>
+      );
+    }
 
-  if (isError) {
-    return (
-      <div className="flex h-28 w-full flex-col items-center justify-center gap-2 text-center">
-        <ExclamationTriangleOutlined className="h-6 w-6 text-red-400" />
-        <p className="text-xs text-slate-400">Không tải được dữ liệu</p>
-        {onRetry && (
-          <button
-            type="button"
-            onClick={onRetry}
-            className="flex items-center gap-1 rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-brand hover:bg-sky-100 [&_svg]:h-3.5 [&_svg]:w-3.5"
-          >
-            <ArrowPathOutlined />
-            Thử lại
-          </button>
-        )}
-      </div>
-    );
-  }
+    if (isError) {
+      return (
+        <div className="flex h-28 w-full items-center justify-center">
+          <ErrorRetry onRetry={onRetry} messageClassName="text-xs text-slate-400" />
+        </div>
+      );
+    }
 
-  if (isEmpty) {
-    return (
-      <div className="flex h-28 w-full items-center justify-center">
-        <p className="text-xs text-slate-400">{emptyText}</p>
-      </div>
-    );
-  }
+    if (isEmpty) {
+      return (
+        <div className="flex h-28 w-full items-center justify-center">
+          <p className="text-xs text-slate-400">{emptyText}</p>
+        </div>
+      );
+    }
 
-  return <>{children}</>;
+    return children;
+  })();
+
+  return animated ? <AnimatedHeight>{content}</AnimatedHeight> : <>{content}</>;
 };
 
 export default WidgetState;

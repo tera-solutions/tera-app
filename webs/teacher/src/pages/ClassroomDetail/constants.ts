@@ -46,13 +46,13 @@ export const LEARNING_TYPE_LABEL: Record<string, string> = {
 
 export const ATTENDANCE_STYLE: Record<
   AttendanceStatus,
-  { label: string; badge: string }
+  { label: string; badge: string, button: string }
 > = {
-  present: { label: "Có mặt", badge: "bg-emerald-50 text-emerald-600" },
-  absent: { label: "Vắng", badge: "bg-red-50 text-red-500" },
-  late: { label: "Muộn", badge: "bg-amber-50 text-amber-600" },
-  excused: { label: "Có phép", badge: "bg-sky-50 text-brand" },
-  other: { label: "Khác", badge: "bg-slate-100 text-slate-500" },
+  present: { label: "Có mặt", badge: "bg-emerald-50 text-emerald-600", button: "text-emerald-600 bg-transparent hover:bg-emerald-600 border border-emerald-600" },
+  absent: { label: "Vắng", badge: "bg-red-50 text-red-500", button: "text-red-600 bg-transparent hover:bg-red-600 border border-red-600" },
+  late: { label: "Muộn", badge: "bg-amber-50 text-amber-600", button: "text-amber-600 bg-transparent hover:bg-amber-600 border border-amber-600" },
+  excused: { label: "Có phép", badge: "bg-sky-50 text-brand", button: "text-brand bg-transparent hover:bg-brand border border-brand" },
+  other: { label: "Khác", badge: "bg-slate-100 text-slate-500", button: "text-slate-600 bg-transparent hover:bg-slate-600 border border-slate-600" },
 };
 
 export const STUDENT_STATUS_OPTIONS: {

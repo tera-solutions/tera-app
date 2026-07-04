@@ -40,7 +40,7 @@ const ScheduleToolbar = ({
   onToday,
 }: ScheduleToolbarProps) => {
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex flex-wrap items-center gap-1.5">
       <Button
         type="light"
         shape="circle"
@@ -50,9 +50,9 @@ const ScheduleToolbar = ({
       <Button type="light" onClick={onToday}>
         Hôm nay
       </Button>
-      <div className="flex items-center gap-2 bg-white rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700">
-        <CalendarDaysOutlined className="h-4 w-4 text-slate-400" />
-        {formatRange(view, currentDate, range)}
+      <div className="flex min-w-0 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700">
+        <CalendarDaysOutlined className="h-4 w-4 shrink-0 text-slate-400" />
+        <span className="truncate">{formatRange(view, currentDate, range)}</span>
       </div>
       <Button
         type="light"

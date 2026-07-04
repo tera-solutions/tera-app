@@ -1,5 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
+import Badge from "_common/components/Badge";
+import TablePagination from "_common/components/TablePagination";
+import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import WidgetState from "_common/components/WidgetState";
 import { AttendanceService } from "@tera/modules/education";
 
@@ -25,6 +28,24 @@ const AttendancePanel = ({ classId }: AttendancePanelProps) => {
     () => toAttendanceRecords(query.data?.data?.items),
     [query.data],
   );
+
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(DEFAULT_PAGE_SIZE);
+
+  const total = records.length;
+  const pagedRecords = useMemo(
+    () => records.slice((page - 1) * perPage, page * perPage),
+    [records, page, perPage],
+  );
+
+  const handleChangePage = (nextPage: number, nextSize: number) => {
+    if (nextSize !== perPage) {
+      setPerPage(nextSize);
+      setPage(1);
+    } else {
+      setPage(nextPage);
+    }
+  };
 
   const counts = useMemo(() => {
     const map: Record<string, number> = {};
@@ -73,21 +94,21 @@ const AttendancePanel = ({ classId }: AttendancePanelProps) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {records.map((r, i) => {
+              {pagedRecords.map((r, i) => {
                 const style = ATTENDANCE_STYLE[r.status];
                 return (
                   <tr key={r.id} className="text-slate-700">
-                    <td className="px-4 py-3 text-slate-400">{i + 1}</td>
+                    <td className="px-4 py-3 text-slate-400">
+                      {(page - 1) * perPage + i + 1}
+                    </td>
                     <td className="px-4 py-3 font-medium">{r.student_name}</td>
                     <td className="px-4 py-3 text-slate-500">
                       {r.student_code || "—"}
                     </td>
                     <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${style.badge}`}
-                      >
+                      <Badge className={`px-2.5 py-0.5 text-[11px] ${style.badge}`}>
                         {r.status_label || style.label}
-                      </span>
+                      </Badge>
                     </td>
                   </tr>
                 );
@@ -95,6 +116,14 @@ const AttendancePanel = ({ classId }: AttendancePanelProps) => {
             </tbody>
           </table>
         </div>
+
+        <TablePagination
+          total={total}
+          page={page}
+          perPage={perPage}
+          unit="học viên"
+          onChange={handleChangePage}
+        />
       </div>
     </WidgetState>
   );

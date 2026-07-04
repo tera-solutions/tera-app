@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import classNames from "classnames";
@@ -12,14 +12,15 @@ import {
   MapPinOutlined,
   Modal,
   notification,
-  Pagination,
   Spin,
 } from "tera-dls";
 
-import AnimatedHeight from "_common/components/AnimatedHeight";
 import Breadcrumb from "_common/components/Breadcrumb";
 import Card from "_common/components/Card";
 import SearchInput from "_common/components/SearchInput";
+import TablePagination from "_common/components/TablePagination";
+import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
+import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
 import { useMeta } from "_common/hooks/useMeta";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 import StatusBadge from "_common/components/StatusBadge";
@@ -32,11 +33,7 @@ import {
 import { toClassrooms } from "pages/Classroom/_utils";
 
 import type { Lesson } from "./_interface";
-import {
-  LESSON_PLAN_STATUS_META,
-  LESSON_STATUS_META,
-  PER_PAGE,
-} from "./constants";
+import { LESSON_PLAN_STATUS_META, LESSON_STATUS_META } from "./constants";
 import { toLessonPlan, toLessons } from "./_utils";
 import LessonTable from "./components/LessonTable";
 import LessonFilterCard from "./components/LessonFilterCard";
@@ -52,7 +49,7 @@ const PlanLessons = observer(() => {
     tab: { type: "string", default: "all" },
     search: { type: "string", default: "" },
     page: { type: "number", default: 1 },
-    pageSize: { type: "number", default: PER_PAGE },
+    pageSize: { type: "number", default: DEFAULT_PAGE_SIZE },
     classroomId: {
       type: "number",
       default: undefined as number | undefined,
@@ -61,21 +58,14 @@ const PlanLessons = observer(() => {
     dateFrom: { type: "string", default: "" },
     dateTo: { type: "string", default: "" },
   });
-  const [searchDraft, setSearchDraft] = useState(filters.search);
+  const [searchDraft, setSearchDraft] = useDebouncedSearch(filters.search, (trimmed) =>
+    setFilters({ search: trimmed, page: 1 }),
+  );
   const [cancelling, setCancelling] = useState<Lesson | null>(null);
   const [reason, setReason] = useState("");
 
   const { mutate: cancelLesson, isPending: isCancelling } =
     LessonService.useLessonCancel();
-
-  // Debounce typed text before it lands in the URL/query.
-  useEffect(() => {
-    const t = setTimeout(() => {
-      const trimmed = searchDraft.trim();
-      if (trimmed !== filters.search) setFilters({ search: trimmed, page: 1 });
-    }, 400);
-    return () => clearTimeout(t);
-  }, [searchDraft]);
 
   const handleTabChange = (key: string) => setFilters({ tab: key, page: 1 });
 
@@ -243,7 +233,7 @@ const PlanLessons = observer(() => {
         </Card>
 
         {selectedClassroom && (
-          <Card className="mb-4">
+          <Card className="mb-4" animated={false}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-sky-50 text-brand [&_svg]:h-6 [&_svg]:w-6">
@@ -333,28 +323,24 @@ const PlanLessons = observer(() => {
                 />
               </div>
 
-              <AnimatedHeight>
-                <LessonTable
-                  lessons={lessons}
-                  loading={isLoading}
-                  fetching={isFetching}
-                  isError={isError}
-                  onRetry={() => refetch()}
-                  onView={handleView}
-                  onDelete={handleCancel}
-                />
-              </AnimatedHeight>
+              <LessonTable
+                lessons={lessons}
+                avatarUrl={selectedClassroom.cover_image}
+                loading={isLoading}
+                fetching={isFetching}
+                isError={isError}
+                onRetry={() => refetch()}
+                onView={handleView}
+                onDelete={handleCancel}
+              />
 
-              {total > 0 && (
-                <div className="mt-4 flex justify-end">
-                  <Pagination
-                    total={total}
-                    current={filters.page}
-                    pageSize={perPage}
-                    onChange={(p, size) => handleChangePage(p ?? 1, size ?? perPage)}
-                  />
-                </div>
-              )}
+              <TablePagination
+                total={total}
+                page={filters.page}
+                perPage={perPage}
+                unit="buổi học"
+                onChange={handleChangePage}
+              />
             </Card>
 
             <div className="flex flex-col gap-4">

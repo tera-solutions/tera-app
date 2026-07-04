@@ -1,12 +1,14 @@
 export interface UserDisplay {
   name: string;
   role: string;
+  roleName: string;
   initials: string;
 }
 
 const DEFAULT_DISPLAY: UserDisplay = {
   name: "Cô Ngọc",
-  role: "Giáo viên",
+  role: "TEACHER_ROLE",
+  roleName: "Giáo viên",
   initials: "NG",
 };
 
@@ -21,7 +23,8 @@ export const getUserDisplay = (user: any): UserDisplay => {
       : words[0].slice(0, 2)
   ).toUpperCase();
 
-  const role = !user?.role || user.role === "teacher" ? "Giáo viên" : user.role;
+  const role = user.role;
+  const roleName = user.role_name;
 
-  return { name, role, initials };
+  return { name, role, roleName, initials };
 };

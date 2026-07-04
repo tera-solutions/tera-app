@@ -16,7 +16,7 @@ export const toNotification = (raw: any): DashboardNotificationItem => ({
   id: raw.id ?? 0,
   title: raw.title ?? "",
   content: raw.content ?? "",
-  type: raw.type ?? "",
+  type: raw.type ?? raw.category ?? "",
   is_read: Boolean(raw.is_read),
   created_at: raw.created_at ?? "",
 });

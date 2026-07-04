@@ -1,24 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import classNames from "classnames";
 import {
   AcademicCapOutlined,
-  ArrowPathOutlined,
   Button,
   CheckBadgeOutlined,
   ClipboardDocumentCheckOutlined,
-  Empty,
-  ExclamationTriangleOutlined,
   ListBulletOutlined,
   notification,
-  Pagination,
   PlusOutlined,
   Spin,
   TableCellsOutlined,
   UsersOutlined,
 } from "tera-dls";
 
-import AnimatedHeight from "_common/components/AnimatedHeight";
 import Card from "_common/components/Card";
+import EmptyState from "_common/components/EmptyState";
+import ErrorRetry from "_common/components/ErrorRetry";
+import StatisticCard from "_common/components/StatisticCard";
+import TablePagination from "_common/components/TablePagination";
+import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
+import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 
 import type {
@@ -26,12 +27,10 @@ import type {
   ClassroomSummary,
   ClassroomView,
 } from "./_interface";
-import { PER_PAGE } from "./constants";
 import { toClassrooms, toClassroomSummary, summarize } from "./_utils";
 import ClassroomToolbar, {
   type LevelOption,
 } from "./components/ClassroomToolbar";
-import StatisticCard from "./components/StatisticCard";
 import ClassroomCard from "./components/ClassroomCard";
 import ClassroomGridCard from "./components/ClassroomGridCard";
 import { ClassRoomService } from "@tera/modules/education";
@@ -43,18 +42,11 @@ const Classroom = () => {
     status: { type: "string", default: "" as ClassroomStatus | "" },
     level: { type: "string", default: "" },
     page: { type: "number", default: 1 },
-    pageSize: { type: "number", default: PER_PAGE },
+    pageSize: { type: "number", default: DEFAULT_PAGE_SIZE },
   });
-  const [searchDraft, setSearchDraft] = useState(filters.search);
-
-  // Debounce typed text before it lands in the URL/query.
-  useEffect(() => {
-    const t = setTimeout(() => {
-      const trimmed = searchDraft.trim();
-      if (trimmed !== filters.search) setFilters({ search: trimmed, page: 1 });
-    }, 400);
-    return () => clearTimeout(t);
-  }, [searchDraft]);
+  const [searchDraft, setSearchDraft] = useDebouncedSearch(filters.search, (trimmed) =>
+    setFilters({ search: trimmed, page: 1 }),
+  );
 
   const listQuery = ClassRoomService.useClassRoomList({
     params: {
@@ -126,26 +118,18 @@ const Classroom = () => {
   const renderList = () => {
     if (isError)
       return (
-        <div className="flex h-[40vh] flex-col items-center justify-center gap-2 text-center">
-          <ExclamationTriangleOutlined className="h-7 w-7 text-red-400" />
-          <p className="text-sm text-slate-400">
-            Không tải được danh sách lớp học
-          </p>
-          <button
-            type="button"
-            onClick={() => refetch()}
-            className="flex items-center gap-1 rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-brand hover:bg-sky-100 [&_svg]:h-3.5 [&_svg]:w-3.5"
-          >
-            <ArrowPathOutlined />
-            Thử lại
-          </button>
+        <div className="flex h-[40vh] items-center justify-center">
+          <ErrorRetry
+            onRetry={() => refetch()}
+            message="Không tải được danh sách lớp học"
+            iconClassName="h-7 w-7"
+          />
         </div>
       );
 
     if (!isLoading && filtered.length === 0)
       return (
-        <Empty
-          className="py-12"
+        <EmptyState
           classNameImage="w-32 mx-auto"
           description={
             classrooms.length === 0
@@ -156,21 +140,23 @@ const Classroom = () => {
       );
 
     return (
-      <Spin spinning={isLoading || isFetching}>
-        {filters.view === "list" ? (
-          <div className="flex flex-col gap-3">
-            {filtered.map((classroom) => (
-              <ClassroomCard key={classroom.id} classroom={classroom} />
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {filtered.map((classroom) => (
-              <ClassroomGridCard key={classroom.id} classroom={classroom} />
-            ))}
-          </div>
-        )}
-      </Spin>
+      <div className="w-full min-h-25 flex items-center">
+        <Spin spinning={isLoading || isFetching}>
+          {filters.view === "list" ? (
+            <div className="w-full flex flex-col gap-3">
+              {filtered.map((classroom) => (
+                <ClassroomCard key={classroom.id} classroom={classroom} />
+              ))}
+            </div>
+          ) : (
+            <div className="w-full grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {filtered.map((classroom) => (
+                <ClassroomGridCard key={classroom.id} classroom={classroom} />
+              ))}
+            </div>
+          )}
+        </Spin>
+      </div>
     );
   };
 
@@ -269,18 +255,15 @@ const Classroom = () => {
           </div>
         </div>
 
-        <AnimatedHeight>{renderList()}</AnimatedHeight>
+        {renderList()}
 
-        {total > 0 && (
-          <div className="mt-4 flex justify-end">
-            <Pagination
-              total={total}
-              current={filters.page}
-              pageSize={perPage}
-              onChange={(p, size) => handleChangePage(p ?? 1, size ?? perPage)}
-            />
-          </div>
-        )}
+        <TablePagination
+          total={total}
+          page={filters.page}
+          perPage={perPage}
+          unit="lớp học"
+          onChange={handleChangePage}
+        />
       </Card>
     </div>
   );
