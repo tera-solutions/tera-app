@@ -418,6 +418,14 @@ export const ATTENDANCE_PAGE_URL = {
   },
 };
 
+export const EVALUATION_PAGE_URL = {
+  list: {
+    key: "",
+    path: "/student/evaluation/list",
+    shortenUrl: "/student/evaluation/list",
+  },
+};
+
 export const CLASS_ROOM_PAGE_URL = {
   list: {
     key: PAGE_KEY.CLASS_ROOM_LIST_VIEW,

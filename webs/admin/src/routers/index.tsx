@@ -40,6 +40,9 @@ import EnrollmentDetailPage from "pages/education/enrollment/EnrollmentDetailPag
 /* IMPORT:Attendance */
 import AttendanceListPage from "pages/education/attendance/AttendanceListPage";
 
+/* IMPORT:Evaluation */
+import EvaluationListPage from "pages/education/evaluation/EvaluationListPage";
+
 /* IMPORT:ClassRoom */
 import ClassRoomListPage from "pages/education/class-room/ClassRoomListPage";
 import ClassRoomCreatePage from "pages/education/class-room/ClassRoomCreatePage";
@@ -132,6 +135,9 @@ export const Routers = () => {
 
         {/* BLOCK:Attendance */}
         <Route path="/student/attendance/list" element={<AttendanceListPage />} />
+
+        {/* BLOCK:Evaluation */}
+        <Route path="/student/evaluation/list" element={<EvaluationListPage />} />
 
         {/* BLOCK:Enrollment */}
         <Route path="/student/enrollment/list" element={<EnrollmentListPage />} />

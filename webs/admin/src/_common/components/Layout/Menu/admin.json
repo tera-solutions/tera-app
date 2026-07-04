@@ -244,9 +244,10 @@
     {
       "id": 9,
       "title": "Nhận xét & Đánh giá",
-      "path": "/withdraw",
+      "path": "/student/evaluation/list",
       "icon": "briefcase",
-      "key": "withdraw",
+      "key": "evaluation",
+      "activeKeys": "evaluation",
       "parentKey": "student",
       "parentGroupKey": "group-study",
       "permission": ""
