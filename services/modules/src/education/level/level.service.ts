@@ -83,7 +83,7 @@ export const useLevelSuspend = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => LevelAPI.suspend(payload),
+    mutationFn: (payload: DetailPayload) => LevelAPI.suspend(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["level", "list"] });
       queryClient.invalidateQueries({ queryKey: ["level", "detail"] });
@@ -98,7 +98,7 @@ export const useLevelRestore = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => LevelAPI.restore(payload),
+    mutationFn: (payload: DetailPayload) => LevelAPI.restore(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["level", "list"] });
       queryClient.invalidateQueries({ queryKey: ["level", "detail"] });

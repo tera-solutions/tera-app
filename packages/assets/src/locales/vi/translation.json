@@ -277,6 +277,27 @@
     "confirm_reject": "Bạn có chắc muốn từ chối đánh giá này?",
     "confirm_lock": "Bạn có chắc muốn khóa đánh giá này? Sau khi khóa sẽ không thể sửa."
   },
+  "level": {
+    "title": "DANH SÁCH CẤP ĐỘ",
+    "create": "Thêm mới cấp độ",
+    "update": "Cập nhật cấp độ",
+    "detail": "Chi tiết cấp độ",
+    "code": "Mã cấp độ",
+    "name": "Tên cấp độ",
+    "course": "Khóa học",
+    "select_course": "Chọn khóa học",
+    "cefr": "Khung CEFR",
+    "order": "Thứ tự",
+    "status": "Trạng thái",
+    "description": "Mô tả",
+    "search_placeholder": "Tìm theo mã/tên cấp độ...",
+    "all_courses": "Tất cả khóa học",
+    "status_active": "Đang hoạt động",
+    "status_inactive": "Ngừng hoạt động",
+    "status_suspended": "Tạm ngưng",
+    "confirm_suspend": "Bạn có chắc muốn tạm ngưng cấp độ này?",
+    "confirm_restore": "Bạn có chắc muốn khôi phục cấp độ này?"
+  },
   "enrollment": {
     "title": "DANH SÁCH GHI DANH KHÓA HỌC",
     "list": "Danh sách ghi danh",

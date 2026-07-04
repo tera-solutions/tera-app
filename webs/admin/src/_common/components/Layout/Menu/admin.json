@@ -427,9 +427,10 @@
     {
       "id": 25,
       "title": "Cấp độ",
-      "path": "/course/list",
+      "path": "/course/level/list",
       "icon": "briefcase",
-      "key": "course-level",
+      "key": "level",
+      "activeKeys": "level",
       "parentKey": "course",
       "parentGroupKey": "group-course1",
       "permission": ""

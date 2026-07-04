@@ -426,6 +426,14 @@ export const EVALUATION_PAGE_URL = {
   },
 };
 
+export const LEVEL_PAGE_URL = {
+  list: {
+    key: "",
+    path: "/course/level/list",
+    shortenUrl: "/course/level/list",
+  },
+};
+
 export const CLASS_ROOM_PAGE_URL = {
   list: {
     key: PAGE_KEY.CLASS_ROOM_LIST_VIEW,
