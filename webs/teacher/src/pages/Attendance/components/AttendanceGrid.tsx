@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react";
+import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { Button, CheckOutlined } from "tera-dls";
 
 import Avatar from "_common/components/Avatar";
-import Badge from "_common/components/Badge";
 import SearchInput from "_common/components/SearchInput";
+import StatusBadge from "_common/components/StatusBadge";
 import WidgetState from "_common/components/WidgetState";
-import { ATTENDANCE_STYLE } from "pages/ClassroomDetail/constants";
+import { getOutlineButtonVariant } from "_common/utils/badgeColor";
+import { useMeta } from "_common/hooks/useMeta";
 
 import type { AttendanceRow } from "../_interface";
 import { STATUS_ACTIONS } from "../constants";
@@ -22,7 +24,7 @@ interface AttendanceGridProps {
   onMarkAllPresent: () => void;
 }
 
-const AttendanceGrid = ({
+const AttendanceGrid = observer(({
   rows,
   loading,
   isError,
@@ -32,6 +34,7 @@ const AttendanceGrid = ({
   onSetStatus,
   onMarkAllPresent,
 }: AttendanceGridProps) => {
+  const { getItem } = useMeta();
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -47,7 +50,7 @@ const AttendanceGrid = ({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Tìm kiếm học viên..."
-          wrapperClassName="sm:max-w-xs"
+          wrapperClassName="flex-1"
         />
         <Button
           outlined
@@ -68,7 +71,6 @@ const AttendanceGrid = ({
       >
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
           {filtered.map((row) => {
-            const style = ATTENDANCE_STYLE[row.status];
             const selected = row.student_id === selectedId;
             return (
               <button
@@ -92,9 +94,7 @@ const AttendanceGrid = ({
                 <p className="w-full truncate text-xs font-medium text-slate-700">
                   {row.name}
                 </p>
-                <Badge className={`px-2 py-0.5 text-[10px] ${style.badge}`}>
-                  {style.label}
-                </Badge>
+                <StatusBadge name="attendance_status" value={row.status} />
               </button>
             );
           })}
@@ -110,7 +110,7 @@ const AttendanceGrid = ({
             onClick={() => selectedId && onSetStatus(selectedId, action.status)}
             className={classNames(
               "whitespace-nowrap",
-              ATTENDANCE_STYLE[action.status].button,
+              getOutlineButtonVariant(getItem("attendance_status", action.status)?.color),
             )}
           >
             {action.label}
@@ -119,6 +119,6 @@ const AttendanceGrid = ({
       </div>
     </div>
   );
-};
+});
 
 export default AttendanceGrid;

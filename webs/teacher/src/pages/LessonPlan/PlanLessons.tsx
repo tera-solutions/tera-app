@@ -315,13 +315,12 @@ const PlanLessons = observer(() => {
                 ))}
               </div>
 
-              <div className="mb-3">
-                <SearchInput
-                  value={searchDraft}
-                  onChange={(e) => setSearchDraft(e.target.value)}
-                  placeholder="Tìm kiếm theo tên bài học..."
-                />
-              </div>
+              <SearchInput
+                value={searchDraft}
+                onChange={(e) => setSearchDraft(e.target.value)}
+                placeholder="Tìm kiếm theo tên bài học..."
+                wrapperClassName="flex-1 mb-3"
+              />
 
               <LessonTable
                 lessons={lessons}

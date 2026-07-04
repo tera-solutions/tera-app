@@ -1,10 +1,18 @@
 import * as yup from "yup";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^0\d{9}$/;
+
 export const loginSchema = yup.object().shape({
   identifier: yup
     .string()
     .trim()
-    .required("Vui lòng nhập email hoặc số điện thoại"),
+    .required("Vui lòng nhập email hoặc số điện thoại")
+    .test(
+      "is-email-or-phone",
+      "Email hoặc số điện thoại không hợp lệ",
+      (value) => !value || EMAIL_REGEX.test(value) || PHONE_REGEX.test(value),
+    ),
   password: yup
     .string()
     .required("Mật khẩu không được để trống")

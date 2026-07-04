@@ -38,6 +38,15 @@ export interface PlanStats {
   archived: number;
 }
 
+/** Kept in sync with the sortable columns LessonPlanService::paginate() allows. */
+export type LessonPlanSortBy =
+  | "created_at"
+  | "plan_name"
+  | "plan_code"
+  | "total_lessons";
+
+export type LessonPlanSortDir = "asc" | "desc";
+
 export interface LessonPlanFormValues {
   plan_code: string;
   plan_name: string;

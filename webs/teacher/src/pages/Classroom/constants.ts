@@ -1,16 +1,18 @@
-import type { ClassroomStatus } from "./_interface";
+import type { ClassroomSortBy } from "./_interface";
 
-export const STATUS_LABEL: Record<ClassroomStatus, string> = {
-  draft: "Nháp",
-  upcoming: "Sắp khai giảng",
-  active: "Đang hoạt động",
-  suspended: "Tạm ngưng",
-  completed: "Đã kết thúc",
-};
+export const SORT_BY_OPTIONS: { value: ClassroomSortBy; label: string }[] = [
+  { value: "created_at", label: "Mới tạo" },
+  { value: "name", label: "Tên lớp" },
+  { value: "start_date", label: "Ngày khai giảng" },
+  { value: "status", label: "Trạng thái" },
+];
 
-export const STATUS_OPTIONS: { value: ClassroomStatus; label: string }[] = (
-  Object.entries(STATUS_LABEL) as [ClassroomStatus, string][]
-).map(([value, label]) => ({ value, label }));
+/** Kept in sync with ClassService::baseQuery's `shift` time ranges. */
+export const SHIFT_OPTIONS: { value: string; label: string }[] = [
+  { value: "morning", label: "Buổi sáng" },
+  { value: "afternoon", label: "Buổi chiều" },
+  { value: "evening", label: "Buổi tối" },
+];
 
 /** Deterministic gradient per class so each card keeps a stable cover colour. */
 const COVER_PALETTE = [

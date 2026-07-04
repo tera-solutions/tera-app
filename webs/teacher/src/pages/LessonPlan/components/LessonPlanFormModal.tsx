@@ -6,6 +6,7 @@ import { Modal, notification, Spin, UserOutlined } from "tera-dls";
 import Input from "@tera/components/dof/Control/Input";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+import { REGEX } from "@tera/commons/constants/common";
 import { LessonPlanService } from "@tera/modules/education";
 import { FileAPI, stripExtension } from "@tera/api/common/FileAPI";
 
@@ -146,7 +147,23 @@ const LessonPlanFormModal = observer(({
             <FormTeraItem
               label="Mã giáo án"
               name="plan_code"
-              rules={[{ required: "Vui lòng nhập mã giáo án" }]}
+              rules={[
+                {
+                  required: "Vui lòng nhập mã giáo án",
+                  pattern: {
+                    value: REGEX.CODE,
+                    message: "Mã giáo án chỉ được chứa chữ, số và dấu gạch dưới",
+                  },
+                  minLength: {
+                    value: 2,
+                    message: "Mã giáo án phải có ít nhất 2 ký tự",
+                  },
+                  maxLength: {
+                    value: 50,
+                    message: "Mã giáo án không được vượt quá 50 ký tự",
+                  },
+                },
+              ]}
             >
               <Input placeholder="Ví dụ: LP001" maxLength={50} disabled={isEdit} />
             </FormTeraItem>
@@ -154,7 +171,19 @@ const LessonPlanFormModal = observer(({
             <FormTeraItem
               label="Tên giáo án"
               name="plan_name"
-              rules={[{ required: "Vui lòng nhập tên giáo án" }]}
+              rules={[
+                {
+                  required: "Vui lòng nhập tên giáo án",
+                  minLength: {
+                    value: 2,
+                    message: "Tên giáo án phải có ít nhất 2 ký tự",
+                  },
+                  maxLength: {
+                    value: 255,
+                    message: "Tên giáo án không được vượt quá 255 ký tự",
+                  },
+                },
+              ]}
             >
               <Input placeholder="Vui lòng nhập tên giáo án" maxLength={255} />
             </FormTeraItem>

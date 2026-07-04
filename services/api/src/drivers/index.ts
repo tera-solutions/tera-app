@@ -1,6 +1,8 @@
 import axios, { AxiosHeaderValue, HeadersDefaults } from "axios";
 import _ from "lodash";
 import qs from "query-string";
+import { rootStore } from "@tera/stores";
+import { authEndpoint } from "@tera/api/_endpoint";
 import {
   _requestError,
   _requestHeader,
@@ -16,8 +18,63 @@ instance.interceptors.request.use(_requestHeader, (error) =>
   Promise.reject(error),
 );
 
+// The API always answers with HTTP 200 and embeds its own business status in
+// `data.code` (see auth's login/register), so an expired/invalid access token
+// surfaces here as `code === 401`, not as a rejected axios response. On that
+// signal, try the refresh token once and silently retry the original request
+// before giving up and forcing a re-login.
+let refreshPromise: Promise<string | null> | null = null;
+
+const refreshAccessToken = (): Promise<string | null> => {
+  const currentRefreshToken = rootStore.globalStore.refresh_token;
+  if (!currentRefreshToken) return Promise.resolve(null);
+
+  if (!refreshPromise) {
+    refreshPromise = axios
+      .post(`${authEndpoint}/refresh-token`, {
+        refresh_token: currentRefreshToken,
+      })
+      .then((res) => {
+        const data = res?.data?.data;
+        if (!data?.token) return null;
+        rootStore.globalStore.updateToken(data.token);
+        if (data.refresh_token) {
+          rootStore.globalStore.updateRefreshToken(data.refresh_token);
+        }
+        return data.token as string;
+      })
+      .catch(() => null)
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+};
+
+const forceLogout = () => {
+  rootStore.globalStore.clear();
+  if (typeof window !== "undefined") {
+    window.location.href = "/401";
+  }
+};
+
 instance.interceptors.response.use(
-  (r) => r,
+  async (response) => {
+    const config: any = response.config;
+    if (response?.data?.code === 401 && !config?._retriedAfterRefresh) {
+      const newToken = await refreshAccessToken();
+      if (newToken) {
+        config._retriedAfterRefresh = true;
+        config.headers = {
+          ...config.headers,
+          authorization: `Bearer ${newToken}`,
+        };
+        return instance.request(config);
+      }
+      forceLogout();
+    }
+    return response;
+  },
   (error) => {
     return Promise.reject(error);
   },

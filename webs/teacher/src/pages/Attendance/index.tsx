@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import moment from "moment";
-import { notification, Spin } from "tera-dls";
+import { ArrowUpTrayOutlined, Button, notification, Spin } from "tera-dls";
 
+import Card from "_common/components/Card";
 import EmptyState from "_common/components/EmptyState";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
+import { todo } from "_common/utils/todo";
 import { toClassrooms } from "pages/Classroom/_utils";
 import {
   toAttendanceRecords,
@@ -134,7 +136,6 @@ const Attendance = () => {
   };
 
   const upsertMutation = AttendanceService.useUpsertAttendance();
-  const exportMutation = AttendanceService.useAttendanceExport();
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
@@ -169,12 +170,6 @@ const Attendance = () => {
     }
   };
 
-  const handleExport = () => {
-    exportMutation.mutate({
-      params: { class_id: classId, session_id: sessionId },
-    } as any);
-  };
-
   return (
     <div className="p-4 xmd:p-6">
       <div className="mb-4 flex items-center justify-between gap-3">
@@ -184,6 +179,13 @@ const Attendance = () => {
             Quản lý điểm danh học viên theo buổi học
           </p>
         </div>
+        <Button
+          icon={<ArrowUpTrayOutlined />}
+          onClick={todo}
+          className="whitespace-nowrap bg-brand hover:bg-brand/80"
+        >
+          Xuất báo cáo
+        </Button>
       </div>
 
       <div className="flex flex-col gap-4">
@@ -195,8 +197,6 @@ const Attendance = () => {
           sessionId={sessionId}
           onSessionChange={(id) => setFilters({ session_id: id })}
           studentCount={roster.length}
-          onExport={handleExport}
-          exporting={exportMutation.isPending}
         />
 
         {!classId ? null : sessionsQuery.isLoading ? (
@@ -214,8 +214,8 @@ const Attendance = () => {
               loading={rosterQuery.isLoading || recordsQuery.isLoading}
             />
 
-            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_320px]">
-              <div className="rounded-2xl border border-slate-100 bg-white p-4">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_300px]">
+              <Card>
                 <AttendanceGrid
                   rows={rows}
                   loading={rosterQuery.isLoading || recordsQuery.isLoading}
@@ -240,14 +240,16 @@ const Attendance = () => {
                     {saving ? "Đang lưu..." : "Lưu điểm danh"}
                   </button>
                 </div>
-              </div>
+              </Card>
 
-              <AttendanceSidebar
-                counts={counts}
-                absentRows={absentRows}
-                note={note}
-                onNoteChange={setNote}
-              />
+              <div className="hidden xl:block">
+                <AttendanceSidebar
+                  counts={counts}
+                  absentRows={absentRows}
+                  note={note}
+                  onNoteChange={setNote}
+                />
+              </div>
             </div>
           </>
         )}

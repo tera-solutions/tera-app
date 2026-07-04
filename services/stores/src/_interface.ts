@@ -14,6 +14,7 @@ export interface IGlobalStore {
   authenticated: boolean;
   user: any;
   token: string;
+  refresh_token: string;
   business_id: string;
   general: any;
   logo: string;
@@ -27,12 +28,14 @@ export interface IGlobalStore {
   clear: () => void;
   setInitData: (data: any) => void;
   updateToken: (token: string) => void;
+  updateRefreshToken: (refreshToken: string) => void;
   updateUser: (user: any) => void;
   updatePermissions: (permissions: string[]) => void;
   updateModules: (modules: string[]) => void;
   updateAccessId: (access_id: string) => void;
   updateEpic: (epics: string[]) => void;
   updateBusiness: (business: any) => void;
+  setRememberMe: (remember: boolean) => void;
 }
 
 export interface IConfirmStore extends ModalProps {

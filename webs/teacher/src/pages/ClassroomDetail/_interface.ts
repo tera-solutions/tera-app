@@ -105,3 +105,15 @@ export interface ClassStudentResult {
   page: number;
   per_page: number;
 }
+
+export interface ClassMaterial {
+  id: number;
+  name: string;
+  type: string;
+  category: string;
+  version: number;
+  status: string;
+  file_id: number | null;
+  file_name: string;
+  file_size: string;
+}

@@ -10,36 +10,35 @@ interface PlanStatusSidebarProps {
   stats: PlanStats;
 }
 
+/**
+ * The donut's segments. `in_review` is a synthetic bucket (draft + reviewing
+ * combined) with no metadata entry of its own, so it composes both labels and
+ * borrows draft's color; the other two map straight onto a real status.
+ */
+const SEGMENTS: {
+  key: string;
+  metaValues: string[];
+  fallbackColor: string;
+  value: (stats: PlanStats) => number;
+}[] = [
+  { key: "published", metaValues: ["published"], fallbackColor: "#10b981", value: (s) => s.published },
+  { key: "in_review", metaValues: ["draft", "reviewing"], fallbackColor: "#f59e0b", value: (s) => s.in_review },
+  { key: "archived", metaValues: ["archived"], fallbackColor: "#cbd5e1", value: (s) => s.archived },
+];
+
 const PlanStatusSidebar = observer(({ stats }: PlanStatusSidebarProps) => {
-  const { getLabel } = useMeta();
+  const { getLabel, getItem } = useMeta();
 
   const rate = stats.total
     ? Math.round((stats.published / stats.total) * 100)
     : 0;
 
-  const legend = [
-    {
-      key: "published",
-      label: getLabel(LESSON_PLAN_STATUS_META, "published"),
-      color: "#10b981",
-      value: stats.published,
-    },
-    {
-      key: "in_review",
-      label: `${getLabel(LESSON_PLAN_STATUS_META, "draft")} / ${getLabel(
-        LESSON_PLAN_STATUS_META,
-        "reviewing",
-      )}`,
-      color: "#f59e0b",
-      value: stats.in_review,
-    },
-    {
-      key: "archived",
-      label: getLabel(LESSON_PLAN_STATUS_META, "archived"),
-      color: "#cbd5e1",
-      value: stats.archived,
-    },
-  ];
+  const legend = SEGMENTS.map(({ key, metaValues, fallbackColor, value }) => ({
+    key,
+    label: metaValues.map((v) => getLabel(LESSON_PLAN_STATUS_META, v)).join(" / "),
+    color: getItem(LESSON_PLAN_STATUS_META, metaValues[0])?.color ?? fallbackColor,
+    value: value(stats),
+  }));
 
   return (
     <DonutStatsCard

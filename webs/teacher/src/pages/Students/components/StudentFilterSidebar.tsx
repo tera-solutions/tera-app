@@ -1,17 +1,14 @@
-import { Checkbox, RangePicker, Select } from "tera-dls";
+import { RangePicker } from "tera-dls";
 import moment from "moment";
 
 import ClassroomSelect from "_common/components/ClassroomSelect";
 import FilterCard from "_common/components/FilterCard";
 import FilterField from "_common/components/FilterField";
-
-import { LEVEL_OPTIONS, RANK_OPTIONS, STATUS_OPTIONS } from "../constants";
+import LevelSelect from "_common/components/LevelSelect";
 
 export interface StudentFilterDraft {
   class_id: number;
-  level: string[];
-  status: string[];
-  rank: string;
+  level_id: number;
   date_from: string;
   date_to: string;
 }
@@ -46,31 +43,11 @@ const StudentFilterSidebar = ({
       </FilterField>
 
       <FilterField label="Cấp độ">
-        <Checkbox.Group
-          value={draft.level}
-          options={LEVEL_OPTIONS}
-          className="flex flex-col gap-2"
-          onChange={(value) => onChange({ level: value as string[] })}
-        />
-      </FilterField>
-
-      <FilterField label="Trạng thái">
-        <Checkbox.Group
-          value={draft.status}
-          options={STATUS_OPTIONS}
-          className="flex flex-col gap-2"
-          onChange={(value) => onChange({ status: value as string[] })}
-        />
-      </FilterField>
-
-      <FilterField label="Xếp loại">
-        <Select
-          value={draft.rank || undefined}
-          selectedValue={RANK_OPTIONS.find((o) => o.value === draft.rank)}
-          placeholder="Tất cả"
+        <LevelSelect
+          value={draft.level_id || undefined}
+          placeholder="Tất cả cấp độ"
           allowClear
-          options={RANK_OPTIONS}
-          onChange={(value) => onChange({ rank: (value as string | undefined) ?? "" })}
+          onChange={(value) => onChange({ level_id: value != null ? Number(value) : 0 })}
         />
       </FilterField>
 

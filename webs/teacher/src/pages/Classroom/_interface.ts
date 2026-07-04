@@ -38,3 +38,8 @@ export interface ClassroomFilters {
   status: ClassroomStatus | "";
   level: string | "";
 }
+
+/** Kept in sync with the sortable columns ClassService::paginate() allows. */
+export type ClassroomSortBy = "created_at" | "name" | "start_date" | "status";
+
+export type ClassroomSortDir = "asc" | "desc";

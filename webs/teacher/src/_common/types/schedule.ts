@@ -1,5 +1,9 @@
-/** Lifecycle of a class session, shared across the Schedule and Dashboard pages. */
-export type ScheduleStatus = "upcoming" | "ongoing" | "done" | "cancelled";
+/**
+ * Lifecycle of a class session, shared across the Schedule and Dashboard pages.
+ * Raw backend value from the `class_session_status` metadata list — label and
+ * color are resolved from metadata, not hardcoded here.
+ */
+export type ScheduleStatus = string;
 
 /** A single class session, as consumed by both the Schedule and Dashboard pages. */
 export interface ScheduleItem {

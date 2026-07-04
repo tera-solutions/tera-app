@@ -71,14 +71,24 @@ const resolveRegisterError = (
 
   if (Object.keys(fields).length > 0) return { fields };
 
-  const status = error?.response?.status ?? error?.data?.code ?? error?.status;
+  // The API always answers with HTTP 200 and embeds its own business status in
+  // `data.code` (e.g. 500 for "email already exists"), so that field must never
+  // be read as a transport status (same issue fixed in Login/Content.tsx) — it
+  // would misclassify every business error as a 5xx "connection error" and hide
+  // the real backend message below.
+  const backendMsg =
+    (typeof msgObj === "string" && msgObj) ||
+    (typeof msgObj?.message === "string" && msgObj.message) ||
+    (typeof data?.message === "string" && data.message);
+  if (backendMsg) return { fields, message: backendMsg };
+
+  const status = error?.response?.status ?? error?.status;
   if (typeof status === "number" && status >= 500) {
     return { fields, message: "Lỗi kết nối. Vui lòng thử lại" };
   }
 
   const message =
     (typeof error?.message === "string" && error.message) ||
-    (typeof data?.message === "string" && data.message) ||
     "Đăng ký thất bại. Vui lòng thử lại";
   return { fields, message };
 };

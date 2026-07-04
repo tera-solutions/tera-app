@@ -2,9 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { AcademicCapOutlined, UsersOutlined } from "tera-dls";
 
 import { PATHS } from "_common/components/Layout/Menu/menus";
+import StatusBadge from "_common/components/StatusBadge";
 
 import type { Classroom } from "../_interface";
-import { getCoverGradient, STATUS_LABEL } from "../constants";
+import { getCoverGradient } from "../constants";
 import ProgressDonut from "./ProgressDonut";
 
 interface ClassroomGridCardProps {
@@ -56,9 +57,7 @@ const ClassroomGridCard = ({ classroom }: ClassroomGridCardProps) => {
         <ProgressDonut value={classroom.completion_rate} size={48} />
       </div>
 
-      <span className="self-start rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
-        {STATUS_LABEL[classroom.status]}
-      </span>
+      <StatusBadge name="class_status" value={classroom.status} className="self-start" />
     </div>
   );
 };

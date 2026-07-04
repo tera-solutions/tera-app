@@ -1,6 +1,9 @@
 import DonutStatsCard from "_common/components/DonutStatsCard";
+import { useMeta } from "_common/hooks/useMeta";
 
 import type { ClassStatistics } from "../_interface";
+
+const SESSION_STATUS_META = "class_session_status";
 
 interface ResultSummaryCardProps {
   statistics: ClassStatistics;
@@ -8,6 +11,7 @@ interface ResultSummaryCardProps {
 
 const ResultSummaryCard = ({ statistics }: ResultSummaryCardProps) => {
   const { operational } = statistics;
+  const { getItem } = useMeta();
 
   return (
     <DonutStatsCard
@@ -18,11 +22,12 @@ const ResultSummaryCard = ({ statistics }: ResultSummaryCardProps) => {
         {
           key: "completed",
           label: "Buổi đã hoàn thành",
-          color: "#10b981",
+          color: getItem(SESSION_STATUS_META, "completed")?.color ?? "#10b981",
           value: operational.completed_sessions,
           displayValue: `${operational.completed_sessions}/${operational.total_sessions}`,
         },
         {
+          // Synthetic remainder (total - completed), not a real session status.
           key: "pending",
           label: "Buổi còn lại",
           color: "#cbd5e1",

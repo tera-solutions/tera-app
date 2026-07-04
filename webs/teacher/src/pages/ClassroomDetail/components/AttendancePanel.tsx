@@ -1,13 +1,12 @@
 import { useMemo, useState } from "react";
 
-import Badge from "_common/components/Badge";
+import StatusBadge from "_common/components/StatusBadge";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import WidgetState from "_common/components/WidgetState";
 import { AttendanceService } from "@tera/modules/education";
 
 import type { AttendanceStatus } from "../_interface";
-import { ATTENDANCE_STYLE } from "../constants";
 import { toAttendanceRecords } from "../_utils";
 
 interface AttendancePanelProps {
@@ -94,25 +93,20 @@ const AttendancePanel = ({ classId }: AttendancePanelProps) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {pagedRecords.map((r, i) => {
-                const style = ATTENDANCE_STYLE[r.status];
-                return (
-                  <tr key={r.id} className="text-slate-700">
-                    <td className="px-4 py-3 text-slate-400">
-                      {(page - 1) * perPage + i + 1}
-                    </td>
-                    <td className="px-4 py-3 font-medium">{r.student_name}</td>
-                    <td className="px-4 py-3 text-slate-500">
-                      {r.student_code || "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge className={`px-2.5 py-0.5 text-[11px] ${style.badge}`}>
-                        {r.status_label || style.label}
-                      </Badge>
-                    </td>
-                  </tr>
-                );
-              })}
+              {pagedRecords.map((r, i) => (
+                <tr key={r.id} className="text-slate-700">
+                  <td className="px-4 py-3 text-slate-400">
+                    {(page - 1) * perPage + i + 1}
+                  </td>
+                  <td className="px-4 py-3 font-medium">{r.student_name}</td>
+                  <td className="px-4 py-3 text-slate-500">
+                    {r.student_code || "—"}
+                  </td>
+                  <td className="px-4 py-3">
+                    <StatusBadge name="attendance_status" value={r.status} />
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
