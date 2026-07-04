@@ -172,6 +172,22 @@ const LessonForm = forwardRef<any, LessonFormProps>(
       ? dataDetail.histories
       : [];
 
+    // Hiển thị giá trị lịch sử: change_status → nhãn trạng thái;
+    // reschedule ("2026-06-26 18:00:00-19:30:00 room:1") → "26/06/2026 18:00-19:30 · Phòng 1"
+    const histValue = (action: string, v?: string | null): string => {
+      if (!v) return "—";
+      if (action === "change_status")
+        return t(`lesson.status_${v}`, { defaultValue: v });
+      const m = String(v).match(
+        /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}:\d{2}):\d{2}-(\d{2}:\d{2}):\d{2}\s*room:(\d*)$/,
+      );
+      if (m) {
+        const [, y, mo, d, st, et, room] = m;
+        return `${d}/${mo}/${y} ${st}-${et}${room ? ` · ${t("lesson.room")} ${room}` : ""}`;
+      }
+      return String(v);
+    };
+
     const hasLesson = !!dataDetail?.id;
 
     const tabErrors: Record<string, boolean> = {
@@ -378,6 +394,17 @@ const LessonForm = forwardRef<any, LessonFormProps>(
                           : ""}
                       </span>
                     </div>
+                    {(h.old_value || h.new_value) && (
+                      <span className="text-[12px] text-gray-500 flex flex-wrap items-center gap-1.5">
+                        <span className="line-through text-gray-400 break-words">
+                          {histValue(h.action, h.old_value)}
+                        </span>
+                        <span className="text-gray-400">→</span>
+                        <span className="font-medium text-gray-700 break-words">
+                          {histValue(h.action, h.new_value)}
+                        </span>
+                      </span>
+                    )}
                     {h.reason && (
                       <span className="text-[12px] text-gray-500">
                         {t("common.reason")}: {h.reason}
