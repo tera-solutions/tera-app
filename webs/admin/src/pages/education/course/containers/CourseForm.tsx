@@ -148,8 +148,9 @@ const CourseForm = forwardRef<
               ? String(dataDetail.duration_minutes)
               : "",
           price_per_lesson:
-            dataDetail.price_per_lesson != null
-              ? String(dataDetail.price_per_lesson)
+            dataDetail.price_per_lesson != null &&
+            dataDetail.price_per_lesson !== ""
+              ? String(Number(dataDetail.price_per_lesson))
               : "",
           description: dataDetail.description ?? "",
           is_active:

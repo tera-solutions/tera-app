@@ -238,6 +238,26 @@ const ClassRoomForm = observer(
             lesson_plan_id: dataDetail.lesson_plan_id
               ? String(dataDetail.lesson_plan_id)
               : "",
+            teacher_id: dataDetail.teacher_id
+              ? String(dataDetail.teacher_id)
+              : "",
+            assignee_id: dataDetail.assignee_id
+              ? String(dataDetail.assignee_id)
+              : "",
+            use_course_curriculum: !!dataDetail.use_course_curriculum,
+            description: dataDetail.description ?? "",
+            learning_type: dataDetail.learning_type ?? "",
+            start_date: dataDetail.start_date
+              ? String(dataDetail.start_date).slice(0, 10)
+              : "",
+            end_date: dataDetail.end_date
+              ? String(dataDetail.end_date).slice(0, 10)
+              : "",
+            room_id: dataDetail.room_id ? String(dataDetail.room_id) : "",
+            min_warning_capacity:
+              dataDetail.min_warning_capacity != null
+                ? String(dataDetail.min_warning_capacity)
+                : "",
           min_capacity:
             dataDetail.min_capacity != null
               ? String(dataDetail.min_capacity)
