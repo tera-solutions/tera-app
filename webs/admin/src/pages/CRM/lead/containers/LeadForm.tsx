@@ -27,6 +27,7 @@ import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import {
   LeadService,
   StudentService,
+  ParentService,
   CourseService,
   BranchService,
   BusinessService,
@@ -70,6 +71,7 @@ const LeadForm = observer(
     ({ dataDetail, type = "create", onSuccess }, ref) => {
       const isView = type === "detail";
       const isUpdate = type === "update";
+      const isCreate = type === "create";
       const { t } = useTranslation();
       const { globalStore } = useStores();
       const queryClient = useQueryClient();
@@ -102,6 +104,11 @@ const LeadForm = observer(
       const { data: studentData } = StudentService.useStudentList({
         params: { page: 1, per_page: 100 },
       });
+      // Người giám hộ chọn từ DS Phụ huynh (chọn → auto-fill họ tên/sđt/email)
+      const { data: parentData } = ParentService.useParentList({
+        params: { page: 1, per_page: 100, status: "active" },
+      });
+      const parents: any[] = parentData?.data?.items ?? [];
       // Options học viên = 100 dòng đầu + merge các HV đã liên kết (giữ tên khi
       // xem/sửa dù HV nằm ngoài 100 dòng đầu). dataDetail.students có thể là
       // Student model (s.id) hoặc { student_id, student:{...} }.
@@ -162,26 +169,34 @@ const LeadForm = observer(
               .email(t("validate.email_format"))
               .nullable()
               .transform((v) => (v === "" ? null : v)),
-            guardians: yup
-              .array()
-              .of(
-                yup.object({
-                  full_name: yup.string().required(t("validate.required")),
-                  relationship: yup.string().required(t("validate.required")),
-                  phone: yup.string().required(t("validate.required")),
-                }),
-              )
-              .min(1, t("validate.required")),
-            students: yup
-              .array()
-              .of(
-                yup.object({
-                  student_id: yup.string().required(t("validate.required")),
-                }),
-              )
-              .min(1, t("validate.required")),
+            // Khi TẠO MỚI: không yêu cầu người giám hộ / học viên liên kết
+            // (chỉ nhập khi khách hàng đã chắc chắn — lúc cập nhật).
+            guardians: isCreate
+              ? yup.array()
+              : yup
+                  .array()
+                  .of(
+                    yup.object({
+                      full_name: yup.string().required(t("validate.required")),
+                      relationship: yup
+                        .string()
+                        .required(t("validate.required")),
+                      phone: yup.string().required(t("validate.required")),
+                    }),
+                  )
+                  .min(1, t("validate.required")),
+            students: isCreate
+              ? yup.array()
+              : yup
+                  .array()
+                  .of(
+                    yup.object({
+                      student_id: yup.string().required(t("validate.required")),
+                    }),
+                  )
+                  .min(1, t("validate.required")),
           }),
-        [t],
+        [t, isCreate],
       );
 
       const form = useForm<ILeadForm>({
@@ -238,6 +253,7 @@ const LeadForm = observer(
               String(c?.id ?? c),
             ),
             guardians: (dataDetail.guardians ?? []).map((g: any) => ({
+              parent_id: g?.parent_id ? String(g.parent_id) : "",
               full_name: g?.full_name ?? g?.name ?? "",
               relationship: g?.relationship ?? g?.relation ?? "",
               phone: g?.phone ?? "",
@@ -282,11 +298,14 @@ const LeadForm = observer(
           note: values.note?.trim() || undefined,
           tag_ids: (values.tag_ids ?? []).map(Number),
           course_ids: (values.course_ids ?? []).map(Number),
-          guardians,
-          students: studentsPayload,
         };
-        // business_id chỉ gửi khi create (không đổi doanh nghiệp khi update — theo Postman)
-        if (!isUpdate) params.business_id = toNum(values.business_id);
+        // Chỉ gửi người giám hộ / học viên liên kết khi cập nhật (không tạo mới)
+        if (!isCreate) {
+          params.guardians = guardians;
+          params.students = studentsPayload;
+        }
+        // business_id gửi cả khi create lẫn update (cho phép đổi doanh nghiệp)
+        params.business_id = toNum(values.business_id);
 
         onSubmit(
           { id: dataDetail?.id, params },
@@ -328,8 +347,13 @@ const LeadForm = observer(
 
       const tabs = [
         { key: "basic", label: t("lead.tab_basic") },
-        { key: "guardians", label: t("lead.guardians") },
-        { key: "students", label: t("lead.students") },
+        // Người giám hộ + Học viên liên kết chỉ hiện khi cập nhật (không tạo mới)
+        ...(isCreate
+          ? []
+          : [
+              { key: "guardians", label: t("lead.guardians") },
+              { key: "students", label: t("lead.students") },
+            ]),
       ];
 
       return (
@@ -489,7 +513,7 @@ const LeadForm = observer(
                     <select
                       className={SELECT_CLASS}
                       style={{ borderRadius: "3px", color: businessValue ? "#111827" : "#9ca3af" }}
-                      disabled={isView || isUpdate}
+                      disabled={isView}
                       {...form.register("business_id")}
                     >
                       <option value="" disabled hidden></option>
@@ -598,13 +622,49 @@ const LeadForm = observer(
                   <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
                     <Col>
                       <label className="text-[13px] text-gray-600 font-medium mb-1 block">
-                        {t("lead.guardian_name")} <span className="text-red-500">*</span>
+                        {t("lead.guardian_parent")} <span className="text-red-500">*</span>
                       </label>
-                      <input
-                        className={INPUT_CLASS}
+                      <select
+                        className={SELECT_CLASS}
+                        style={{ borderRadius: "3px" }}
                         disabled={isView}
-                        {...form.register(`guardians.${index}.full_name` as const)}
-                      />
+                        value={String(
+                          form.watch(`guardians.${index}.parent_id`) ?? "",
+                        )}
+                        onChange={(e) => {
+                          const pid = e.target.value;
+                          form.setValue(
+                            `guardians.${index}.parent_id` as const,
+                            pid,
+                            { shouldDirty: true },
+                          );
+                          const p = parents.find(
+                            (x: any) => String(x.id) === pid,
+                          );
+                          form.setValue(
+                            `guardians.${index}.full_name` as const,
+                            p?.name ?? "",
+                            { shouldDirty: true, shouldValidate: true },
+                          );
+                          form.setValue(
+                            `guardians.${index}.phone` as const,
+                            p?.phone ?? "",
+                            { shouldDirty: true, shouldValidate: true },
+                          );
+                          form.setValue(
+                            `guardians.${index}.email` as const,
+                            p?.email ?? "",
+                            { shouldDirty: true },
+                          );
+                        }}
+                      >
+                        <option value="" disabled hidden></option>
+                        {parents.map((p: any) => (
+                          <option key={p.id} value={String(p.id)}>
+                            {p.code ? `${p.code} - ${p.name}` : p.name}
+                          </option>
+                        ))}
+                      </select>
                       {errors?.guardians?.[index]?.full_name?.message && (
                         <p className="text-red-500 text-xs mt-1">
                           {errors.guardians[index].full_name.message}
@@ -634,31 +694,22 @@ const LeadForm = observer(
                         </p>
                       )}
                     </Col>
-                    <Col>
-                      <label className="text-[13px] text-gray-600 font-medium mb-1 block">
-                        {t("lead.phone")} <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        className={INPUT_CLASS}
-                        disabled={isView}
-                        {...form.register(`guardians.${index}.phone` as const)}
-                      />
-                      {errors?.guardians?.[index]?.phone?.message && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.guardians[index].phone.message}
+                    {/* Thông tin phụ huynh đã chọn (auto-fill, chỉ đọc) */}
+                    {(form.watch(`guardians.${index}.full_name`) ||
+                      form.watch(`guardians.${index}.phone`) ||
+                      form.watch(`guardians.${index}.email`)) && (
+                      <Col className="sm:col-span-2">
+                        <p className="text-[12px] text-gray-500">
+                          {[
+                            form.watch(`guardians.${index}.full_name`),
+                            form.watch(`guardians.${index}.phone`),
+                            form.watch(`guardians.${index}.email`),
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
                         </p>
-                      )}
-                    </Col>
-                    <Col>
-                      <label className="text-[13px] text-gray-600 font-medium mb-1 block">
-                        {t("lead.email")}
-                      </label>
-                      <input
-                        className={INPUT_CLASS}
-                        disabled={isView}
-                        {...form.register(`guardians.${index}.email` as const)}
-                      />
-                    </Col>
+                      </Col>
+                    )}
                   </Row>
                 </div>
               ))}
@@ -670,6 +721,7 @@ const LeadForm = observer(
                   type="button"
                   onClick={() =>
                     appendGuardian({
+                      parent_id: "",
                       full_name: "",
                       relationship: "",
                       phone: "",
