@@ -50,4 +50,9 @@ export const StudentAPI = {
     await api
       .post(`${endpoint}/edu/student/restore/${id}`, params)
       .then((result) => result.data),
+
+  getSummary: async (params?: Record<string, unknown>) =>
+    await api
+      .get(`${endpoint}/edu/student/summary`, params)
+      .then((result) => result.data),
 };

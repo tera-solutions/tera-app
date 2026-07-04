@@ -40,6 +40,17 @@ export const useStudentDetail = (
   });
 };
 
+export const useStudentSummary = (
+  params?: Record<string, unknown>,
+  options?: QueryHookOptions,
+) => {
+  return useQueryAdapter({
+    queryKey: ["student", "summary", params],
+    queryFn: () => StudentAPI.getSummary(params),
+    ...options,
+  });
+};
+
 // MUTATION
 export const useStudentCreate = () => {
   const { t } = useTranslation();
@@ -150,6 +161,7 @@ export const useStudentExport = () => {
 export const StudentService = {
   useStudentList,
   useStudentDetail,
+  useStudentSummary,
   useStudentCreate,
   useStudentUpdate,
   useUpsertStudent,
