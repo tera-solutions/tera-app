@@ -130,7 +130,7 @@ const BranchDetailPage = observer(() => {
       <div className="w-full max-w-3xl mx-auto">
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
           {/* Tab bar */}
-          <div className="flex overflow-x-auto border-b border-gray-200 mb-4 scrollbar-none">
+          <div className="flex overflow-x-auto overflow-y-hidden border-b border-gray-200 mb-4 [scrollbar-width:thin] [scrollbar-color:#d1d5db80_transparent] hover:[scrollbar-color:#d1d5db_transparent] [&::-webkit-scrollbar]:h-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#d1d5db80] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#d1d5db]">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
