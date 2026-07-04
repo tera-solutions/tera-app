@@ -43,32 +43,26 @@ const CourseTable = ({ params, setParams, setModalData }: CourseTableProps) => {
   const isMobile = useIsMobile();
 
   const { data, isPending } = CourseService.useCourseList({ params });
-  const { mutate: onUpdate, isPending: isUpdating } =
-    CourseService.useCourseUpdate();
+  const { mutate: onSuspend, isPending: isSuspending } =
+    CourseService.useCourseSuspend();
+  const { mutate: onRestore, isPending: isRestoring } =
+    CourseService.useCourseRestore();
+  const isUpdating = isSuspending || isRestoring;
 
   const [pendingStop, setPendingStop] = useState<ICourse | null>(null);
   const [reason, setReason] = useState("");
 
-  const runUpdate = (
-    record: ICourse,
-    payload: Record<string, any>,
-    onDone?: () => void,
-  ) => {
-    onUpdate(
-      { id: record.id, params: payload },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["course", "list"] });
-          notification.success({ message: t("common.update_success") });
-          onDone?.();
-        },
-        onError: (error: any) =>
-          notification.error({
-            message: error?.message || t("common.error_message"),
-          }),
-      },
-    );
-  };
+  const callbacks = (onDone?: () => void) => ({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["course", "list"] });
+      notification.success({ message: t("common.update_success") });
+      onDone?.();
+    },
+    onError: (error: any) =>
+      notification.error({
+        message: error?.message || t("common.error_message"),
+      }),
+  });
 
   const handleToggleStatus = (record: ICourse) => {
     if (record.is_active) {
@@ -76,17 +70,16 @@ const CourseTable = ({ params, setParams, setModalData }: CourseTableProps) => {
       setReason("");
       setPendingStop(record);
     } else {
-      // đang ngừng → kích hoạt: cập nhật trực tiếp
-      runUpdate(record, { is_active: true });
+      // đang ngừng → kích hoạt: restore (không body)
+      onRestore({ id: record.id }, callbacks());
     }
   };
 
   const handleConfirmStop = () => {
     if (!pendingStop) return;
-    runUpdate(
-      pendingStop,
-      { is_active: false, reason: reason.trim() },
-      () => setPendingStop(null),
+    onSuspend(
+      { id: pendingStop.id, params: { reason: reason.trim() } },
+      callbacks(() => setPendingStop(null)),
     );
   };
 
