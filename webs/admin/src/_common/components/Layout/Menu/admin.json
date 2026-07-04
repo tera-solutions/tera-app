@@ -213,9 +213,10 @@
     {
       "id": 6,
       "title": "Điểm danh",
-      "path": "/package/list",
+      "path": "/student/attendance/list",
       "icon": "briefcase",
-      "key": "package",
+      "key": "attendance",
+      "activeKeys": "attendance",
       "parentKey": "student",
       "parentGroupKey": "group-study",
       "permission": ""
