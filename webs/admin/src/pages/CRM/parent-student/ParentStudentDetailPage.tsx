@@ -1,5 +1,6 @@
 /* Import: library */
 import { observer } from "mobx-react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ import {
 /* Import: packages */
 import useConfirm from "@tera/commons/hooks/useConfirm";
 import { PARENT_STUDENT_PAGE_URL } from "@tera/commons/constants/url";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
 
 /* Import: services */
 import { ParentStudentService } from "@tera/modules";
@@ -25,6 +27,18 @@ import ParentStudentDetailView from "./containers/ParentStudentDetailView";
 const ParentStudentDetailPage = observer(() => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const isMobile = useIsMobile();
+
+  // Trang này chỉ dành cho mobile; desktop dùng modal trên trang danh sách.
+  // Resize sang desktop → quay về danh sách và nhắn nó mở modal detail.
+  useEffect(() => {
+    if (!isMobile) {
+      navigate(PARENT_STUDENT_PAGE_URL.list.path, {
+        replace: true,
+        state: { openModal: { type: "detail", id } },
+      });
+    }
+  }, [isMobile, navigate, id]);
   const { t } = useTranslation();
   const confirmDialog = useConfirm();
   const queryClient = useQueryClient();

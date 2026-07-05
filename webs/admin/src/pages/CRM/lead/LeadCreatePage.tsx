@@ -1,5 +1,5 @@
 /* Import: library */
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -13,6 +13,8 @@ import {
 /* Import: packages */
 import { IFormRef } from "@tera/commons/interfaces";
 import useConfirm from "@tera/commons/hooks/useConfirm";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
+import { LEAD_PAGE_URL } from "@tera/commons/constants/url";
 import { messageWarning } from "@tera/commons/constants/message";
 
 /* Import: pages */
@@ -20,6 +22,18 @@ import LeadForm from "./containers/LeadForm";
 
 const LeadCreatePage = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+
+  // Trang này chỉ dành cho mobile; desktop dùng modal trên trang danh sách.
+  // Resize sang desktop → quay về danh sách và nhắn nó mở modal create.
+  useEffect(() => {
+    if (!isMobile) {
+      navigate(LEAD_PAGE_URL.list.path, {
+        replace: true,
+        state: { openModal: { type: "create" } },
+      });
+    }
+  }, [isMobile, navigate]);
   const confirm = useConfirm();
   const { t } = useTranslation();
   const actionRef = useRef<IFormRef>(null);
