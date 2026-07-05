@@ -1,6 +1,6 @@
 /* Import: library */
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button, PlusCircleOutlined } from "tera-dls";
 
@@ -39,6 +39,29 @@ const BranchListPage = () => {
     type: "create",
     id: undefined,
   });
+
+  // Trang create/update/detail (mobile) redirect về đây khi resize sang desktop,
+  // kèm state.openModal = { type, id } để mở tiếp đúng modal.
+  const location = useLocation();
+  useEffect(() => {
+    const m = (location.state as any)?.openModal;
+    if (m?.type) {
+      setModalData({ open: true, type: m.type, id: m.id });
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, location.pathname, navigate]);
+
+  // Chiều ngược: desktop đang mở modal → resize xuống mobile thì đóng modal
+  // và chuyển sang trang riêng (create/update/detail) tương ứng.
+  useEffect(() => {
+    if (isMobile && modalData.open) {
+      const { type, id } = modalData;
+      setModalData({ open: false, type: "create", id: undefined });
+      if (type === "update" && id != null) navigate(BRANCH_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null) navigate(BRANCH_PAGE_URL.detail.path(id));
+      else navigate(BRANCH_PAGE_URL.create.path);
+    }
+  }, [isMobile, modalData, navigate]);
 
   const { data: businessData } = BusinessService.useBusinessList({
     params: { page: 1, per_page: 100, status: "active" },

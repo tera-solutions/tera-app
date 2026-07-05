@@ -1,5 +1,5 @@
 /* Import: library */
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -11,6 +11,8 @@ import {
 
 /* Import: packages */
 import { IFormRef } from "@tera/commons/interfaces";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
+import { LESSON_PAGE_URL } from "@tera/commons/constants/url";
 
 /* Import: pages */
 import LessonGenerateForm from "./containers/LessonGenerateForm";
@@ -19,7 +21,18 @@ import LessonGenerateForm from "./containers/LessonGenerateForm";
 const LessonGeneratePage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const actionRef = useRef<IFormRef>(null);
+
+  // Trang này chỉ dành cho mobile; desktop dùng modal generate trên trang danh sách.
+  useEffect(() => {
+    if (!isMobile) {
+      navigate(LESSON_PAGE_URL.list.path, {
+        replace: true,
+        state: { openModal: { type: "create" } },
+      });
+    }
+  }, [isMobile, navigate]);
 
   return (
     <div className="tera-page-form gap-0! relative">

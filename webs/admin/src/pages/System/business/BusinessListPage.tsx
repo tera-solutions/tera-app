@@ -1,5 +1,5 @@
 /* Import: library */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
 import { Button, PlusCircleOutlined } from "tera-dls";
@@ -9,7 +9,7 @@ import HeaderViewList from "@tera/components/web/HeaderViewList";
 import { IModalProps } from "@tera/commons/interfaces";
 import { useStores } from "@tera/stores/useStores";
 import useIsMobile from "@tera/commons/hooks/useIsMobile";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { BUSINESS_PAGE_URL } from "@tera/commons/constants/url";
 
 /* Import: pages */
@@ -38,6 +38,29 @@ const BusinessListPage = observer(() => {
     type: "create",
     id: undefined,
   });
+
+  // Trang create/update/detail (mobile) redirect về đây khi resize sang desktop,
+  // kèm state.openModal = { type, id } để mở tiếp đúng modal.
+  const location = useLocation();
+  useEffect(() => {
+    const m = (location.state as any)?.openModal;
+    if (m?.type) {
+      setModalData({ open: true, type: m.type, id: m.id });
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, location.pathname, navigate]);
+
+  // Chiều ngược: desktop đang mở modal → resize xuống mobile thì đóng modal
+  // và chuyển sang trang riêng (create/update/detail) tương ứng.
+  useEffect(() => {
+    if (isMobile && modalData.open) {
+      const { type, id } = modalData;
+      setModalData({ open: false, type: "create", id: undefined });
+      if (type === "update" && id != null) navigate(BUSINESS_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null) navigate(BUSINESS_PAGE_URL.detail.path(id));
+      else navigate(BUSINESS_PAGE_URL.create.path);
+    }
+  }, [isMobile, modalData, navigate]);
 
   const statusOptions = (
     globalStore.getOptions("business_status") ?? []
