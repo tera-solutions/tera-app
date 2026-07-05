@@ -13,7 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Col, Row, notification, UserOutlined } from "tera-dls";
+import { Col, Row, Modal, notification, UserOutlined } from "tera-dls";
 
 /* Import: packages */
 import { IFormProps, IFileUpload } from "@tera/commons/interfaces";
@@ -60,6 +60,7 @@ const UserForm = observer(
       const { globalStore } = useStores();
 
       const [activeTab, setActiveTab] = useState("basic");
+      const [showAvatarPreview, setShowAvatarPreview] = useState(false);
 
       const isUpdateRef = useRef(isUpdate);
       isUpdateRef.current = isUpdate;
@@ -336,15 +337,24 @@ const UserForm = observer(
                       </UploadFiles>
                     </div>
                     {avatarValue && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          form.setValue("avatar" as any, "", { shouldDirty: true })
-                        }
-                        className="text-[13px] text-red-500 hover:text-red-600 transition-colors"
-                      >
-                        {t("button.delete")}
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowAvatarPreview(true)}
+                          className="text-[13px] text-blue-500 hover:text-blue-600 transition-colors cursor-pointer"
+                        >
+                          {t("button.detail")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            form.setValue("avatar" as any, "", { shouldDirty: true })
+                          }
+                          className="text-[13px] text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                        >
+                          {t("button.delete")}
+                        </button>
+                      </div>
                     )}
                   </div>
                 </Col>
@@ -610,6 +620,21 @@ const UserForm = observer(
               </Col>
             </Row>
           </div>
+          {showAvatarPreview && (
+            <Modal
+              title={t("user.avatar")}
+              open={showAvatarPreview}
+              cancelText={t("button.close")}
+              okButtonProps={{ className: "hidden" }}
+              onCancel={() => setShowAvatarPreview(false)}
+            >
+              <img
+                src={avatarValue}
+                alt="avatar"
+                className="max-h-[70vh] max-w-full mx-auto rounded"
+              />
+            </Modal>
+          )}
         </FormTera>
       );
     },
