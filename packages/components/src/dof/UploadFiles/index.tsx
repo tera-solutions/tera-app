@@ -2,7 +2,7 @@ import NoPermission from "@tera/components/web/NoPermission";
 import ActionCUD, {
   TTypeButton,
 } from "@tera/components/web/TableColumnCustom/ActionCUD";
-import { portalEndpoint } from "@tera/api/_endpoint";
+import { fileEndpoint } from "@tera/api/_endpoint";
 import { useStores } from "@tera/stores/useStores";
 import { usePermission } from "@tera/commons/hooks/usePermission";
 import { IFileUpload } from "@tera/commons/interfaces";
@@ -188,7 +188,7 @@ function UploadFiles({
       // const deviceCode = rootStore.globalStore.device;
       const result = await Axios({
         method: "POST",
-        url: `${portalEndpoint}/file/upload`,
+        url: `${fileEndpoint}/upload`,
         data: form,
         headers: {
           authorization: authToken ? `Bearer ${authToken}` : "",
@@ -236,7 +236,7 @@ function UploadFiles({
       // const deviceCode = rootStore.globalStore.device;
       const result = await Axios({
         method: "GET",
-        url: `${portalEndpoint}/file/download/${file?.id}?object_id=${object_id}`,
+        url: `${fileEndpoint}/download/${file?.id}?object_id=${object_id}`,
 
         headers: {
           authorization: authToken ? `Bearer ${authToken}` : "",
@@ -332,8 +332,9 @@ function UploadFiles({
       {/* {hasPage(permission?.upload) && (
         
       )} */}
+      {!children && (
       <div ref={elementRef} className="flex flex-col gap-2 items-center">
-        {!children && mode === "edit" && hasPage(permission?.upload) && (
+        {mode === "edit" && hasPage(permission?.upload) && (
           <>
             {large ? (
               <div
@@ -452,6 +453,7 @@ function UploadFiles({
           </div>
         )}
       </div>
+      )}
       {isPreview && (
         <ModalPreview
           open={isPreview}

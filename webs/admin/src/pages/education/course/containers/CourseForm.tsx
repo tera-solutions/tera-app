@@ -12,7 +12,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Col, Row, notification, BookOpenOutlined } from "tera-dls";
+import { Col, Row, Modal, notification, BookOpenOutlined } from "tera-dls";
 import debounce from "lodash/debounce";
 
 /* Import: packages */
@@ -54,6 +54,7 @@ const CourseForm = forwardRef<
     const { t } = useTranslation();
 
     const [activeTab, setActiveTab] = useState("basic");
+    const [showThumbnailPreview, setShowThumbnailPreview] = useState(false);
 
     const { data: businessData } = BusinessService.useBusinessList({
       params: { page: 1, per_page: 100, status: "active" },
@@ -292,17 +293,26 @@ const CourseForm = forwardRef<
                       </UploadFiles>
                     </div>
                     {thumbnailValue && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          form.setValue("thumbnail" as any, "", {
-                            shouldDirty: true,
-                          })
-                        }
-                        className="text-[13px] text-red-500 hover:text-red-600 transition-colors"
-                      >
-                        {t("button.delete")}
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowThumbnailPreview(true)}
+                          className="text-[13px] text-blue-500 hover:text-blue-600 transition-colors cursor-pointer"
+                        >
+                          {t("button.detail")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            form.setValue("thumbnail" as any, "", {
+                              shouldDirty: true,
+                            })
+                          }
+                          className="text-[13px] text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                        >
+                          {t("button.delete")}
+                        </button>
+                      </div>
                     )}
                   </div>
                 </Col>
@@ -448,6 +458,21 @@ const CourseForm = forwardRef<
             </Row>
           </div>
         </FormTera>
+        {showThumbnailPreview && (
+          <Modal
+            title={t("course.thumbnail")}
+            open={showThumbnailPreview}
+            cancelText={t("button.close")}
+            okButtonProps={{ className: "hidden" }}
+            onCancel={() => setShowThumbnailPreview(false)}
+          >
+            <img
+              src={thumbnailValue}
+              alt="thumbnail"
+              className="max-h-[70vh] max-w-full mx-auto rounded"
+            />
+          </Modal>
+        )}
       </div>
     );
   },

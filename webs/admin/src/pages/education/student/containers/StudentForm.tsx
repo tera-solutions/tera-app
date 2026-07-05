@@ -17,6 +17,7 @@ import moment from "moment";
 import {
   Col,
   Row,
+  Modal,
   notification,
   PlusCircleOutlined,
   UserOutlined,
@@ -81,6 +82,7 @@ const StudentForm = observer(
       const queryClient = useQueryClient();
 
       const [activeTab, setActiveTab] = useState("general");
+      const [showAvatarPreview, setShowAvatarPreview] = useState(false);
 
       const isUpdateRef = useRef(isUpdate);
       isUpdateRef.current = isUpdate;
@@ -495,15 +497,24 @@ const StudentForm = observer(
                       </UploadFiles>
                     </div>
                     {avatarValue && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          form.setValue("avatar" as any, "", { shouldDirty: true })
-                        }
-                        className="text-[13px] text-red-500 hover:text-red-600 transition-colors"
-                      >
-                        {t("button.delete")}
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowAvatarPreview(true)}
+                          className="text-[13px] text-blue-500 hover:text-blue-600 transition-colors cursor-pointer"
+                        >
+                          {t("button.detail")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            form.setValue("avatar" as any, "", { shouldDirty: true })
+                          }
+                          className="text-[13px] text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                        >
+                          {t("button.delete")}
+                        </button>
+                      </div>
                     )}
                   </div>
                 </Col>
@@ -1012,6 +1023,21 @@ const StudentForm = observer(
               )}
             </div>
           </div>
+          {showAvatarPreview && (
+            <Modal
+              title={t("student.avatar")}
+              open={showAvatarPreview}
+              cancelText={t("button.close")}
+              okButtonProps={{ className: "hidden" }}
+              onCancel={() => setShowAvatarPreview(false)}
+            >
+              <img
+                src={avatarValue}
+                alt="avatar"
+                className="max-h-[70vh] max-w-full mx-auto rounded"
+              />
+            </Modal>
+          )}
         </FormTera>
       );
     },
