@@ -43,6 +43,9 @@ import AttendanceListPage from "pages/education/attendance/AttendanceListPage";
 /* IMPORT:Evaluation */
 import EvaluationListPage from "pages/education/evaluation/EvaluationListPage";
 
+/* IMPORT:Level */
+import LevelListPage from "pages/education/level/LevelListPage";
+
 /* IMPORT:ClassRoom */
 import ClassRoomListPage from "pages/education/class-room/ClassRoomListPage";
 import ClassRoomCreatePage from "pages/education/class-room/ClassRoomCreatePage";
@@ -132,6 +135,9 @@ export const Routers = () => {
         <Route path='/course/create' element={<CourseCreatePage />} />
         <Route path='/course/update/:id' element={<CourseUpdatePage />} />
         <Route path='/course/detail/:id' element={<CourseDetailPage />} />
+
+        {/* BLOCK:Level */}
+        <Route path='/course/level/list' element={<LevelListPage />} />
 
         {/* BLOCK:Attendance */}
         <Route path="/student/attendance/list" element={<AttendanceListPage />} />

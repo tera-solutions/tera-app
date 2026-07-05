@@ -29,13 +29,14 @@ export const LevelAPI = {
       .put(`${endpoint}/edu/level/update/${id}`, params)
       .then((result) => result.data),
 
-  suspend: async ({ id, params }: UpdatePayload) =>
+  // suspend/restore không body — chỉ nhận id
+  suspend: async ({ id }: DetailPayload) =>
     await api
-      .post(`${endpoint}/edu/level/suspend/${id}`, params)
+      .post(`${endpoint}/edu/level/suspend/${id}`)
       .then((result) => result.data),
 
-  restore: async ({ id, params }: UpdatePayload) =>
+  restore: async ({ id }: DetailPayload) =>
     await api
-      .post(`${endpoint}/edu/level/restore/${id}`, params)
+      .post(`${endpoint}/edu/level/restore/${id}`)
       .then((result) => result.data),
 };
