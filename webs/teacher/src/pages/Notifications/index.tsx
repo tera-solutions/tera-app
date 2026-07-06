@@ -18,7 +18,7 @@ const Notifications = () => {
     status: { type: "string", default: "all" as NotificationStatus },
     date_from: { type: "string", default: "" },
     date_to: { type: "string", default: "" },
-  });
+  }, { syncDefaultsOnMount: true });
 
   const [items, setItems] = useState<NotificationItem[]>(MOCK_NOTIFICATIONS);
   const [selectedId, setSelectedId] = useState<number | null>(null);

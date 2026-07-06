@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import moment from "moment";
 import classNames from "classnames";
 import {
@@ -6,8 +6,6 @@ import {
   CalendarDaysOutlined,
   Drawer,
   FunnelOutlined,
-  notification,
-  PlusOutlined,
   Spin,
   XMarkOutlined,
 } from "tera-dls";
@@ -23,17 +21,15 @@ import { DEFAULT_STATUSES } from "./constants";
 import ScheduleToolbar from "./components/ScheduleToolbar";
 import WeekCalendar from "./components/WeekCalendar";
 import MonthCalendar from "./components/MonthCalendar";
-import DayView from "./components/DayView";
+import DayCalendar from "./components/DayCalendar";
+import ListCalendar from "./components/ListCalendar";
 import RangeView from "./components/RangeView";
 import ScheduleDetailDrawer from "./components/ScheduleDetailDrawer";
 import FilterSidebar from "./components/FilterSidebar";
-import HomeroomCard from "./components/HomeroomCard";
-import StudentCard from "./components/StudentCard";
 import MonthStatsCard from "./components/MonthStatsCard";
-import MiniCalendar from "./components/MiniCalendar";
-import { ClassRoomService, StudentService, TimetableService } from "@tera/modules/education";
+import { TimetableService } from "@tera/modules/education";
 import { toCalendarItems } from "_common/utils/schedule";
-import { computeMonthStats, homeroomNames, scheduleDateSet } from "./_utils";
+import { computeMonthStats } from "./_utils";
 
 const Schedule = () => {
   const isMobile = useIsMobile();
@@ -45,11 +41,16 @@ const Schedule = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const [scheduleFilters, setScheduleFilters] = useUrlFilters({
-    classId: { type: "number", default: undefined as number | undefined },
-    branch: { type: "number", default: undefined as number | undefined },
-    statuses: { type: "string[]", default: DEFAULT_STATUSES as string[] },
-  });
+  const [scheduleFilters, setScheduleFilters] = useUrlFilters(
+    {
+      classId: { type: "number", default: undefined as number | undefined },
+      branch: { type: "number", default: undefined as number | undefined },
+      statuses: { type: "string[]", default: DEFAULT_STATUSES as string[] },
+      dateFrom: { type: "string", default: undefined as string | undefined },
+      dateTo: { type: "string", default: undefined as string | undefined },
+    },
+    { syncDefaultsOnMount: true },
+  );
   const classId: number | "" =
     scheduleFilters.classId === undefined ? "" : scheduleFilters.classId;
   const branch: number | "" =
@@ -62,9 +63,6 @@ const Schedule = () => {
   const setStatuses = (updater: (prev: ScheduleStatus[]) => ScheduleStatus[]) =>
     setScheduleFilters({ statuses: updater(statuses) });
 
-  // On mobile the week/month grids and filter sidebar are hidden, so the day
-  // view would strand users on an empty single day. Show the week as a scrollable
-  // agenda instead (paged by the toolbar).
   const effectiveView: ScheduleView = rangeFilter
     ? "range"
     : isMobile
@@ -92,6 +90,16 @@ const Schedule = () => {
     };
   }, [effectiveView, currentDate, rangeFilter]);
 
+  // Keep the effective date window reflected in the URL, so "Lọc theo ngày"
+  // shows a value from the first load onward, not only once a custom range
+  // is picked.
+  useEffect(() => {
+    setScheduleFilters({
+      dateFrom: viewRange.date_from,
+      dateTo: viewRange.date_to,
+    });
+  }, [viewRange.date_from, viewRange.date_to, setScheduleFilters]);
+
   const monthRange = useMemo(
     () => ({
       date_from: currentDate.clone().startOf("month").format("YYYY-MM-DD"),
@@ -100,21 +108,36 @@ const Schedule = () => {
     [currentDate],
   );
 
+  const filterParams: Pick<CalendarParams, "class_id" | "branch_id" | "status"> =
+    useMemo(
+      () => ({
+        class_id: classId === "" ? undefined : classId,
+        branch_id: branch === "" ? undefined : branch,
+        status: statuses.join(","),
+      }),
+      [classId, branch, statuses],
+    );
+
   const viewParams: CalendarParams = useMemo(
-    () => ({ date_from: viewRange.date_from, date_to: viewRange.date_to }),
-    [viewRange],
+    () => ({
+      date_from: viewRange.date_from,
+      date_to: viewRange.date_to,
+      ...filterParams,
+    }),
+    [viewRange, filterParams],
   );
   const monthParams: CalendarParams = useMemo(
-    () => ({ date_from: monthRange.date_from, date_to: monthRange.date_to }),
-    [monthRange],
+    () => ({
+      date_from: monthRange.date_from,
+      date_to: monthRange.date_to,
+      ...filterParams,
+    }),
+    [monthRange, filterParams],
   );
 
-  const viewQuery = TimetableService.useTimetableCalendar(viewParams);
-  const { isLoading, isError, refetch } = viewQuery;
-  const data = useMemo(
-    () => toCalendarItems(viewQuery.data?.data),
-    [viewQuery.data],
-  );
+  const viewWithinMonth =
+    viewRange.date_from >= monthRange.date_from &&
+    viewRange.date_to <= monthRange.date_to;
 
   const monthQuery = TimetableService.useTimetableCalendar(monthParams);
   const isMonthLoading = monthQuery.isLoading;
@@ -123,41 +146,34 @@ const Schedule = () => {
     [monthQuery.data],
   );
 
-  const classes = ClassRoomService.useClassRoomList({
-    params: { per_page: 20 },
+  const viewQuery = TimetableService.useTimetableCalendar(viewParams, {
+    enabled: !viewWithinMonth,
   });
+  const data = useMemo(
+    () => toCalendarItems(viewQuery.data?.data),
+    [viewQuery.data],
+  );
 
-  const students = StudentService.useStudentList({ params: { per_page: 1 } });
+  const isLoading = viewWithinMonth ? isMonthLoading : viewQuery.isLoading;
+  const isError = viewWithinMonth ? monthQuery.isError : viewQuery.isError;
+  const refetch = viewWithinMonth ? monthQuery.refetch : viewQuery.refetch;
 
-  const homeroomList = homeroomNames(classes.data?.data?.items);
-
-  const totalClasses = classes.data?.data?.pagination?.total ?? 0;
-  const totalStudents= students.data?.data?.pagination?.total ?? 0;
-  const isClassesLoading= classes.isLoading;
-  const isStudentsLoading= students.isLoading;
-
-  const viewSchedules = useMemo<ScheduleItem[]>(() => data ?? [], [data]);
   const monthSchedules = useMemo<ScheduleItem[]>(
     () => monthData ?? [],
     [monthData],
   );
 
-  const schedules = useMemo<ScheduleItem[]>(() => {
-    return viewSchedules.filter((item) => {
-      if (classId !== "" && item.class_id !== classId) return false;
-      if (!statuses.includes(item.status)) return false;
-      if (branch !== "" && item.branch_id !== branch) return false;
-      return true;
-    });
-  }, [viewSchedules, classId, statuses, branch]);
+  const viewSchedules = useMemo<ScheduleItem[]>(() => {
+    if (!viewWithinMonth) return data ?? [];
+    return monthSchedules.filter(
+      (item) => item.date >= viewRange.date_from && item.date <= viewRange.date_to,
+    );
+  }, [viewWithinMonth, data, monthSchedules, viewRange]);
+
+  const schedules = viewSchedules;
 
   const monthStats = useMemo(
     () => computeMonthStats(monthSchedules),
-    [monthSchedules],
-  );
-
-  const scheduleDates = useMemo(
-    () => scheduleDateSet(monthSchedules),
     [monthSchedules],
   );
 
@@ -214,9 +230,6 @@ const Schedule = () => {
     setRangeFilter(null);
   };
 
-  const handleAdd = () =>
-    notification.open({ message: "Tính năng đang được phát triển" });
-
   const cardTitle =
     effectiveView === "range"
       ? "Khoảng đã chọn"
@@ -224,7 +237,9 @@ const Schedule = () => {
         ? "Tháng hiện tại"
         : effectiveView === "day"
           ? "Ngày hiện tại"
-          : "Tuần hiện tại";
+          : effectiveView === "list"
+            ? "Danh sách buổi học"
+            : "Tuần hiện tại";
 
   const renderMainView = () => {
     if (effectiveView === "range")
@@ -244,7 +259,15 @@ const Schedule = () => {
       );
     if (effectiveView === "day")
       return (
-        <DayView
+        <DayCalendar
+          currentDate={currentDate}
+          schedules={schedules}
+          onSelect={(item) => setSelectedId(item.id)}
+        />
+      );
+    if (effectiveView === "list")
+      return (
+        <ListCalendar
           currentDate={currentDate}
           schedules={schedules}
           onSelect={(item) => setSelectedId(item.id)}
@@ -303,13 +326,6 @@ const Schedule = () => {
             Quản lý lịch dạy chi tiết theo tuần và tháng
           </p>
         </div>
-        <Button
-          icon={<PlusOutlined />}
-          onClick={handleAdd}
-          className="whitespace-nowrap bg-brand hover:bg-brand/80"
-        >
-          Thêm lịch dạy
-        </Button>
       </div>
 
       <div className="mb-4">
@@ -332,7 +348,7 @@ const Schedule = () => {
             </p>
             {!isMobile && (
               <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">
-                {(["week", "month"] as const).map((key) => (
+                {(["month", "week", "day", "list"] as const).map((key) => (
                   <button
                     key={key}
                     type="button"
@@ -344,7 +360,13 @@ const Schedule = () => {
                         : "text-slate-600 hover:text-slate-800",
                     )}
                   >
-                    {key === "week" ? "Tuần" : "Tháng"}
+                    {key === "month"
+                      ? "Tháng"
+                      : key === "week"
+                        ? "Tuần"
+                        : key === "day"
+                          ? "Ngày"
+                          : "Danh sách"}
                   </button>
                 ))}
               </div>
@@ -377,35 +399,14 @@ const Schedule = () => {
           )}
         </Card>
 
-        <div className="hidden xl:block">
+        <div className="hidden flex-col gap-4 xl:flex">
           <FilterSidebar {...filterProps} />
+          <MonthStatsCard
+            total={monthStats.total}
+            completed={monthStats.completed}
+            loading={isMonthLoading}
+          />
         </div>
-      </div>
-
-      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <HomeroomCard
-          count={totalClasses}
-          classNames={homeroomList}
-          loading={isClassesLoading}
-        />
-        <StudentCard count={totalStudents} loading={isStudentsLoading} />
-        <MonthStatsCard
-          total={monthStats.total}
-          completed={monthStats.completed}
-          loading={isMonthLoading}
-        />
-        <MiniCalendar
-          currentDate={currentDate}
-          scheduleDates={scheduleDates}
-          loading={isMonthLoading}
-          onSelectDay={handleSelectDay}
-          onPrevMonth={() =>
-            setCurrentDate((prev) => prev.clone().subtract(1, "month"))
-          }
-          onNextMonth={() =>
-            setCurrentDate((prev) => prev.clone().add(1, "month"))
-          }
-        />
       </div>
 
       <Drawer

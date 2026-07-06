@@ -7,6 +7,7 @@ import {
   ChatBubbleLeftOutlined,
   CalendarOutlined,
   Popover,
+  StarSolid,
 } from "tera-dls";
 
 import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
@@ -40,12 +41,15 @@ const Topbar = observer(() => {
   });
 
   return (
-    <header className="hidden xmd:flex fixed inset-x-0 top-0 z-50 h-topbar items-center gap-4 border-b border-slate-100 bg-white px-4">
+    <header className="hidden xmd:flex fixed inset-x-0 top-0 z-50 h-topbar items-center gap-4 border-b border-slate-100 bg-white px-4 shadow-sm">
       <div className="flex items-center gap-2.5">
         <img src={logo} alt="Hana Edu" className="h-9 w-9 object-contain" />
-        <span className="text-lg font-semibold tracking-wide text-brand">
-          Hana Edu ⭐
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-semibold tracking-wide text-brand">
+            Hana Edu
+          </span>
+          <StarSolid className="size-6 text-accent" />
+        </div>
       </div>
 
       <div className="ml-auto flex items-center gap-4">

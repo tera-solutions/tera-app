@@ -80,6 +80,21 @@ export const useUpsertLessonPlan = () => {
   });
 };
 
+export const useLessonPlanPublish = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => LessonPlanAPI.publish(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lesson-plan", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["lesson-plan", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const useLessonPlanArchive = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -116,6 +131,7 @@ export const LessonPlanService = {
   useLessonPlanCreate,
   useLessonPlanUpdate,
   useUpsertLessonPlan,
+  useLessonPlanPublish,
   useLessonPlanArchive,
   useLessonPlanExport,
 };

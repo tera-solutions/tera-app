@@ -30,6 +30,11 @@ export const LessonPlanAPI = {
       .put(`${endpoint}/edu/lesson-plan/update/${id}`, params)
       .then((result) => result.data),
 
+  publish: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/edu/lesson-plan/publish/${id}`, params)
+      .then((result) => result.data),
+
   archive: async ({ id }: DetailPayload) =>
     await api
       .post(`${endpoint}/edu/lesson-plan/archive/${id}`)

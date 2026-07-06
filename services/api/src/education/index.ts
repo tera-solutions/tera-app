@@ -20,6 +20,7 @@ export * from "./level";
 export * from "./lesson";
 export * from "./lesson-material";
 export * from "./lesson-plan";
+export * from "./lesson-plan-lesson";
 export * from "./lesson-progress";
 export * from "./progress-report";
 export * from "./score";

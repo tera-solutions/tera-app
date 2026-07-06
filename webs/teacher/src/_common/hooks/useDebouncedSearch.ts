@@ -11,6 +11,14 @@ export const useDebouncedSearch = (
 ) => {
   const [draft, setDraft] = useState(value);
 
+  // Keep the draft in sync when `value` changes for a reason other than our
+  // own commit below (e.g. a "reset filters" button, browser back/forward),
+  // so the input doesn't keep showing stale text after an external reset.
+  useEffect(() => {
+    setDraft(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
   useEffect(() => {
     const t = setTimeout(() => {
       const trimmed = draft.trim();

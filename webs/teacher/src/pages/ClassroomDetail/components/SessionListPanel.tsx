@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import moment from "moment";
 
+import SearchInput from "_common/components/SearchInput";
 import StatusBadge from "_common/components/StatusBadge";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
@@ -23,6 +24,7 @@ const SessionListPanel = ({
 }: SessionListPanelProps) => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(DEFAULT_PAGE_SIZE);
+  const [search, setSearch] = useState("");
 
   // Reset back to page 1 whenever the underlying session list changes
   // (e.g. switching classes) so pagination doesn't get stuck out of range.
@@ -30,11 +32,22 @@ const SessionListPanel = ({
     setPage(1);
   }, [sessions]);
 
-  const total = sessions.length;
+  const filteredSessions = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return sessions;
+    return sessions.filter((s) => (s.name || "").toLowerCase().includes(term));
+  }, [sessions, search]);
+
+  const total = filteredSessions.length;
   const pagedSessions = useMemo(
-    () => sessions.slice((page - 1) * perPage, page * perPage),
-    [sessions, page, perPage],
+    () => filteredSessions.slice((page - 1) * perPage, page * perPage),
+    [filteredSessions, page, perPage],
   );
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
 
   const handleChangePage = (nextPage: number, nextSize: number) => {
     if (nextSize !== perPage) {
@@ -53,6 +66,14 @@ const SessionListPanel = ({
       emptyText="Chưa có buổi học nào"
       onRetry={onRetry}
     >
+      <div className="mb-3">
+        <SearchInput
+          value={search}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          placeholder="Tìm kiếm buổi học..."
+        />
+      </div>
+
       <div className="overflow-x-auto rounded-xl border border-slate-100">
         <table className="w-full min-w-[560px] text-left text-sm">
           <thead>
@@ -65,6 +86,13 @@ const SessionListPanel = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
+            {pagedSessions.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-4 py-6 text-center text-slate-400">
+                  Không có buổi học phù hợp
+                </td>
+              </tr>
+            )}
             {pagedSessions.map((s) => (
               <tr key={s.id} className="text-slate-700">
                 <td className="px-4 py-3 font-medium">

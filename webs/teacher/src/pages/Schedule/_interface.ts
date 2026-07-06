@@ -2,13 +2,15 @@ import type { ScheduleStatus } from "_common/types/schedule";
 
 export type { ScheduleStatus, ScheduleItem } from "_common/types/schedule";
 
-export type ScheduleView = "week" | "month" | "day" | "range";
+export type ScheduleView = "week" | "month" | "day" | "list" | "range";
 
 export interface CalendarParams {
   date_from: string;
   date_to: string;
   class_id?: number;
   teacher_id?: number;
+  branch_id?: number;
+  status?: string;
 }
 
 export interface ScheduleSummary {

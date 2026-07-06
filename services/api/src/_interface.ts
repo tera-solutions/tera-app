@@ -43,6 +43,7 @@ export interface ListParams<TFilter = any> {
   sort_by?: string;
   sort_dir?: "asc" | "desc";
   filters?: TFilter;
+  class_id?: string | number;
 }
 
 // ==========================

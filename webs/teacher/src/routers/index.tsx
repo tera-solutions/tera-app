@@ -14,6 +14,7 @@ import Classroom from "pages/Classroom";
 import ClassroomDetail from "pages/ClassroomDetail";
 import LessonPlan from "pages/LessonPlan";
 import PlanLessons from "pages/LessonPlan/PlanLessons";
+import LessonPlanWizard from "pages/LessonPlan/Wizard";
 import Lesson from "pages/Lesson";
 import Attendance from "pages/Attendance";
 import Students from "pages/Students";
@@ -53,6 +54,8 @@ export const Routers = () => {
         <Route path={PATHS.schedule} element={<Schedule />} />
         <Route path={PATHS.classroom} element={<Classroom />} />
         <Route path={PATHS.lessonPlans} element={<LessonPlan />} />
+        <Route path={`${PATHS.lessonPlans}/new`} element={<LessonPlanWizard />} />
+        <Route path={`${PATHS.lessonPlans}/:id/edit`} element={<LessonPlanWizard />} />
         <Route path={`${PATHS.lessonPlans}/:id`} element={<PlanLessons />} />
         <Route path={`${PATHS.lesson}/:id`} element={<Lesson />} />
         <Route path={`${PATHS.classroom}/:id`} element={<ClassroomDetail />} />

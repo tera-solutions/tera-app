@@ -1,4 +1,7 @@
+import StatusBadge from "_common/components/StatusBadge";
+
 import type { LessonActivity } from "../_interface";
+import { LESSON_ACTIVITY_STATUS_META } from "../constants";
 
 interface ActivityTimelineProps {
   activities: LessonActivity[];
@@ -17,12 +20,19 @@ const ActivityTimeline = ({ activities }: ActivityTimelineProps) => {
     <ol className="flex flex-col gap-2">
       {activities.map((activity, index) => (
         <li
-          key={index}
+          key={activity.id}
           className="flex items-center gap-3 rounded-xl border border-slate-100 p-3"
         >
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-50 text-xs font-semibold text-brand">
             {index + 1}
           </span>
+          {activity.avatar && (
+            <img
+              src={activity.avatar}
+              alt=""
+              className="h-7 w-7 shrink-0 rounded-full object-cover"
+            />
+          )}
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-slate-700">
               {activity.name}
@@ -38,6 +48,11 @@ const ActivityTimeline = ({ activities }: ActivityTimelineProps) => {
               </p>
             )}
           </div>
+          <StatusBadge
+            name={LESSON_ACTIVITY_STATUS_META}
+            value={activity.status}
+            className="shrink-0"
+          />
         </li>
       ))}
     </ol>

@@ -2,6 +2,7 @@ import { toDate, toTime } from "_common/utils/schedule";
 
 import type {
   LessonActivity,
+  LessonActivityStatus,
   LessonDetail,
   LessonMaterial,
 } from "./_interface";
@@ -16,14 +17,18 @@ const durationMinutes = (start: string, end: string): number => {
   return Math.max(0, toMinutes(end) - toMinutes(start));
 };
 
-/** Split a free-text block into trimmed, non-empty lines, stripping bullet chars. */
+/**
+ * Split a free-text block into trimmed, non-empty lines, stripping bullet
+ * chars. Objectives are stored as a single ";"-joined string; older/looser
+ * inputs (newlines) are tolerated too.
+ */
 const toLines = (value: unknown): string[] => {
   if (Array.isArray(value)) {
     return value.map((item) => String(item).trim()).filter(Boolean);
   }
   if (typeof value !== "string") return [];
   return value
-    .split(/\r?\n/)
+    .split(/;|\r?\n/)
     .map((line) => line.replace(/^[\s•\-*]+/, "").trim())
     .filter(Boolean);
 };
@@ -35,17 +40,31 @@ const parseDuration = (value: unknown): number => {
   return match ? Number(match[1]) : 0;
 };
 
+const ACTIVITY_STATUSES: LessonActivityStatus[] = [
+  "pending",
+  "in_progress",
+  "completed",
+];
+
+const toActivityStatus = (value: unknown): LessonActivityStatus =>
+  ACTIVITY_STATUSES.includes(value as LessonActivityStatus)
+    ? (value as LessonActivityStatus)
+    : "pending";
+
 /**
- * The lesson entity stores activities as free text (one per line). Parse the
- * common "Name (10 phút): description" shape, degrading gracefully when a line
- * only carries a name.
+ * Activities are structured rows (edu_lesson_activities / lesson_plan_lesson
+ * counterpart): avatar, title, description, duration, status. Free-text
+ * "Name (10 phút): description" lines are still tolerated for older data.
  */
-const parseActivity = (raw: any): LessonActivity => {
+const parseActivity = (raw: any, index: number): LessonActivity => {
   if (raw && typeof raw === "object") {
     return {
+      id: raw.id ?? index,
       name: String(raw.name ?? raw.title ?? "").trim(),
       duration: parseDuration(raw.duration ?? raw.minutes),
       description: String(raw.description ?? raw.content ?? "").trim(),
+      avatar: String(raw.avatar_url ?? raw.avatar ?? "").trim(),
+      status: toActivityStatus(raw.status),
     };
   }
 
@@ -57,12 +76,21 @@ const parseActivity = (raw: any): LessonActivity => {
   const duration = durationMatch ? parseDuration(durationMatch[1]) : 0;
   const name = head.replace(/\([^)]*\)/, "").trim();
 
-  return { name: name || line, duration, description };
+  return {
+    id: index,
+    name: name || line,
+    duration,
+    description,
+    avatar: "",
+    status: "pending",
+  };
 };
 
 export const toActivities = (raw: unknown): LessonActivity[] => {
   if (Array.isArray(raw)) return raw.map(parseActivity).filter((a) => a.name);
-  return toLines(raw).map(parseActivity).filter((a) => a.name);
+  return toLines(raw)
+    .map((line, index) => parseActivity(line, index))
+    .filter((a) => a.name);
 };
 
 const humanSize = (value: unknown): string => {

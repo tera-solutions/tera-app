@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { Button, PlusOutlined } from "tera-dls";
 
 import Card from "_common/components/Card";
 import DonutStatsCard from "_common/components/DonutStatsCard";
@@ -39,7 +38,7 @@ const Students = () => {
     sort_dir: { type: "string", default: "asc" as StudentSortDir },
     page: { type: "number", default: 1 },
     per_page: { type: "number", default: DEFAULT_PAGE_SIZE },
-  });
+  }, { syncDefaultsOnMount: true });
 
   const [searchDraft, setSearchDraft] = useDebouncedSearch(filters.search, (trimmed) =>
     setFilters({ search: trimmed, page: 1 }),
@@ -90,11 +89,16 @@ const Students = () => {
 
   const resetFilters = () => {
     setFilters({
+      search: "",
       class_id: 0,
       level_id: 0,
+      status: "",
       date_from: "",
       date_to: "",
+      sort_by: "name",
+      sort_dir: "asc",
       page: 1,
+      per_page: DEFAULT_PAGE_SIZE,
     });
   };
 
@@ -121,13 +125,6 @@ const Students = () => {
             Quản lý thông tin học tập của học viên
           </p>
         </div>
-        <Button
-          icon={<PlusOutlined />}
-          onClick={todo}
-          className="whitespace-nowrap bg-brand hover:bg-brand/80"
-        >
-          Thêm học viên
-        </Button>
       </div>
 
       <div className="mb-4">

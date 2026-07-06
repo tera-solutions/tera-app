@@ -3,14 +3,11 @@ import { observer } from "mobx-react-lite";
 import moment from "moment";
 import {
   AcademicCapOutlined,
-  ArrowDownTrayOutlined,
   BookOpenOutlined,
-  Button,
   CalendarDaysOutlined,
   ClockOutlined,
   IdentificationOutlined,
   MapPinOutlined,
-  PencilSquareOutlined,
   UserOutlined,
   UsersOutlined,
   VideoCameraOutlined,
@@ -28,8 +25,6 @@ interface ClassroomInfoCardProps {
   maxStudents: number;
   lessonPlan?: { id: number; name: string };
   onViewLessonPlan?: () => void;
-  onEdit: () => void;
-  onExport: () => void;
 }
 
 const InfoRow = ({
@@ -58,8 +53,6 @@ const ClassroomInfoCard = observer(({
   maxStudents,
   lessonPlan,
   onViewLessonPlan,
-  onEdit,
-  onExport,
 }: ClassroomInfoCardProps) => {
   const { getLabel } = useMeta();
   const timeRange =
@@ -99,32 +92,11 @@ const ClassroomInfoCard = observer(({
         </div>
 
         <div className="p-5">
-          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-lg font-bold text-slate-800">
-                  {detail.name}
-                </h2>
-                <StatusBadge name="class_status" value={detail.status} />
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                icon={<PencilSquareOutlined />}
-                onClick={onEdit}
-                className="whitespace-nowrap bg-brand hover:bg-brand/80"
-              >
-                Sửa thông tin lớp
-              </Button>
-              <Button
-                outlined
-                icon={<ArrowDownTrayOutlined />}
-                onClick={onExport}
-                className="whitespace-nowrap text-brand border-brand hover:bg-brand"
-              >
-                Tải danh sách lớp
-              </Button>
-            </div>
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <h2 className="text-lg font-bold text-slate-800">
+              {detail.name}
+            </h2>
+            <StatusBadge name="class_status" value={detail.status} />
           </div>
 
           <div className="grid grid-cols-1 gap-x-6 sm:grid-cols-2">

@@ -1,11 +1,8 @@
 import { useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import {
-  ArrowUpTrayOutlined,
-  Button,
   ChatBubbleLeftRightOutlined,
   EyeOutlined,
-  PlusOutlined,
   Select,
   Spin,
 } from "tera-dls";
@@ -54,7 +51,7 @@ const StudentListPanel = observer(({ classId }: { classId: number | null }) => {
     student_status: { type: "string", default: "" as StudentRowStatus | "" },
     student_page: { type: "number", default: 1 },
     student_per_page: { type: "number", default: DEFAULT_PAGE_SIZE },
-  });
+  }, { syncDefaultsOnMount: true });
   const [searchDraft, setSearchDraft] = useDebouncedSearch(
     filters.student_search,
     (trimmed) => setFilters({ student_search: trimmed, student_page: 1 }),
@@ -189,29 +186,6 @@ const StudentListPanel = observer(({ classId }: { classId: number | null }) => {
 
   return (
     <div>
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm font-semibold text-slate-700">
-          Danh sách học viên ({total})
-        </p>
-        <div className="flex items-center gap-2">
-          <Button
-            outlined
-            icon={<ArrowUpTrayOutlined />}
-            onClick={todo}
-            className="text-brand border-brand hover:bg-brand"
-          >
-            Nhập danh sách
-          </Button>
-          <Button
-            icon={<PlusOutlined />}
-            onClick={todo}
-            className="whitespace-nowrap bg-brand hover:bg-brand/80"
-          >
-            Thêm học viên
-          </Button>
-        </div>
-      </div>
-
       <div className="mb-3 flex flex-col gap-3 sm:flex-row">
         <SearchInput
           value={searchDraft}

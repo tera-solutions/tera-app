@@ -10,6 +10,7 @@ export * from "./assignment";
 export * from "./level";
 export * from "./lesson";
 export * from "./lesson-plan";
+export * from "./lesson-plan-lesson";
 export * from "./student";
 export * from "./student-level";
 export * from "./material";

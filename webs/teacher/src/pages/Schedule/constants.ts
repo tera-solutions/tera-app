@@ -48,9 +48,3 @@ const CLASS_PALETTE = [
 
 export const getClassColor = (classId: number) =>
   CLASS_PALETTE[Math.abs(classId) % CLASS_PALETTE.length];
-
-/** Minutes from midnight for a "HH:mm" string (used to order slots). */
-export const toMinutes = (time: string): number => {
-  const [h, m] = time.split(":").map(Number);
-  return (h || 0) * 60 + (m || 0);
-};

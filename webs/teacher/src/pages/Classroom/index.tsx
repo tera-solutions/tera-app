@@ -2,12 +2,9 @@ import { useMemo } from "react";
 import classNames from "classnames";
 import {
   AcademicCapOutlined,
-  Button,
   CheckBadgeOutlined,
   ClipboardDocumentCheckOutlined,
   ListBulletOutlined,
-  notification,
-  PlusOutlined,
   Spin,
   TableCellsOutlined,
   UsersOutlined,
@@ -64,7 +61,7 @@ const Classroom = () => {
     sort_dir: { type: "string", default: "desc" as ClassroomSortDir },
     page: { type: "number", default: 1 },
     pageSize: { type: "number", default: DEFAULT_PAGE_SIZE },
-  });
+  }, { syncDefaultsOnMount: true });
   const [searchDraft, setSearchDraft] = useDebouncedSearch(filters.search, (trimmed) =>
     setFilters({ search: trimmed, page: 1 }),
   );
@@ -128,9 +125,6 @@ const Classroom = () => {
     }
   };
 
-  const handleCreate = () =>
-    notification.open({ message: "Tính năng đang được phát triển" });
-
   const handleTabChange = (key: string) =>
     setFilters({ status: (key === "all" ? "" : key) as ClassroomStatus | "", page: 1 });
 
@@ -151,11 +145,17 @@ const Classroom = () => {
 
   const handleResetFilters = () =>
     setFilters({
+      view: "list",
+      search: "",
+      status: "",
       courseId: undefined,
       shift: "",
       startFrom: "",
       startTo: "",
+      sort_by: "created_at",
+      sort_dir: "desc",
       page: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
     });
 
   const renderList = () => {
@@ -208,13 +208,6 @@ const Classroom = () => {
             Quản lý và theo dõi các lớp bạn chủ nhiệm
           </p>
         </div>
-        <Button
-          icon={<PlusOutlined />}
-          onClick={handleCreate}
-          className="whitespace-nowrap bg-brand hover:bg-brand/80"
-        >
-          Tạo lớp học
-        </Button>
       </div>
 
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
