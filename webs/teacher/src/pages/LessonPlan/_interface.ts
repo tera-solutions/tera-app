@@ -1,3 +1,13 @@
+export interface LessonActivity {
+  id: number | string;
+  sort_order: number;
+  avatar: string;
+  title: string;
+  description: string;
+  duration: number;
+  status: string; // pending, in_progress, completed
+}
+
 export interface Lesson {
   id: number;
   class_room_id: number;
@@ -10,9 +20,20 @@ export interface Lesson {
   duration: number; // minutes (derived)
   status: string; // raw backend value (see `lesson_status` metadata)
   is_locked: boolean;
-  objective: string;
-  activities: string;
+  objective: string; // multiple values joined by ";"
+  activities: LessonActivity[];
   lesson_note: string;
+}
+
+/** A lesson template (edu_lesson_plan_lessons) belonging to a plan — distinct from the classroom-generated `Lesson` above. */
+export interface LessonTemplateSummary {
+  id: number;
+  lesson_no: number;
+  lesson_title: string;
+  duration: number;
+  objective_count: number;
+  activities_count: number;
+  materials_count: number;
 }
 
 export interface LessonPlan {

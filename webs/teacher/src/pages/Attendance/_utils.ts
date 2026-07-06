@@ -2,13 +2,13 @@ import type { ClassStudent } from "pages/ClassroomDetail/_interface";
 import type { AttendanceRecord } from "pages/ClassroomDetail/_interface";
 
 import type { AttendanceRow, AttendanceSummaryCounts } from "./_interface";
-import { DEFAULT_STATUS } from "./constants";
 
 /**
  * Builds the editable grid rows from the full class roster plus whatever
  * attendance records already exist for the selected session. Students with
- * no record yet default to Present (task spec) but stay non-`dirty` so an
- * untouched session doesn't get saved as "everyone present" by accident.
+ * no record yet are left unmarked (`status: null`) so the teacher has to
+ * actively mark each one — an untouched session shouldn't silently save as
+ * "everyone present".
  */
 export const toAttendanceRows = (
   roster: ClassStudent[],
@@ -23,7 +23,7 @@ export const toAttendanceRows = (
       avatar: student.avatar,
       code: student.code,
       record_id: record?.id ?? null,
-      status: record?.status ?? DEFAULT_STATUS,
+      status: record?.status ?? null,
       time: "",
       dirty: false,
     };

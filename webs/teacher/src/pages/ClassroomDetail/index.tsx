@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import classNames from "classnames";
-import { Spin } from "tera-dls";
+import { ArrowDownTrayOutlined, Button, Spin } from "tera-dls";
 
 import Breadcrumb from "_common/components/Breadcrumb";
 import { CARD } from "_common/constants/dashboard";
@@ -120,12 +120,22 @@ const ClassroomDetail = () => {
 
   return (
     <div className="p-4 xmd:p-6">
-      <Breadcrumb
-        items={[
-          { label: "Lớp học", onClick: () => navigate(PATHS.classroom) },
-          { label: "Chi tiết lớp học" },
-        ]}
-      />
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
+        <Breadcrumb
+          items={[
+            { label: "Lớp học", onClick: () => navigate(PATHS.classroom) },
+            { label: "Chi tiết lớp học" },
+          ]}
+        />
+        <Button
+          outlined
+          icon={<ArrowDownTrayOutlined />}
+          onClick={todo}
+          className="whitespace-nowrap text-brand border-brand hover:bg-brand"
+        >
+          Tải danh sách lớp
+        </Button>
+      </div>
 
       {notFound ? (
         <div className="flex h-[50vh] items-center justify-center">
@@ -151,8 +161,6 @@ const ClassroomDetail = () => {
                 onViewLessonPlan={() =>
                   navigate(`${PATHS.lessonPlans}/${lessonPlan?.id}`)
                 }
-                onEdit={todo}
-                onExport={todo}
               />
 
               <OverviewStats statistics={statistics} />
@@ -182,7 +190,7 @@ const ClassroomDetail = () => {
                 <div className="flex flex-col gap-4">
                   <ResultSummaryCard statistics={statistics} />
                   <UpcomingSessions schedules={detail.schedules} />
-                  <ClassNotifications onCreate={todo} />
+                  <ClassNotifications />
                 </div>
               </div>
             </div>

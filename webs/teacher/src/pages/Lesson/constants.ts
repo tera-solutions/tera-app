@@ -3,6 +3,9 @@ import type { LessonDetailTab } from "./_interface";
 /** Shared enum metadata list name (see `/auth/metadata`). */
 export const LESSON_STATUS_META = "lesson_status";
 
+/** Shared enum metadata list name for activity status (see `/auth/metadata`). */
+export const LESSON_ACTIVITY_STATUS_META = "lesson_activity_status";
+
 export const DETAIL_TABS: { key: LessonDetailTab; label: string }[] = [
   { key: "overview", label: "Tổng quan" },
   { key: "content", label: "Nội dung" },

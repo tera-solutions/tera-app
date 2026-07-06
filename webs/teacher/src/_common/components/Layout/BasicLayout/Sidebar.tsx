@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   ChevronDoubleLeftOutlined,
   ChevronDoubleRightOutlined,
+  StarSolid
 } from "tera-dls";
 
 import { MENU } from "../Menu/menus";
@@ -63,9 +64,7 @@ const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
               <strong>Hana Edu</strong>
               <span>Hỗ trợ giáo viên</span>
             </div>
-            <span className="text-2xl">
-              ⭐
-            </span>
+            <StarSolid className="size-8 text-accent" />
         </button>
       </div>
 

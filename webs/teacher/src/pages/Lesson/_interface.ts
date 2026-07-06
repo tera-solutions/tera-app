@@ -5,10 +5,15 @@ export type LessonDetailTab =
   | "materials"
   | "notes";
 
+export type LessonActivityStatus = "pending" | "in_progress" | "completed";
+
 export interface LessonActivity {
+  id: number | string;
   name: string;
   duration: number; // minutes, 0 when unknown
   description: string;
+  avatar: string;
+  status: LessonActivityStatus;
 }
 
 export interface LessonMaterial {

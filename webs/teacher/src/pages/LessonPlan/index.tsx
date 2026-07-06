@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import moment from "moment";
@@ -30,7 +30,6 @@ import type { LessonPlan, LessonPlanSortBy, LessonPlanSortDir } from "./_interfa
 import { LESSON_PLAN_STATUS_META, SORT_BY_OPTIONS } from "./constants";
 import { summarizePlans, toLessonPlans } from "./_utils";
 import LessonPlanTable from "./components/LessonPlanTable";
-import LessonPlanFormModal from "./components/LessonPlanFormModal";
 import LessonFilterCard from "./components/LessonFilterCard";
 import PlanStatusSidebar from "./components/PlanStatusSidebar";
 
@@ -52,12 +51,10 @@ const LessonPlanPage = observer(() => {
     dateTo: { type: "string", default: "" },
     sortBy: { type: "string", default: "created_at" as LessonPlanSortBy },
     sortDir: { type: "string", default: "desc" as LessonPlanSortDir },
-  });
+  }, { syncDefaultsOnMount: true });
   const [searchDraft, setSearchDraft] = useDebouncedSearch(filters.search, (trimmed) =>
     setFilters({ search: trimmed, page: 1 }),
   );
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<LessonPlan | null>(null);
 
   const confirm = useConfirm();
   const { mutate: archive } = LessonPlanService.useLessonPlanArchive();
@@ -79,7 +76,17 @@ const LessonPlanPage = observer(() => {
   const handleRangeClear = () =>
     setFilters({ dateFrom: "", dateTo: "", page: 1 });
   const handleResetFilters = () =>
-    setFilters({ courseId: undefined, dateFrom: "", dateTo: "", page: 1 });
+    setFilters({
+      status: "all",
+      courseId: undefined,
+      search: "",
+      dateFrom: "",
+      dateTo: "",
+      sortBy: "created_at",
+      sortDir: "desc",
+      page: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+    });
 
   // Stats/sidebar reflect every plan for the course, independent of the active
   // status tab or the current page.
@@ -130,15 +137,10 @@ const LessonPlanPage = observer(() => {
   const toggleSortDir = () =>
     setFilters({ sortDir: filters.sortDir === "asc" ? "desc" : "asc" });
 
-  const handleCreate = () => {
-    setEditing(null);
-    setFormOpen(true);
-  };
+  const handleCreate = () => navigate(`${PATHS.lessonPlans}/new`);
 
-  const handleEdit = (plan: LessonPlan) => {
-    setEditing(plan);
-    setFormOpen(true);
-  };
+  const handleEdit = (plan: LessonPlan) =>
+    navigate(`${PATHS.lessonPlans}/${plan.id}/edit`);
 
   const handleView = (plan: LessonPlan) =>
     navigate(`${PATHS.lessonPlans}/${plan.id}`);
@@ -186,7 +188,7 @@ const LessonPlanPage = observer(() => {
           onClick={handleCreate}
           className="whitespace-nowrap bg-brand hover:bg-brand/80"
         >
-          Thêm giáo án
+          Soạn giáo án
         </Button>
       </div>
 
@@ -287,13 +289,6 @@ const LessonPlanPage = observer(() => {
           <PlanStatusSidebar stats={stats} />
         </div>
       </div>
-
-      <LessonPlanFormModal
-        open={formOpen}
-        editing={editing}
-        onClose={() => setFormOpen(false)}
-        onSuccess={() => refetch()}
-      />
     </div>
   );
 });

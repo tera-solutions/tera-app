@@ -3,9 +3,10 @@ import moment from "moment";
 
 import Card from "_common/components/Card";
 import DonutStatsCard from "_common/components/DonutStatsCard";
-import { getDonutColor } from "pages/Classroom/constants";
+import { useMeta } from "_common/hooks/useMeta";
 
 import type { LessonDetail } from "../_interface";
+import { LESSON_ACTIVITY_STATUS_META } from "../constants";
 import LessonNote from "./LessonNote";
 
 interface LessonSidebarProps {
@@ -23,12 +24,27 @@ const InfoRow = ({ label, value }: { label: string; value: string }) => (
 );
 
 const LessonSidebar = ({ detail, courseName, level }: LessonSidebarProps) => {
+  const { getOptions } = useMeta();
+
   const updatedAt = detail.updated_at
     ? moment(detail.updated_at).format("DD/MM/YYYY")
     : "";
   const updatedLabel = [updatedAt, detail.updated_by && `bởi ${detail.updated_by}`]
     .filter(Boolean)
     .join(" ");
+
+  const activities = detail.activities;
+  const completedCount = activities.filter((a) => a.status === "completed").length;
+  const activityProgress = activities.length
+    ? Math.round((completedCount / activities.length) * 100)
+    : 0;
+
+  const activityStatusLegend = getOptions(LESSON_ACTIVITY_STATUS_META).map((option) => ({
+    key: option.value,
+    label: option.label,
+    color: option.color ?? "#94a3b8",
+    value: activities.filter((a) => a.status === option.value).length,
+  }));
 
   return (
     <div className="flex flex-col gap-4">
@@ -57,24 +73,10 @@ const LessonSidebar = ({ detail, courseName, level }: LessonSidebarProps) => {
       </Card>
 
       <DonutStatsCard
-        title="Tiến độ lớp học"
-        centerValue={`${detail.completion_rate}%`}
+        title="Tiến độ bài học"
+        centerValue={`${activityProgress}%`}
         centerCaption="Hoàn thành"
-        showLegendList={false}
-        legend={[
-          {
-            key: "rate",
-            label: "Hoàn thành",
-            color: getDonutColor(detail.completion_rate),
-            value: detail.completion_rate,
-          },
-          {
-            key: "rest",
-            label: "Còn lại",
-            color: "#e2e8f0",
-            value: 100 - detail.completion_rate,
-          },
-        ]}
+        legend={activityStatusLegend}
       />
 
       <Card>

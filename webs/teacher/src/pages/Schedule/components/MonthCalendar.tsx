@@ -1,10 +1,16 @@
-import { useMemo } from "react";
+import { useEffect, useRef } from "react";
 import moment from "moment";
-import classNames from "classnames";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import type { EventClickArg, DateClickArg } from "@fullcalendar/core";
 
 import { WEEKDAY_LABELS } from "../constants";
+import { toFullCalendarEvents, type ScheduleEventInput } from "../_utils";
 import type { ScheduleItem } from "../_interface";
 import ScheduleBlock from "./ScheduleBlock";
+
+import "./fc-overrides.css";
 
 interface MonthCalendarProps {
   currentDate: moment.Moment;
@@ -13,97 +19,44 @@ interface MonthCalendarProps {
   onSelectDay: (date: moment.Moment) => void;
 }
 
-const MAX_VISIBLE = 3;
-
 const MonthCalendar = ({
   currentDate,
   schedules,
   onSelect,
   onSelectDay,
 }: MonthCalendarProps) => {
-  const monthStart = currentDate.clone().startOf("month");
-  const gridStart = monthStart.clone().startOf("isoWeek");
+  const calendarRef = useRef<FullCalendar>(null);
+  const events = toFullCalendarEvents(schedules);
 
-  const weeks = useMemo(() => {
-    const cells = Array.from({ length: 42 }, (_, i) =>
-      gridStart.clone().add(i, "day"),
-    );
-    return Array.from({ length: 6 }, (_, w) => cells.slice(w * 7, w * 7 + 7));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gridStart.format("YYYY-MM-DD")]);
-
-  const byDate = useMemo(() => {
-    const map = new Map<string, ScheduleItem[]>();
-    schedules.forEach((item) => {
-      const list = map.get(item.date) ?? [];
-      list.push(item);
-      map.set(item.date, list);
-    });
-    return map;
-  }, [schedules]);
-
-  const today = moment().format("YYYY-MM-DD");
-  const currentMonth = monthStart.month();
+  useEffect(() => {
+    calendarRef.current?.getApi().gotoDate(currentDate.toDate());
+  }, [currentDate]);
 
   return (
-    <div>
-      <div className="grid grid-cols-7 border-b border-slate-100">
-        {WEEKDAY_LABELS.map((label) => (
-          <div
-            key={label}
-            className="py-2 text-center text-[11px] font-medium text-slate-400"
-          >
-            {label}
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7">
-        {weeks.flat().map((day) => {
-          const dateKey = day.format("YYYY-MM-DD");
-          const items = byDate.get(dateKey) ?? [];
-          const isCurrentMonth = day.month() === currentMonth;
-          const isToday = dateKey === today;
-          return (
-            <button
-              type="button"
-              key={dateKey}
-              onClick={() => onSelectDay(day)}
-              className={classNames(
-                "flex min-h-[96px] flex-col gap-1 border-b border-l border-slate-100 p-1 text-left align-top",
-                !isCurrentMonth && "bg-slate-50/60",
-              )}
-            >
-              <span
-                className={classNames(
-                  "ml-auto flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium",
-                  isToday
-                    ? "bg-brand text-white"
-                    : isCurrentMonth
-                      ? "text-slate-700"
-                      : "text-slate-300",
-                )}
-              >
-                {day.format("DD")}
-              </span>
-              <div className="flex flex-col gap-0.5">
-                {items.slice(0, MAX_VISIBLE).map((item) => (
-                  <ScheduleBlock
-                    key={item.id}
-                    item={item}
-                    onClick={onSelect}
-                    compact
-                  />
-                ))}
-                {items.length > MAX_VISIBLE && (
-                  <span className="px-1 text-[10px] font-medium text-brand">
-                    Xem thêm +{items.length - MAX_VISIBLE}
-                  </span>
-                )}
-              </div>
-            </button>
-          );
-        })}
-      </div>
+    <div className="fc-tera">
+      <FullCalendar
+        ref={calendarRef}
+        plugins={[dayGridPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        initialDate={currentDate.toDate()}
+        headerToolbar={false}
+        firstDay={1}
+        height={680}
+        events={events}
+        dayMaxEvents={3}
+        dayHeaderContent={({ date }) => (
+          <span className="text-xs font-medium text-slate-600">
+            {WEEKDAY_LABELS[moment(date).isoWeekday() - 1]}
+          </span>
+        )}
+        dateClick={(arg: DateClickArg) => onSelectDay(moment(arg.date))}
+        eventClick={(arg: EventClickArg) =>
+          onSelect((arg.event.extendedProps as ScheduleEventInput["extendedProps"]).item)
+        }
+        eventContent={({ event }: { event: { extendedProps: ScheduleEventInput["extendedProps"] } }) => (
+          <ScheduleBlock item={event.extendedProps.item} onClick={onSelect} compact />
+        )}
+      />
     </div>
   );
 };

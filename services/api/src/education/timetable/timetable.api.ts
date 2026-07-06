@@ -7,6 +7,8 @@ export interface TimetableCalendarParams {
   class_id?: number;
   teacher_id?: number;
   room_id?: number;
+  branch_id?: number;
+  status?: string;
 }
 
 export const TimetableAPI = {

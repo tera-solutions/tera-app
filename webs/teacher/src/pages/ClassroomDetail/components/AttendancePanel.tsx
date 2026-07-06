@@ -1,23 +1,17 @@
 import { useMemo, useState } from "react";
 
+import SearchInput from "_common/components/SearchInput";
 import StatusBadge from "_common/components/StatusBadge";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import WidgetState from "_common/components/WidgetState";
 import { AttendanceService } from "@tera/modules/education";
 
-import type { AttendanceStatus } from "../_interface";
 import { toAttendanceRecords } from "../_utils";
 
 interface AttendancePanelProps {
   classId: number | null;
 }
-
-const SUMMARY: { key: AttendanceStatus; label: string; tone: string }[] = [
-  { key: "present", label: "Có mặt", tone: "text-emerald-600" },
-  { key: "absent", label: "Vắng", tone: "text-red-500" },
-  { key: "late", label: "Muộn", tone: "text-amber-600" },
-];
 
 const AttendancePanel = ({ classId }: AttendancePanelProps) => {
   const listParams = { class_id: classId ?? 0, per_page: 100 };
@@ -30,12 +24,28 @@ const AttendancePanel = ({ classId }: AttendancePanelProps) => {
 
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(DEFAULT_PAGE_SIZE);
+  const [search, setSearch] = useState("");
 
-  const total = records.length;
+  const filteredRecords = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return records;
+    return records.filter(
+      (r) =>
+        r.student_name.toLowerCase().includes(term) ||
+        r.student_code.toLowerCase().includes(term),
+    );
+  }, [records, search]);
+
+  const total = filteredRecords.length;
   const pagedRecords = useMemo(
-    () => records.slice((page - 1) * perPage, page * perPage),
-    [records, page, perPage],
+    () => filteredRecords.slice((page - 1) * perPage, page * perPage),
+    [filteredRecords, page, perPage],
   );
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
 
   const handleChangePage = (nextPage: number, nextSize: number) => {
     if (nextSize !== perPage) {
@@ -46,16 +56,6 @@ const AttendancePanel = ({ classId }: AttendancePanelProps) => {
     }
   };
 
-  const counts = useMemo(() => {
-    const map: Record<string, number> = {};
-    records.forEach((r) => {
-      map[r.status] = (map[r.status] ?? 0) + 1;
-    });
-    return map;
-  }, [records]);
-
-  const sessionName = records[0]?.session_name;
-
   return (
     <WidgetState
       isLoading={loading}
@@ -65,25 +65,14 @@ const AttendancePanel = ({ classId }: AttendancePanelProps) => {
       onRetry={() => refetch()}
     >
       <div className="flex flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm font-medium text-slate-600">
-            Buổi điểm danh gần nhất
-            {sessionName ? `: ${sessionName}` : ""}
-          </p>
-          <div className="flex items-center gap-3">
-            {SUMMARY.map((s) => (
-              <div key={s.key} className="text-center">
-                <p className={`text-lg font-bold ${s.tone}`}>
-                  {counts[s.key] ?? 0}
-                </p>
-                <p className="text-[11px] text-slate-400">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <SearchInput
+          value={search}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          placeholder="Tìm kiếm học viên..."
+        />
 
         <div className="overflow-x-auto rounded-xl border border-slate-100">
-          <table className="w-full min-w-[480px] text-left text-sm">
+          <table className="w-full min-w-120 text-left text-sm">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50 text-xs font-medium text-slate-500">
                 <th className="px-4 py-3">STT</th>
@@ -93,6 +82,13 @@ const AttendancePanel = ({ classId }: AttendancePanelProps) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
+              {pagedRecords.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-4 py-6 text-center text-slate-400">
+                    Không có học viên phù hợp
+                  </td>
+                </tr>
+              )}
               {pagedRecords.map((r, i) => (
                 <tr key={r.id} className="text-slate-700">
                   <td className="px-4 py-3 text-slate-400">

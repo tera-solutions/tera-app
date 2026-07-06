@@ -1,12 +1,8 @@
-import { BellOutlined, PlusOutlined } from "tera-dls";
+import { BellOutlined } from "tera-dls";
 
 import { CARD } from "_common/constants/dashboard";
 
-interface ClassNotificationsProps {
-  onCreate: () => void;
-}
-
-const ClassNotifications = ({ onCreate }: ClassNotificationsProps) => (
+const ClassNotifications = () => (
   <div className={`${CARD} p-4`}>
     <p className="mb-3 text-sm font-semibold text-slate-700">
       Thông báo lớp học
@@ -19,14 +15,6 @@ const ClassNotifications = ({ onCreate }: ClassNotificationsProps) => (
         Chưa có thông báo cho lớp này.
       </p>
     </div>
-    <button
-      type="button"
-      onClick={onCreate}
-      className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-slate-200 py-2 text-xs font-medium text-brand hover:bg-sky-50 [&_svg]:h-4 [&_svg]:w-4"
-    >
-      <PlusOutlined />
-      Tạo thông báo mới
-    </button>
   </div>
 );
 

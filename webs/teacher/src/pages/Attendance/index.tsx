@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import moment from "moment";
-import { ArrowUpTrayOutlined, Button, notification, Spin } from "tera-dls";
+import { ArrowDownTrayOutlined, Button, notification, Spin } from "tera-dls";
 
 import Card from "_common/components/Card";
 import EmptyState from "_common/components/EmptyState";
@@ -16,15 +16,14 @@ import type { AttendanceStatus } from "pages/ClassroomDetail/_interface";
 import {
   AttendanceService,
   ClassRoomService,
+  ClassSessionService,
   StudentService,
-  TimetableService,
 } from "@tera/modules/education";
 
 import type { AttendanceRow } from "./_interface";
 import { SESSION_RANGE_MONTHS } from "./constants";
 import { summarizeAttendance, toAttendanceRows } from "./_utils";
 import AttendanceHeader from "./components/AttendanceHeader";
-import AttendanceSummary from "./components/AttendanceSummary";
 import AttendanceGrid from "./components/AttendanceGrid";
 import AttendanceSidebar from "./components/AttendanceSidebar";
 
@@ -37,14 +36,14 @@ const Attendance = () => {
   const [filters, setFilters] = useUrlFilters({
     class_id: { type: "number", default: 0 },
     session_id: { type: "number", default: 0 },
-  });
+  }, { syncDefaultsOnMount: true });
 
   const [rows, setRows] = useState<AttendanceRow[]>([]);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [note, setNote] = useState("");
 
   const classesQuery = ClassRoomService.useClassRoomList({
-    params: { per_page: 100 },
+    params: { per_page: 20 },
   });
   const classes = useMemo(
     () => toClassrooms(classesQuery.data?.data?.items),
@@ -59,15 +58,15 @@ const Attendance = () => {
     }
   }, [classes, filters.class_id]);
 
-  const sessionsQuery = TimetableService.useTimetableCalendar({
-    class_id: classId ?? 0,
-    ...SESSION_RANGE,
-  });
+  const sessionsQuery = ClassSessionService.useClassSessionList(
+    { params: { class_id: filters.class_id, per_page: 100, ...SESSION_RANGE } },
+    { enabled: !!filters.class_id },
+  );
   const sessions = useMemo(() => {
-    const list = toClassSessions(sessionsQuery.data?.data);
+    if (sessionsQuery.isPlaceholderData) return [];
+
+    const list = toClassSessions(sessionsQuery.data?.data?.items);
     const today = moment().startOf("day");
-    // Nearest upcoming (today or future) session first; past sessions after,
-    // nearest-to-today first.
     const rank = (date: string) => {
       const diff = moment(date).startOf("day").diff(today, "days");
       return diff >= 0 ? [0, diff] : [1, -diff];
@@ -77,7 +76,9 @@ const Attendance = () => {
       const [groupB, valB] = rank(b.date);
       return groupA - groupB || valA - valB;
     });
-  }, [sessionsQuery.data]);
+  }, [sessionsQuery.data, sessionsQuery.isPlaceholderData]);
+
+  const sessionsLoading = sessionsQuery.isLoading || sessionsQuery.isPlaceholderData;
 
   const sessionId = filters.session_id || sessions[0]?.id || null;
 
@@ -111,22 +112,49 @@ const Attendance = () => {
     [recordsQuery.data],
   );
 
-  // Rebuild the editable draft whenever the roster/records for the selected
-  // class+session change; local edits are lost on purpose when switching.
+  // Last-saved status per student, used to restore a row if its pending
+  // (unsaved) status change is undone by deselecting it.
+  const savedStatuses = useMemo(() => {
+    const baseRows = toAttendanceRows(roster, records);
+    return new Map(baseRows.map((r) => [r.student_id, r.status]));
+  }, [roster, records]);
+
   useEffect(() => {
     setRows(toAttendanceRows(roster, records));
     setNote("");
-    setSelectedId(null);
+    setSelectedIds(new Set());
   }, [roster, records]);
 
   const counts = useMemo(() => summarizeAttendance(rows), [rows]);
   const absentRows = useMemo(() => rows.filter((r) => r.status === "absent"), [rows]);
   const dirtyRows = useMemo(() => rows.filter((r) => r.dirty), [rows]);
 
-  const setStatus = (studentId: number, status: AttendanceStatus) => {
+  const toggleSelect = (studentId: number) => {
+    const wasSelected = selectedIds.has(studentId);
+
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(studentId)) next.delete(studentId);
+      else next.add(studentId);
+      return next;
+    });
+
+    if (wasSelected) {
+      setRows((prev) =>
+        prev.map((r) =>
+          r.student_id === studentId && r.dirty
+            ? { ...r, status: savedStatuses.get(studentId) ?? null, dirty: false }
+            : r,
+        ),
+      );
+    }
+  };
+
+  const setStatusForSelected = (status: AttendanceStatus) => {
+    if (selectedIds.size === 0) return;
     setRows((prev) =>
       prev.map((r) =>
-        r.student_id === studentId ? { ...r, status, dirty: true } : r,
+        selectedIds.has(r.student_id) ? { ...r, status, dirty: true } : r,
       ),
     );
   };
@@ -180,9 +208,10 @@ const Attendance = () => {
           </p>
         </div>
         <Button
-          icon={<ArrowUpTrayOutlined />}
+          outlined
+          icon={<ArrowDownTrayOutlined />}
           onClick={todo}
-          className="whitespace-nowrap bg-brand hover:bg-brand/80"
+          className="whitespace-nowrap text-brand border-brand hover:bg-brand"
         >
           Xuất báo cáo
         </Button>
@@ -193,13 +222,14 @@ const Attendance = () => {
           classes={classes}
           classId={classId}
           onClassChange={(id) => setFilters({ class_id: id, session_id: 0 })}
+          classesLoading={classesQuery.isLoading}
           sessions={sessions}
           sessionId={sessionId}
           onSessionChange={(id) => setFilters({ session_id: id })}
-          studentCount={roster.length}
+          sessionsLoading={sessionsLoading}
         />
 
-        {!classId ? null : sessionsQuery.isLoading ? (
+        {!classId ? null : sessionsLoading ? (
           <div className="flex h-40 items-center justify-center">
             <Spin spinning>
               <div className="h-20" />
@@ -209,11 +239,6 @@ const Attendance = () => {
           <EmptyState description="Lớp học này chưa có buổi học nào" />
         ) : (
           <>
-            <AttendanceSummary
-              counts={counts}
-              loading={rosterQuery.isLoading || recordsQuery.isLoading}
-            />
-
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_300px]">
               <Card>
                 <AttendanceGrid
@@ -224,9 +249,9 @@ const Attendance = () => {
                     rosterQuery.refetch();
                     recordsQuery.refetch();
                   }}
-                  selectedId={selectedId}
-                  onSelect={setSelectedId}
-                  onSetStatus={setStatus}
+                  selectedIds={selectedIds}
+                  onToggleSelect={toggleSelect}
+                  onSetStatus={setStatusForSelected}
                   onMarkAllPresent={markAllPresent}
                 />
 
