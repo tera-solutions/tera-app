@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { ArrowDownTrayOutlined, Button, Spin } from "tera-dls";
 
 import Breadcrumb from "_common/components/Breadcrumb";
+import ComingSoon from "_common/components/ComingSoon";
 import { CARD } from "_common/constants/dashboard";
 import ErrorRetry from "_common/components/ErrorRetry";
 import { PATHS } from "_common/components/Layout/Menu/menus";
@@ -21,7 +22,6 @@ import StudentListPanel from "./components/StudentListPanel";
 import AttendancePanel from "./components/AttendancePanel";
 import SessionListPanel from "./components/SessionListPanel";
 import MaterialsPanel from "./components/MaterialsPanel";
-import ComingSoon from "./components/ComingSoon";
 import { toClassroomDetail, toClassSessions } from "./_utils";
 import {
   ClassRoomService,

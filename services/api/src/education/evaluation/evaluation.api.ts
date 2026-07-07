@@ -20,6 +20,11 @@ export const EvaluationAPI = {
       .get(`${endpoint}/edu/evaluation/detail/${id}`)
       .then((result) => result.data),
 
+  getStudentSummary: async (params?: Record<string, unknown>) =>
+    await api
+      .get(`${endpoint}/edu/evaluation/student-summary`, params)
+      .then((result) => result.data),
+
   create: async ({ params }: CreatePayload) =>
     await api
       .post(`${endpoint}/edu/evaluation/create`, params)

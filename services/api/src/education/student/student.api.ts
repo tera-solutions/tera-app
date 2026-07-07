@@ -55,4 +55,9 @@ export const StudentAPI = {
     await api
       .get(`${endpoint}/edu/student/summary`, params)
       .then((result) => result.data),
+
+  getStats: async ({ id }: DetailPayload) =>
+    await api
+      .get(`${endpoint}/edu/student/detail/${id}/stats`)
+      .then((result) => result.data),
 };

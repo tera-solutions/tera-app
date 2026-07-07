@@ -3,8 +3,8 @@ import { ArrowDownTrayOutlined, notification, Spin } from "tera-dls";
 
 import SearchInput from "_common/components/SearchInput";
 import StatusBadge from "_common/components/StatusBadge";
+import Table, { TableColumn } from "_common/components/Table";
 import TablePagination from "_common/components/TablePagination";
-import WidgetState from "_common/components/WidgetState";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import { FileAPI } from "@tera/api/common/FileAPI";
 import { MaterialService } from "@tera/modules/education";
@@ -88,6 +88,64 @@ const MaterialsPanel = ({ courseId, lessonPlanId }: MaterialsPanelProps) => {
     }
   };
 
+  const columns: TableColumn<ClassMaterial>[] = [
+    {
+      key: "name",
+      title: "Tài liệu",
+      render: (m) => (
+        <>
+          <p className="font-medium">{m.name || "—"}</p>
+          {m.file_name && (
+            <p className="mt-0.5 truncate text-xs text-slate-400">
+              {m.file_name}
+              {m.file_size && ` · ${m.file_size}`}
+            </p>
+          )}
+          <div className="mt-1">
+            <StatusBadge name={MATERIAL_TYPE_META} value={m.type} />
+          </div>
+        </>
+      ),
+    },
+    {
+      key: "category",
+      title: "Danh mục",
+      cellClassName: "px-4 py-3 text-slate-500",
+      render: (m) => m.category || "—",
+    },
+    {
+      key: "version",
+      title: "Phiên bản",
+      cellClassName: "px-4 py-3 text-slate-500",
+      render: (m) => (m.version > 0 ? `v${m.version}` : "—"),
+    },
+    {
+      key: "status",
+      title: "Trạng thái",
+      render: (m) => <StatusBadge name={MATERIAL_STATUS_META} value={m.status} />,
+    },
+    {
+      key: "actions",
+      title: "Thao tác",
+      render: (m) =>
+        downloadingId === m.id ? (
+          <span className="flex h-8 w-8 items-center justify-center [&_svg]:h-4 [&_svg]:w-4">
+            <Spin spinning size="small" />
+          </span>
+        ) : (
+          <button
+            type="button"
+            title="Tải xuống"
+            disabled={!m.file_id}
+            onClick={() => handleDownload(m)}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand disabled:cursor-not-allowed disabled:text-slate-200 disabled:hover:bg-transparent [&_svg]:h-4.5 [&_svg]:w-4.5"
+          >
+            <ArrowDownTrayOutlined />
+          </button>
+        ),
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-3">
       <SearchInput
@@ -99,80 +157,28 @@ const MaterialsPanel = ({ courseId, lessonPlanId }: MaterialsPanelProps) => {
         placeholder="Tìm kiếm tài liệu..."
       />
 
-      <WidgetState
+      <Table
+        columns={columns}
+        data={pagedMaterials}
+        rowKey={(m) => m.id}
         isLoading={isLoading}
         isError={isError}
-        isEmpty={!isLoading && materials.length === 0}
-        emptyText="Chưa có tài liệu nào cho lớp học này"
         onRetry={() => {
           courseQuery.refetch();
           lessonPlanQuery.refetch();
         }}
-      >
-        <div className="overflow-x-auto rounded-xl border border-slate-100">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-slate-100 bg-slate-50 text-xs font-medium text-slate-500">
-                <th className="px-4 py-3">Tài liệu</th>
-                <th className="px-4 py-3">Danh mục</th>
-                <th className="px-4 py-3">Phiên bản</th>
-                <th className="px-4 py-3">Trạng thái</th>
-                <th className="px-4 py-3">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {pagedMaterials.map((m) => (
-                <tr key={m.id} className="text-slate-700">
-                  <td className="px-4 py-3">
-                    <p className="font-medium">{m.name || "—"}</p>
-                    {m.file_name && (
-                      <p className="mt-0.5 truncate text-xs text-slate-400">
-                        {m.file_name}
-                        {m.file_size && ` · ${m.file_size}`}
-                      </p>
-                    )}
-                    <div className="mt-1">
-                      <StatusBadge name={MATERIAL_TYPE_META} value={m.type} />
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-slate-500">{m.category || "—"}</td>
-                  <td className="px-4 py-3 text-slate-500">
-                    {m.version > 0 ? `v${m.version}` : "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusBadge name={MATERIAL_STATUS_META} value={m.status} />
-                  </td>
-                  <td className="px-4 py-3">
-                    {downloadingId === m.id ? (
-                      <span className="flex h-8 w-8 items-center justify-center [&_svg]:h-4 [&_svg]:w-4">
-                        <Spin spinning size="small" />
-                      </span>
-                    ) : (
-                      <button
-                        type="button"
-                        title="Tải xuống"
-                        disabled={!m.file_id}
-                        onClick={() => handleDownload(m)}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand disabled:cursor-not-allowed disabled:text-slate-200 disabled:hover:bg-transparent [&_svg]:h-4.5 [&_svg]:w-4.5"
-                      >
-                        <ArrowDownTrayOutlined />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        errorMessage="Không tải được tài liệu"
+        emptyText="Chưa có tài liệu nào cho lớp học này"
+        minWidthClassName="min-w-[640px]"
+      />
 
-        <TablePagination
-          total={total}
-          page={page}
-          perPage={perPage}
-          unit="tài liệu"
-          onChange={handleChangePage}
-        />
-      </WidgetState>
+      <TablePagination
+        total={total}
+        page={page}
+        perPage={perPage}
+        unit="tài liệu"
+        onChange={handleChangePage}
+      />
     </div>
   );
 };

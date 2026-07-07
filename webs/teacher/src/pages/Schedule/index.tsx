@@ -348,7 +348,7 @@ const Schedule = () => {
             </p>
             {!isMobile && (
               <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">
-                {(["month", "week", "day", "list"] as const).map((key) => (
+                {(["list", "day", "week", "month"] as const).map((key) => (
                   <button
                     key={key}
                     type="button"

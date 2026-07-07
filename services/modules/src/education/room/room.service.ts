@@ -34,6 +34,17 @@ export const useRoomDetail = (payload: DetailPayload, options?: QueryHookOptions
   });
 };
 
+export const useRoomSummary = (
+  params?: Record<string, unknown>,
+  options?: QueryHookOptions,
+) => {
+  return useQueryAdapter({
+    queryKey: ["room", "summary", params],
+    queryFn: () => RoomAPI.getSummary(params),
+    ...options,
+  });
+};
+
 // MUTATION
 export const useRoomCreate = () => {
   const { t } = useTranslation();
@@ -143,6 +154,7 @@ export const useRoomRestore = () => {
 export const RoomService = {
   useRoomList,
   useRoomDetail,
+  useRoomSummary,
   useRoomCreate,
   useRoomUpdate,
   useUpsertRoom,
