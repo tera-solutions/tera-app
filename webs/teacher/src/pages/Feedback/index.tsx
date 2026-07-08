@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQueries } from "@tanstack/react-query";
 import { CheckBadgeOutlined, ChatBubbleLeftRightOutlined, StarOutlined, UsersOutlined } from "tera-dls";
 
@@ -75,6 +76,22 @@ const Feedback = () => {
   }, [rows, search]);
 
   const selectedRow = rows.find((r) => r.student_id === selectedStudent?.student_id) ?? null;
+
+  // Deep-link from the student list / classroom roster ("Nhận xét" action):
+  // `?student_id=` pre-selects the student and opens the evaluation form once
+  // the rows have loaded.
+  const [searchParams] = useSearchParams();
+  const presetStudentId = searchParams.get("student_id");
+  const presetApplied = useRef(false);
+  useEffect(() => {
+    if (presetApplied.current || !presetStudentId || rows.length === 0) return;
+    const row = rows.find((r) => r.student_id === Number(presetStudentId));
+    if (row) {
+      setSelectedStudent(row);
+      setFormOpen(true);
+      presetApplied.current = true;
+    }
+  }, [presetStudentId, rows]);
 
   return (
     <div className="p-4 xmd:p-6">

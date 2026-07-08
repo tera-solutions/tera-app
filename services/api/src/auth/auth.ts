@@ -13,6 +13,12 @@ export const AuthApi = {
   logout: async () => await api.post(`${authEndpoint}/logout`),
   getProfile: async () =>
     await api.get(`${auth2Endpoint}/profile`).then((result) => result.data),
+  updateProfile: async (params: any) =>
+    await api.put(`${auth2Endpoint}/profile`, params).then((result) => result.data),
+  changePassword: async (params: { current_password: string; new_password: string }) =>
+    await api
+      .post(`${auth2Endpoint}/profile/change-password`, params)
+      .then((result) => result.data),
   getMetadata: async () =>
     await api.get(`${authEndpoint}/metadata`).then((result) => result.data),
   getPermissions: async () =>

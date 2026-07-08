@@ -406,7 +406,11 @@ const Lesson = () => {
                     <Button
                       outlined
                       icon={<ClipboardDocumentListOutlined />}
-                      onClick={todo}
+                      disabled={!detail.lesson_plan_id}
+                      onClick={() =>
+                        detail.lesson_plan_id &&
+                        navigate(`${PATHS.lessonPlans}/${detail.lesson_plan_id}`)
+                      }
                       className="text-brand border-brand hover:bg-brand"
                     >
                       Xem kế hoạch bài học

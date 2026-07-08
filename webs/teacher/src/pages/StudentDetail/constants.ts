@@ -9,4 +9,4 @@ export const DETAIL_TABS: { key: DetailTab; label: string }[] = [
 ];
 
 /** Tabs backed by a real teacher endpoint; the rest render a "coming soon" state. */
-export const SUPPORTED_TABS: DetailTab[] = ["overview", "attendance"];
+export const SUPPORTED_TABS: DetailTab[] = ["overview", "attendance", "scores", "homework", "history"];

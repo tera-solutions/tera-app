@@ -14,7 +14,6 @@ import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
 import { useMeta } from "_common/hooks/useMeta";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
-import { todo } from "_common/utils/todo";
 
 import type { ClassStudent, StudentRowStatus } from "../_interface";
 import { StudentService } from "@tera/modules/education";
@@ -135,7 +134,7 @@ const StudentListPanel = observer(({ classId }: { classId: number | null }) => {
           <button
             type="button"
             title="Nhận xét"
-            onClick={todo}
+            onClick={() => navigate(`${PATHS.comments}?student_id=${student.id}`)}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4.5 [&_svg]:w-4.5"
           >
             <ChatBubbleLeftRightOutlined />

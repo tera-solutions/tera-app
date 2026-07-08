@@ -31,6 +31,9 @@ import CurrentClassTable from "./components/CurrentClassTable";
 import RecentComments from "./components/RecentComments";
 import StudentMaterialsCard from "./components/StudentMaterialsCard";
 import StudentAttendanceTable from "./components/StudentAttendanceTable";
+import StudentScoresPanel from "./components/StudentScoresPanel";
+import StudentHistoryPanel from "./components/StudentHistoryPanel";
+import ClassHomeworkPanel from "pages/ClassroomDetail/components/ClassHomeworkPanel";
 
 const StudentDetail = () => {
   const navigate = useNavigate();
@@ -142,6 +145,35 @@ const StudentDetail = () => {
             unit="buổi điểm danh"
             onChange={handleAttendancePageChange}
           />
+        </Card>
+      );
+
+    if (tab === "scores")
+      return (
+        <Card>
+          <p className="mb-2 text-sm font-semibold text-slate-700">Điểm đánh giá</p>
+          <StudentScoresPanel
+            evaluations={evaluationItems}
+            isLoading={evaluationsQuery.isLoading}
+            isError={evaluationsQuery.isError}
+            onRetry={() => evaluationsQuery.refetch()}
+          />
+        </Card>
+      );
+
+    if (tab === "homework")
+      return (
+        <Card>
+          <p className="mb-2 text-sm font-semibold text-slate-700">Bài tập của lớp</p>
+          <ClassHomeworkPanel classId={classId} />
+        </Card>
+      );
+
+    if (tab === "history")
+      return (
+        <Card>
+          <p className="mb-2 text-sm font-semibold text-slate-700">Lịch sử ghi danh</p>
+          <StudentHistoryPanel studentId={studentId} />
         </Card>
       );
 

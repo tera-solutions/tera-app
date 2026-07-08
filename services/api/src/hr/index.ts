@@ -1,3 +1,4 @@
+export * from "./achievement";
 export * from "./department";
 export * from "./job-role";
 export * from "./staff";
