@@ -16,6 +16,20 @@ export const useTimetableCalendar = (
   });
 };
 
+export const useStudentSchedule = (
+  id: string | number | undefined,
+  params?: { date_from?: string; date_to?: string },
+  options?: QueryHookOptions,
+) => {
+  return useQueryAdapter({
+    queryKey: ["timetable", "student-schedule", id, params],
+    queryFn: () => TimetableAPI.getStudentSchedule(id as string | number, params),
+    enabled: !!id,
+    ...options,
+  });
+};
+
 export const TimetableService = {
   useTimetableCalendar,
+  useStudentSchedule,
 };

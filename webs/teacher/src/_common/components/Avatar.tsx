@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { UserOutlined } from "tera-dls";
 import classNames from "classnames";
 
@@ -10,16 +11,19 @@ interface AvatarProps {
   iconClassName?: string;
   /** Fallback icon svg size classes. */
   iconSizeClassName?: string;
+  /** Icon shown when `src` is missing. Defaults to a user icon. */
+  fallbackIcon?: ReactNode;
   shrink?: boolean;
 }
 
-/** Circular avatar image, falling back to a user icon when `src` is missing. */
+/** Circular avatar image, falling back to an icon when `src` is missing. */
 const Avatar = ({
   src,
   alt,
   sizeClassName = "h-8 w-8",
   iconClassName = "bg-sky-50 text-brand",
   iconSizeClassName = "[&_svg]:h-4 [&_svg]:w-4",
+  fallbackIcon = <UserOutlined />,
   shrink = true,
 }: AvatarProps) => {
   if (src) {
@@ -42,7 +46,7 @@ const Avatar = ({
         iconSizeClassName,
       )}
     >
-      <UserOutlined />
+      {fallbackIcon}
     </span>
   );
 };

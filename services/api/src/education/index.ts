@@ -18,6 +18,7 @@ export * from "./exam";
 export * from "./assignment";
 export * from "./level";
 export * from "./lesson";
+export * from "./lesson-activity";
 export * from "./lesson-material";
 export * from "./lesson-plan";
 export * from "./lesson-plan-lesson";

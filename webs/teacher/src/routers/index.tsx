@@ -18,6 +18,10 @@ import LessonPlanWizard from "pages/LessonPlan/Wizard";
 import Lesson from "pages/Lesson";
 import Attendance from "pages/Attendance";
 import Students from "pages/Students";
+import StudentDetail from "pages/StudentDetail";
+import Room from "pages/Room";
+import RoomDetail from "pages/RoomDetail";
+import Feedback from "pages/Feedback";
 import Notifications from "pages/Notifications";
 import Placeholder from "pages/Placeholder";
 
@@ -32,7 +36,6 @@ const PLACEHOLDER_PATHS = [
   PATHS.homework,
   PATHS.grading,
   PATHS.reports,
-  PATHS.comments,
   PATHS.messages,
   PATHS.more,
   PATHS.profile,
@@ -61,6 +64,10 @@ export const Routers = () => {
         <Route path={`${PATHS.classroom}/:id`} element={<ClassroomDetail />} />
         <Route path={PATHS.attendance} element={<Attendance />} />
         <Route path={PATHS.students} element={<Students />} />
+        <Route path={`${PATHS.studentDetail}/:id`} element={<StudentDetail />} />
+        <Route path={PATHS.rooms} element={<Room />} />
+        <Route path={`${PATHS.roomDetail}/:id`} element={<RoomDetail />} />
+        <Route path={PATHS.comments} element={<Feedback />} />
         <Route path={PATHS.notifications} element={<Notifications />} />
         {PLACEHOLDER_PATHS.map((path) => (
           <Route key={path} path={path} element={<Placeholder />} />

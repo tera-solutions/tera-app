@@ -49,4 +49,9 @@ export const RoomAPI = {
     await api
       .post(`${endpoint}/edu/room/restore/${id}`, params)
       .then((result) => result.data),
+
+  getSummary: async (params?: Record<string, unknown>) =>
+    await api
+      .get(`${endpoint}/edu/room/summary`, params)
+      .then((result) => result.data),
 };

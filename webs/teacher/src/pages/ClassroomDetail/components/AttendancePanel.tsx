@@ -2,11 +2,12 @@ import { useMemo, useState } from "react";
 
 import SearchInput from "_common/components/SearchInput";
 import StatusBadge from "_common/components/StatusBadge";
+import Table, { TableColumn } from "_common/components/Table";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
-import WidgetState from "_common/components/WidgetState";
 import { AttendanceService } from "@tera/modules/education";
 
+import type { AttendanceRecord } from "../_interface";
 import { toAttendanceRecords } from "../_utils";
 
 interface AttendancePanelProps {
@@ -56,66 +57,55 @@ const AttendancePanel = ({ classId }: AttendancePanelProps) => {
     }
   };
 
+  const columns: TableColumn<AttendanceRecord>[] = [
+    {
+      key: "stt",
+      title: "STT",
+      cellClassName: "px-4 py-3 text-slate-400",
+      render: (r, i) => (page - 1) * perPage + i + 1,
+    },
+    { key: "student_name", title: "Học viên", cellClassName: "px-4 py-3 font-medium", render: (r) => r.student_name },
+    {
+      key: "student_code",
+      title: "Mã HV",
+      cellClassName: "px-4 py-3 text-slate-500",
+      render: (r) => r.student_code || "—",
+    },
+    {
+      key: "status",
+      title: "Trạng thái",
+      render: (r) => <StatusBadge name="attendance_status" value={r.status} />,
+    },
+  ];
+
   return (
-    <WidgetState
-      isLoading={loading}
-      isError={isError}
-      isEmpty={!loading && records.length === 0}
-      emptyText="Chưa có dữ liệu điểm danh"
-      onRetry={() => refetch()}
-    >
-      <div className="flex flex-col gap-4">
-        <SearchInput
-          value={search}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          placeholder="Tìm kiếm học viên..."
-        />
+    <div className="flex flex-col gap-4">
+      <SearchInput
+        value={search}
+        onChange={(e) => handleSearchChange(e.target.value)}
+        placeholder="Tìm kiếm học viên..."
+      />
 
-        <div className="overflow-x-auto rounded-xl border border-slate-100">
-          <table className="w-full min-w-120 text-left text-sm">
-            <thead>
-              <tr className="border-b border-slate-100 bg-slate-50 text-xs font-medium text-slate-500">
-                <th className="px-4 py-3">STT</th>
-                <th className="px-4 py-3">Học viên</th>
-                <th className="px-4 py-3">Mã HV</th>
-                <th className="px-4 py-3">Trạng thái</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {pagedRecords.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="px-4 py-6 text-center text-slate-400">
-                    Không có học viên phù hợp
-                  </td>
-                </tr>
-              )}
-              {pagedRecords.map((r, i) => (
-                <tr key={r.id} className="text-slate-700">
-                  <td className="px-4 py-3 text-slate-400">
-                    {(page - 1) * perPage + i + 1}
-                  </td>
-                  <td className="px-4 py-3 font-medium">{r.student_name}</td>
-                  <td className="px-4 py-3 text-slate-500">
-                    {r.student_code || "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusBadge name="attendance_status" value={r.status} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <Table
+        columns={columns}
+        data={pagedRecords}
+        rowKey={(r) => r.id}
+        isLoading={loading}
+        isError={isError}
+        onRetry={() => refetch()}
+        errorMessage="Không tải được dữ liệu điểm danh"
+        emptyText={records.length === 0 ? "Chưa có dữ liệu điểm danh" : "Không có học viên phù hợp"}
+        minWidthClassName="min-w-120"
+      />
 
-        <TablePagination
-          total={total}
-          page={page}
-          perPage={perPage}
-          unit="học viên"
-          onChange={handleChangePage}
-        />
-      </div>
-    </WidgetState>
+      <TablePagination
+        total={total}
+        page={page}
+        perPage={perPage}
+        unit="học viên"
+        onChange={handleChangePage}
+      />
+    </div>
   );
 };
 

@@ -1,11 +1,12 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Card from "_common/components/Card";
 import DonutStatsCard from "_common/components/DonutStatsCard";
+import { PATHS } from "_common/components/Layout/Menu/menus";
 import SearchInput from "_common/components/SearchInput";
 import SortControl from "_common/components/SortControl";
 import StatusTabs from "_common/components/StatusTabs";
-import StudentDetailModal from "_common/components/StudentDetailModal";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
@@ -24,8 +25,8 @@ import StudentFilterSidebar, {
 } from "./components/StudentFilterSidebar";
 
 const Students = () => {
+  const navigate = useNavigate();
   const { getTabs, getItem } = useMeta();
-  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
 
   const [filters, setFilters] = useUrlFilters({
     search: { type: "string", default: "" },
@@ -67,8 +68,6 @@ const Students = () => {
 
   const data = useMemo(() => toStudentListResult(listQuery.data?.data), [listQuery.data]);
 
-  // Totals come from `/edu/student/summary` (server-wide, ignores pagination);
-  // fall back to counting the loaded page if that endpoint has no value yet.
   const summaryQuery = StudentService.useStudentSummary();
   const isSummaryLoading = summaryQuery.isLoading;
   const summary = useMemo(
@@ -77,7 +76,6 @@ const Students = () => {
   );
 
   const perPage = data.per_page || filters.per_page;
-  const from = data.total === 0 ? 0 : (filters.page - 1) * perPage + 1;
 
   const handleChangePage = (nextPage: number, nextSize: number) => {
     if (nextSize !== perPage) {
@@ -163,10 +161,9 @@ const Students = () => {
             sortBy={filters.sort_by}
             sortDir={filters.sort_dir}
             onSortChange={handleSort}
-            onView={(student) => setSelectedStudentId(student.id)}
+            onView={(student) => navigate(`${PATHS.studentDetail}/${student.id}`)}
             onComment={todo}
             onMessage={todo}
-            from={from}
           />
 
           <TablePagination
@@ -202,12 +199,6 @@ const Students = () => {
           />
         </div>
       </div>
-
-      <StudentDetailModal
-        studentId={selectedStudentId}
-        open={selectedStudentId != null}
-        onClose={() => setSelectedStudentId(null)}
-      />
     </div>
   );
 };

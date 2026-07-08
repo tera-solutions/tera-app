@@ -48,6 +48,11 @@ export const ClassSessionAPI = {
       .post(`${endpoint}/edu/class-session/cancel/${id}`, params)
       .then((r) => r.data),
 
+  end: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/edu/class-session/end/${id}`, params)
+      .then((r) => r.data),
+
   delete: async ({ id }: DeletePayload) =>
     await api
       .delete(`${endpoint}/edu/class-session/delete/${id}`)

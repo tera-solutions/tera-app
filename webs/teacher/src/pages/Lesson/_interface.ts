@@ -2,6 +2,7 @@ export type LessonDetailTab =
   | "overview"
   | "content"
   | "activities"
+  | "attendance"
   | "materials"
   | "notes";
 

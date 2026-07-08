@@ -3,9 +3,9 @@ import moment from "moment";
 
 import SearchInput from "_common/components/SearchInput";
 import StatusBadge from "_common/components/StatusBadge";
+import Table, { TableColumn } from "_common/components/Table";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
-import WidgetState from "_common/components/WidgetState";
 
 import type { ClassSession } from "../_interface";
 
@@ -58,14 +58,35 @@ const SessionListPanel = ({
     }
   };
 
+  const columns: TableColumn<ClassSession>[] = [
+    {
+      key: "session_no",
+      title: "Buổi",
+      cellClassName: "px-4 py-3 font-medium",
+      render: (s) => (s.session_no != null ? `Buổi ${s.session_no}` : "—"),
+    },
+    { key: "name", title: "Nội dung", render: (s) => s.name || "—" },
+    {
+      key: "date",
+      title: "Ngày",
+      cellClassName: "px-4 py-3 text-slate-500",
+      render: (s) => (s.date ? moment(s.date, "YYYY-MM-DD").format("DD/MM/YYYY") : "—"),
+    },
+    {
+      key: "time",
+      title: "Thời gian",
+      cellClassName: "px-4 py-3 text-slate-500",
+      render: (s) => (s.start_time && s.end_time ? `${s.start_time} - ${s.end_time}` : "—"),
+    },
+    {
+      key: "status",
+      title: "Trạng thái",
+      render: (s) => <StatusBadge name="class_session_status" value={s.status} />,
+    },
+  ];
+
   return (
-    <WidgetState
-      isLoading={loading}
-      isError={isError}
-      isEmpty={!loading && sessions.length === 0}
-      emptyText="Chưa có buổi học nào"
-      onRetry={onRetry}
-    >
+    <div>
       <div className="mb-3">
         <SearchInput
           value={search}
@@ -74,47 +95,17 @@ const SessionListPanel = ({
         />
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-slate-100">
-        <table className="w-full min-w-[560px] text-left text-sm">
-          <thead>
-            <tr className="border-b border-slate-100 bg-slate-50 text-xs font-medium text-slate-500">
-              <th className="px-4 py-3">Buổi</th>
-              <th className="px-4 py-3">Nội dung</th>
-              <th className="px-4 py-3">Ngày</th>
-              <th className="px-4 py-3">Thời gian</th>
-              <th className="px-4 py-3">Trạng thái</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {pagedSessions.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-slate-400">
-                  Không có buổi học phù hợp
-                </td>
-              </tr>
-            )}
-            {pagedSessions.map((s) => (
-              <tr key={s.id} className="text-slate-700">
-                <td className="px-4 py-3 font-medium">
-                  {s.session_no != null ? `Buổi ${s.session_no}` : "—"}
-                </td>
-                <td className="px-4 py-3">{s.name || "—"}</td>
-                <td className="px-4 py-3 text-slate-500">
-                  {s.date ? moment(s.date, "YYYY-MM-DD").format("DD/MM/YYYY") : "—"}
-                </td>
-                <td className="px-4 py-3 text-slate-500">
-                  {s.start_time && s.end_time
-                    ? `${s.start_time} - ${s.end_time}`
-                    : "—"}
-                </td>
-                <td className="px-4 py-3">
-                  <StatusBadge name="class_session_status" value={s.status} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        columns={columns}
+        data={pagedSessions}
+        rowKey={(s) => s.id}
+        isLoading={loading}
+        isError={isError}
+        onRetry={onRetry}
+        errorMessage="Không tải được danh sách buổi học"
+        emptyText={sessions.length === 0 ? "Chưa có buổi học nào" : "Không có buổi học phù hợp"}
+        minWidthClassName="min-w-[560px]"
+      />
 
       <TablePagination
         total={total}
@@ -123,7 +114,7 @@ const SessionListPanel = ({
         unit="buổi học"
         onChange={handleChangePage}
       />
-    </WidgetState>
+    </div>
   );
 };
 

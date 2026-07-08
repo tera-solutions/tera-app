@@ -51,6 +51,18 @@ export const useStudentSummary = (
   });
 };
 
+export const useStudentStats = (
+  payload: DetailPayload,
+  options?: QueryHookOptions,
+) => {
+  return useQueryAdapter({
+    queryKey: ["student", "stats", payload.id],
+    queryFn: () => StudentAPI.getStats(payload),
+    enabled: !!payload.id,
+    ...options,
+  });
+};
+
 // MUTATION
 export const useStudentCreate = () => {
   const { t } = useTranslation();
@@ -162,6 +174,7 @@ export const StudentService = {
   useStudentList,
   useStudentDetail,
   useStudentSummary,
+  useStudentStats,
   useStudentCreate,
   useStudentUpdate,
   useUpsertStudent,

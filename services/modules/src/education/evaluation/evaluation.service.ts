@@ -33,6 +33,17 @@ export const useEvaluationDetail = (payload: DetailPayload, options?: QueryHookO
   });
 };
 
+export const useEvaluationStudentSummary = (
+  params?: Record<string, unknown>,
+  options?: QueryHookOptions,
+) => {
+  return useQueryAdapter({
+    queryKey: ["evaluation", "student-summary", params],
+    queryFn: () => EvaluationAPI.getStudentSummary(params),
+    ...options,
+  });
+};
+
 // MUTATION
 export const useEvaluationCreate = () => {
   const { t } = useTranslation();
@@ -41,6 +52,7 @@ export const useEvaluationCreate = () => {
     mutationFn: (payload: CreatePayload) => EvaluationAPI.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["evaluation", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "student-summary"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -56,6 +68,7 @@ export const useEvaluationUpdate = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["evaluation", "list"] });
       queryClient.invalidateQueries({ queryKey: ["evaluation", "detail"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "student-summary"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -74,6 +87,7 @@ export const useUpsertEvaluation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["evaluation", "list"] });
       queryClient.invalidateQueries({ queryKey: ["evaluation", "detail"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "student-summary"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -106,6 +120,7 @@ const useEvaluationAction = (
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["evaluation", "list"] });
       queryClient.invalidateQueries({ queryKey: ["evaluation", "detail"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "student-summary"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -121,6 +136,7 @@ export const useEvaluationLock = () => useEvaluationAction(EvaluationAPI.lock);
 export const EvaluationService = {
   useEvaluationList,
   useEvaluationDetail,
+  useEvaluationStudentSummary,
   useEvaluationCreate,
   useEvaluationUpdate,
   useUpsertEvaluation,

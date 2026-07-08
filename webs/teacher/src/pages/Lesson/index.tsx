@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import moment from "moment";
 import classNames from "classnames";
 import {
   Button,
@@ -17,13 +18,23 @@ import useConfirm from "_common/hooks/useConfirm";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 import { todo } from "_common/utils/todo";
 import {
+  ClassSessionService,
+  LessonActivityService,
   LessonMaterialService,
   LessonPlanService,
   LessonService,
 } from "@tera/modules/education";
 import { toLessonPlan } from "pages/LessonPlan/_utils";
+import { toClassSessions } from "pages/ClassroomDetail/_utils";
+import { useAttendanceSession } from "pages/Attendance/hooks/useAttendanceSession";
+import AttendanceEditor from "pages/Attendance/components/AttendanceEditor";
 
-import type { LessonDetailTab, LessonMaterial } from "./_interface";
+import type {
+  LessonActivity,
+  LessonActivityStatus,
+  LessonDetailTab,
+  LessonMaterial,
+} from "./_interface";
 import { DETAIL_TABS } from "./constants";
 import { toLessonDetail } from "./_utils";
 import LessonHeader from "./components/LessonHeader";
@@ -68,6 +79,103 @@ const Lesson = () => {
     if (!payload) return undefined;
     return toLessonPlan(payload.plan ?? payload);
   }, [lessonPlanQuery.data]);
+
+  // Resolve which class session this lesson maps to so attendance can be taken
+  // in-place. Prefer the session on the lesson's own date; otherwise fall back
+  // to the session nearest today.
+  const attendanceClassId = detail?.class_room_id ?? null;
+  const sessionListParams = {
+    class_id: attendanceClassId ?? 0,
+    per_page: 100,
+    date_from: moment().subtract(6, "months").format("YYYY-MM-DD"),
+    date_to: moment().add(6, "months").format("YYYY-MM-DD"),
+  };
+  const sessionsQuery = ClassSessionService.useClassSessionList(
+    { params: sessionListParams },
+    { enabled: !!attendanceClassId },
+  );
+  const attendanceSessionId = useMemo(() => {
+    const list = toClassSessions(sessionsQuery.data?.data?.items);
+    if (list.length === 0) return null;
+    const onLessonDate = detail?.date
+      ? list.find((s) => s.date === detail.date)
+      : undefined;
+    if (onLessonDate) return onLessonDate.id;
+    const today = moment().startOf("day");
+    const nearest = [...list].sort(
+      (a, b) =>
+        Math.abs(moment(a.date).startOf("day").diff(today, "days")) -
+        Math.abs(moment(b.date).startOf("day").diff(today, "days")),
+    );
+    return nearest[0]?.id ?? null;
+  }, [sessionsQuery.data, detail?.date]);
+
+  const attendanceSession = useAttendanceSession({
+    classId: attendanceClassId,
+    sessionId: attendanceSessionId,
+  });
+
+  // Live activity progress. Persisted to `edu_lesson_activities` via the
+  // activity status endpoint; kept as optimistic local state so Start/Complete
+  // feel instant, rolled back if the request fails.
+  const [activityStatuses, setActivityStatuses] = useState<
+    Record<string, LessonActivityStatus>
+  >({});
+
+  useEffect(() => {
+    if (!detail) return;
+    setActivityStatuses(
+      Object.fromEntries(
+        detail.activities.map((a) => [String(a.id), a.status]),
+      ),
+    );
+  }, [detail?.id]);
+
+  const activities: LessonActivity[] = useMemo(
+    () =>
+      (detail?.activities ?? []).map((a) => ({
+        ...a,
+        status: activityStatuses[String(a.id)] ?? a.status,
+      })),
+    [detail?.activities, activityStatuses],
+  );
+
+  const { mutate: persistActivityStatus } =
+    LessonActivityService.useLessonActivityUpdateStatus();
+
+  const setActivityStatus = (
+    activityId: LessonActivity["id"],
+    status: LessonActivityStatus,
+  ) => {
+    const prevStatus = activityStatuses[String(activityId)] ?? "pending";
+    setActivityStatuses((prev) => ({ ...prev, [String(activityId)]: status }));
+    persistActivityStatus(
+      { id: activityId, status },
+      {
+        onSuccess: (res: any) => {
+          notification.success({
+            message:
+              res?.msg ??
+              (status === "in_progress"
+                ? "Đã bắt đầu hoạt động"
+                : status === "completed"
+                  ? "Đã hoàn thành hoạt động"
+                  : "Đã cập nhật hoạt động"),
+          });
+        },
+        onError: (err: any) => {
+          setActivityStatuses((prev) => ({
+            ...prev,
+            [String(activityId)]: prevStatus,
+          }));
+          notification.error({
+            message:
+              err?.msg ?? err?.message ?? "Cập nhật hoạt động thất bại",
+          });
+        },
+      },
+    );
+  };
 
   const { mutate: detachMaterial } = LessonMaterialService.useLessonMaterialDetach();
 
@@ -115,7 +223,7 @@ const Lesson = () => {
           notification.success({
             message: res?.msg ?? "Đã bắt đầu buổi học",
           });
-          navigate(`${PATHS.attendance}?class_id=${detail?.class_room_id ?? ""}`);
+          setTab("attendance");
         },
         onError: (err: any) => {
           notification.error({
@@ -162,7 +270,15 @@ const Lesson = () => {
         return (
           <div>
             <SectionTitle>Hoạt động trong bài</SectionTitle>
-            <ActivityTimeline activities={detail.activities} />
+            <ActivityTimeline
+              activities={activities}
+              onStart={(activityId) =>
+                setActivityStatus(activityId, "in_progress")
+              }
+              onComplete={(activityId) =>
+                setActivityStatus(activityId, "completed")
+              }
+            />
           </div>
         );
       case "materials":
@@ -177,6 +293,20 @@ const Lesson = () => {
               onDelete={handleDeleteMaterial}
               deletingId={deletingId}
             />
+          </div>
+        );
+      case "attendance":
+        if (!attendanceSessionId) {
+          return (
+            <p className="py-8 text-center text-sm text-slate-400">
+              Buổi học này chưa gắn với buổi điểm danh nào.
+            </p>
+          );
+        }
+        return (
+          <div>
+            <SectionTitle>Điểm danh buổi học</SectionTitle>
+            <AttendanceEditor session={attendanceSession} />
           </div>
         );
       case "notes":
@@ -200,7 +330,7 @@ const Lesson = () => {
             </div>
             <div>
               <SectionTitle>Hoạt động trong bài</SectionTitle>
-              <ActivityTimeline activities={detail.activities} />
+              <ActivityTimeline activities={activities} />
             </div>
           </div>
         );
