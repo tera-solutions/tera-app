@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueries } from "@tanstack/react-query";
+import { Button } from "tera-dls";
 
 import Card from "_common/components/Card";
 import DonutStatsCard from "_common/components/DonutStatsCard";
@@ -12,12 +14,12 @@ import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
 import { useMeta } from "_common/hooks/useMeta";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
-import { todo } from "_common/utils/todo";
-import { StudentService } from "@tera/modules/education";
+import { StudentAPI } from "@tera/api";
+import { ClassRoomService, EvaluationService, StudentService } from "@tera/modules/education";
 
 import type { StudentSortBy, StudentSortDir } from "./_interface";
 import { SORT_OPTIONS, STUDENT_STATUS_META, STUDENT_SUMMARY_SEGMENTS } from "./constants";
-import { toStudentListResult, toStudentSummary } from "./_utils";
+import { enrichStudentRows, toStudentListResult, toStudentSummary } from "./_utils";
 import StudentStats from "./components/StudentStats";
 import StudentTable from "./components/StudentTable";
 import StudentFilterSidebar, {
@@ -66,7 +68,52 @@ const Students = () => {
   const listQuery = StudentService.useStudentList({ params: listParams });
   const { isLoading, isFetching, isError, refetch } = listQuery;
 
-  const data = useMemo(() => toStudentListResult(listQuery.data?.data), [listQuery.data]);
+  const rawData = useMemo(() => toStudentListResult(listQuery.data?.data), [listQuery.data]);
+
+  // Student list/detail carries no class field for the teacher role, so it's
+  // resolved by scanning the teacher's own classes' rosters — same fix as
+  // Feedback/StudentDetail.
+  const classesQuery = ClassRoomService.useClassRoomList({ params: { per_page: 50 } });
+  const classes = useMemo(() => classesQuery.data?.data?.items ?? [], [classesQuery.data]);
+
+  const rosterQueries = useQueries({
+    queries: classes.map((c: any) => ({
+      queryKey: ["students", "class-roster", c.id],
+      queryFn: () => StudentAPI.getList({ params: { class_id: c.id, per_page: 100 } }),
+      enabled: classes.length > 0,
+    })),
+  });
+  const studentClassMap = useMemo(() => {
+    const map = new Map<number, string>();
+    classes.forEach((c: any, i: number) => {
+      const items = (rosterQueries[i]?.data as any)?.data?.items ?? [];
+      items.forEach((s: any) => {
+        if (!map.has(s.id)) map.set(s.id, c.name);
+      });
+    });
+    return map;
+  }, [classes, rosterQueries]);
+
+  // No dedicated avg-score field either — the latest `Evaluation` score per
+  // student stands in, same as Feedback/Ranking.
+  const evaluationsQuery = EvaluationService.useEvaluationList({
+    params: { filters: { evaluation_type: "student" } },
+  });
+  const studentScoreMap = useMemo(() => {
+    const map = new Map<number, { score: number; date: string }>();
+    (evaluationsQuery.data?.data?.items ?? []).forEach((e: any) => {
+      if (e.score == null || !e.target_id) return;
+      const date = e.evaluated_at ?? e.created_at ?? "";
+      const current = map.get(e.target_id);
+      if (!current || date >= current.date) map.set(e.target_id, { score: Number(e.score), date });
+    });
+    return new Map(Array.from(map, ([id, v]) => [id, v.score]));
+  }, [evaluationsQuery.data]);
+
+  const data = useMemo(
+    () => ({ ...rawData, items: enrichStudentRows(rawData.items, studentClassMap, studentScoreMap) }),
+    [rawData, studentClassMap, studentScoreMap],
+  );
 
   const summaryQuery = StudentService.useStudentSummary();
   const isSummaryLoading = summaryQuery.isLoading;
@@ -116,12 +163,18 @@ const Students = () => {
 
   return (
     <div className="p-4 xmd:p-6">
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-slate-800">Học viên</h1>
           <p className="mt-0.5 text-sm text-slate-400">
             Quản lý thông tin học tập của học viên
           </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button outlined onClick={() => navigate(PATHS.transfer)}>
+            Chuyển lớp
+          </Button>
+          <Button onClick={() => navigate(PATHS.enrollmentNew)}>Ghi danh học viên</Button>
         </div>
       </div>
 
@@ -162,8 +215,8 @@ const Students = () => {
             sortDir={filters.sort_dir}
             onSortChange={handleSort}
             onView={(student) => navigate(`${PATHS.studentDetail}/${student.id}`)}
-            onComment={todo}
-            onMessage={todo}
+            onComment={(student) => navigate(`${PATHS.comments}?student_id=${student.id}`)}
+            onMessage={() => navigate(PATHS.messages)}
           />
 
           <TablePagination

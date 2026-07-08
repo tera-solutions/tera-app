@@ -25,6 +25,7 @@ interface ClassroomInfoCardProps {
   maxStudents: number;
   lessonPlan?: { id: number; name: string };
   onViewLessonPlan?: () => void;
+  onViewCourse?: () => void;
 }
 
 const InfoRow = ({
@@ -53,6 +54,7 @@ const ClassroomInfoCard = observer(({
   maxStudents,
   lessonPlan,
   onViewLessonPlan,
+  onViewCourse,
 }: ClassroomInfoCardProps) => {
   const { getLabel } = useMeta();
   const timeRange =
@@ -107,8 +109,20 @@ const ClassroomInfoCard = observer(({
             />
             <InfoRow
               icon={<AcademicCapOutlined />}
-              label="Trình độ"
-              value={detail.level || "—"}
+              label="Khóa học"
+              value={
+                detail.level && onViewCourse ? (
+                  <button
+                    type="button"
+                    onClick={onViewCourse}
+                    className="text-brand hover:underline"
+                  >
+                    {detail.level}
+                  </button>
+                ) : (
+                  detail.level || "—"
+                )
+              }
             />
             <InfoRow
               icon={<UserOutlined />}

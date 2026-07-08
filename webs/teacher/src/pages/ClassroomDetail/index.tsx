@@ -22,6 +22,10 @@ import StudentListPanel from "./components/StudentListPanel";
 import AttendancePanel from "./components/AttendancePanel";
 import SessionListPanel from "./components/SessionListPanel";
 import MaterialsPanel from "./components/MaterialsPanel";
+import ClassHomeworkPanel from "./components/ClassHomeworkPanel";
+import ClassScoresPanel from "./components/ClassScoresPanel";
+import ClassCommentsPanel from "./components/ClassCommentsPanel";
+import ClassHistoryPanel from "./components/ClassHistoryPanel";
 import { toClassroomDetail, toClassSessions } from "./_utils";
 import {
   ClassRoomService,
@@ -113,6 +117,14 @@ const ClassroomDetail = () => {
         );
       case "documents":
         return <MaterialsPanel courseId={courseId} lessonPlanId={lessonPlan?.id} />;
+      case "homework":
+        return <ClassHomeworkPanel classId={classId} />;
+      case "scores":
+        return <ClassScoresPanel classId={classId} />;
+      case "comments":
+        return <ClassCommentsPanel classId={classId} />;
+      case "history":
+        return <ClassHistoryPanel classId={classId} />;
       default:
         return <ComingSoon />;
     }
@@ -160,6 +172,9 @@ const ClassroomDetail = () => {
                 lessonPlan={lessonPlan}
                 onViewLessonPlan={() =>
                   navigate(`${PATHS.lessonPlans}/${lessonPlan?.id}`)
+                }
+                onViewCourse={
+                  courseId ? () => navigate(`${PATHS.courseDetail}/${courseId}`) : undefined
                 }
               />
 

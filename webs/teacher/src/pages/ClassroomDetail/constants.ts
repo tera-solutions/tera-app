@@ -12,7 +12,16 @@ export const DETAIL_TABS: { key: DetailTab; label: string }[] = [
 ];
 
 /** Tabs backed by a real teacher endpoint; the rest render a "coming soon" state. */
-export const SUPPORTED_TABS: DetailTab[] = ["students", "attendance", "schedule", "documents"];
+export const SUPPORTED_TABS: DetailTab[] = [
+  "students",
+  "attendance",
+  "schedule",
+  "documents",
+  "homework",
+  "scores",
+  "comments",
+  "history",
+];
 
 export const WEEKDAY_LABEL: Record<number, string> = {
   1: "Chủ nhật",

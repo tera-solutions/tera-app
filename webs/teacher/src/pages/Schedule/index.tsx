@@ -33,7 +33,7 @@ import { computeMonthStats } from "./_utils";
 
 const Schedule = () => {
   const isMobile = useIsMobile();
-  const [view, setView] = useState<ScheduleView>("week");
+  const [view, setView] = useState<ScheduleView>("list");
   const [currentDate, setCurrentDate] = useState(() => moment());
   const [rangeFilter, setRangeFilter] = useState<
     [moment.Moment, moment.Moment] | null
