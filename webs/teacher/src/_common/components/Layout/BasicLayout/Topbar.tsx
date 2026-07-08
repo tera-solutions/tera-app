@@ -8,7 +8,9 @@ import {
   CalendarOutlined,
   Popover,
   StarSolid,
+  UserOutlined,
 } from "tera-dls";
+import { useNavigate } from "react-router-dom";
 
 import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 import { AuthApi } from "@tera/api/auth/auth";
@@ -19,8 +21,11 @@ import { getUserDisplay } from "_common/utils/user";
 import { formatDate } from "@tera/commons/utils";
 
 import logo from "@/assets/logo.webp";
+import { PATHS } from "../Menu/menus";
 
 const Topbar = observer(() => {
+  const navigate = useNavigate();
+
   const {
     globalStore: { user, clear },
   } = useStores();
@@ -110,10 +115,18 @@ const Topbar = observer(() => {
               <div className="my-1 h-px bg-slate-100" />
               <button
                 type="button"
+                onClick={() => navigate(PATHS.profile)}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-800 hover:bg-brand/15"
+              >
+                <UserOutlined className="size-4" />
+                Thông tin cá nhân
+              </button>
+              <button
+                type="button"
                 onClick={() => onLogout()}
                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50"
               >
-                <ArrowRightOnRectangleOutlined className="h-4 w-4" />
+                <ArrowRightOnRectangleOutlined className="size-4" />
                 Đăng xuất
               </button>
             </div>

@@ -15,6 +15,11 @@ export const AssignmentAPI = {
       .get(`${endpoint}/edu/assignment/list`, { ...params, ...params?.filters })
       .then((r) => r.data),
 
+  getSummary: async ({ params }: ListPayload) =>
+    await api
+      .get(`${endpoint}/edu/assignment/summary`, { ...params, ...params?.filters })
+      .then((r) => r.data),
+
   getDetail: async ({ id }: DetailPayload) =>
     await api
       .get(`${endpoint}/edu/assignment/detail/${id}`)
@@ -28,6 +33,11 @@ export const AssignmentAPI = {
   update: async ({ id, params }: UpdatePayload) =>
     await api
       .put(`${endpoint}/edu/assignment/update/${id}`, params)
+      .then((r) => r.data),
+
+  publish: async ({ id }: DetailPayload) =>
+    await api
+      .post(`${endpoint}/edu/assignment/publish/${id}`)
       .then((r) => r.data),
 
   delete: async ({ id }: DeletePayload) =>
