@@ -53,13 +53,15 @@ const ClassroomCard = ({ classroom }: ClassroomCardProps) => {
       key: "lesson-plans",
       label: "Giáo án",
       icon: <BookOpenOutlined />,
-      to: `${PATHS.lessonPlans}?class_id=${classroom.id}`,
+      to: classroom.lesson_plan_id
+        ? `${PATHS.lessonPlans}/${classroom.lesson_plan_id}`
+        : `${PATHS.lessonPlans}?class_id=${classroom.id}`,
     },
     {
-      key: "homework",
+      key: "assignment",
       label: "Bài tập",
       icon: <DocumentTextOutlined />,
-      to: `${PATHS.homework}?class_id=${classroom.id}`,
+      to: `${PATHS.assignment}?class_id=${classroom.id}`,
     },
     {
       key: "reports",

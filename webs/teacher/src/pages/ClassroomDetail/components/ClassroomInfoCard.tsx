@@ -26,6 +26,7 @@ interface ClassroomInfoCardProps {
   lessonPlan?: { id: number; name: string };
   onViewLessonPlan?: () => void;
   onViewCourse?: () => void;
+  onViewRoom?: () => void;
 }
 
 const InfoRow = ({
@@ -55,6 +56,7 @@ const ClassroomInfoCard = observer(({
   lessonPlan,
   onViewLessonPlan,
   onViewCourse,
+  onViewRoom,
 }: ClassroomInfoCardProps) => {
   const { getLabel } = useMeta();
   const timeRange =
@@ -144,7 +146,19 @@ const ClassroomInfoCard = observer(({
             <InfoRow
               icon={<MapPinOutlined />}
               label="Phòng học"
-              value={detail.room || "—"}
+              value={
+                detail.room && onViewRoom ? (
+                  <button
+                    type="button"
+                    onClick={onViewRoom}
+                    className="text-brand hover:underline"
+                  >
+                    {detail.room}
+                  </button>
+                ) : (
+                  detail.room || "—"
+                )
+              }
             />
             <InfoRow
               icon={<CalendarDaysOutlined />}

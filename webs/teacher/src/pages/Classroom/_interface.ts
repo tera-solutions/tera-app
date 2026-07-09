@@ -13,6 +13,7 @@ export interface Classroom {
   category: string;
   level: string;
   room: string;
+  room_id: number | null;
   branch: string;
   schedule_days: string;
   start_time: string;

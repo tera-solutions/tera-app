@@ -8,10 +8,8 @@ import {
   UsersOutlined,
 } from "tera-dls";
 
-import Card from "_common/components/Card";
 import StatisticCard from "_common/components/StatisticCard";
 import { AchievementService } from "@tera/modules/hr";
-import { ClassRoomService } from "@tera/modules/education";
 import { ProfileService } from "@tera/modules/system";
 
 import type { ChartPeriod } from "./_interface";
@@ -25,7 +23,6 @@ import {
 import TeacherProfileCard from "./components/TeacherProfileCard";
 import ProgressChart from "./components/ProgressChart";
 import StudentReviewList from "./components/StudentReviewList";
-import ClassStatsSummary from "./components/ClassStatsSummary";
 
 const Achievement = () => {
   const [period, setPeriod] = useState<ChartPeriod>("month");
@@ -53,18 +50,6 @@ const Achievement = () => {
   const reviews = useMemo(
     () => toTeacherReviews(reviewsQuery.data?.data?.items),
     [reviewsQuery.data],
-  );
-
-  const classesQuery = ClassRoomService.useClassRoomList({ params: { per_page: 50 } });
-  const classRows = useMemo(
-    () =>
-      (classesQuery.data?.data?.items ?? []).map((c: any) => ({
-        id: c.id,
-        name: c.name,
-        student_count: c.total_students ?? 0,
-        status: c.status,
-      })),
-    [classesQuery.data],
   );
 
   return (
@@ -148,22 +133,12 @@ const Achievement = () => {
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1fr_360px]">
-        <div className="flex flex-col gap-4">
-          <ProgressChart
-            points={progressPoints}
-            period={period}
-            onPeriodChange={setPeriod}
-            loading={progressQuery.isLoading}
-          />
-          <Card>
-            <ClassStatsSummary
-              rows={classRows}
-              isLoading={classesQuery.isLoading}
-              isError={classesQuery.isError}
-              onRetry={() => classesQuery.refetch()}
-            />
-          </Card>
-        </div>
+        <ProgressChart
+          points={progressPoints}
+          period={period}
+          onPeriodChange={setPeriod}
+          loading={progressQuery.isLoading}
+        />
 
         <StudentReviewList
           reviews={reviews}

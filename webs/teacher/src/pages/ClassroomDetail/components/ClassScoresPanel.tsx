@@ -1,8 +1,13 @@
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
+import SearchInput from "_common/components/SearchInput";
 import StatusBadge from "_common/components/StatusBadge";
 import Table, { TableColumn } from "_common/components/Table";
+import TablePagination from "_common/components/TablePagination";
+import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
+import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
+import { useUrlFilters } from "_common/hooks/useUrlFilters";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 import { ExamSessionService } from "@tera/modules/education";
 import { EXAM_SESSION_STATUS_META } from "pages/ExamSession/constants";
@@ -11,11 +16,39 @@ import { EXAM_SESSION_STATUS_META } from "pages/ExamSession/constants";
 const ClassScoresPanel = ({ classId }: { classId: number | null }) => {
   const navigate = useNavigate();
 
+  const [filters, setFilters] = useUrlFilters(
+    {
+      scores_search: { type: "string", default: "" },
+      scores_page: { type: "number", default: 1 },
+      scores_page_size: { type: "number", default: DEFAULT_PAGE_SIZE },
+    },
+    { syncDefaultsOnMount: true },
+  );
+  const [searchDraft, setSearchDraft] = useDebouncedSearch(
+    filters.scores_search,
+    (trimmed) => setFilters({ scores_search: trimmed, scores_page: 1 }),
+  );
+
   const query = ExamSessionService.useExamSessionList(
-    { params: { per_page: 50, filters: { class_room_id: classId ?? 0 } } },
+    {
+      params: {
+        page: filters.scores_page,
+        per_page: filters.scores_page_size,
+        search: filters.scores_search || undefined,
+        filters: { class_room_id: classId ?? 0 },
+      },
+    },
     { enabled: !!classId },
   );
   const items = query.data?.data?.items ?? [];
+  const pagination = query.data?.data?.pagination;
+  const total = pagination?.total ?? items.length;
+  const perPage = pagination?.per_page ?? filters.scores_page_size;
+
+  const handleChangePage = (nextPage: number, nextSize: number) => {
+    if (nextSize !== perPage) setFilters({ scores_page_size: nextSize, scores_page: 1 });
+    else setFilters({ scores_page: nextPage });
+  };
 
   const columns: TableColumn<any>[] = [
     {
@@ -43,18 +76,34 @@ const ClassScoresPanel = ({ classId }: { classId: number | null }) => {
   ];
 
   return (
-    <Table
-      columns={columns}
-      data={items}
-      rowKey={(row) => row.id}
-      isLoading={query.isLoading}
-      isError={query.isError}
-      onRetry={() => query.refetch()}
-      errorMessage="Không tải được danh sách bài kiểm tra"
-      emptyText="Lớp học chưa có bài kiểm tra nào"
-      minWidthClassName="min-w-200"
-      onRowClick={(row) => navigate(`${PATHS.exam}/session/${row.id}`)}
-    />
+    <div>
+      <div className="mb-3">
+        <SearchInput
+          value={searchDraft}
+          onChange={(e) => setSearchDraft(e.target.value)}
+          placeholder="Tìm kiếm bài kiểm tra..."
+        />
+      </div>
+      <Table
+        columns={columns}
+        data={items}
+        rowKey={(row) => row.id}
+        isLoading={query.isLoading}
+        isError={query.isError}
+        onRetry={() => query.refetch()}
+        errorMessage="Không tải được danh sách bài kiểm tra"
+        emptyText="Lớp học chưa có bài kiểm tra nào"
+        minWidthClassName="min-w-200"
+        onRowClick={(row) => navigate(`${PATHS.exam}/session/${row.id}`)}
+      />
+      <TablePagination
+        total={total}
+        page={filters.scores_page}
+        perPage={perPage}
+        unit="bài kiểm tra"
+        onChange={handleChangePage}
+      />
+    </div>
   );
 };
 

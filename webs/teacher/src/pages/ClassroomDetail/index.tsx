@@ -9,7 +9,6 @@ import ComingSoon from "_common/components/ComingSoon";
 import { CARD } from "_common/constants/dashboard";
 import ErrorRetry from "_common/components/ErrorRetry";
 import { PATHS } from "_common/components/Layout/Menu/menus";
-import { todo } from "_common/utils/todo";
 
 import type { DetailTab } from "./_interface";
 import { DETAIL_TABS } from "./constants";
@@ -22,14 +21,14 @@ import StudentListPanel from "./components/StudentListPanel";
 import AttendancePanel from "./components/AttendancePanel";
 import SessionListPanel from "./components/SessionListPanel";
 import MaterialsPanel from "./components/MaterialsPanel";
-import ClassHomeworkPanel from "./components/ClassHomeworkPanel";
+import ClassAssignmentPanel from "./components/ClassAssignmentPanel";
 import ClassScoresPanel from "./components/ClassScoresPanel";
 import ClassCommentsPanel from "./components/ClassCommentsPanel";
-import ClassHistoryPanel from "./components/ClassHistoryPanel";
 import { toClassroomDetail, toClassSessions } from "./_utils";
 import {
   ClassRoomService,
   LessonPlanService,
+  StudentService,
   TimetableService,
 } from "@tera/modules/education";
 
@@ -99,6 +98,10 @@ const ClassroomDetail = () => {
   const statistics = detailData?.statistics;
   const notFound = !isLoading && (isError || !detail?.id);
 
+  const rosterExportMutation = StudentService.useStudentExport();
+  const handleExportRoster = () =>
+    rosterExportMutation.mutate({ params: { class_id: classId ?? undefined } });
+
   const renderTab = () => {
     if (!statistics) return null;
     switch (tab) {
@@ -117,14 +120,12 @@ const ClassroomDetail = () => {
         );
       case "documents":
         return <MaterialsPanel courseId={courseId} lessonPlanId={lessonPlan?.id} />;
-      case "homework":
-        return <ClassHomeworkPanel classId={classId} />;
+      case "assignment":
+        return <ClassAssignmentPanel classId={classId} />;
       case "scores":
         return <ClassScoresPanel classId={classId} />;
       case "comments":
         return <ClassCommentsPanel classId={classId} />;
-      case "history":
-        return <ClassHistoryPanel classId={classId} />;
       default:
         return <ComingSoon />;
     }
@@ -140,12 +141,12 @@ const ClassroomDetail = () => {
           ]}
         />
         <Button
-          outlined
           icon={<ArrowDownTrayOutlined />}
-          onClick={todo}
-          className="whitespace-nowrap text-brand border-brand hover:bg-brand"
+          onClick={handleExportRoster}
+          disabled={!classId || rosterExportMutation.isPending}
+          className="whitespace-nowrap bg-brand hover:bg-brand/80"
         >
-          Tải danh sách lớp
+          {rosterExportMutation.isPending ? "Đang tải..." : "Tải danh sách lớp"}
         </Button>
       </div>
 
@@ -176,6 +177,11 @@ const ClassroomDetail = () => {
                 onViewCourse={
                   courseId ? () => navigate(`${PATHS.courseDetail}/${courseId}`) : undefined
                 }
+                onViewRoom={
+                  detail.room_id
+                    ? () => navigate(`${PATHS.roomDetail}/${detail.room_id}`)
+                    : undefined
+                }
               />
 
               <OverviewStats statistics={statistics} />
@@ -205,7 +211,7 @@ const ClassroomDetail = () => {
                 <div className="flex flex-col gap-4">
                   <ResultSummaryCard statistics={statistics} />
                   <UpcomingSessions schedules={detail.schedules} />
-                  <ClassNotifications />
+                  <ClassNotifications classId={classId} />
                 </div>
               </div>
             </div>

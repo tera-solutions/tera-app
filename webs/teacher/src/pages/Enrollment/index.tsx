@@ -1,8 +1,6 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
-import Breadcrumb from "_common/components/Breadcrumb";
-import { PATHS } from "_common/components/Layout/Menu/menus";
+import Card from "_common/components/Card";
 import type { Classroom } from "pages/Classroom/_interface";
 import WizardSteps from "pages/LessonPlan/Wizard/components/WizardSteps";
 
@@ -15,8 +13,6 @@ import StepStudents from "./components/StepStudents";
 import StepConfirm from "./components/StepConfirm";
 
 const Enrollment = () => {
-  const navigate = useNavigate();
-
   const [step, setStep] = useState(1);
   const [maxStep, setMaxStep] = useState(1);
   const [selectedClass, setSelectedClass] = useState<Classroom | null>(null);
@@ -38,37 +34,34 @@ const Enrollment = () => {
 
   return (
     <div className="p-4 xmd:p-6">
-      <Breadcrumb
-        items={[
-          { label: "Học viên", onClick: () => navigate(PATHS.students) },
-          { label: "Ghi danh học viên" },
-        ]}
-      />
-
-      <div className="mb-4 mt-2">
+      <div className="mb-4">
         <h1 className="text-xl font-bold text-slate-800">Ghi danh học viên</h1>
         <p className="mt-0.5 text-sm text-slate-400">
           Đăng ký học viên vào lớp học và chọn gói dịch vụ
         </p>
       </div>
 
-      <WizardSteps
-        currentStep={step}
-        steps={STEP_LABELS}
-        completedSteps={completedSteps}
-        onStepClick={goToStep}
-      />
+      <Card className="mb-4">
+        <WizardSteps
+          currentStep={step}
+          steps={STEP_LABELS}
+          completedSteps={completedSteps}
+          onStepClick={goToStep}
+        />
+      </Card>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_300px]">
         <div>
           {step === 1 && (
-            <StepSelectClass
-              selectedClass={selectedClass}
-              onNext={(classroom) => {
-                setSelectedClass(classroom);
-                advance(2);
-              }}
-            />
+            <Card>
+              <StepSelectClass
+                selectedClass={selectedClass}
+                onNext={(classroom) => {
+                  setSelectedClass(classroom);
+                  advance(2);
+                }}
+              />
+            </Card>
           )}
 
           {step === 2 && (

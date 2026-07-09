@@ -24,13 +24,13 @@ export interface DashboardSummary {
   stats: DashboardStats;
   schedule_today: ScheduleItem[];
   schedule_week: DashboardWeekDay[];
-  homework_pending: DashboardHomeworkItem[];
+  assignment_pending: DashboardAssignmentItem[];
   lesson_plans: DashboardLessonPlanItem[];
   my_classes: DashboardClassItem[];
   attendance: DashboardAttendance | null;
 }
 
-export interface DashboardHomeworkItem {
+export interface DashboardAssignmentItem {
   id: number;
   title: string;
   class_name: string;

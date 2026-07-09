@@ -32,3 +32,13 @@ export interface SiblingExam {
   type: string;
   active: boolean;
 }
+
+export interface ExamFormValues {
+  exam_name: string;
+  exam_type: string;
+  course_id?: number;
+  level_id?: number;
+  duration: number;
+  total_score: number;
+  passing_score: number;
+}

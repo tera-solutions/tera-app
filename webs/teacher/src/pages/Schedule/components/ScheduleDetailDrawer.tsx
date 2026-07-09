@@ -144,6 +144,7 @@ const ScheduleDetailDrawer = ({
             <Button
               type="primary"
               className="w-full"
+              disabled={detail.status === "completed"}
               onClick={() => navigate(`${PATHS.lesson}/${detail.id}`)}
             >
               Bắt đầu buổi học

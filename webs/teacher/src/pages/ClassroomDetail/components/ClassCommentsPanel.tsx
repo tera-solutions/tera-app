@@ -1,10 +1,23 @@
 import { useMemo } from "react";
 
 import Avatar from "_common/components/Avatar";
-import EmptyState from "_common/components/EmptyState";
-import ErrorRetry from "_common/components/ErrorRetry";
-import { Spin } from "tera-dls";
+import SearchInput from "_common/components/SearchInput";
+import Table, { TableColumn } from "_common/components/Table";
+import TablePagination from "_common/components/TablePagination";
+import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
+import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
+import { useUrlFilters } from "_common/hooks/useUrlFilters";
 import { EvaluationService, StudentService } from "@tera/modules/education";
+
+interface CommentRow {
+  id: number;
+  target_id: number;
+  comment: string;
+  score: number | null;
+  classification_label: string;
+  evaluation_period_label: string;
+  evaluated_at: string | null;
+}
 
 /**
  * Student evaluations scoped to this class — `edu/evaluation/list` honours
@@ -12,10 +25,25 @@ import { EvaluationService, StudentService } from "@tera/modules/education";
  * name), so names are joined from the class roster.
  */
 const ClassCommentsPanel = ({ classId }: { classId: number | null }) => {
+  const [filters, setFilters] = useUrlFilters(
+    {
+      comments_search: { type: "string", default: "" },
+      comments_page: { type: "number", default: 1 },
+      comments_page_size: { type: "number", default: DEFAULT_PAGE_SIZE },
+    },
+    { syncDefaultsOnMount: true },
+  );
+  const [searchDraft, setSearchDraft] = useDebouncedSearch(
+    filters.comments_search,
+    (trimmed) => setFilters({ comments_search: trimmed, comments_page: 1 }),
+  );
+
   const query = EvaluationService.useEvaluationList(
     {
       params: {
-        per_page: 100,
+        page: filters.comments_page,
+        per_page: filters.comments_page_size,
+        search: filters.comments_search || undefined,
         filters: { class_room_id: classId ?? 0, evaluation_type: "student" },
       },
     },
@@ -34,62 +62,92 @@ const ClassCommentsPanel = ({ classId }: { classId: number | null }) => {
     return map;
   }, [rosterQuery.data]);
 
-  const items = query.data?.data?.items ?? [];
+  const items: CommentRow[] = query.data?.data?.items ?? [];
+  const pagination = query.data?.data?.pagination;
+  const total = pagination?.total ?? items.length;
+  const perPage = pagination?.per_page ?? filters.comments_page_size;
 
-  if (query.isLoading || rosterQuery.isLoading) {
-    return (
-      <Spin spinning>
-        <div className="h-40" />
-      </Spin>
-    );
-  }
-  if (query.isError) {
-    return (
-      <div className="flex h-40 items-center justify-center">
-        <ErrorRetry onRetry={() => query.refetch()} message="Không tải được nhận xét" />
-      </div>
-    );
-  }
-  if (items.length === 0) {
-    return <EmptyState description="Lớp học chưa có nhận xét nào" className="py-10" />;
-  }
+  const handleChangePage = (nextPage: number, nextSize: number) => {
+    if (nextSize !== perPage) setFilters({ comments_page_size: nextSize, comments_page: 1 });
+    else setFilters({ comments_page: nextPage });
+  };
 
-  return (
-    <div className="flex flex-col gap-3">
-      {items.map((e: any) => {
-        const student = studentNameMap.get(e.target_id);
+  const columns: TableColumn<CommentRow>[] = [
+    {
+      key: "student",
+      title: "Học viên",
+      render: (row) => {
+        const student = studentNameMap.get(row.target_id);
         return (
-          <div key={e.id} className="rounded-xl border border-slate-100 p-3">
-            <div className="mb-1.5 flex flex-wrap items-center gap-2">
-              <Avatar src={student?.avatar} alt={student?.name} sizeClassName="size-7" />
-              <span className="text-sm font-medium text-slate-800">
-                {student?.name ?? `HV #${e.target_id}`}
-              </span>
-              {e.score != null && (
-                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-600">
-                  {e.score} điểm
-                </span>
-              )}
-              {e.classification_label && (
-                <span className="rounded-full bg-sky-50 px-2 py-0.5 text-[11px] text-brand">
-                  {e.classification_label}
-                </span>
-              )}
-              {e.evaluation_period_label && (
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500">
-                  {e.evaluation_period_label}
-                </span>
-              )}
-            </div>
-            <p className="text-sm text-slate-700">{e.comment || "Không có nội dung nhận xét"}</p>
-            {e.evaluated_at && (
-              <p className="mt-1 text-[11px] text-slate-400">
-                {new Date(e.evaluated_at).toLocaleDateString("vi-VN")}
-              </p>
-            )}
+          <div className="flex items-center gap-2">
+            <Avatar src={student?.avatar} alt={student?.name} sizeClassName="size-7" />
+            <span className="truncate font-medium text-slate-800">
+              {student?.name ?? `HV #${row.target_id}`}
+            </span>
           </div>
         );
-      })}
+      },
+    },
+    {
+      key: "comment",
+      title: "Nội dung nhận xét",
+      cellClassName: "px-4 py-3 text-slate-600",
+      render: (row) => row.comment || "Không có nội dung nhận xét",
+    },
+    {
+      key: "score",
+      title: "Điểm",
+      cellClassName: "px-4 py-3 text-slate-500",
+      render: (row) => (row.score != null ? row.score : "—"),
+    },
+    {
+      key: "classification",
+      title: "Phân loại",
+      cellClassName: "px-4 py-3 text-slate-500",
+      render: (row) => row.classification_label || "—",
+    },
+    {
+      key: "period",
+      title: "Kỳ đánh giá",
+      cellClassName: "px-4 py-3 text-slate-500",
+      render: (row) => row.evaluation_period_label || "—",
+    },
+    {
+      key: "evaluated_at",
+      title: "Ngày đánh giá",
+      cellClassName: "px-4 py-3 text-slate-500",
+      render: (row) =>
+        row.evaluated_at ? new Date(row.evaluated_at).toLocaleDateString("vi-VN") : "—",
+    },
+  ];
+
+  return (
+    <div>
+      <div className="mb-3">
+        <SearchInput
+          value={searchDraft}
+          onChange={(e) => setSearchDraft(e.target.value)}
+          placeholder="Tìm kiếm nhận xét..."
+        />
+      </div>
+      <Table
+        columns={columns}
+        data={items}
+        rowKey={(row) => row.id}
+        isLoading={query.isLoading || rosterQuery.isLoading}
+        isError={query.isError}
+        onRetry={() => query.refetch()}
+        errorMessage="Không tải được nhận xét"
+        emptyText="Lớp học chưa có nhận xét nào"
+        minWidthClassName="min-w-200"
+      />
+      <TablePagination
+        total={total}
+        page={filters.comments_page}
+        perPage={perPage}
+        unit="nhận xét"
+        onChange={handleChangePage}
+      />
     </div>
   );
 };

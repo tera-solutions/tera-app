@@ -134,7 +134,7 @@ const StudentListPanel = observer(({ classId }: { classId: number | null }) => {
           <button
             type="button"
             title="Nhận xét"
-            onClick={() => navigate(`${PATHS.comments}?student_id=${student.id}`)}
+            onClick={() => navigate(`${PATHS.evaluation}?student_id=${student.id}`)}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4.5 [&_svg]:w-4.5"
           >
             <ChatBubbleLeftRightOutlined />

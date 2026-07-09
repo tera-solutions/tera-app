@@ -33,7 +33,7 @@ export const useDashboardSummary = () => {
       stats: { ...EMPTY_STATS, ...(d.stats ?? {}) },
       schedule_today: toScheduleItems(d.schedule_today),
       schedule_week: (d.schedule_week ?? []).map(toWeekDay),
-      homework_pending: d.homework_pending ?? [],
+      assignment_pending: d.homework_pending ?? [],
       lesson_plans: d.lesson_plans ?? [],
       my_classes: d.my_classes ?? [],
       attendance: d.attendance ?? null,

@@ -9,7 +9,7 @@ export interface ParentDetail {
 export interface ParentChildStats {
   attendance_rate: number;
   avg_score: number | null;
-  homework_completion: number;
+  assignment_completion: number;
 }
 
 export interface ScheduleSlot {

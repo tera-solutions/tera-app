@@ -1,8 +1,6 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
-import Breadcrumb from "_common/components/Breadcrumb";
-import { PATHS } from "_common/components/Layout/Menu/menus";
+import Card from "_common/components/Card";
 import type { Classroom } from "pages/Classroom/_interface";
 import WizardSteps from "pages/LessonPlan/Wizard/components/WizardSteps";
 
@@ -13,8 +11,6 @@ import StepSelectTargetClass from "./components/StepSelectTargetClass";
 import StepConfirm from "./components/StepConfirm";
 
 const Transfer = () => {
-  const navigate = useNavigate();
-
   const [step, setStep] = useState(1);
   const [maxStep, setMaxStep] = useState(1);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -39,49 +35,48 @@ const Transfer = () => {
 
   return (
     <div className="p-4 xmd:p-6">
-      <Breadcrumb
-        items={[
-          { label: "Học viên", onClick: () => navigate(PATHS.students) },
-          { label: "Chuyển lớp" },
-        ]}
-      />
-
-      <div className="mb-4 mt-2">
+      <div className="mb-4">
         <h1 className="text-xl font-bold text-slate-800">Chuyển lớp</h1>
         <p className="mt-0.5 text-sm text-slate-400">
           Quản lý & chuyển học viên sang lớp học mới
         </p>
       </div>
 
-      <WizardSteps
-        currentStep={step}
-        steps={STEP_LABELS}
-        completedSteps={completedSteps}
-        onStepClick={goToStep}
-      />
+      <Card className="mb-4">
+        <WizardSteps
+          currentStep={step}
+          steps={STEP_LABELS}
+          completedSteps={completedSteps}
+          onStepClick={goToStep}
+        />
+      </Card>
 
       {step === 1 && (
-        <StepSelectStudents
-          selectedIds={selectedIds}
-          onChange={setSelectedIds}
-          onNext={(rows) => {
-            setSelectedRows(rows);
-            advance(2);
-          }}
-        />
+        <Card>
+          <StepSelectStudents
+            selectedIds={selectedIds}
+            onChange={setSelectedIds}
+            onNext={(rows) => {
+              setSelectedRows(rows);
+              advance(2);
+            }}
+          />
+        </Card>
       )}
 
       {step === 2 && (
-        <StepSelectTargetClass
-          courseId={sourceCourseId}
-          excludeClassIds={sourceClassIds}
-          targetClassId={targetClass?.id ?? null}
-          onBack={() => setStep(1)}
-          onNext={(target) => {
-            setTargetClass(target);
-            advance(3);
-          }}
-        />
+        <Card>
+          <StepSelectTargetClass
+            courseId={sourceCourseId}
+            excludeClassIds={sourceClassIds}
+            targetClassId={targetClass?.id ?? null}
+            onBack={() => setStep(1)}
+            onNext={(target) => {
+              setTargetClass(target);
+              advance(3);
+            }}
+          />
+        </Card>
       )}
 
       {step === 3 && targetClass && (

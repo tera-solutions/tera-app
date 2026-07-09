@@ -1,4 +1,10 @@
-import type { ExamResultRow, ExamSessionHeader, ExamSkill } from "./_interface";
+import type {
+  ExamResultRow,
+  ExamSessionHeader,
+  ExamSessionRow,
+  ExamSessionSummary,
+  ExamSkill,
+} from "./_interface";
 import { EXAM_SKILLS } from "./_interface";
 
 export const toExamSessionHeader = (raw: any): ExamSessionHeader | undefined => {
@@ -15,6 +21,31 @@ export const toExamSessionHeader = (raw: any): ExamSessionHeader | undefined => 
   };
 };
 
+export const toExamSessionRows = (raw: any[]): ExamSessionRow[] =>
+  (raw ?? []).map((item) => ({
+    id: item.id,
+    exam_id: item.exam?.id ?? item.exam_id ?? null,
+    exam_name: item.exam?.exam_name ?? "",
+    exam_type: item.exam?.exam_type ?? "",
+    class_id: item.class?.id ?? item.class_room_id ?? null,
+    class_name: item.class?.name ?? "",
+    room_name: item.room?.room_name ?? "",
+    exam_date: item.exam_date ?? "",
+    start_time: item.start_time ?? "",
+    end_time: item.end_time ?? "",
+    status: (item.status ?? "scheduled") as ExamSessionRow["status"],
+    registrations_count: item.registrations_count ?? 0,
+  }));
+
+/** No dedicated summary endpoint — totals are derived from the loaded page, same
+ * fallback pattern used by Classroom/summarize() when a server summary is missing. */
+export const examSessionSummary = (rows: ExamSessionRow[]): ExamSessionSummary => ({
+  total: rows.length,
+  scheduled: rows.filter((r) => r.status === "scheduled").length,
+  in_progress: rows.filter((r) => r.status === "in_progress").length,
+  closed: rows.filter((r) => r.status === "closed").length,
+});
+
 /** Join `registrations[]` (the candidate roster) with `results[]` (per-skill scores) by student. */
 export const toExamResultRows = (raw: any): ExamResultRow[] => {
   const registrations: any[] = Array.isArray(raw?.registrations) ? raw.registrations : [];
@@ -27,18 +58,22 @@ export const toExamResultRows = (raw: any): ExamResultRow[] => {
     const scores: Partial<Record<ExamSkill, number>> = {};
     EXAM_SKILLS.forEach((skill) => {
       const value = result?.[`${skill}_score`];
-      if (value != null) scores[skill] = value;
+      if (value != null) scores[skill] = Number(value);
     });
 
     return {
       registration_id: reg.id,
       student_id: reg.student_id,
+      student_code: reg.student?.code ?? "",
       student_name: reg.student?.name ?? "",
       student_avatar: reg.student?.avatar_url ?? "",
       registration_status: (reg.status ?? "registered") as ExamResultRow["registration_status"],
       scores,
-      total_score: result?.total_score ?? null,
+      // API returns decimal columns (total_score, etc.) as strings; coerce so
+      // downstream numeric reduce/sum logic doesn't fall into string concatenation.
+      total_score: result?.total_score != null ? Number(result.total_score) : null,
       passed: result?.passed ?? null,
+      grade: result?.grade ?? null,
     };
   });
 };
@@ -60,6 +95,31 @@ export const scoreStats = (rows: ExamResultRow[]) => {
     gradedCount: scored.length,
     totalCount: rows.length,
     pendingCount: rows.length - scored.length,
+  };
+};
+
+/** Extra per-session tiles the results header needs beyond `scoreStats()`. */
+export const sessionSummaryStats = (rows: ExamResultRow[]) => {
+  const scored = rows.filter((r) => r.total_score != null);
+  const top = scored.reduce<ExamResultRow | null>(
+    (best, r) => (!best || (r.total_score as number) > (best.total_score as number) ? r : best),
+    null,
+  );
+  const bottom = scored.reduce<ExamResultRow | null>(
+    (worst, r) => (!worst || (r.total_score as number) < (worst.total_score as number) ? r : worst),
+    null,
+  );
+  const submittedCount = rows.filter((r) => r.registration_status !== "registered").length;
+  const needsRegradeCount = rows.filter(
+    (r) => r.registration_status === "submitted" && r.total_score == null,
+  ).length;
+
+  return {
+    topStudent: top,
+    bottomStudent: bottom,
+    submittedCount,
+    completionRate: rows.length ? Math.round((submittedCount / rows.length) * 100) : 0,
+    needsRegradeCount,
   };
 };
 
