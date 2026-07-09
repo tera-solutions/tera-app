@@ -56,10 +56,10 @@ export const MOCK_NOTIFICATIONS: NotificationItem[] = [
     content:
       "<p>Bạn đã giao bài tập Writing - Unit 5 cho lớp Starters 2A.</p>" +
       "<p>Hạn nộp: 20/05/2025.</p>",
-    category: "homework",
+    category: "assignment",
     is_read: true,
     image_url: null,
-    action_url: "/homework",
+    action_url: "/assignment",
     action_label: "Xem bài tập",
     created_at: ago(1, "days"),
   },
@@ -106,10 +106,10 @@ export const MOCK_NOTIFICATIONS: NotificationItem[] = [
     content:
       "<p>Bạn còn 12 bài tập chưa chấm.</p>" +
       "<p>Vui lòng hoàn thành trước ngày 18/05/2025.</p>",
-    category: "homework",
+    category: "assignment",
     is_read: true,
     image_url: null,
-    action_url: "/homework",
+    action_url: "/assignment",
     action_label: "Chấm bài ngay",
     created_at: ago(3, "days"),
   },
@@ -165,10 +165,10 @@ export const MOCK_NOTIFICATIONS: NotificationItem[] = [
     id: 12,
     title: "Bài tập mới: Reading - Unit 4",
     content: "<p>Bạn đã giao bài tập Reading - Unit 4 cho lớp Flyers 3A. Hạn nộp: 22/05/2025.</p>",
-    category: "homework",
+    category: "assignment",
     is_read: true,
     image_url: null,
-    action_url: "/homework",
+    action_url: "/assignment",
     action_label: "Xem bài tập",
     created_at: ago(8, "days"),
   },

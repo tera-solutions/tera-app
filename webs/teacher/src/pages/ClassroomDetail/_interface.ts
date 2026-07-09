@@ -14,6 +14,10 @@ export interface ClassOperationalStats {
   pending_sessions: number;
   completion_rate: number;
   avg_attendance_rate: number;
+  avg_score: number | null;
+  score_distribution: { grade: string; count: number }[];
+  assignments_count: number;
+  assignment_completion_rate: number;
 }
 
 export interface ClassStatistics {
@@ -70,11 +74,10 @@ export type DetailTab =
   | "students"
   | "attendance"
   | "schedule"
-  | "homework"
+  | "assignment"
   | "scores"
   | "comments"
-  | "documents"
-  | "history";
+  | "documents";
 
 export type StudentRowStatus = "active" | "suspended" | "dropped";
 

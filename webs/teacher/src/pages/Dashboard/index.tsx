@@ -4,7 +4,7 @@ import QuickActions from "./components/QuickActions";
 import StatsRow from "./widgets/StatsRow";
 import ScheduleTodayWidget from "./widgets/ScheduleTodayWidget";
 import WeekScheduleWidget from "./widgets/WeekScheduleWidget";
-import HomeworkWidget from "./widgets/HomeworkWidget";
+import AssignmentWidget from "./widgets/AssignmentWidget";
 import NotificationWidget from "./widgets/NotificationWidget";
 import AttendanceWidget from "./widgets/AttendanceWidget";
 import ProgressWidget from "./widgets/ProgressWidget";
@@ -23,7 +23,7 @@ const Dashboard = () => {
           <QuickActions />
           <ScheduleTodayWidget />
           <WeekScheduleWidget />
-          <HomeworkWidget />
+          <AssignmentWidget />
           <NotificationWidget />
         </div>
       </div>
@@ -40,7 +40,7 @@ const Dashboard = () => {
           <ScheduleTodayWidget />
           <WeekScheduleWidget />
           <AttendanceWidget />
-          <HomeworkWidget />
+          <AssignmentWidget />
           <NotificationWidget />
           <ProgressWidget />
           <LessonPlanWidget />

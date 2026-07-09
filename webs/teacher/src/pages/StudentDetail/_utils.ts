@@ -49,7 +49,7 @@ export const toStudentStats = (raw: any): StudentStats => ({
   attendance_rate: raw?.attendance_rate ?? 0,
   total_sessions: raw?.total_sessions ?? 0,
   avg_score: raw?.avg_score ?? null,
-  homework_completion: raw?.homework_completion ?? 0,
+  assignment_completion: raw?.homework_completion ?? 0,
   skills: {
     listening: raw?.skills?.listening ?? 0,
     speaking: raw?.skills?.speaking ?? 0,

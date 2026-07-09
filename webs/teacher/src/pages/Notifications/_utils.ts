@@ -19,7 +19,7 @@ export const CATEGORY_META: Record<
 > = {
   general: { label: "Thông báo chung", icon: MegaphoneOutlined, badge: "bg-sky-50 text-brand" },
   schedule: { label: "Lịch dạy", icon: CalendarDaysOutlined, badge: "bg-sky-50 text-brand" },
-  homework: { label: "Bài tập", icon: DocumentTextOutlined, badge: "bg-amber-50 text-amber-600" },
+  assignment: { label: "Bài tập", icon: DocumentTextOutlined, badge: "bg-amber-50 text-amber-600" },
   attendance: { label: "Điểm danh", icon: ClipboardDocumentCheckOutlined, badge: "bg-emerald-50 text-emerald-600" },
   system: { label: "Hệ thống", icon: Cog6ToothOutlined, badge: "bg-violet-50 text-violet-600" },
 };
@@ -67,7 +67,7 @@ export const countByCategory = (
     all: items.length,
     general: 0,
     schedule: 0,
-    homework: 0,
+    assignment: 0,
     attendance: 0,
     system: 0,
   };

@@ -26,6 +26,7 @@ import type { DetailTab } from "./_interface";
 import { DETAIL_TABS } from "./constants";
 import { toAttendanceHistory, toComments, toCurrentClass, toStudentDetail, toStudentStats } from "./_utils";
 import StudentProfileCard from "./components/StudentProfileCard";
+import LearningProgressCard from "./components/LearningProgressCard";
 import ProgressChart from "./components/ProgressChart";
 import CurrentClassTable from "./components/CurrentClassTable";
 import RecentComments from "./components/RecentComments";
@@ -33,7 +34,7 @@ import StudentMaterialsCard from "./components/StudentMaterialsCard";
 import StudentAttendanceTable from "./components/StudentAttendanceTable";
 import StudentScoresPanel from "./components/StudentScoresPanel";
 import StudentHistoryPanel from "./components/StudentHistoryPanel";
-import ClassHomeworkPanel from "pages/ClassroomDetail/components/ClassHomeworkPanel";
+import ClassAssignmentPanel from "pages/ClassroomDetail/components/ClassAssignmentPanel";
 
 const StudentDetail = () => {
   const navigate = useNavigate();
@@ -161,11 +162,11 @@ const StudentDetail = () => {
         </Card>
       );
 
-    if (tab === "homework")
+    if (tab === "assignment")
       return (
         <Card>
           <p className="mb-2 text-sm font-semibold text-slate-700">Bài tập của lớp</p>
-          <ClassHomeworkPanel classId={classId} />
+          <ClassAssignmentPanel classId={classId} />
         </Card>
       );
 
@@ -184,27 +185,32 @@ const StudentDetail = () => {
         </Card>
       );
     return (
-      <div className="flex flex-col gap-4">
+      <Card>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <Card>
+          <div className="lg:border-r lg:border-slate-100 lg:pr-4">
             <p className="mb-2 text-sm font-semibold text-slate-700">Tiến độ học tập</p>
-            <ProgressChart points={progressPoints} />
-          </Card>
+            <LearningProgressCard stats={stats} loading={statsQuery.isLoading} />
+          </div>
 
-          <Card>
+          <div>
             <p className="mb-2 text-sm font-semibold text-slate-700">Kỹ năng</p>
             <SkillBars skills={stats.skills} />
-          </Card>
+          </div>
         </div>
 
-        <Card>
+        <div className="mt-4 border-t border-slate-100 pt-4">
+          <p className="mb-2 text-sm font-semibold text-slate-700">Xu hướng điểm đánh giá</p>
+          <ProgressChart points={progressPoints} />
+        </div>
+
+        <div className="mt-4 border-t border-slate-100 pt-4">
           <p className="mb-2 text-sm font-semibold text-slate-700">Lớp học hiện tại</p>
           <CurrentClassTable
             currentClass={currentClass}
             isLoading={rosterLoading || classDetailQuery.isLoading}
           />
-        </Card>
-      </div>
+        </div>
+      </Card>
     );
   };
 
@@ -254,7 +260,7 @@ const StudentDetail = () => {
                     />
                     <StatisticCard
                       icon={<DocumentTextOutlined />}
-                      value={`${stats.homework_completion}%`}
+                      value={`${stats.assignment_completion}%`}
                       label="Bài tập"
                       iconClassName="bg-violet-50 text-violet-500"
                       loading={statsQuery.isLoading}

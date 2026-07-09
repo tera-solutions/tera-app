@@ -233,7 +233,8 @@ export const PATHS = {
   classroom: "/classroom",
   schedule: "/schedule",
   lessonPlans: "/lesson-plans",
-  homework: "/homework",
+  assignment: "/assignment",
+  assignmentDetail: "/assignment-detail",
   grading: "/grading",
   attendance: "/attendance",
   students: "/students",
@@ -249,7 +250,7 @@ export const PATHS = {
   enrollmentNew: "/enrollment/new",
   transfer: "/transfer",
   reports: "/reports",
-  comments: "/comments",
+  evaluation: "/evaluation",
   notifications: "/notifications",
   messages: "/messages",
   more: "/more",
@@ -296,9 +297,9 @@ export const MENU: MenuItem[] = [
     icon: <BookOpenOutlined />,
   },
   {
-    key: "homework",
+    key: "assignment",
     title: "Bài tập",
-    path: PATHS.homework,
+    path: PATHS.assignment,
     icon: <DocumentTextOutlined />,
   },
   {
@@ -314,9 +315,9 @@ export const MENU: MenuItem[] = [
     icon: <AcademicCapOutlined />,
   },
   {
-    key: "comments",
-    title: "Nhận xét",
-    path: PATHS.comments,
+    key: "evaluation",
+    title: "Đánh giá",
+    path: PATHS.evaluation,
     icon: <ChatBubbleLeftRightOutlined />,
   },
   {

@@ -4,10 +4,10 @@ import { ArrowDownTrayOutlined, Button, Spin } from "tera-dls";
 
 import EmptyState from "_common/components/EmptyState";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
-import { todo } from "_common/utils/todo";
 import { toClassrooms } from "pages/Classroom/_utils";
 import { toClassSessions } from "pages/ClassroomDetail/_utils";
 import {
+  AttendanceService,
   ClassRoomService,
   ClassSessionService,
 } from "@tera/modules/education";
@@ -76,6 +76,12 @@ const Attendance = () => {
 
   const session = useAttendanceSession({ classId, sessionId });
 
+  const exportMutation = AttendanceService.useAttendanceExport();
+  const handleExport = () =>
+    exportMutation.mutate({
+      params: { class_id: classId ?? undefined, session_id: sessionId ?? undefined },
+    });
+
   return (
     <div className="p-4 xmd:p-6">
       <div className="mb-4 flex items-center justify-between gap-3">
@@ -86,12 +92,12 @@ const Attendance = () => {
           </p>
         </div>
         <Button
-          outlined
           icon={<ArrowDownTrayOutlined />}
-          onClick={todo}
-          className="whitespace-nowrap text-brand border-brand hover:bg-brand"
+          onClick={handleExport}
+          disabled={!classId || !sessionId || exportMutation.isPending}
+          className="whitespace-nowrap bg-brand hover:bg-brand/80"
         >
-          Xuất báo cáo
+          {exportMutation.isPending ? "Đang xuất..." : "Xuất báo cáo"}
         </Button>
       </div>
 

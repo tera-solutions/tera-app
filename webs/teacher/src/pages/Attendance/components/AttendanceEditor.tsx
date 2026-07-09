@@ -40,18 +40,10 @@ const AttendanceEditor = ({ session }: AttendanceEditorProps) => {
           onToggleSelect={toggleSelect}
           onSetStatus={setStatusForSelected}
           onMarkAllPresent={markAllPresent}
+          dirtyCount={dirtyCount}
+          saving={saving}
+          onSave={save}
         />
-
-        <div className="mt-4 flex justify-end">
-          <button
-            type="button"
-            disabled={dirtyCount === 0 || saving}
-            onClick={save}
-            className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand/80 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
-          >
-            {saving ? "Đang lưu..." : "Lưu điểm danh"}
-          </button>
-        </div>
       </Card>
 
       <div className="hidden xl:block">

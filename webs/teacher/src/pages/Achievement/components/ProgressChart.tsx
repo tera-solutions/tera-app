@@ -30,8 +30,10 @@ const ProgressChart = ({ points, period, onPeriodChange, loading }: ProgressChar
             type="button"
             onClick={() => onPeriodChange(opt.key)}
             className={classNames(
-              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
-              period === opt.key ? "bg-white text-brand shadow-sm" : "text-slate-500 hover:text-slate-700",
+              "rounded-md px-4 py-1 text-sm font-medium transition-colors",
+              period === opt.key
+                ? "bg-brand text-white shadow-sm"
+                : "text-slate-600 hover:text-slate-800",
             )}
           >
             {opt.label}

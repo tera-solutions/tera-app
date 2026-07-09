@@ -1,4 +1,4 @@
-export type DetailTab = "overview" | "scores" | "attendance" | "homework" | "history";
+export type DetailTab = "overview" | "scores" | "attendance" | "assignment" | "history";
 
 export interface StudentParent {
   id: number;
@@ -46,7 +46,7 @@ export interface StudentStats {
   attendance_rate: number;
   total_sessions: number;
   avg_score: number | null;
-  homework_completion: number;
+  assignment_completion: number;
   skills: {
     listening: number;
     speaking: number;

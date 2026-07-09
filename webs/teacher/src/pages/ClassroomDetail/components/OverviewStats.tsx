@@ -52,24 +52,21 @@ const OverviewStats = ({ statistics }: OverviewStatsProps) => {
     },
     {
       icon: <StarOutlined />,
-      value: "—",
+      value: operational.avg_score != null ? operational.avg_score : "—",
       label: "Điểm trung bình",
       tone: "bg-amber-50 text-amber-500",
-      soon: true,
     },
     {
       icon: <ClipboardDocumentCheckOutlined />,
-      value: "—",
+      value: `${operational.assignment_completion_rate}%`,
       label: "Hoàn thành bài tập",
       tone: "bg-violet-50 text-violet-500",
-      soon: true,
     },
     {
       icon: <DocumentTextOutlined />,
-      value: "—",
+      value: operational.assignments_count,
       label: "Bài tập đã giao",
       tone: "bg-indigo-50 text-indigo-500",
-      soon: true,
     },
     {
       icon: <CalendarDaysOutlined />,

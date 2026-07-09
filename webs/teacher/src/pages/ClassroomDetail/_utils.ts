@@ -31,6 +31,10 @@ const toStatistics = (raw: any): ClassStatistics => {
       pending_sessions: o.pending_sessions ?? 0,
       completion_rate: o.completion_rate ?? 0,
       avg_attendance_rate: o.avg_attendance_rate ?? 0,
+      avg_score: o.avg_score ?? null,
+      score_distribution: Array.isArray(o.score_distribution) ? o.score_distribution : [],
+      assignments_count: o.assignments_count ?? 0,
+      assignment_completion_rate: o.homework_completion_rate ?? 0,
     },
   };
 };

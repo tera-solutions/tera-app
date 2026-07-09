@@ -19,14 +19,20 @@ import ErrorRetry from "_common/components/ErrorRetry";
 import StatisticCard from "_common/components/StatisticCard";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
-import { ClassRoomService, CourseService, LessonService } from "@tera/modules/education";
+import {
+  ClassRoomService,
+  CourseService,
+  LessonPlanService,
+  LessonService,
+} from "@tera/modules/education";
 import { toClassrooms } from "pages/Classroom/_utils";
 import { getCoverGradient } from "pages/Classroom/constants";
 import { toLessons } from "pages/LessonPlan/_utils";
 import TeachingProgressCard from "pages/LessonPlan/components/TeachingProgressCard";
 
-import { toCourseDetail, toCourseStats } from "./_utils";
+import { toCourseDetail, toCourseStats, toCurriculumItems } from "./_utils";
 import CourseLessonList from "./components/CourseLessonList";
+import CurriculumList from "./components/CurriculumList";
 
 const CourseDetail = observer(() => {
   const navigate = useNavigate();
@@ -42,6 +48,22 @@ const CourseDetail = observer(() => {
   const stats = useMemo(() => toCourseStats(courseQuery.data?.data?.statistics), [courseQuery.data]);
 
   const notFound = !courseQuery.isLoading && (courseQuery.isError || !course?.id);
+
+  // The course's curriculum is its lesson plan's ordered lesson templates —
+  // independent of any specific class's schedule.
+  const curriculumPlanQuery = LessonPlanService.useLessonPlanList(
+    { params: { per_page: 1, filters: { course_id: courseId } } },
+    { enabled: !!courseId },
+  );
+  const curriculumPlanId = curriculumPlanQuery.data?.data?.items?.[0]?.id;
+  const curriculumDetailQuery = LessonPlanService.useLessonPlanDetail({
+    id: curriculumPlanId ?? "",
+  });
+  const curriculumItems = useMemo(() => {
+    const detail = curriculumDetailQuery.data?.data;
+    return toCurriculumItems((detail?.plan ?? detail)?.lessons);
+  }, [curriculumDetailQuery.data]);
+  const isCurriculumLoading = curriculumPlanQuery.isLoading || curriculumDetailQuery.isLoading;
 
   // `crm/course` (unlike ClassRoom) has no TeacherScope — a teacher may view
   // any course's catalog info, but "which of my classes teach it" is
@@ -189,6 +211,11 @@ const CourseDetail = observer(() => {
                 />
               </div>
 
+              <Card>
+                <p className="mb-2 text-sm font-semibold text-slate-700">Chương trình học tập</p>
+                <CurriculumList items={curriculumItems} loading={isCurriculumLoading} />
+              </Card>
+
               {classrooms.length === 0 ? (
                 !classroomsQuery.isLoading && (
                   <Card>
@@ -207,7 +234,7 @@ const CourseDetail = observer(() => {
                     />
 
                     <Card>
-                      <p className="mb-2 text-sm font-semibold text-slate-700">Chương trình học tập</p>
+                      <p className="mb-2 text-sm font-semibold text-slate-700">Buổi học đã lên lịch</p>
                       <CourseLessonList
                         lessons={lessons}
                         loading={lessonsQuery.isLoading}

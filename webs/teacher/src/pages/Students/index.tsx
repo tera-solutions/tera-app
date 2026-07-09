@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueries } from "@tanstack/react-query";
-import { Button } from "tera-dls";
+import { Button, PlusOutlined } from "tera-dls";
 
 import Card from "_common/components/Card";
 import DonutStatsCard from "_common/components/DonutStatsCard";
@@ -171,10 +171,20 @@ const Students = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button outlined onClick={() => navigate(PATHS.transfer)}>
+          <Button
+            outlined
+            onClick={() => navigate(PATHS.transfer)}
+            className="text-brand border-brand hover:bg-brand"
+          >
             Chuyển lớp
           </Button>
-          <Button onClick={() => navigate(PATHS.enrollmentNew)}>Ghi danh học viên</Button>
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => navigate(PATHS.enrollmentNew)}
+            className="whitespace-nowrap bg-brand hover:bg-brand/80"
+          >
+            Ghi danh học viên
+          </Button>
         </div>
       </div>
 
@@ -215,7 +225,7 @@ const Students = () => {
             sortDir={filters.sort_dir}
             onSortChange={handleSort}
             onView={(student) => navigate(`${PATHS.studentDetail}/${student.id}`)}
-            onComment={(student) => navigate(`${PATHS.comments}?student_id=${student.id}`)}
+            onComment={(student) => navigate(`${PATHS.evaluation}?student_id=${student.id}`)}
             onMessage={() => navigate(PATHS.messages)}
           />
 

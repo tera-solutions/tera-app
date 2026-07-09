@@ -22,7 +22,7 @@ const ChildStatSidebar = ({ stats, loading }: { stats: ParentChildStats; loading
     />
     <StatisticCard
       icon={<DocumentTextOutlined />}
-      value={`${stats.homework_completion}%`}
+      value={`${stats.assignment_completion}%`}
       label="Bài tập hoàn thành"
       iconClassName="bg-violet-50 text-violet-500"
       loading={loading}

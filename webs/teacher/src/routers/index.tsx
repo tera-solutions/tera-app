@@ -21,16 +21,19 @@ import Students from "pages/Students";
 import StudentDetail from "pages/StudentDetail";
 import Room from "pages/Room";
 import RoomDetail from "pages/RoomDetail";
-import Feedback from "pages/Feedback";
+import Evaluation from "pages/Evaluation";
 import Notifications from "pages/Notifications";
-import Homework from "pages/Homework";
+import Assignment from "pages/Assignment";
+import AssignmentForm from "pages/Assignment/Form";
+import AssignmentDetail from "pages/AssignmentDetail";
 import Grading from "pages/Grading";
 import ExamSession from "pages/ExamSession";
 import ExamDetail from "pages/ExamDetail";
+import ExamForm from "pages/ExamDetail/Form";
 import Achievement from "pages/Achievement";
 import Ranking from "pages/Ranking";
 import Messages from "pages/Messages";
-import Profile from "pages/Profile";
+import MyInfo from "pages/MyInfo";
 import Parents from "pages/Parents";
 import ParentDetail from "pages/ParentDetail";
 import CourseDetail from "pages/CourseDetail";
@@ -74,11 +77,16 @@ export const Routers = () => {
         <Route path={`${PATHS.studentDetail}/:id`} element={<StudentDetail />} />
         <Route path={PATHS.rooms} element={<Room />} />
         <Route path={`${PATHS.roomDetail}/:id`} element={<RoomDetail />} />
-        <Route path={PATHS.comments} element={<Feedback />} />
+        <Route path={PATHS.evaluation} element={<Evaluation />} />
         <Route path={PATHS.notifications} element={<Notifications />} />
-        <Route path={PATHS.homework} element={<Homework />} />
+        <Route path={PATHS.assignment} element={<Assignment />} />
+        <Route path={`${PATHS.assignment}/new`} element={<AssignmentForm />} />
+        <Route path={`${PATHS.assignment}/:id/edit`} element={<AssignmentForm />} />
+        <Route path={`${PATHS.assignmentDetail}/:id`} element={<AssignmentDetail />} />
         <Route path={`${PATHS.grading}/:id`} element={<Grading />} />
         <Route path={PATHS.exam} element={<ExamSession />} />
+        <Route path={`${PATHS.exam}/new`} element={<ExamForm />} />
+        <Route path={`${PATHS.exam}/:id/edit`} element={<ExamForm />} />
         <Route path={`${PATHS.exam}/session/:id`} element={<ExamSession />} />
         <Route path={`${PATHS.exam}/:id`} element={<ExamDetail />} />
         <Route path={PATHS.achievement} element={<Achievement />} />
@@ -88,7 +96,7 @@ export const Routers = () => {
         <Route path={PATHS.enrollmentNew} element={<Enrollment />} />
         <Route path={PATHS.transfer} element={<Transfer />} />
         <Route path={PATHS.messages} element={<Messages />} />
-        <Route path={PATHS.profile} element={<Profile />} />
+        <Route path={PATHS.profile} element={<MyInfo />} />
         {PLACEHOLDER_PATHS.map((path) => (
           <Route key={path} path={path} element={<Placeholder />} />
         ))}

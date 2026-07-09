@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueries } from "@tanstack/react-query";
 import moment from "moment";
-import { Spin } from "tera-dls";
+import { Button, EyeOutlined, PencilSquareOutlined, Spin } from "tera-dls";
 
 import Breadcrumb from "_common/components/Breadcrumb";
 import Card from "_common/components/Card";
@@ -12,7 +12,7 @@ import { PATHS } from "_common/components/Layout/Menu/menus";
 import { ExamService, ExamSessionService } from "@tera/modules/education";
 import { ExamSessionAPI } from "@tera/api";
 
-import { toExamBank, toSiblingExams } from "./_utils";
+import { toExamBank, toExamSessionSummaries, toSiblingExams } from "./_utils";
 import ExamCoverCard from "./components/ExamCoverCard";
 import ExamStatGrid from "./components/ExamStatGrid";
 import ScoreDistributionChart from "./components/ScoreDistributionChart";
@@ -45,11 +45,22 @@ const ExamDetail = () => {
       enabled: sessions.length > 0,
     })),
   });
+  const sessionDetailById = useMemo(() => {
+    const map = new Map<number, any>();
+    sessions.forEach((s: any, i: number) => {
+      map.set(s.id, (sessionDetailQueries[i]?.data as any)?.data);
+    });
+    return map;
+  }, [sessions, sessionDetailQueries]);
   const rows = useMemo(
     () => sessionDetailQueries.flatMap((q) => toExamResultRows((q.data as any)?.data)),
     [sessionDetailQueries],
   );
   const isAggregating = sessionDetailQueries.some((q) => q.isLoading);
+  const sessionSummaries = useMemo(
+    () => toExamSessionSummaries(sessions, sessionDetailById),
+    [sessions, sessionDetailById],
+  );
 
   const siblingQuery = ExamService.useExamList(
     {
@@ -83,14 +94,41 @@ const ExamDetail = () => {
       )
     : 0;
 
+  // Quick-access shortcut for the header action: jump to the most recently
+  // scheduled sitting's results/grading page (the list below covers the rest).
+  const latestSession = sessions.length
+    ? sessions.reduce((latest: any, s: any) => (s.exam_date > latest.exam_date ? s : latest), sessions[0])
+    : null;
+
   return (
     <div className="p-4 xmd:p-6">
-      <Breadcrumb
-        items={[
-          { label: "Bài kiểm tra", onClick: () => navigate(PATHS.exam) },
-          { label: exam?.name || "Chi tiết bài kiểm tra" },
-        ]}
-      />
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
+        <Breadcrumb
+          items={[
+            { label: "Bài kiểm tra", onClick: () => navigate(PATHS.exam) },
+            { label: exam?.name || "Chi tiết bài kiểm tra" },
+          ]}
+        />
+        {exam && (
+          <div className="flex shrink-0 flex-wrap gap-2">
+            <Button
+              outlined
+              icon={<PencilSquareOutlined />}
+              onClick={() => navigate(`${PATHS.exam}/${exam.id}/edit`)}
+              className="text-brand border-brand hover:bg-brand"
+            >
+              Sửa
+            </Button>
+            <Button
+              disabled={!latestSession}
+              onClick={() => latestSession && navigate(`${PATHS.exam}/session/${latestSession.id}`)}
+              className="whitespace-nowrap bg-brand hover:bg-brand/80"
+            >
+              Xem đợt thi gần nhất
+            </Button>
+          </div>
+        )}
+      </div>
 
       {notFound ? (
         <div className="flex h-[50vh] items-center justify-center">
@@ -127,6 +165,7 @@ const ExamDetail = () => {
                   <p className="mb-3 text-sm font-semibold text-slate-700">Kết quả học viên</p>
                   <StudentResultTable
                     rows={rows}
+                    totalScore={exam.total_score}
                     isLoading={sessionsQuery.isLoading || isAggregating}
                     showSkillColumns={false}
                   />
@@ -134,20 +173,23 @@ const ExamDetail = () => {
 
                 <Card>
                   <p className="mb-2 text-sm font-semibold text-slate-700">Các lần kiểm tra</p>
-                  {sessions.length === 0 ? (
+                  {sessionSummaries.length === 0 ? (
                     <EmptyState description="Bài kiểm tra chưa được lên lịch thi" className="py-6" />
                   ) : (
                     <div className="flex flex-col divide-y divide-slate-100">
-                      {sessions.map((s: any) => (
+                      {sessionSummaries.map((s) => (
                         <button
                           key={s.id}
                           type="button"
                           onClick={() => navigate(`${PATHS.exam}/session/${s.id}`)}
-                          className="flex items-center justify-between py-2.5 text-left text-sm hover:text-brand"
+                          className="flex items-center justify-between gap-3 py-2.5 text-left text-sm hover:text-brand"
                         >
-                          <span>{s.class?.name || "—"}</span>
-                          <span className="text-slate-400">
-                            {s.exam_date ? moment(s.exam_date).format("DD/MM/YYYY") : "—"}
+                          <span className="truncate">{s.class_name || "—"}</span>
+                          <span className="flex shrink-0 items-center gap-3 text-slate-400">
+                            <span title="Điểm TB">
+                              {s.submitted > 0 ? `TB: ${s.avg_score}` : "Chưa chấm"}
+                            </span>
+                            <span>{s.exam_date ? moment(s.exam_date).format("DD/MM/YYYY") : "—"}</span>
                           </span>
                         </button>
                       ))}

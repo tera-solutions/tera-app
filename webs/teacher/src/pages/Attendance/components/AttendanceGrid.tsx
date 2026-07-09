@@ -23,6 +23,9 @@ interface AttendanceGridProps {
   onToggleSelect: (studentId: number) => void;
   onSetStatus: (status: AttendanceStatus) => void;
   onMarkAllPresent: () => void;
+  dirtyCount: number;
+  saving?: boolean;
+  onSave: () => void;
 }
 
 const AttendanceGrid = observer(({
@@ -34,6 +37,9 @@ const AttendanceGrid = observer(({
   onToggleSelect,
   onSetStatus,
   onMarkAllPresent,
+  dirtyCount,
+  saving,
+  onSave,
 }: AttendanceGridProps) => {
   const { getItem } = useMeta();
   const [search, setSearch] = useState("");
@@ -53,14 +59,24 @@ const AttendanceGrid = observer(({
           placeholder="Tìm kiếm học viên..."
           wrapperClassName="flex-1"
         />
-        <Button
-          outlined
-          icon={<CheckOutlined />}
-          onClick={onMarkAllPresent}
-          className="whitespace-nowrap text-emerald-600 border-emerald-500 hover:bg-emerald-500"
-        >
-          Đánh dấu có mặt tất cả
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            outlined
+            icon={<CheckOutlined />}
+            onClick={onMarkAllPresent}
+            disabled={saving}
+            className="whitespace-nowrap text-emerald-600 border-emerald-500 hover:bg-emerald-500"
+          >
+            Đánh dấu có mặt tất cả
+          </Button>
+          <Button
+            disabled={dirtyCount === 0 || saving}
+            onClick={onSave}
+            className="whitespace-nowrap"
+          >
+            {saving ? "Đang lưu..." : "Lưu điểm danh"}
+          </Button>
+        </div>
       </div>
 
       <WidgetState

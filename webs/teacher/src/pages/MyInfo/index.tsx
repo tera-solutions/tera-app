@@ -1,223 +1,106 @@
-import CardForm from "@tera/components/web/CardForm";
-import {
-  BTN_PRIMARY,
-  BTN_PRIMARY_LIGHT,
-  HEADING_CLASS_NAME,
-  labelClassName,
-} from "@tera/commons/constants/common";
-import { messageValidate } from "@tera/commons/constants/message";
-import Image from "@tera/components/dof/Control/Image";
-import Input from "@tera/components/dof/Control/Input";
-import InputPassword from "@tera/components/dof/Control/InputPassword";
-import Toggle from "@tera/components/dof/Control/Switch";
-import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
-import TableTera from "@tera/components/dof/TableTera";
-import classNames from "classnames";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Button, Row } from "tera-dls";
-import ModalAddress from "./ModalAddress";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import moment from "moment";
+import { notification } from "tera-dls";
+
+import Card from "_common/components/Card";
+import useConfirm from "_common/hooks/useConfirm";
+import { toCalendarItems } from "_common/utils/schedule";
+import { AuthApi } from "@tera/api/auth/auth";
+import { TimetableService } from "@tera/modules/education";
+import { ProfileService } from "@tera/modules/system";
+import { TeacherService } from "@tera/modules/hr";
+import { useStores } from "@tera/stores/useStores";
+
+import { toProfileData, toTeachingProfile } from "./_utils";
+import AccountInfoCard from "./components/AccountInfoCard";
+import AccountSidebar from "./components/AccountSidebar";
+import ChangePasswordForm from "./components/ChangePasswordForm";
+import TeachingProfileCard from "./components/TeachingProfileCard";
+import UpcomingSessionsCard from "./components/UpcomingSessionsCard";
 
 const MyInfo = () => {
-  const form = useForm();
-  const [openForm, setOpenForm] = useState({ open: false, id: null });
+  const navigate = useNavigate();
+  const confirm = useConfirm();
+  const { globalStore } = useStores();
+  const [passwordFormOpen, setPasswordFormOpen] = useState(false);
 
-  const columns: any = [
-    {
-      title: "Quốc gia",
-      dataIndex: "country",
-    },
-    {
-      title: "Tiểu bang",
-      dataIndex: "district",
-    },
-    {
-      title: "Thành phố",
-      dataIndex: "city",
-    },
-    {
-      title: "Mã bưu điện",
-      dataIndex: "code",
-    },
-    {
-      title: "Điện thoại",
-      dataIndex: "phone",
-    },
-    {
-      title: "Địa chỉ cụ thể",
-      dataIndex: "address",
-    },
-  ];
+  const profileQuery = ProfileService.useProfile();
+  const profile = useMemo(() => toProfileData(profileQuery.data?.data), [profileQuery.data]);
+
+  // The teacher's own HR record — looked up by user_id since there's no
+  // dedicated "my teacher profile" endpoint.
+  const teacherLookupQuery = TeacherService.useTeacherList(
+    { params: { per_page: 1, filters: { user_id: profile.user_id } } },
+    { enabled: !!profile.user_id },
+  );
+  const teacherId = teacherLookupQuery.data?.data?.items?.[0]?.id;
+  const teacherDetailQuery = TeacherService.useTeacherDetail(
+    { id: teacherId ?? "" },
+    { enabled: !!teacherId },
+  );
+  const teachingProfile = useMemo(
+    () => toTeachingProfile(teacherDetailQuery.data?.data),
+    [teacherDetailQuery.data],
+  );
+  const isTeachingProfileLoading =
+    profileQuery.isLoading || teacherLookupQuery.isLoading || teacherDetailQuery.isLoading;
+
+  const weekRange = {
+    date_from: moment().startOf("week").format("YYYY-MM-DD"),
+    date_to: moment().add(1, "month").format("YYYY-MM-DD"),
+  };
+  const scheduleQuery = TimetableService.useTimetableCalendar(weekRange);
+  const sessions = useMemo(
+    () => toCalendarItems(scheduleQuery.data?.data),
+    [scheduleQuery.data],
+  );
+
+  const handleLogout = () => {
+    confirm.warning({
+      title: "Đăng xuất",
+      content: <p>Bạn có chắc muốn đăng xuất khỏi tài khoản?</p>,
+      onOk: async () => {
+        try {
+          await AuthApi.logout();
+        } finally {
+          globalStore.clear?.();
+          navigate(`/auth/login`);
+        }
+      },
+    });
+  };
 
   return (
-    <div className="p-6">
-      <h1 className={HEADING_CLASS_NAME}>Thông tin của tôi</h1>
-      <Row className="gap-8 w-[90%] m-auto">
-        <FormTera form={form} className="grid gap-8">
-          <CardForm title="Thông tin cơ bản">
-            <FormTeraItem
-              name="name"
-              label="Tên của bạn"
-              layout="inline"
-              rules={[
-                {
-                  required: messageValidate.emptyText,
-                },
-              ]}
-              labelClassName={labelClassName}
-            >
-              <Input />
-            </FormTeraItem>
-            <FormTeraItem
-              name="phone"
-              label="Điện thoại của bạn"
-              layout="inline"
-              labelClassName={labelClassName}
-            >
-              <Input />
-            </FormTeraItem>
-            <FormTeraItem
-              name="avatar"
-              label="Ảnh đại diện"
-              layout="inline"
-              labelClassName={labelClassName}
-              className="items-start"
-            >
-              <Image folder="" object_key="" />
-            </FormTeraItem>
-            <FormTeraItem
-              name="password"
-              label="Mật khẩu của bạn"
-              layout="inline"
-              labelClassName={labelClassName}
-            >
-              <InputPassword />
-            </FormTeraItem>
-            <FormTeraItem
-              name="confirm-password"
-              label="Xác nhận mật khẩu"
-              layout="inline"
-              labelClassName={labelClassName}
-            >
-              <InputPassword />
-            </FormTeraItem>
-          </CardForm>
-          <CardForm title="Cài đặt thanh toán">
-            <FormTeraItem
-              name="cash"
-              label="Thanh toán bằng tiền mặt"
-              layout="inline"
-              labelClassName={labelClassName}
-            >
-              <Toggle />
-            </FormTeraItem>
-            <FormTeraItem
-              name="bank"
-              label="Thanh toán qua ngân hàng"
-              layout="inline"
-              labelClassName={labelClassName}
-            >
-              <Toggle />
-            </FormTeraItem>
-            <FormTeraItem
-              name="bank_name"
-              label="Tên ngân hàng"
-              layout="inline"
-              labelClassName={labelClassName}
-              className="items-start"
-            >
-              <Input />
-            </FormTeraItem>
-            <FormTeraItem
-              name="bank_number"
-              label="Số tài khoản ngân hàng"
-              layout="inline"
-              labelClassName={labelClassName}
-            >
-              <Input />
-            </FormTeraItem>
-            <FormTeraItem
-              name="bank_"
-              label="Số định tuyến ngân hàng"
-              layout="inline"
-              labelClassName={labelClassName}
-            >
-              <Input />
-            </FormTeraItem>
-            <FormTeraItem
-              name="usdt"
-              label="USDT Payment"
-              layout="inline"
-              labelClassName={labelClassName}
-            >
-              <Toggle />
-            </FormTeraItem>
-            <FormTeraItem
-              name="usdt_link"
-              label="USDT Link"
-              layout="inline"
-              labelClassName={labelClassName}
-            >
-              <Input />
-            </FormTeraItem>
-            <FormTeraItem
-              name="usdt"
-              label="USDT Address"
-              layout="inline"
-              labelClassName={labelClassName}
-            >
-              <Input />
-            </FormTeraItem>
-          </CardForm>
-          <Button className={classNames(BTN_PRIMARY, "ml-auto")}>Lưu</Button>
-        </FormTera>
-        <CardForm
-          title="Địa chỉ nhà"
-          rightContent={
-            <Button
-              className={BTN_PRIMARY_LIGHT}
-              onClick={() => setOpenForm({ open: true, id: null })}
-            >
-              Thêm địa chỉ
-            </Button>
-          }
-        >
-          <TableTera data={[]} columns={columns} />
-        </CardForm>
-        <CardForm title="Thay đổi email của bạn">
-          <FormTera form={form}>
-            <FormTeraItem
-              name="email"
-              label="Email của bạn"
-              layout="inline"
-              labelClassName={labelClassName}
-            >
-              <div className="flex items-center gap-2.5">
-                <Input />
-                <Button
-                  htmlType="button"
-                  className={classNames(BTN_PRIMARY_LIGHT, "shrink-0")}
-                >
-                  Kiểm chứng
-                </Button>
-              </div>
-            </FormTeraItem>
-            <Button
-              htmlType="button"
-              className={classNames(BTN_PRIMARY, "ml-auto")}
-            >
-              Cập nhật email
-            </Button>
-          </FormTera>
-        </CardForm>
-      </Row>
-      {openForm.open && (
-        <ModalAddress
-          open={openForm.open}
-          id={openForm.id}
-          onClose={() => setOpenForm({ open: false, id: null })}
-        />
-      )}
+    <div className="p-4 xmd:p-6">
+      <div className="mb-4">
+        <h1 className="text-xl font-bold text-slate-800">Thông tin cá nhân</h1>
+        <p className="mt-0.5 text-sm text-slate-400">
+          Quản lý hồ sơ, lịch dạy và cài đặt tài khoản của bạn
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[280px_1fr_280px]">
+        <AccountInfoCard profile={profile} loading={profileQuery.isLoading} />
+
+        <div className="flex flex-col gap-4">
+          <Card>
+            <p className="mb-2 text-sm font-semibold text-slate-700">Hồ sơ giảng dạy</p>
+            <TeachingProfileCard profile={teachingProfile} loading={isTeachingProfileLoading} />
+          </Card>
+          <UpcomingSessionsCard
+            title="Lịch dạy học"
+            sessions={sessions}
+            isLoading={scheduleQuery.isLoading}
+            isError={scheduleQuery.isError}
+            onRetry={() => scheduleQuery.refetch()}
+          />
+        </div>
+
+        <AccountSidebar onChangePassword={() => setPasswordFormOpen(true)} onLogout={handleLogout} />
+      </div>
+
+      <ChangePasswordForm open={passwordFormOpen} onClose={() => setPasswordFormOpen(false)} />
     </div>
   );
 };

@@ -141,9 +141,9 @@ const Ranking = () => {
           </Card>
 
           <div className="flex flex-col gap-4">
+            <MonthFilter value={month} onChange={setMonth} />
             <Top3Cards top3={ranked.slice(0, 3)} />
             <ScoreHistogram buckets={histogram} />
-            <MonthFilter value={month} onChange={setMonth} />
           </div>
         </div>
       )}
@@ -161,14 +161,14 @@ const Ranking = () => {
           <div className="flex flex-col items-center gap-3 py-10 text-center">
             <ChatBubbleLeftRightOutlined className="h-8 w-8 text-slate-300" />
             <p className="text-sm text-slate-500">
-              Xem và gửi nhận xét chi tiết cho từng học viên tại trang Nhận xét
+              Xem và gửi đánh giá chi tiết cho từng học viên tại trang Đánh giá
             </p>
             <button
               type="button"
-              onClick={() => navigate(PATHS.comments)}
+              onClick={() => navigate(PATHS.evaluation)}
               className="rounded-full bg-sky-50 px-4 py-1.5 text-xs font-medium text-brand hover:bg-sky-100"
             >
-              Đi tới Nhận xét & Đánh giá
+              Đi tới Đánh giá
             </button>
           </div>
         </Card>

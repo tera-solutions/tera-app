@@ -105,18 +105,18 @@ export const useAttendanceSession = ({
     );
   };
 
-  const markAllPresent = () => {
-    setRows((prev) => prev.map((r) => ({ ...r, status: "present", dirty: true })));
-  };
-
   const upsertMutation = AttendanceService.useUpsertAttendance();
 
-  const save = async (): Promise<boolean> => {
-    if (dirtyRows.length === 0) return true;
+  const persistRows = async (
+    rowsToSave: AttendanceRow[],
+    successMessage: string,
+    failureMessagePrefix: string,
+  ): Promise<boolean> => {
+    if (rowsToSave.length === 0) return true;
     setSaving(true);
     try {
       const results = await Promise.allSettled(
-        dirtyRows.map((row) =>
+        rowsToSave.map((row) =>
           upsertMutation.mutateAsync({
             id: row.record_id ?? undefined,
             params: {
@@ -132,16 +132,37 @@ export const useAttendanceSession = ({
       const failed = results.filter((r) => r.status === "rejected").length;
       if (failed > 0) {
         notification.error({
-          message: `Lưu điểm danh thất bại cho ${failed} học viên`,
+          message: `${failureMessagePrefix} ${failed} học viên`,
         });
         return false;
       }
-      notification.success({ message: "Lưu điểm danh thành công" });
-      setRows((prev) => prev.map((r) => ({ ...r, dirty: false })));
+      notification.success({ message: successMessage });
+      const savedIds = new Set(rowsToSave.map((r) => r.student_id));
+      setRows((prev) =>
+        prev.map((r) => (savedIds.has(r.student_id) ? { ...r, dirty: false } : r)),
+      );
       return true;
     } finally {
       setSaving(false);
     }
+  };
+
+  const save = () =>
+    persistRows(dirtyRows, "Lưu điểm danh thành công", "Lưu điểm danh thất bại cho");
+
+  /** Marks every student present and saves immediately, no separate "Lưu" step. */
+  const markAllPresent = () => {
+    const updatedRows = rows.map((r) => ({
+      ...r,
+      status: "present" as AttendanceStatus,
+      dirty: true,
+    }));
+    setRows(updatedRows);
+    return persistRows(
+      updatedRows,
+      "Đã đánh dấu có mặt tất cả",
+      "Đánh dấu có mặt thất bại cho",
+    );
   };
 
   return {

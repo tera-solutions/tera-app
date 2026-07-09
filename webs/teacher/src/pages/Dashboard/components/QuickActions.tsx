@@ -6,7 +6,7 @@ import QuickActionCard from "./QuickActionCard";
 
 const QuickActions = () => {
   const { data } = useDashboardSummary();
-  const homeworkCount = data?.homework_pending?.length ?? 0;
+  const assignmentCount = data?.assignment_pending?.length ?? 0;
 
   return (
     <div className="grid grid-cols-4 gap-3">
@@ -14,7 +14,7 @@ const QuickActions = () => {
         <QuickActionCard
           key={action.label}
           {...action}
-          badge={action.to === PATHS.homework ? homeworkCount : undefined}
+          badge={action.to === PATHS.assignment ? assignmentCount : undefined}
         />
       ))}
     </div>

@@ -47,7 +47,7 @@ export const toSessionDetail = (res: any): SessionDetail | null => {
     date: d.session_date ?? "",
     start_time: toTime(d.start_time),
     end_time: toTime(d.end_time),
-    room: d.room?.name ?? "",
+    room: d.room?.room_name ?? "",
     teacher_name: d.teacher?.full_name ?? "",
     status: toScheduleStatus(d.status),
   };

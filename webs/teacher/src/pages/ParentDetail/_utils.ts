@@ -39,7 +39,7 @@ export const toParentChildren = (
 export const toChildStats = (raw: any): ParentChildStats => ({
   attendance_rate: raw?.attendance_rate ?? 0,
   avg_score: raw?.avg_score ?? null,
-  homework_completion: raw?.homework_completion ?? 0,
+  assignment_completion: raw?.homework_completion ?? 0,
 });
 
 export const toScheduleSlots = (raw: any[] | null | undefined): ScheduleSlot[] =>
