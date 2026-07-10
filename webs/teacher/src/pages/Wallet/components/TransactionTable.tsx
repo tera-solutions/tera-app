@@ -156,22 +156,24 @@ const TransactionTable = ({
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <p className="text-base font-semibold text-slate-800">Lịch sử giao dịch</p>
         <div className="flex items-center gap-2">
+          {/* `text-sm` (14px) để cỡ chữ bằng nút "Xuất file" bên cạnh — mặc định CompactSelect 12px. */}
           <CompactSelect
             value={typeFilter}
             options={TYPE_FILTER_OPTIONS}
             placeholder="Tất cả giao dịch"
             allowClear
-            className="h-9"
+            className="h-9 text-sm"
             onChange={onTypeFilterChange}
           />
+          {/* Cùng kiểu nút "Xuất báo cáo" ở màn Điểm danh (`pages/Attendance/index.tsx`):
+              Button mặc định + prop `icon` (icon nằm sau chữ), nền brand. Cao sẵn 36px = CompactSelect. */}
           <Button
-            type="light"
-            className="btn-info flex! h-9! items-center! gap-1.5 px-3"
+            icon={<ArrowDownTrayOutlined />}
             onClick={onExport}
-            loading={exporting}
+            disabled={exporting}
+            className="whitespace-nowrap bg-brand hover:bg-brand/80"
           >
-            <ArrowDownTrayOutlined className="h-4 w-4" />
-            <span className="text-xs font-medium">Xuất file</span>
+            {exporting ? "Đang xuất..." : "Xuất file"}
           </Button>
         </div>
       </div>

@@ -87,8 +87,11 @@ const CompactSelect = ({
         disabled={disabled}
         onClick={() => setOpen((o) => !o)}
         className={customTwMerge(
-          "flex items-center gap-2 rounded-lg border border-slate-200 bg-white py-1.5 pl-3 pr-2.5 text-xs font-medium text-slate-600 transition-colors hover:border-brand/50 focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-100",
-          open && "border-brand/60",
+          // Hover/mở dùng đúng token của `SearchInput` (`hover:border-blue-700`,
+          // `focus:border-blue-700 focus:ring focus:ring-blue-300`) để 3 control cùng hàng
+          // highlight giống nhau — trước đây là `border-brand/50` nên nhạt hơn hẳn.
+          "flex items-center gap-2 rounded-lg border border-slate-200 bg-white py-1.5 pl-3 pr-2.5 text-xs font-medium text-slate-600 transition-colors hover:border-blue-700 focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-100",
+          open && "border-blue-700 ring ring-blue-300",
           className,
         )}
       >
