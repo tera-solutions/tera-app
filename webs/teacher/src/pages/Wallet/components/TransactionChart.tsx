@@ -62,18 +62,12 @@ const TransactionChart = ({
       : "";
 
   return (
-    /* `animated={false}`: Card mặc định bọc children trong `AnimatedHeight` (`overflow-hidden`),
-       mép phải của nó trùng mép phải RangePicker → xén mất ring focus (`box-shadow` lồi 2px ra
-       ngoài viền). Nội dung bên trong vẫn được `WidgetState` animate. */
+
     <Card className="xmd:p-5" animated={false}>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <p className="text-base font-semibold text-slate-800">Biểu đồ giao dịch</p>
-        {/* `justify-end`: trên mobile khối này xuống dòng và chiếm hết bề ngang → không có
-            `justify-end` thì 2 control dồn về trái. Desktop khối co theo nội dung nên vô hại.
-            KHÔNG `flex-wrap`: 2 control phải nằm cùng 1 hàng — picker tự co (xem className của nó). */}
+
         <div className="flex w-full items-center justify-end gap-2 xmd:w-auto">
-          {/* `h-9` (36px) cho cả 2 control để chúng bằng nhau — mặc định select 30px, picker 26px.
-              `shrink-0`: mobile hẹp thì picker co, select giữ nguyên. */}
           <CompactSelect
             className="h-9 shrink-0 text-[13px]"
             value={selectValue}
@@ -83,33 +77,9 @@ const TransactionChart = ({
               if (v) onRangeChange(presetToRange(v as ChartPeriod));
             }}
           />
-          {/* Icon lịch của tera-picker là position:absolute right:1rem → chừa pr-9
-              để ô ngày thứ 2 không bị icon đè lên chữ. */}
           <RangePicker
-            /* `hover:border-brand/50` + `focus-within:border-brand/60` để giống CompactSelect cạnh bên.
-               🐞 `.tera-picker-active-bar` (gạch chân 2px báo đang ở ô "Từ ngày" hay "Đến ngày")
-               mặc định nằm ở `bottom:-1px` → đè lên cạnh dưới bo tròn, trông như viền gãy.
-               KHÔNG ẩn nó (mất chỉ báo) — kéo vào trong viền + bo tròn hai đầu. */
-            /* `flex-1 min-w-0` để picker CO khi hàng chật (thay vì cứng 260px rồi bị đẩy xuống
-               dòng), `max-w-[260px]` để nó KHÔNG NỞ quá bề rộng chuẩn khi hàng rộng — thiếu cái
-               này thì ở tablet 768px picker bị kéo tới ~593px.
-               ⚠️ `.tera-picker-input` mặc định rộng CỐ ĐỊNH 99px/ô → khi picker co, ô thứ 2 tràn
-               ra dưới icon lịch (icon là `position:absolute`). Ép 2 ô `flex-1 min-w-0` + thu hẹp
-               dấu `→` thì chúng mới chia đều phần còn lại. */
             className="h-9! min-w-0 max-w-[260px] flex-1 rounded-lg! border-slate-200! pr-9! transition-colors hover:border-blue-700! focus-within:border-blue-700! [&_.tera-picker-active-bar]:bottom-[3px]! [&_.tera-picker-active-bar]:rounded-full! [&_.tera-picker-input]:min-w-0! [&_.tera-picker-input]:flex-1! [&_.tera-picker-range-separator]:px-1! [&_input]:w-full! [&_input]:text-[12px]! [&_input]:text-slate-600 xmd:[&_.tera-picker-range-separator]:px-2! xmd:[&_input]:text-[13px]!"
             inputReadOnly
-            /* 🐞 Popup mặc định bày 2 bảng tháng CẠNH NHAU (`flex-row`, rộng ~409px) → trên màn
-               390px nó tràn khỏi mép trái (`left: -29px`) và bị cắt mất cột thứ. Popup render qua
-               portal + `position:fixed` nên không cuộn ngang tới được.
-               → dưới `xmd` xếp 2 bảng CHỒNG DỌC để popup chỉ rộng bằng 1 bảng.
-               (`classNames.popup` là API của rc-picker v4 — tera-dls forward thẳng props.) */
-            /* ⚠️ Popup là hộp `absolute` → bề rộng = shrink-to-fit = min(max-width, max-content).
-               `max-content` của nó là 580px, nên phải CHẶN `max-width` bằng đúng bề rộng 1 bảng
-               (290px + viền) thì nó mới co lại; chỉ xếp `flex-col` thôi là chưa đủ. */
-            /* Bảng tháng cần tối thiểu 290px; màn ≤340px thì popup hẹp hơn thế và
-               `.tera-picker-panel-container` (overflow-x:hidden) sẽ CẮT MẤT cột thứ.
-               → cho chính nó cuộn ngang. Đặt `overflow-x-auto` ở root popup KHÔNG có tác dụng,
-               vì phần tử clip nằm sâu bên trong. */
             classNames={{
               popup:
                 "max-w-[min(300px,calc(100vw-2.5rem))] [&_.tera-picker-panel-container]:overflow-x-auto! [&_.tera-picker-panels]:flex-col xmd:max-w-none xmd:[&_.tera-picker-panel-container]:overflow-x-hidden! xmd:[&_.tera-picker-panels]:flex-row",
