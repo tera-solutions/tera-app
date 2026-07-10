@@ -19,6 +19,7 @@ import { ParentService } from "@tera/modules";
 
 /* Import: pages */
 import Pagination from "_common/components/Pagination";
+import { DatePickerField } from "_common/components/DateField";
 import { IParent } from "pages/CRM/parent/_interface";
 
 const ParentTable = observer(
@@ -310,11 +311,10 @@ const ParentTable = observer(
                 {t("parent.suspend_date")}{" "}
                 <span className="text-red-500">*</span>
               </label>
-              <input
-                type="date"
+              <DatePickerField
                 value={suspendDate}
-                onChange={(e) => setSuspendDate(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-[13px] focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500"
+                onChange={setSuspendDate}
+                disableFuture={false}
               />
             </div>
             <div className="flex flex-col gap-1.5">

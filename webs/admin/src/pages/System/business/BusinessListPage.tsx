@@ -30,8 +30,8 @@ const BusinessListPage = observer(() => {
   const [managerFilter, setManagerFilter] = useState("");
   const [selectedManager, setSelectedManager] = useState<any>(null);
   const [dateFilter, setDateFilter] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [sortBy, setSortBy] = useState("business_code");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,

@@ -22,7 +22,9 @@ import ClassRoomFormModal from "./ClassRoomFormModal";
 
 const defaultFilters: ClassRoomFilterValue = {
   course: "",
+  selectedCourse: null,
   teacher: "",
+  selectedTeacher: null,
   assignee: "",
   selectedAssignee: null,
   weekday: "",
@@ -41,8 +43,8 @@ const ClassRoomListPage = observer(() => {
   const [activeStatus, setActiveStatus] = useState("");
   const [keyword, setKeyword] = useState("");
   const [filters, setFilters] = useState<ClassRoomFilterValue>(defaultFilters);
-  const [sortBy, setSortBy] = useState("");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [sortBy, setSortBy] = useState("code");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
@@ -146,7 +148,7 @@ const ClassRoomListPage = observer(() => {
             nguyên (shrink-0), search co lại; dưới 1280px về layout mobile */}
         <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:flex-wrap xmd:items-center">
           <SearchBar
-            className="w-full xmd:flex-1 xmd:min-w-[200px]"
+            className="w-full xmd:flex-1 xmd:min-w-[110px]"
             value={keyword}
             placeholder={t("classroom.search_placeholder")}
             onChange={(v) => {

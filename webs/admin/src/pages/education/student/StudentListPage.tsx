@@ -32,8 +32,8 @@ const StudentListPage = observer(() => {
   const [keyword, setKeyword] = useState("");
   const [levelFilter, setLevelFilter] = useState("");
   const [branchFilter, setBranchFilter] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [sortBy, setSortBy] = useState("code");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,

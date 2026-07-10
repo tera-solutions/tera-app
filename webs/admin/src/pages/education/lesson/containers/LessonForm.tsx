@@ -15,6 +15,7 @@ import { Col, Row, notification } from "tera-dls";
 
 /* Import: packages */
 import { IFormProps } from "@tera/commons/interfaces";
+import Select from "@tera/components/dof/Control/Select";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 
@@ -26,8 +27,6 @@ import { ILessonForm } from "pages/education/lesson/_interface";
 import LessonAttendanceTab from "./LessonAttendanceTab";
 import LessonEvaluationTab from "./LessonEvaluationTab";
 
-const SELECT_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
 
 const fmtDate = (v?: string) =>
   v ? new Date(v).toLocaleDateString("vi-VN") : "—";
@@ -100,8 +99,7 @@ const LessonForm = forwardRef<any, LessonFormProps>(
       resolver: yupResolver(schema) as any,
     });
 
-    const { reset, formState, watch, register } = form;
-    const teacherIdValue = watch("teacher_id");
+    const { reset, formState } = form;
 
     const { mutate: onUpdate, isPending } = LessonService.useLessonUpdate();
 
@@ -285,31 +283,16 @@ const LessonForm = forwardRef<any, LessonFormProps>(
               </Col>
               <Col className="sm:col-span-2">
                 <FormTeraItem label={t("lesson.teacher")} name="teacher_id">
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: teacherIdValue ? "#111827" : "#9ca3af",
-                      }}
-                      disabled={isView}
-                      {...register("teacher_id")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("lesson.teacher") })}
-                      </option>
-                      {teachers.map((tc) => (
-                        <option
-                          key={tc.id}
-                          value={String(tc.id)}
-                          style={{ color: "#111827" }}
-                        >
-                          {tc.full_name ?? tc.name}
-                          {tc.code ? ` (${tc.code})` : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={teachers.map((tc) => ({
+                      value: String(tc.id),
+                      label: tc.code
+                        ? `${tc.full_name ?? tc.name} (${tc.code})`
+                        : (tc.full_name ?? tc.name),
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("lesson.teacher") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
             </Row>

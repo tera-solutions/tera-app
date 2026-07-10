@@ -3,6 +3,8 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { Modal, notification } from "tera-dls";
+import { SelectField } from "@tera/components/dof/Control/Select";
+import { DatePickerField } from "_common/components/DateField";
 
 /* Import: packages */
 import useIsMobile from "@tera/commons/hooks/useIsMobile";
@@ -21,8 +23,6 @@ interface TransferStudentProps {
   onSuccess?: () => void;
 }
 
-const SELECT_CLASS =
-  "w-full h-9 border border-gray-300 bg-white px-3 text-[13px] rounded focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500";
 
 /** Modal chuyển lớp học viên: to_class_id + transfer_date + reason */
 const TransferStudent = ({
@@ -128,21 +128,15 @@ const TransferStudent = ({
           <label className="text-[13px] text-gray-600 font-medium">
             {t("enrollment.to_class")} <span className="text-red-500">*</span>
           </label>
-          <select
-            className={SELECT_CLASS}
-            style={{ color: toClassId ? "#111827" : "#9ca3af" }}
+          <SelectField
+            options={classes.map((c) => ({
+              value: String(c.id),
+              label: c.code ? `${c.code} - ${c.name}` : c.name,
+            }))}
+            placeholder={t("form.enter_value", { key: t("enrollment.to_class") })}
             value={toClassId}
-            onChange={(e) => setToClassId(e.target.value)}
-          >
-            <option value="" disabled hidden>
-              {t("form.enter_value", { key: t("enrollment.to_class") })}
-            </option>
-            {classes.map((c) => (
-              <option key={c.id} value={String(c.id)} style={{ color: "#111827" }}>
-                {c.code ? `${c.code} - ${c.name}` : c.name}
-              </option>
-            ))}
-          </select>
+            onChange={(val) => setToClassId(String(val ?? ""))}
+          />
         </div>
 
         {toClassId && <ClassCapacity classId={toClassId} />}
@@ -152,11 +146,10 @@ const TransferStudent = ({
           <label className="text-[13px] text-gray-600 font-medium">
             {t("enrollment.transfer_date")} <span className="text-red-500">*</span>
           </label>
-          <input
-            type="date"
-            className={SELECT_CLASS}
+          <DatePickerField
             value={transferDate}
-            onChange={(e) => setTransferDate(e.target.value)}
+            onChange={setTransferDate}
+            disableFuture={false}
           />
         </div>
 

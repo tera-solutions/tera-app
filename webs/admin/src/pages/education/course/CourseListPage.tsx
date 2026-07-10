@@ -38,8 +38,8 @@ const CourseListPage = () => {
   const [activeStatus, setActiveStatus] = useState("");
   const [keyword, setKeyword] = useState("");
   const [filters, setFilters] = useState<CourseFilterValue>(defaultFilters);
-  const [sortBy, setSortBy] = useState("");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [sortBy, setSortBy] = useState("code");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
@@ -142,7 +142,7 @@ const CourseListPage = () => {
         {/* Search + quick filters row */}
         <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center">
           <SearchBar
-            className="xmd:flex-1"
+            className="w-full xmd:flex-1 xmd:min-w-[140px]"
             value={keyword}
             placeholder={t("course.search_placeholder")}
             onChange={(v) => {

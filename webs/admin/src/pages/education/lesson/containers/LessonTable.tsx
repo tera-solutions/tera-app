@@ -15,6 +15,7 @@ import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdow
 
 /* Import: packages */
 import { TableTera } from "@tera/components/dof";
+import { SelectField } from "@tera/components/dof/Control/Select";
 import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { IModalProps } from "@tera/commons/interfaces";
 import { LESSON_PAGE_URL } from "@tera/commons/constants/url";
@@ -449,24 +450,17 @@ const LessonTable = ({ params, setParams, setModalData }: LessonTableProps) => {
             <label className='text-[13px] text-gray-600 font-medium'>
               {t("lesson.room")}
             </label>
-            <select
-              className={SELECT_CLASS}
-              style={{ color: reRoom ? "#111827" : "#9ca3af" }}
+            <SelectField
+              options={rooms.map((r) => ({
+                value: String(r.id),
+                label: r.room_code
+                  ? `${r.room_name ?? r.name ?? `#${r.id}`} (${r.room_code})`
+                  : (r.room_name ?? r.name ?? `#${r.id}`),
+              }))}
+              placeholder="—"
               value={reRoom}
-              onChange={(e) => setReRoom(e.target.value)}
-            >
-              <option value=''>—</option>
-              {rooms.map((r) => (
-                <option
-                  key={r.id}
-                  value={String(r.id)}
-                  style={{ color: "#111827" }}
-                >
-                  {r.room_name ?? r.name ?? `#${r.id}`}
-                  {r.room_code ? ` (${r.room_code})` : ""}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setReRoom(String(val ?? ""))}
+            />
           </div>
         </div>
       </Modal>

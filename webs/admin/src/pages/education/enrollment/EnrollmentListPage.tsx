@@ -12,9 +12,6 @@ import { useStores } from "@tera/stores/useStores";
 import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { ENROLLMENT_PAGE_URL } from "@tera/commons/constants/url";
 
-/* Import: services */
-import { StudentService, ClassRoomService, CourseService } from "@tera/modules";
-
 /* Import: pages */
 import SearchBar from "_common/components/SearchBar";
 import EnrollmentFilter from "./containers/EnrollmentFilter";
@@ -31,8 +28,11 @@ const EnrollmentListPage = observer(() => {
   const [activeStatus, setActiveStatus] = useState("");
   const [keyword, setKeyword] = useState("");
   const [studentFilter, setStudentFilter] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [classFilter, setClassFilter] = useState("");
+  const [selectedClass, setSelectedClass] = useState<any>(null);
   const [courseFilter, setCourseFilter] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [salesFilter, setSalesFilter] = useState("");
   const [selectedSales, setSelectedSales] = useState<any>(null);
   const [debtFilter, setDebtFilter] = useState("");
@@ -68,20 +68,6 @@ const EnrollmentListPage = observer(() => {
     }
   }, [isMobile, modalData, navigate]);
 
-  const { data: studentData } = StudentService.useStudentList({
-    params: { page: 1, per_page: 100 },
-  });
-  const studentsList: any[] = studentData?.data?.items ?? [];
-
-  const { data: classData } = ClassRoomService.useClassRoomList({
-    params: { page: 1, per_page: 100 },
-  });
-  const classes: any[] = classData?.data?.items ?? [];
-
-  const { data: courseData } = CourseService.useCourseList({
-    params: { page: 1, per_page: 100 },
-  });
-  const courses: any[] = courseData?.data?.items ?? [];
 
   const statusOptions = globalStore.getOptions("enrollment_status") ?? [];
   const statusTabs = [
@@ -149,8 +135,9 @@ const EnrollmentListPage = observer(() => {
 
         {/* Search + filter row */}
         <div className='relative z-20 flex flex-wrap items-center gap-2 mb-3'>
+          {/* Search nuốt phần dư của hàng → luôn dài nhất; các select co lại cho vừa 1 hàng */}
           <SearchBar
-            className='w-full xmd:w-[240px] xmd:shrink-0'
+            className='w-full xmd:flex-1 xmd:min-w-[130px]'
             value={keyword}
             placeholder={t("enrollment.search_placeholder")}
             onChange={(v) => {
@@ -160,36 +147,30 @@ const EnrollmentListPage = observer(() => {
           />
 
           <EnrollmentFilter
-            studentOptions={studentsList.map((s) => ({
-              value: String(s.id),
-              label: s.code ? `${s.code} - ${s.name}` : s.name,
-            }))}
-            classOptions={classes.map((c) => ({
-              value: String(c.id),
-              label: c.code ? `${c.code} - ${c.name}` : c.name,
-            }))}
-            courseOptions={courses.map((c) => ({
-              value: String(c.id),
-              label: c.code ? `${c.code} - ${c.name}` : c.name,
-            }))}
             studentId={studentFilter}
+            selectedStudent={selectedStudent}
             classId={classFilter}
+            selectedClass={selectedClass}
             courseId={courseFilter}
+            selectedCourse={selectedCourse}
             sales={salesFilter}
             selectedSales={selectedSales}
             debt={debtFilter}
             dateFrom={dateFrom}
             dateTo={dateTo}
-            onStudentChange={(v) => {
-              setStudentFilter(v);
+            onStudentChange={(id, item) => {
+              setStudentFilter(id);
+              setSelectedStudent(item ?? null);
               resetPage();
             }}
-            onClassChange={(v) => {
-              setClassFilter(v);
+            onClassChange={(id, item) => {
+              setClassFilter(id);
+              setSelectedClass(item ?? null);
               resetPage();
             }}
-            onCourseChange={(v) => {
-              setCourseFilter(v);
+            onCourseChange={(id, item) => {
+              setCourseFilter(id);
+              setSelectedCourse(item ?? null);
               resetPage();
             }}
             onSalesChange={(id, user) => {
