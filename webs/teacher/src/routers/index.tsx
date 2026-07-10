@@ -40,6 +40,7 @@ import CourseDetail from "pages/CourseDetail";
 import Enrollment from "pages/Enrollment";
 import Transfer from "pages/Transfer";
 import Wallet from "pages/Wallet";
+import Deposit from "pages/Deposit";
 import Placeholder from "pages/Placeholder";
 
 import CheckAuth from "routers/CheckAuth";
@@ -113,6 +114,7 @@ export const Routers = () => {
         <Route path={PATHS.transfer} element={<Transfer />} />
         <Route path={PATHS.messages} element={<Messages />} />
         <Route path={PATHS.wallet} element={<Wallet />} />
+        <Route path={PATHS.walletDeposit} element={<Deposit />} />
         <Route path={PATHS.profile} element={<MyInfo />} />
         {PLACEHOLDER_PATHS.map((path) => (
           <Route key={path} path={path} element={<Placeholder />} />

@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { notification } from "tera-dls";
 
+import { PATHS } from "_common/components/Layout/Menu/menus";
+
 import { WalletService } from "@tera/modules/wallet";
-import { ProfileService } from "@tera/modules/system";
 
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 
@@ -12,8 +14,8 @@ import {
   toLinkedBankAccounts,
   toSummaryStats,
   toTransactions,
-  toWalletInfo,
 } from "./_utils";
+import useTeacherWallet from "./useTeacherWallet";
 import BalanceCard from "./components/BalanceCard";
 import WalletSummary from "./components/WalletSummary";
 import DepositMethods from "./components/DepositMethods";
@@ -27,6 +29,7 @@ import TransactionTable from "./components/TransactionTable";
 const SUMMARY_FETCH_SIZE = 100;
 
 const Wallet = () => {
+  const navigate = useNavigate();
   // `null` = chưa chọn khoảng ngày. Cố ý KHÔNG điền sẵn preset nào — người dùng tự chọn,
   // biểu đồ chờ tới lúc đó.
   const [chartRange, setChartRange] = useState<DateRange | null>(null);
@@ -46,32 +49,7 @@ const Wallet = () => {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
-  const profileQuery = ProfileService.useProfile();
-  /** `wallet.owner_id` là **id bảng `users`** (verify 2026-07-09: ví teacher có `owner_id: 5`,
-   * đúng bằng user id 5 role Teacher). */
-  const currentUserId = profileQuery.data?.data?.id ?? null;
-
-  /**
-   * 🐞 `fin/wallet/list` KHÔNG tự lọc theo user đang đăng nhập (verify 2026-07-09: trả về ví của
-   * mọi owner). Không lọc thì `items[0]` là ví người khác → phải tự truyền `owner_type` + `owner_id`.
-   *
-   * ⚠️ Nếu profile không trả `id`, ta vẫn lọc `owner_type` để không lộ ví phụ huynh, nhưng khi có
-   * từ 2 ví giáo viên trở lên sẽ lấy nhầm ví của giáo viên đầu tiên. Xem mục 4a trong
-   * `agents/claude/teacher/sprint4-wallet-checklist.md`.
-   */
-  // ⚠️ `ListParams` chưa có index signature → khai params rời để né TS2353 (lỗi baseline toàn repo).
-  const walletParams: Record<string, unknown> = {
-    page: 1,
-    per_page: 20,
-    owner_type: "teacher",
-    ...(currentUserId ? { owner_id: currentUserId } : {}),
-  };
-  // Chờ profile xong rồi mới gọi, tránh nháy 1 lần bằng ví của giáo viên khác.
-  const walletQuery = WalletService.useWalletList(
-    { params: walletParams },
-    { enabled: !profileQuery.isLoading },
-  );
-  const wallet = useMemo(() => toWalletInfo(walletQuery.data), [walletQuery.data]);
+  const { wallet, profileQuery, walletQuery } = useTeacherWallet();
 
   const bankAccounts = useMemo(
     () => toLinkedBankAccounts(walletQuery.data, profileQuery.data),
@@ -134,14 +112,22 @@ const Wallet = () => {
           được dưới min-content của bảng giao dịch (820px) và đẩy trang tràn ngang ở 1280px. */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[400px_1fr] [&>*]:min-w-0">
         <div className="lg:col-start-1 lg:row-start-1">
-          <BalanceCard balance={wallet.balance} loading={walletQuery.isLoading} />
+          <BalanceCard
+            balance={wallet.balance}
+            loading={walletQuery.isLoading}
+            onDeposit={() => navigate(PATHS.walletDeposit)}
+          />
         </div>
         <div className="lg:col-start-2 lg:row-start-1">
           <WalletSummary stats={summaryStats} loading={summaryQuery.isLoading} />
         </div>
 
         <div className="lg:col-start-1 lg:row-start-2">
-          <DepositMethods />
+          <DepositMethods
+            onSelect={(method) =>
+              navigate(PATHS.walletDeposit, { state: { method } })
+            }
+          />
         </div>
         <div className="lg:col-start-2 lg:row-start-2">
           <TransactionChart
