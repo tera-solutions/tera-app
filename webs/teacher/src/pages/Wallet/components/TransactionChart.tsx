@@ -16,8 +16,10 @@ ChartJS.register(Filler);
 
 interface TransactionChartProps {
   points: ChartPoint[];
-  range: DateRange;
-  onRangeChange: (range: DateRange) => void;
+  /** `null` = người dùng chưa chọn khoảng ngày → ô ngày để trống, biểu đồ chưa vẽ. */
+  range: DateRange | null;
+  /** `null` khi người dùng bấm × xoá khoảng ngày. */
+  onRangeChange: (range: DateRange | null) => void;
   loading?: boolean;
 }
 
@@ -33,8 +35,8 @@ const LegendDot = ({ className, label }: { className: string; label: string }) =
   </span>
 );
 
-/** "Biểu đồ giao dịch" — 2 đường tiền nạp vào / tiền rút ra, khoảng ngày do
- * người dùng tự chọn qua RangePicker (2 nút preset chỉ để set nhanh). */
+/** "Biểu đồ giao dịch" — 2 đường tiền nạp vào / tiền rút ra. Khoảng ngày do người dùng tự chọn
+ * qua RangePicker (2 nút preset chỉ để set nhanh); **mặc định để trống, chưa vẽ gì.** */
 const TransactionChart = ({
   points,
   range,
@@ -44,6 +46,7 @@ const TransactionChart = ({
   const hasData = points.some((p) => p.moneyIn > 0 || p.moneyOut > 0);
 
   const isPresetActive = (key: ChartPeriod) => {
+    if (!range) return false;
     const preset = presetToRange(key);
     return (
       preset.from.toDateString() === range.from.toDateString() &&
@@ -59,11 +62,14 @@ const TransactionChart = ({
       : "";
 
   return (
-    <Card className="xmd:p-5">
+
+    <Card className="xmd:p-5" animated={false}>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <p className="text-base font-semibold text-slate-800">Biểu đồ giao dịch</p>
-        <div className="flex flex-wrap items-center gap-2">
+
+        <div className="flex w-full items-center justify-end gap-2 xmd:w-auto">
           <CompactSelect
+            className="h-9 shrink-0 text-[13px]"
             value={selectValue}
             placeholder="Tùy chọn"
             options={PERIOD_OPTIONS.map((opt) => ({ value: opt.key, label: opt.label }))}
@@ -71,17 +77,24 @@ const TransactionChart = ({
               if (v) onRangeChange(presetToRange(v as ChartPeriod));
             }}
           />
-          {/* Icon lịch của tera-picker là position:absolute right:1rem → chừa pr-9
-              để ô ngày thứ 2 không bị icon đè lên chữ. */}
           <RangePicker
-            className="w-[250px] max-w-full shrink-0 rounded-lg! border-slate-200! py-1! pr-9! [&_input]:text-xs! [&_input]:text-slate-600"
+            className="h-9! min-w-0 max-w-[260px] flex-1 rounded-lg! border-slate-200! pr-9! transition-colors hover:border-blue-700! focus-within:border-blue-700! [&_.tera-picker-active-bar]:bottom-[3px]! [&_.tera-picker-active-bar]:rounded-full! [&_.tera-picker-input]:min-w-0! [&_.tera-picker-input]:flex-1! [&_.tera-picker-range-separator]:px-1! [&_input]:w-full! [&_input]:text-[12px]! [&_input]:text-slate-600 xmd:[&_.tera-picker-range-separator]:px-2! xmd:[&_input]:text-[13px]!"
             inputReadOnly
-            allowClear={false}
+            classNames={{
+              popup:
+                "max-w-[min(300px,calc(100vw-2.5rem))] [&_.tera-picker-panel-container]:overflow-x-auto! [&_.tera-picker-panels]:flex-col xmd:max-w-none xmd:[&_.tera-picker-panel-container]:overflow-x-hidden! xmd:[&_.tera-picker-panels]:flex-row",
+            }}
             suffixIcon={<CalendarOutlined className="h-3.5 w-3.5 text-slate-400" />}
-            value={[moment(range.from), moment(range.to)]}
+            // `null` → ô trống, hiện placeholder. KHÔNG điền sẵn khoảng ngày nào.
+            value={range ? [moment(range.from), moment(range.to)] : null}
+            placeholder={["Từ ngày", "Đến ngày"]}
             format="DD/MM/YYYY"
             onChange={(dates: any) => {
-              if (!dates?.[0] || !dates?.[1]) return;
+              // Bấm × xoá → về `null` (ô trống, biểu đồ quay lại trạng thái chờ chọn).
+              if (!dates?.[0] || !dates?.[1]) {
+                onRangeChange(null);
+                return;
+              }
               onRangeChange({
                 from: moment(dates[0]).startOf("day").toDate(),
                 to: moment(dates[1]).startOf("day").toDate(),
@@ -98,8 +111,13 @@ const TransactionChart = ({
 
       <WidgetState
         isLoading={loading}
-        isEmpty={!loading && !hasData}
-        emptyText="Chưa có giao dịch trong khoảng thời gian này"
+        // Chưa chọn ngày → chưa vẽ gì, mời người dùng chọn. Đã chọn mà rỗng → báo không có giao dịch.
+        isEmpty={!loading && (!range || !hasData)}
+        emptyText={
+          range
+            ? "Chưa có giao dịch trong khoảng thời gian này"
+            : "Chọn khoảng thời gian để xem biểu đồ"
+        }
       >
         <div className="h-64">
           <ChartLine

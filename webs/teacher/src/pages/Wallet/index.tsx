@@ -8,7 +8,6 @@ import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 
 import type { DateRange } from "./_interface";
 import {
-  presetToRange,
   toChartPoints,
   toLinkedBankAccounts,
   toSummaryStats,
@@ -28,7 +27,9 @@ import TransactionTable from "./components/TransactionTable";
 const SUMMARY_FETCH_SIZE = 100;
 
 const Wallet = () => {
-  const [chartRange, setChartRange] = useState<DateRange>(() => presetToRange("week"));
+  // `null` = chưa chọn khoảng ngày. Cố ý KHÔNG điền sẵn preset nào — người dùng tự chọn,
+  // biểu đồ chờ tới lúc đó.
+  const [chartRange, setChartRange] = useState<DateRange | null>(null);
 
   // Bảng lịch sử giao dịch: phân trang + tìm kiếm (debounce) + lọc loại.
   const [page, setPage] = useState(1);
@@ -90,8 +91,9 @@ const Wallet = () => {
   );
   const summaryTxns = useMemo(() => toTransactions(summaryQuery.data), [summaryQuery.data]);
   const summaryStats = useMemo(() => toSummaryStats(summaryTxns), [summaryTxns]);
+  // Chưa chọn khoảng ngày thì không tính điểm nào — `TransactionChart` hiện lời mời chọn ngày.
   const chartPoints = useMemo(
-    () => toChartPoints(summaryTxns, chartRange),
+    () => (chartRange ? toChartPoints(summaryTxns, chartRange) : []),
     [summaryTxns, chartRange],
   );
 
