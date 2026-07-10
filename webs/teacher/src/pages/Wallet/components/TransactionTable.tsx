@@ -156,7 +156,6 @@ const TransactionTable = ({
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <p className="text-base font-semibold text-slate-800">Lịch sử giao dịch</p>
         <div className="flex items-center gap-2">
-          {/* `text-sm` (14px) để cỡ chữ bằng nút "Xuất file" bên cạnh — mặc định CompactSelect 12px. */}
           <CompactSelect
             value={typeFilter}
             options={TYPE_FILTER_OPTIONS}
@@ -165,8 +164,6 @@ const TransactionTable = ({
             className="h-9 text-sm"
             onChange={onTypeFilterChange}
           />
-          {/* Cùng kiểu nút "Xuất báo cáo" ở màn Điểm danh (`pages/Attendance/index.tsx`):
-              Button mặc định + prop `icon` (icon nằm sau chữ), nền brand. Cao sẵn 36px = CompactSelect. */}
           <Button
             icon={<ArrowDownTrayOutlined />}
             onClick={onExport}
