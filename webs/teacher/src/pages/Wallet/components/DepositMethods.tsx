@@ -11,6 +11,8 @@ import {
 import Card from "_common/components/Card";
 import IconBox from "_common/components/IconBox";
 
+/** `key` phải khớp `DEPOSIT_METHODS` trong `pages/Deposit/constants.tsx` — nó được gửi qua
+ * `location.state.method` để trang Nạp tiền chọn sẵn hình thức người dùng vừa bấm. */
 const METHODS: {
   key: string;
   icon: ReactNode;
@@ -26,21 +28,21 @@ const METHODS: {
     desc: "Nạp tiền qua ngân hàng",
   },
   {
-    key: "atm",
+    key: "card_domestic",
     icon: <CreditCardOutlined />,
     iconClassName: "bg-emerald-50 text-emerald-600",
     name: "Thẻ ATM nội địa",
     desc: "VISA, Napas, ATM",
   },
   {
-    key: "e_wallet",
+    key: "momo",
     icon: <DevicePhoneMobileOutlined />,
     iconClassName: "bg-violet-50 text-violet-600",
     name: "Ví điện tử",
     desc: "Momo, ZaloPay, VNPay",
   },
   {
-    key: "international",
+    key: "card_international",
     icon: <GlobeAltOutlined />,
     iconClassName: "bg-amber-50 text-amber-600",
     name: "Thẻ quốc tế",
@@ -48,8 +50,14 @@ const METHODS: {
   },
 ];
 
-/** "Nạp tiền vào ví" — lưới hình thức nạp. Flow nạp thật = task [051]. */
-const DepositMethods = () => {
+interface DepositMethodsProps {
+  /** Điều hướng sang trang Nạp tiền, kèm hình thức vừa bấm.
+   * ⚠️ BẮT BUỘC: để optional thì quên truyền là 4 card thành nút chết, không báo lỗi gì. */
+  onSelect: (methodKey: string) => void;
+}
+
+/** "Nạp tiền vào ví" — lưới hình thức nạp, mỗi card là 1 lối vào trang `/wallet/deposit`. */
+const DepositMethods = ({ onSelect }: DepositMethodsProps) => {
   const notReady = () =>
     notification.warning({ message: "Tính năng đang được phát triển" });
 
@@ -65,7 +73,7 @@ const DepositMethods = () => {
           <button
             key={m.key}
             type="button"
-            onClick={notReady}
+            onClick={() => onSelect(m.key)}
             className="flex items-center gap-3 rounded-xl border border-slate-100 p-3 text-left transition-colors hover:border-brand/40 hover:bg-sky-50/40"
           >
             <IconBox
