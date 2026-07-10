@@ -49,7 +49,12 @@ const Wallet = () => {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
-  const { wallet, profileQuery, walletQuery } = useTeacherWallet();
+  const {
+    wallet,
+    profileQuery,
+    walletQuery,
+    isLoading: walletLoading,
+  } = useTeacherWallet();
 
   const bankAccounts = useMemo(
     () => toLinkedBankAccounts(walletQuery.data, profileQuery.data),
@@ -114,7 +119,7 @@ const Wallet = () => {
         <div className="lg:col-start-1 lg:row-start-1">
           <BalanceCard
             balance={wallet.balance}
-            loading={walletQuery.isLoading}
+            loading={walletLoading}
             onDeposit={() => navigate(PATHS.walletDeposit)}
           />
         </div>

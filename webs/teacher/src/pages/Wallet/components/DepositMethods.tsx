@@ -51,8 +51,9 @@ const METHODS: {
 ];
 
 interface DepositMethodsProps {
-  /** Điều hướng sang trang Nạp tiền, kèm hình thức vừa bấm. */
-  onSelect?: (methodKey: string) => void;
+  /** Điều hướng sang trang Nạp tiền, kèm hình thức vừa bấm.
+   * ⚠️ BẮT BUỘC: để optional thì quên truyền là 4 card thành nút chết, không báo lỗi gì. */
+  onSelect: (methodKey: string) => void;
 }
 
 /** "Nạp tiền vào ví" — lưới hình thức nạp, mỗi card là 1 lối vào trang `/wallet/deposit`. */
@@ -72,7 +73,7 @@ const DepositMethods = ({ onSelect }: DepositMethodsProps) => {
           <button
             key={m.key}
             type="button"
-            onClick={() => onSelect?.(m.key)}
+            onClick={() => onSelect(m.key)}
             className="flex items-center gap-3 rounded-xl border border-slate-100 p-3 text-left transition-colors hover:border-brand/40 hover:bg-sky-50/40"
           >
             <IconBox

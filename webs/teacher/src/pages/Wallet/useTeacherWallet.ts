@@ -24,10 +24,12 @@ export const useTeacherWallet = () => {
     ...(currentUserId ? { owner_id: currentUserId } : {}),
   };
 
-  // Chờ profile xong rồi mới gọi, tránh nháy 1 nhịp bằng ví của giáo viên khác.
+  // ⚠️ Chỉ gọi khi ĐÃ có `currentUserId`. Nếu gate bằng `!profileQuery.isLoading` thì lúc profile
+  // LỖI (isLoading=false, data undefined) query vẫn chạy mà thiếu `owner_id` → trả ví giáo viên
+  // khác (route không tự scope theo token) và lộ luôn giao dịch của họ.
   const walletQuery = WalletService.useWalletList(
     { params: walletParams },
-    { enabled: !profileQuery.isLoading },
+    { enabled: !!currentUserId },
   );
 
   const wallet = useMemo(() => toWalletInfo(walletQuery.data), [walletQuery.data]);
@@ -36,6 +38,8 @@ export const useTeacherWallet = () => {
     wallet,
     profileQuery,
     walletQuery,
+    /** ⚠️ Dùng cái này thay `walletQuery.isLoading`: khi query bị `enabled: false` (đang chờ
+     * profile), react-query v5 cho `isLoading = false` → UI sẽ nháy "0đ" thay vì skeleton. */
     isLoading: profileQuery.isLoading || walletQuery.isLoading,
   };
 };

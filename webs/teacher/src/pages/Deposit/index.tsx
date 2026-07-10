@@ -42,7 +42,7 @@ const Deposit = () => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(DEFAULT_PAGE_SIZE);
 
-  const { wallet, walletQuery } = useTeacherWallet();
+  const { wallet, isLoading: walletLoading } = useTeacherWallet();
 
   // "Lịch sử nạp tiền" không cần endpoint riêng — lọc đúng `transaction_type: "deposit"`.
   // ⚠️ `wallet_id` BẮT BUỘC: thiếu nó backend trả giao dịch của MỌI ví.
@@ -137,7 +137,7 @@ const Deposit = () => {
         <div className="order-1 self-start lg:order-none">
           <BalanceCard
             balance={wallet.balance}
-            loading={walletQuery.isLoading}
+            loading={walletLoading}
             showDeposit={false}
             actionsAlign="end"
           />
