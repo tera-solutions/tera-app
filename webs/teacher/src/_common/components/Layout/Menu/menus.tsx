@@ -29,6 +29,7 @@ import {
   UserGroupOutlined,
   UserOutlined,
   UsersOutlined,
+  WalletOutlined,
   WrenchScrewdriverOutlined,
 } from "tera-dls";
 
@@ -252,6 +253,7 @@ export const PATHS = {
   reports: "/reports",
   evaluation: "/evaluation",
   notifications: "/notifications",
+  wallet: "/wallet",
   messages: "/messages",
   more: "/more",
   profile: "/profile",
@@ -355,6 +357,12 @@ export const MENU: MenuItem[] = [
     title: "Thông báo",
     path: PATHS.notifications,
     icon: <BellOutlined />,
+  },
+  {
+    key: "wallet",
+    title: "Ví cá nhân",
+    path: PATHS.wallet,
+    icon: <WalletOutlined />,
   },
   {
     key: "more",
