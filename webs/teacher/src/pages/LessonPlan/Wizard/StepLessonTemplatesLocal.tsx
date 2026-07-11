@@ -63,7 +63,7 @@ const StepLessonTemplatesLocal = ({
         <Button
           outlined
           onClick={onBack}
-          className="text-slate-600 border-slate-200 hover:bg-slate-50"
+          className="text-brand border-brand hover:bg-brand"
         >
           Quay lại
         </Button>

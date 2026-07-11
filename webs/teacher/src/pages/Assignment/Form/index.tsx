@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import moment from "moment";
 import { Button, Checkbox, CheckOutlined, notification, Select, Spin, UserOutlined, XMarkOutlined } from "tera-dls";
@@ -29,16 +29,27 @@ const DATE_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
 const AssignmentFormPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { getOptions } = useMeta();
   const { id } = useParams<{ id: string }>();
   const isEdit = !!id;
+
+  // Prefilled when navigated here from a lesson's Homework tab
+  // (`pages/Lesson/components/LessonHomework.tsx`), which passes the
+  // originating lesson/class as router state so the new assignment is
+  // scoped to that lesson without the teacher re-picking it.
+  const prefill = (location.state as { lesson_id?: number; class_room_id?: number }) ?? {};
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   const form = useForm<AssignmentFormValues>({
     mode: "onChange",
-    defaultValues: DEFAULT_FORM_VALUES,
+    defaultValues: {
+      ...DEFAULT_FORM_VALUES,
+      lesson_id: prefill.lesson_id,
+      class_room_id: prefill.class_room_id,
+    },
   });
   const avatarValue = form.watch("avatar");
 

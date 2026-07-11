@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 
 import { CARD } from "_common/constants/dashboard";
 
-import type { Conversation, ConversationTab } from "./_interface";
+import type { Attachment, Conversation, ConversationTab } from "./_interface";
 import { MOCK_CONVERSATIONS } from "./_mock";
 import InboxSidebar from "./components/InboxSidebar";
 import ChatWindow from "./components/ChatWindow";
@@ -39,14 +39,14 @@ const Messages = () => {
     );
   };
 
-  const handleSend = (content: string) => {
+  const handleSend = (content: string, attachments: Attachment[]) => {
     if (!active) return;
     setConversations((prev) =>
       prev.map((c) =>
         c.id === active.id
           ? {
               ...c,
-              last_message: content,
+              last_message: content || (attachments[0]?.name ?? ""),
               last_message_at: new Date().toISOString(),
               messages: [
                 ...c.messages,
@@ -55,7 +55,7 @@ const Messages = () => {
                   sender: "teacher",
                   content,
                   sent_at: new Date().toISOString(),
-                  attachments: [],
+                  attachments,
                 },
               ],
             }

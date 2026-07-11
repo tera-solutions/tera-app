@@ -3,10 +3,11 @@ import { useLocation } from "react-router-dom";
 import {
   BOTTOM_NAV,
   MENU,
+  MORE_MENU_ITEMS,
 } from "_common/components/Layout/Menu/menus";
 import { CARD } from "_common/constants/dashboard";
 
-const ALL_ITEMS = [...MENU, ...BOTTOM_NAV];
+const ALL_ITEMS = [...MENU, ...BOTTOM_NAV, ...MORE_MENU_ITEMS];
 
 interface PlaceholderProps {
   title?: string;

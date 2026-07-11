@@ -154,14 +154,13 @@ const StepReview = ({ planId, onBack }: StepReviewProps) => {
         <Button
           outlined
           onClick={onBack}
-          className="text-slate-600 border-slate-200 hover:bg-slate-50"
+          className="text-brand border-brand hover:bg-brand"
         >
           Quay lại
         </Button>
         <Button
-          outlined
           onClick={() => navigate(PATHS.lessonPlans)}
-          className="text-slate-600 border-slate-200 hover:bg-slate-50"
+          className="whitespace-nowrap bg-brand hover:bg-brand/80"
         >
           Về danh sách giáo án
         </Button>

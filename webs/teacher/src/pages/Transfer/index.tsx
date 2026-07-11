@@ -69,7 +69,7 @@ const Transfer = () => {
           <StepSelectTargetClass
             courseId={sourceCourseId}
             excludeClassIds={sourceClassIds}
-            targetClassId={targetClass?.id ?? null}
+            targetClass={targetClass}
             onBack={() => setStep(1)}
             onNext={(target) => {
               setTargetClass(target);

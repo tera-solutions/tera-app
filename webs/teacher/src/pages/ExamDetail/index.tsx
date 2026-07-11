@@ -155,12 +155,6 @@ const ExamDetail = () => {
                   loading={sessionsQuery.isLoading || isAggregating}
                 />
 
-                <ScoreDistributionChart
-                  buckets={histogram as [number, number, number, number]}
-                  totalScore={exam.total_score}
-                  loading={sessionsQuery.isLoading || isAggregating}
-                />
-
                 <Card>
                   <p className="mb-3 text-sm font-semibold text-slate-700">Kết quả học viên</p>
                   <StudentResultTable
@@ -200,6 +194,11 @@ const ExamDetail = () => {
 
               <div className="flex flex-col gap-4">
                 <ExamTypeSidebar exams={siblingExams} isLoading={siblingQuery.isLoading} />
+                <ScoreDistributionChart
+                  buckets={histogram as [number, number, number, number]}
+                  totalScore={exam.total_score}
+                  loading={sessionsQuery.isLoading || isAggregating}
+                />
                 <Card>
                   <p className="mb-2 text-sm font-semibold text-slate-700">Hoạt động gần đây</p>
                   <EmptyState description="Chưa có hoạt động nào" className="py-6" />

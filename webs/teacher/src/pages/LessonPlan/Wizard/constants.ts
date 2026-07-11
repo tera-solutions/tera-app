@@ -1,6 +1,9 @@
 /** Shared enum metadata list name (see `/auth/metadata`). */
 export const LESSON_ACTIVITY_STATUS_META = "lesson_activity_status";
 
+/** Debounce before a server-backed activity row autosaves an edit. */
+export const ACTIVITY_AUTOSAVE_DELAY = 1500;
+
 export const STEP_LABELS = [
   "Tạo giáo án",
   "Tạo bài học mẫu",

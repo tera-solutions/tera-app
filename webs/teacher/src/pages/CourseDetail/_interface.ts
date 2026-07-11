@@ -5,6 +5,8 @@ export interface CourseDetail {
   thumbnail: string;
   description: string;
   duration_minutes: number;
+  price_per_lesson: number;
+  is_active: boolean;
 }
 
 export interface CourseStats {
@@ -15,13 +17,10 @@ export interface CourseStats {
   completion_rate: number;
 }
 
-/** A course's curriculum unit — one entry per lesson template (edu_lesson_plan_lessons) on the course's lesson plan. */
+/** A course's curriculum unit (edu_course_curriculums) — the course's syllabus outline, independent of any lesson plan or class. */
 export interface CurriculumItem {
   id: number;
   order: number;
   title: string;
-  duration: number;
-  objective_count: number;
-  activities_count: number;
-  materials_count: number;
+  content: string;
 }

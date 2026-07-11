@@ -16,6 +16,7 @@ import LessonPlan from "pages/LessonPlan";
 import PlanLessons from "pages/LessonPlan/PlanLessons";
 import LessonPlanWizard from "pages/LessonPlan/Wizard";
 import Lesson from "pages/Lesson";
+import SessionRuntime from "pages/SessionRuntime";
 import Attendance from "pages/Attendance";
 import Students from "pages/Students";
 import StudentDetail from "pages/StudentDetail";
@@ -43,6 +44,7 @@ import Wallet from "pages/Wallet";
 import Deposit from "pages/Deposit";
 import Withdraw from "pages/Withdraw";
 import Placeholder from "pages/Placeholder";
+import More from "pages/More";
 
 import CheckAuth from "routers/CheckAuth";
 import MiddlewareRouter from "routers/MiddlewareRouter";
@@ -51,7 +53,7 @@ import BasicLayout from "_common/components/Layout/BasicLayout";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 import UnAuthLayout from "_common/components/Layout/UnAuthLayout";
 
-const PLACEHOLDER_PATHS = [PATHS.reports, PATHS.more];
+const PLACEHOLDER_PATHS = [PATHS.reports];
 
 export const Routers = () => {
   return (
@@ -79,6 +81,7 @@ export const Routers = () => {
         />
         <Route path={`${PATHS.lessonPlans}/:id`} element={<PlanLessons />} />
         <Route path={`${PATHS.lesson}/:id`} element={<Lesson />} />
+        <Route path={`${PATHS.session}/:id`} element={<SessionRuntime />} />
         <Route path={`${PATHS.classroom}/:id`} element={<ClassroomDetail />} />
         <Route path={`${PATHS.courseDetail}/:id`} element={<CourseDetail />} />
         <Route path={PATHS.attendance} element={<Attendance />} />
@@ -118,6 +121,7 @@ export const Routers = () => {
         <Route path={PATHS.walletDeposit} element={<Deposit />} />
         <Route path={PATHS.walletWithdraw} element={<Withdraw />} />
         <Route path={PATHS.profile} element={<MyInfo />} />
+        <Route path={PATHS.more} element={<More />} />
         {PLACEHOLDER_PATHS.map((path) => (
           <Route key={path} path={path} element={<Placeholder />} />
         ))}
