@@ -2,8 +2,7 @@ import { useMemo } from "react";
 import moment from "moment";
 import { Empty } from "tera-dls";
 
-import Badge from "_common/components/Badge";
-import { SCHEDULE_STATUS } from "_common/constants/schedule";
+import StatusBadge from "_common/components/StatusBadge";
 
 import { getClassColor, WEEKDAY_FULL } from "../constants";
 import type { ScheduleItem } from "../_interface";
@@ -61,8 +60,6 @@ const RangeView = ({
           <div className="flex flex-col gap-2.5">
             {items.map((item) => {
               const color = getClassColor(item.class_id);
-              const status =
-                SCHEDULE_STATUS[item.status] ?? SCHEDULE_STATUS.upcoming;
               return (
                 <button
                   type="button"
@@ -87,9 +84,7 @@ const RangeView = ({
                         .join(" · ")}
                     </p>
                   </div>
-                  <Badge className={`h-fit px-2 py-0.5 text-[10px] ${status.badge}`}>
-                    {status.label}
-                  </Badge>
+                  <StatusBadge name="class_session_status" value={item.status} />
                 </button>
               );
             })}

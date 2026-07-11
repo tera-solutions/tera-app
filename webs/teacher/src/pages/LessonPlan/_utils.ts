@@ -1,6 +1,11 @@
 import { toDate, toTime } from "_common/utils/schedule";
 
-import type { Lesson, LessonPlan, PlanStats } from "./_interface";
+import type {
+  Lesson,
+  LessonPlan,
+  LessonTemplateSummary,
+  PlanStats,
+} from "./_interface";
 
 const toMinutes = (time: string): number => {
   const [h, m] = time.split(":").map(Number);
@@ -28,7 +33,7 @@ export const toLesson = (raw: any): Lesson => {
     status: raw.status ?? "",
     is_locked: !!raw.is_locked,
     objective: raw.objective ?? "",
-    activities: raw.activities ?? "",
+    activities: Array.isArray(raw.activities) ? raw.activities : [],
     lesson_note: raw.lesson_note ?? "",
   };
 };
@@ -74,3 +79,26 @@ export const summarizePlans = (
 /** Predicate for the active plan status tab (raw status value or "all"). */
 export const matchesPlanTab = (plan: LessonPlan, tab: string): boolean =>
   tab === "all" || plan.status === tab;
+
+/** Objective is stored as a single ";"-joined string; count the non-empty entries. */
+const countObjectives = (value: unknown): number =>
+  typeof value === "string"
+    ? value.split(";").map((v) => v.trim()).filter(Boolean).length
+    : 0;
+
+const toLessonTemplateSummary = (raw: any): LessonTemplateSummary => ({
+  id: raw.id ?? 0,
+  lesson_no: raw.lesson_no ?? 0,
+  lesson_title: raw.lesson_title ?? "",
+  duration: raw.duration ?? 0,
+  objective_count: countObjectives(raw.objective),
+  activities_count: Array.isArray(raw.activities) ? raw.activities.length : 0,
+  materials_count: Array.isArray(raw.materials) ? raw.materials.length : 0,
+});
+
+export const toLessonTemplateSummaries = (
+  raw: any[] | null | undefined,
+): LessonTemplateSummary[] =>
+  (raw ?? [])
+    .map(toLessonTemplateSummary)
+    .sort((a, b) => a.lesson_no - b.lesson_no);

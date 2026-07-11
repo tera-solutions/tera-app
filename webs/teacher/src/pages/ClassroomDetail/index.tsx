@@ -2,13 +2,13 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import classNames from "classnames";
-import { Spin } from "tera-dls";
+import { ArrowDownTrayOutlined, Button, Spin } from "tera-dls";
 
 import Breadcrumb from "_common/components/Breadcrumb";
+import ComingSoon from "_common/components/ComingSoon";
 import { CARD } from "_common/constants/dashboard";
 import ErrorRetry from "_common/components/ErrorRetry";
 import { PATHS } from "_common/components/Layout/Menu/menus";
-import { todo } from "_common/utils/todo";
 
 import type { DetailTab } from "./_interface";
 import { DETAIL_TABS } from "./constants";
@@ -20,11 +20,15 @@ import ClassNotifications from "./components/ClassNotifications";
 import StudentListPanel from "./components/StudentListPanel";
 import AttendancePanel from "./components/AttendancePanel";
 import SessionListPanel from "./components/SessionListPanel";
-import ComingSoon from "./components/ComingSoon";
+import MaterialsPanel from "./components/MaterialsPanel";
+import ClassAssignmentPanel from "./components/ClassAssignmentPanel";
+import ClassScoresPanel from "./components/ClassScoresPanel";
+import ClassCommentsPanel from "./components/ClassCommentsPanel";
 import { toClassroomDetail, toClassSessions } from "./_utils";
 import {
   ClassRoomService,
   LessonPlanService,
+  StudentService,
   TimetableService,
 } from "@tera/modules/education";
 
@@ -94,6 +98,10 @@ const ClassroomDetail = () => {
   const statistics = detailData?.statistics;
   const notFound = !isLoading && (isError || !detail?.id);
 
+  const rosterExportMutation = StudentService.useStudentExport();
+  const handleExportRoster = () =>
+    rosterExportMutation.mutate({ params: { class_id: classId ?? undefined } });
+
   const renderTab = () => {
     if (!statistics) return null;
     switch (tab) {
@@ -110,6 +118,14 @@ const ClassroomDetail = () => {
             onRetry={() => refetchSessions()}
           />
         );
+      case "documents":
+        return <MaterialsPanel courseId={courseId} lessonPlanId={lessonPlan?.id} />;
+      case "assignment":
+        return <ClassAssignmentPanel classId={classId} />;
+      case "scores":
+        return <ClassScoresPanel classId={classId} />;
+      case "comments":
+        return <ClassCommentsPanel classId={classId} />;
       default:
         return <ComingSoon />;
     }
@@ -117,12 +133,22 @@ const ClassroomDetail = () => {
 
   return (
     <div className="p-4 xmd:p-6">
-      <Breadcrumb
-        items={[
-          { label: "Lớp học", onClick: () => navigate(PATHS.classroom) },
-          { label: "Chi tiết lớp học" },
-        ]}
-      />
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
+        <Breadcrumb
+          items={[
+            { label: "Lớp học", onClick: () => navigate(PATHS.classroom) },
+            { label: "Chi tiết lớp học" },
+          ]}
+        />
+        <Button
+          icon={<ArrowDownTrayOutlined />}
+          onClick={handleExportRoster}
+          disabled={!classId || rosterExportMutation.isPending}
+          className="whitespace-nowrap bg-brand hover:bg-brand/80"
+        >
+          {rosterExportMutation.isPending ? "Đang tải..." : "Tải danh sách lớp"}
+        </Button>
+      </div>
 
       {notFound ? (
         <div className="flex h-[50vh] items-center justify-center">
@@ -148,8 +174,14 @@ const ClassroomDetail = () => {
                 onViewLessonPlan={() =>
                   navigate(`${PATHS.lessonPlans}/${lessonPlan?.id}`)
                 }
-                onEdit={todo}
-                onExport={todo}
+                onViewCourse={
+                  courseId ? () => navigate(`${PATHS.courseDetail}/${courseId}`) : undefined
+                }
+                onViewRoom={
+                  detail.room_id
+                    ? () => navigate(`${PATHS.roomDetail}/${detail.room_id}`)
+                    : undefined
+                }
               />
 
               <OverviewStats statistics={statistics} />
@@ -179,7 +211,7 @@ const ClassroomDetail = () => {
                 <div className="flex flex-col gap-4">
                   <ResultSummaryCard statistics={statistics} />
                   <UpcomingSessions schedules={detail.schedules} />
-                  <ClassNotifications onCreate={todo} />
+                  <ClassNotifications classId={classId} />
                 </div>
               </div>
             </div>

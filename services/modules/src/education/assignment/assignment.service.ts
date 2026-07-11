@@ -34,6 +34,14 @@ export const useAssignmentDetail = (payload: DetailPayload, options?: QueryHookO
   });
 };
 
+export const useAssignmentSummary = (payload: ListPayload = {}, options?: QueryHookOptions) => {
+  return useQueryAdapter({
+    queryKey: ["assignment", "summary", payload.params],
+    queryFn: () => AssignmentAPI.getSummary(payload),
+    ...options,
+  });
+};
+
 // MUTATION
 export const useAssignmentCreate = () => {
   const { t } = useTranslation();
@@ -81,6 +89,22 @@ export const useUpsertAssignment = () => {
   });
 };
 
+export const useAssignmentPublish = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: DetailPayload) => AssignmentAPI.publish(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assignment", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["assignment", "detail"] });
+      queryClient.invalidateQueries({ queryKey: ["assignment", "summary"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const useAssignmentDelete = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -88,6 +112,7 @@ export const useAssignmentDelete = () => {
     mutationFn: (payload: DeletePayload) => AssignmentAPI.delete(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["assignment", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["assignment", "summary"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -113,9 +138,11 @@ export const useAssignmentExport = () => {
 export const AssignmentService = {
   useAssignmentList,
   useAssignmentDetail,
+  useAssignmentSummary,
   useAssignmentCreate,
   useAssignmentUpdate,
   useUpsertAssignment,
+  useAssignmentPublish,
   useAssignmentDelete,
   useAssignmentExport,
 };

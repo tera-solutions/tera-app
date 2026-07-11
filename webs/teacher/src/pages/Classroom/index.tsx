@@ -1,13 +1,10 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import classNames from "classnames";
 import {
   AcademicCapOutlined,
-  Button,
   CheckBadgeOutlined,
   ClipboardDocumentCheckOutlined,
   ListBulletOutlined,
-  notification,
-  PlusOutlined,
   Spin,
   TableCellsOutlined,
   UsersOutlined,
@@ -16,34 +13,55 @@ import {
 import Card from "_common/components/Card";
 import EmptyState from "_common/components/EmptyState";
 import ErrorRetry from "_common/components/ErrorRetry";
+import SearchInput from "_common/components/SearchInput";
+import SortControl from "_common/components/SortControl";
 import StatisticCard from "_common/components/StatisticCard";
+import StatusTabs from "_common/components/StatusTabs";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
+import { useMeta } from "_common/hooks/useMeta";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 
 import type {
+  ClassroomSortBy,
+  ClassroomSortDir,
   ClassroomStatus,
   ClassroomSummary,
   ClassroomView,
 } from "./_interface";
+import { SORT_BY_OPTIONS } from "./constants";
 import { toClassrooms, toClassroomSummary, summarize } from "./_utils";
-import ClassroomToolbar, {
-  type LevelOption,
-} from "./components/ClassroomToolbar";
+import ClassroomFilterSidebar, {
+  type ClassroomFilterDraft,
+} from "./components/ClassroomFilterSidebar";
 import ClassroomCard from "./components/ClassroomCard";
 import ClassroomGridCard from "./components/ClassroomGridCard";
 import { ClassRoomService } from "@tera/modules/education";
 
+/** Kept in sync with the `class_status` metadata list (see ClassStatus enum). */
+const CLASS_STATUS_META = "class_status";
+
 const Classroom = () => {
+  const { getTabs } = useMeta();
+
   const [filters, setFilters] = useUrlFilters({
     view: { type: "string", default: "list" as ClassroomView },
     search: { type: "string", default: "" },
     status: { type: "string", default: "" as ClassroomStatus | "" },
-    level: { type: "string", default: "" },
+    courseId: {
+      type: "number",
+      default: undefined as number | undefined,
+      param: "course_id",
+    },
+    shift: { type: "string", default: "" },
+    startFrom: { type: "string", default: "", param: "start_from" },
+    startTo: { type: "string", default: "", param: "start_to" },
+    sort_by: { type: "string", default: "created_at" as ClassroomSortBy },
+    sort_dir: { type: "string", default: "desc" as ClassroomSortDir },
     page: { type: "number", default: 1 },
     pageSize: { type: "number", default: DEFAULT_PAGE_SIZE },
-  });
+  }, { syncDefaultsOnMount: true });
   const [searchDraft, setSearchDraft] = useDebouncedSearch(filters.search, (trimmed) =>
     setFilters({ search: trimmed, page: 1 }),
   );
@@ -53,7 +71,15 @@ const Classroom = () => {
       page: filters.page,
       per_page: filters.pageSize,
       search: filters.search || undefined,
-      filters: { status: filters.status || undefined },
+      filters: {
+        status: filters.status || undefined,
+        course_id: filters.courseId,
+        shift: filters.shift || undefined,
+        start_from: filters.startFrom || undefined,
+        start_to: filters.startTo || undefined,
+      },
+      sort_by: filters.sort_by,
+      sort_dir: filters.sort_dir,
     },
   });
   const { isLoading, isFetching, isError, refetch } = listQuery;
@@ -91,19 +117,6 @@ const Classroom = () => {
     };
   }, [summaryData, classrooms]);
 
-  const levelOptions = useMemo<LevelOption[]>(() => {
-    const set = new Set<string>();
-    classrooms.forEach((c) => c.level && set.add(c.level));
-    return Array.from(set, (value) => ({ value, label: value }));
-  }, [classrooms]);
-
-  // Status and search are filtered server-side; level has no matching API
-  // filter, so it's applied on top of the current page's results.
-  const filtered = useMemo(() => {
-    if (filters.level === "") return classrooms;
-    return classrooms.filter((c) => c.level === filters.level);
-  }, [classrooms, filters.level]);
-
   const handleChangePage = (nextPage: number, nextSize: number) => {
     if (nextSize !== perPage) {
       setFilters({ pageSize: nextSize, page: 1 });
@@ -112,8 +125,38 @@ const Classroom = () => {
     }
   };
 
-  const handleCreate = () =>
-    notification.open({ message: "Tính năng đang được phát triển" });
+  const handleTabChange = (key: string) =>
+    setFilters({ status: (key === "all" ? "" : key) as ClassroomStatus | "", page: 1 });
+
+  const toggleSortDir = () =>
+    setFilters({ sort_dir: filters.sort_dir === "asc" ? "desc" : "asc" });
+
+  const handleFilterChange = (patch: Partial<ClassroomFilterDraft>) =>
+    setFilters({
+      // Check key presence, not `!== undefined` — clearing a field (e.g. the
+      // course select) sends `{ course_id: undefined }`, which is otherwise
+      // indistinguishable from the key being absent/untouched.
+      ...("course_id" in patch && { courseId: patch.course_id }),
+      ...("shift" in patch && { shift: patch.shift }),
+      ...("start_from" in patch && { startFrom: patch.start_from }),
+      ...("start_to" in patch && { startTo: patch.start_to }),
+      page: 1,
+    });
+
+  const handleResetFilters = () =>
+    setFilters({
+      view: "list",
+      search: "",
+      status: "",
+      courseId: undefined,
+      shift: "",
+      startFrom: "",
+      startTo: "",
+      sort_by: "created_at",
+      sort_dir: "desc",
+      page: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+    });
 
   const renderList = () => {
     if (isError)
@@ -127,15 +170,11 @@ const Classroom = () => {
         </div>
       );
 
-    if (!isLoading && filtered.length === 0)
+    if (!isLoading && classrooms.length === 0)
       return (
         <EmptyState
           classNameImage="w-32 mx-auto"
-          description={
-            classrooms.length === 0
-              ? "Bạn chưa được phân công lớp nào"
-              : "Không tìm thấy lớp học phù hợp"
-          }
+          description="Không tìm thấy lớp học phù hợp"
         />
       );
 
@@ -144,13 +183,13 @@ const Classroom = () => {
         <Spin spinning={isLoading || isFetching}>
           {filters.view === "list" ? (
             <div className="w-full flex flex-col gap-3">
-              {filtered.map((classroom) => (
+              {classrooms.map((classroom) => (
                 <ClassroomCard key={classroom.id} classroom={classroom} />
               ))}
             </div>
           ) : (
             <div className="w-full grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {filtered.map((classroom) => (
+              {classrooms.map((classroom) => (
                 <ClassroomGridCard key={classroom.id} classroom={classroom} />
               ))}
             </div>
@@ -169,25 +208,6 @@ const Classroom = () => {
             Quản lý và theo dõi các lớp bạn chủ nhiệm
           </p>
         </div>
-        <Button
-          icon={<PlusOutlined />}
-          onClick={handleCreate}
-          className="whitespace-nowrap bg-brand hover:bg-brand/80"
-        >
-          Tạo lớp học
-        </Button>
-      </div>
-
-      <div className="mb-4">
-        <ClassroomToolbar
-          search={searchDraft}
-          status={filters.status}
-          level={filters.level}
-          levelOptions={levelOptions}
-          onSearchChange={setSearchDraft}
-          onStatusChange={(status) => setFilters({ status, page: 1 })}
-          onLevelChange={(level) => setFilters({ level, page: 1 })}
-        />
       </div>
 
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -225,46 +245,83 @@ const Classroom = () => {
         />
       </div>
 
-      <Card>
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <p className="text-sm font-semibold text-slate-700">
-            Danh sách lớp học
-          </p>
-          <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">
-            {(
-              [
-                { key: "list", icon: <ListBulletOutlined /> },
-                { key: "grid", icon: <TableCellsOutlined /> },
-              ] as const
-            ).map(({ key, icon }) => (
-              <button
-                key={key}
-                type="button"
-                title={key === "list" ? "Dạng danh sách" : "Dạng lưới"}
-                onClick={() => setFilters({ view: key })}
-                className={classNames(
-                  "flex h-8 w-8 items-center justify-center rounded-md transition-colors [&_svg]:h-4 [&_svg]:w-4",
-                  filters.view === key
-                    ? "bg-white text-brand shadow-sm"
-                    : "text-slate-500 hover:text-slate-700",
-                )}
-              >
-                {icon}
-              </button>
-            ))}
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_300px]">
+        <Card>
+          <StatusTabs
+            className="mb-3"
+            tabs={getTabs(CLASS_STATUS_META)}
+            activeKey={filters.status || "all"}
+            onChange={handleTabChange}
+          />
+
+          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <SearchInput
+              value={searchDraft}
+              onChange={(e) => setSearchDraft(e.target.value)}
+              placeholder="Tìm kiếm lớp học, học viên..."
+              wrapperClassName="flex-1"
+            />
+            <div className="flex items-center gap-2">
+              <SortControl
+                sortBy={filters.sort_by}
+                sortDir={filters.sort_dir}
+                options={SORT_BY_OPTIONS}
+                onSortByChange={(value) =>
+                  setFilters({ sort_by: value as ClassroomSortBy, page: 1 })
+                }
+                onToggleDir={toggleSortDir}
+              />
+
+              <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">
+                {(
+                  [
+                    { key: "list", icon: <ListBulletOutlined /> },
+                    { key: "grid", icon: <TableCellsOutlined /> },
+                  ] as const
+                ).map(({ key, icon }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    title={key === "list" ? "Dạng danh sách" : "Dạng lưới"}
+                    onClick={() => setFilters({ view: key })}
+                    className={classNames(
+                      "flex h-8 w-8 items-center justify-center rounded-md transition-colors [&_svg]:h-4 [&_svg]:w-4",
+                      filters.view === key
+                        ? "bg-white text-brand shadow-sm"
+                        : "text-slate-500 hover:text-slate-700",
+                    )}
+                  >
+                    {icon}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
+
+          {renderList()}
+
+          <TablePagination
+            total={total}
+            page={filters.page}
+            perPage={perPage}
+            unit="lớp học"
+            onChange={handleChangePage}
+          />
+        </Card>
+
+        <div className="hidden xl:block">
+          <ClassroomFilterSidebar
+            draft={{
+              course_id: filters.courseId,
+              shift: filters.shift,
+              start_from: filters.startFrom,
+              start_to: filters.startTo,
+            }}
+            onChange={handleFilterChange}
+            onReset={handleResetFilters}
+          />
         </div>
-
-        {renderList()}
-
-        <TablePagination
-          total={total}
-          page={filters.page}
-          perPage={perPage}
-          unit="lớp học"
-          onChange={handleChangePage}
-        />
-      </Card>
+      </div>
     </div>
   );
 };

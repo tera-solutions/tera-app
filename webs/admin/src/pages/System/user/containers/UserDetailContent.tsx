@@ -95,7 +95,7 @@ const UserDetailContent = observer(({ user }: UserDetailContentProps) => {
       </div>
 
       {/* Tab bar */}
-      <div className="flex overflow-x-auto border-b border-gray-200 mb-4 scrollbar-none">
+      <div className="flex overflow-x-auto overflow-y-hidden border-b border-gray-200 mb-4 max-xmd:scrollbar-none [scrollbar-width:thin] [scrollbar-color:#d1d5db80_transparent] hover:[scrollbar-color:#d1d5db_transparent] [&::-webkit-scrollbar]:h-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#d1d5db80] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#d1d5db]">
         {tabs.map((tab) => (
           <button
             key={tab.key}

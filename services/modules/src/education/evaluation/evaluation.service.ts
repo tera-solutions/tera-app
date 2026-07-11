@@ -10,7 +10,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -34,6 +33,17 @@ export const useEvaluationDetail = (payload: DetailPayload, options?: QueryHookO
   });
 };
 
+export const useEvaluationStudentSummary = (
+  params?: Record<string, unknown>,
+  options?: QueryHookOptions,
+) => {
+  return useQueryAdapter({
+    queryKey: ["evaluation", "student-summary", params],
+    queryFn: () => EvaluationAPI.getStudentSummary(params),
+    ...options,
+  });
+};
+
 // MUTATION
 export const useEvaluationCreate = () => {
   const { t } = useTranslation();
@@ -42,6 +52,7 @@ export const useEvaluationCreate = () => {
     mutationFn: (payload: CreatePayload) => EvaluationAPI.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["evaluation", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "student-summary"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -56,6 +67,8 @@ export const useEvaluationUpdate = () => {
     mutationFn: (payload: UpdatePayload) => EvaluationAPI.update(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["evaluation", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "detail"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "student-summary"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -72,7 +85,9 @@ export const useUpsertEvaluation = () => {
       return EvaluationAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "detail"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "student-summary"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -94,15 +109,18 @@ export const useEvaluationDelete = () => {
   });
 };
 
-export const useEvaluationExport = () => {
+// Vòng đời đánh giá: submit → approve/reject → lock (không body, invalidate list + detail)
+const useEvaluationAction = (
+  action: (payload: DetailPayload) => Promise<any>,
+) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => EvaluationAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
+    mutationFn: (payload: DetailPayload) => action(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "detail"] });
+      queryClient.invalidateQueries({ queryKey: ["evaluation", "student-summary"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -110,12 +128,21 @@ export const useEvaluationExport = () => {
   });
 };
 
+export const useEvaluationSubmit = () => useEvaluationAction(EvaluationAPI.submit);
+export const useEvaluationApprove = () => useEvaluationAction(EvaluationAPI.approve);
+export const useEvaluationReject = () => useEvaluationAction(EvaluationAPI.reject);
+export const useEvaluationLock = () => useEvaluationAction(EvaluationAPI.lock);
+
 export const EvaluationService = {
   useEvaluationList,
   useEvaluationDetail,
+  useEvaluationStudentSummary,
   useEvaluationCreate,
   useEvaluationUpdate,
   useUpsertEvaluation,
   useEvaluationDelete,
-  useEvaluationExport,
+  useEvaluationSubmit,
+  useEvaluationApprove,
+  useEvaluationReject,
+  useEvaluationLock,
 };

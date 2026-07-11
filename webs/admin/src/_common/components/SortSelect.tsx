@@ -121,19 +121,6 @@ const SortSelect = ({
             }}
             className="bg-white border border-gray-200 rounded shadow-lg py-1"
           >
-            {placeholder && (
-              <div
-                onClick={() => {
-                  onChange("", defaultDir);
-                  setOpen(false);
-                }}
-                className={`px-3 py-2 text-[13px] cursor-pointer hover:bg-blue-50 ${
-                  !sortBy ? "text-blue-600 font-medium" : "text-gray-500"
-                }`}
-              >
-                {placeholder}
-              </div>
-            )}
             {options.map((opt) => {
               const active = opt.value === sortBy;
               return (

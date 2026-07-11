@@ -213,9 +213,10 @@
     {
       "id": 6,
       "title": "Điểm danh",
-      "path": "/package/list",
+      "path": "/student/attendance/list",
       "icon": "briefcase",
-      "key": "package",
+      "key": "attendance",
+      "activeKeys": "attendance",
       "parentKey": "student",
       "parentGroupKey": "group-study",
       "permission": ""
@@ -243,9 +244,10 @@
     {
       "id": 9,
       "title": "Nhận xét & Đánh giá",
-      "path": "/withdraw",
+      "path": "/student/evaluation/list",
       "icon": "briefcase",
-      "key": "withdraw",
+      "key": "evaluation",
+      "activeKeys": "evaluation",
       "parentKey": "student",
       "parentGroupKey": "group-study",
       "permission": ""
@@ -425,9 +427,10 @@
     {
       "id": 25,
       "title": "Cấp độ",
-      "path": "/course/list",
+      "path": "/course/level/list",
       "icon": "briefcase",
-      "key": "course-level",
+      "key": "level",
+      "activeKeys": "level",
       "parentKey": "course",
       "parentGroupKey": "group-course1",
       "permission": ""

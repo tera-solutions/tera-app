@@ -15,9 +15,10 @@ import {
 } from "tera-dls";
 
 import { PATHS } from "_common/components/Layout/Menu/menus";
+import StatusBadge from "_common/components/StatusBadge";
 
 import type { Classroom } from "../_interface";
-import { getCoverGradient, STATUS_LABEL } from "../constants";
+import { getCoverGradient } from "../constants";
 import ProgressDonut from "./ProgressDonut";
 
 interface ClassroomCardProps {
@@ -52,13 +53,15 @@ const ClassroomCard = ({ classroom }: ClassroomCardProps) => {
       key: "lesson-plans",
       label: "Giáo án",
       icon: <BookOpenOutlined />,
-      to: `${PATHS.lessonPlans}?class_id=${classroom.id}`,
+      to: classroom.lesson_plan_id
+        ? `${PATHS.lessonPlans}/${classroom.lesson_plan_id}`
+        : `${PATHS.lessonPlans}?class_id=${classroom.id}`,
     },
     {
-      key: "homework",
+      key: "assignment",
       label: "Bài tập",
       icon: <DocumentTextOutlined />,
-      to: `${PATHS.homework}?class_id=${classroom.id}`,
+      to: `${PATHS.assignment}?class_id=${classroom.id}`,
     },
     {
       key: "reports",
@@ -109,9 +112,7 @@ const ClassroomCard = ({ classroom }: ClassroomCardProps) => {
             <p className="truncate font-semibold text-brand group-hover:underline">
               {classroom.name}
             </p>
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
-              {STATUS_LABEL[classroom.status]}
-            </span>
+            <StatusBadge name="class_status" value={classroom.status} />
           </div>
           {meta && <p className="mt-0.5 text-xs text-slate-500">{meta}</p>}
           {place && (

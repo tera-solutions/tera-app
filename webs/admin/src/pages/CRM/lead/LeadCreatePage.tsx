@@ -1,5 +1,5 @@
 /* Import: library */
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -7,12 +7,13 @@ import {
   Breadcrumb,
   Button,
   BookmarkOutlined,
-  ArrowLeftOutlined,
 } from "tera-dls";
 
 /* Import: packages */
 import { IFormRef } from "@tera/commons/interfaces";
 import useConfirm from "@tera/commons/hooks/useConfirm";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
+import { LEAD_PAGE_URL } from "@tera/commons/constants/url";
 import { messageWarning } from "@tera/commons/constants/message";
 
 /* Import: pages */
@@ -20,6 +21,18 @@ import LeadForm from "./containers/LeadForm";
 
 const LeadCreatePage = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+
+  // Trang này chỉ dành cho mobile; desktop dùng modal trên trang danh sách.
+  // Resize sang desktop → quay về danh sách và nhắn nó mở modal create.
+  useEffect(() => {
+    if (!isMobile) {
+      navigate(LEAD_PAGE_URL.list.path, {
+        replace: true,
+        state: { openModal: { type: "create" } },
+      });
+    }
+  }, [isMobile, navigate]);
   const confirm = useConfirm();
   const { t } = useTranslation();
   const actionRef = useRef<IFormRef>(null);
@@ -37,6 +50,10 @@ const LeadCreatePage = () => {
         onOk: () => navigate(-1),
       });
     } else navigate(-1);
+  };
+
+  const handleSaveForm = () => {
+    actionRef?.current?.submit();
   };
 
   return (
@@ -68,24 +85,19 @@ const LeadCreatePage = () => {
           </div>
         </div>
       </div>
-      <div className="w-full max-w-3xl mx-auto">
-        <div className="bg-white rounded-[5px] w-full p-4">
-          <LeadForm ref={actionRef} type="create" onSuccess={() => navigate(-1)} />
-        </div>
-        <div className="flex justify-between gap-2 mt-4 max-xmd:mb-[60px]">
-          <Button onClick={() => navigate(-1)} type="light" className="btn-info px-3">
-            <ArrowLeftOutlined className="w-4 h-4 stroke-2" />
-            <span className="font-normal text-[16px] leading-4.5">{t("button.back")}</span>
-          </Button>
+      <div className="w-full max-w-3xl mx-auto max-xmd:pb-[60px]">
+        <div className="flex justify-end mb-2">
           <Button
-            htmlType="submit"
-            type="success"
-            onClick={() => actionRef?.current?.submit()}
-            className="page-header-btn px-3"
+            onClick={handleSaveForm}
+            className="flex! items-center! gap-2 px-6 py-3 xmd:px-4 xmd:py-2 mr-4 rounded-xl! bg-gradient-to-r! from-green-400! to-emerald-500! text-white! font-semibold! shadow-lg! shadow-emerald-200! hover:from-green-500! hover:to-emerald-600! hover:shadow-emerald-300! active:scale-95 transition-all duration-200 border-none!"
           >
-            <BookmarkOutlined className="w-4 h-4 stroke-2" />
-            <span className="font-normal text-[16px] leading-4.5">{t("button.save")}</span>
+            <BookmarkOutlined className="w-5 h-5 xmd:w-4 xmd:h-4" />
+            <span className="text-base xmd:text-sm">{t("button.save")}</span>
           </Button>
+        </div>
+
+        <div className="bg-white rounded-[5px] w-full p-4">
+          <LeadForm ref={actionRef} type="create" onSuccess={() => navigate(LEAD_PAGE_URL.list.path)} />
         </div>
       </div>
     </div>

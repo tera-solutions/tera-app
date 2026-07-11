@@ -1,4 +1,5 @@
 /* Import: library */
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -11,6 +12,7 @@ import {
 
 /* Import: packages */
 import { ENROLLMENT_PAGE_URL } from "@tera/commons/constants/url";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
 
 /* Import: services */
 import { EnrollmentService } from "@tera/modules";
@@ -21,6 +23,18 @@ import EnrollmentDetailContent from "./containers/EnrollmentDetailContent";
 const EnrollmentDetailPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const isMobile = useIsMobile();
+
+  // Trang này chỉ dành cho mobile; desktop dùng modal trên trang danh sách.
+  // Resize sang desktop → quay về danh sách và nhắn nó mở modal detail.
+  useEffect(() => {
+    if (!isMobile) {
+      navigate(ENROLLMENT_PAGE_URL.list.path, {
+        replace: true,
+        state: { openModal: { type: "detail", id } },
+      });
+    }
+  }, [isMobile, navigate, id]);
   const { t } = useTranslation();
 
   const { data, isPending } = EnrollmentService.useEnrollmentDetail({ id });

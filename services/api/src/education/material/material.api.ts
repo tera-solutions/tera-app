@@ -9,10 +9,21 @@ import {
   UpdatePayload,
 } from "@tera/api/_interface";
 
+export interface AttachMaterialToEntityPayload {
+  id: number | string;
+  entity_type: "course" | "lesson_plan" | "lesson" | "assignment" | "evaluation";
+  entity_id: number | string;
+}
+
 export const MaterialAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
       .get(`${endpoint}/edu/material/list`, { ...params, ...params?.filters })
+      .then((r) => r.data),
+
+  attach: async ({ id, entity_type, entity_id }: AttachMaterialToEntityPayload) =>
+    await api
+      .post(`${endpoint}/edu/material/attach/${id}`, { entity_type, entity_id })
       .then((r) => r.data),
 
   getDetail: async ({ id }: DetailPayload) =>

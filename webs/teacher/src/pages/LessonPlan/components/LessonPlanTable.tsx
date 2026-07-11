@@ -117,14 +117,16 @@ const LessonPlanTable = ({
                 className="flex shrink-0 items-center gap-1"
                 onClick={(e) => e.stopPropagation()}
               >
-                <button
-                  type="button"
-                  title="Sửa"
-                  onClick={() => onEdit(plan)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4.5 [&_svg]:w-4.5"
-                >
-                  <PencilSquareOutlined />
-                </button>
+                {plan.status !== "published" && (
+                  <button
+                    type="button"
+                    title="Sửa"
+                    onClick={() => onEdit(plan)}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4.5 [&_svg]:w-4.5"
+                  >
+                    <PencilSquareOutlined />
+                  </button>
+                )}
                 <Dropdown
                   trigger="click"
                   menu={{
@@ -132,7 +134,7 @@ const LessonPlanTable = ({
                     items: [
                       {
                         key: "view",
-                        label: "Xem bài học",
+                        label: "Xem chi tiết giáo án",
                         icon: <EyeOutlined />,
                         onClick: () => onView(plan),
                       },

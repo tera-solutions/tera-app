@@ -1,5 +1,5 @@
 /* Import: library */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -16,6 +16,7 @@ import {
 
 /* Import: packages */
 import { BRANCH_PAGE_URL } from "@tera/commons/constants/url";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import useConfirm from "@tera/commons/hooks/useConfirm";
 
 /* Import: services */
@@ -27,6 +28,18 @@ const fmtDate = (v?: string | null) =>
 const BranchDetailPage = observer(() => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const isMobile = useIsMobile();
+
+  // Trang này chỉ dành cho mobile; desktop dùng modal trên trang danh sách.
+  // Resize sang desktop → quay về danh sách và nhắn nó mở modal detail.
+  useEffect(() => {
+    if (!isMobile) {
+      navigate(BRANCH_PAGE_URL.list.path, {
+        replace: true,
+        state: { openModal: { type: "detail", id } },
+      });
+    }
+  }, [isMobile, navigate, id]);
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const confirmDialog = useConfirm();
@@ -130,7 +143,7 @@ const BranchDetailPage = observer(() => {
       <div className="w-full max-w-3xl mx-auto">
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
           {/* Tab bar */}
-          <div className="flex overflow-x-auto border-b border-gray-200 mb-4 scrollbar-none">
+          <div className="flex overflow-x-auto overflow-y-hidden border-b border-gray-200 mb-4 [scrollbar-width:thin] [scrollbar-color:#d1d5db80_transparent] hover:[scrollbar-color:#d1d5db_transparent] [&::-webkit-scrollbar]:h-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#d1d5db80] [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#d1d5db]">
             {tabs.map((tab) => (
               <button
                 key={tab.key}

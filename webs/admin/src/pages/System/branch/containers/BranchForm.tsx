@@ -18,6 +18,7 @@ import debounce from "lodash/debounce";
 /* Import: packages */
 import { IFormProps } from "@tera/commons/interfaces";
 import Input from "@tera/components/dof/Control/Input";
+import Select from "@tera/components/dof/Control/Select";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 
 /* Import: services */
@@ -25,11 +26,10 @@ import { BranchService, BusinessService } from "@tera/modules";
 import { BranchAPI } from "@tera/api";
 
 /* Import: pages */
+import DateField from "_common/components/DateField";
 import UserSelect from "_common/components/UserSelect";
 import { IBranchForm } from "pages/System/branch/_interface";
 
-const SELECT_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
 
 const BUSINESS_ID = 1;
 
@@ -163,8 +163,6 @@ const BranchForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
 
     const { reset, formState, watch } = form;
     const errors = formState.errors as any;
-    const statusValue = watch("status");
-    const businessIdValue = watch("business_id");
     const managerIdValue = watch("manager_id");
 
     const queryClient = useQueryClient();
@@ -310,23 +308,14 @@ const BranchForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
                 name="business_id"
                 rules={[{ required: t("validate.required") }]}
               >
-                <div className="w-full overflow-hidden">
-                  <select
-                    className={SELECT_CLASS}
-                    style={{ borderRadius: "3px", color: businessIdValue ? "#111827" : "#9ca3af" }}
-                    disabled={isView || isUpdate}
-                    {...form.register("business_id")}
-                  >
-                    <option value="" disabled hidden>
-                      {t("form.enter_value", { key: t("branch.business") })}
-                    </option>
-                    {businesses.map((b) => (
-                      <option key={b.id} value={String(b.id)} style={{ color: "#111827" }}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  options={businesses.map((b) => ({
+                    value: String(b.id),
+                    label: b.name,
+                  }))}
+                  placeholder={t("form.enter_value", { key: t("branch.business") })}
+                  disabled={isView || isUpdate}
+                />
               </FormTeraItem>
             </Col>
             <Col>
@@ -372,24 +361,14 @@ const BranchForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
                   name="status"
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: statusValue ? "#111827" : "#9ca3af" }}
+                    <Select
+                      options={[
+                        { value: "active", label: t("branch.status_active") },
+                        { value: "inactive", label: t("branch.status_inactive") },
+                      ]}
+                      placeholder={t("form.enter_value", { key: t("branch.status") })}
                       disabled={isView}
-                      {...form.register("status")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("branch.status") })}
-                      </option>
-                      <option value="active" style={{ color: "#111827" }}>
-                        {t("branch.status_active")}
-                      </option>
-                      <option value="inactive" style={{ color: "#111827" }}>
-                        {t("branch.status_inactive")}
-                      </option>
-                    </select>
-                  </div>
+                    />
                 </FormTeraItem>
               </Col>
             )}
@@ -507,7 +486,7 @@ const BranchForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
             </Col>
             <Col>
               <FormTeraItem label={t("branch.opened_at")} name="opened_at">
-                <Input type="date" disabled={isView} />
+                <DateField disabled={isView} disableFuture={false} />
               </FormTeraItem>
             </Col>
             <Col>

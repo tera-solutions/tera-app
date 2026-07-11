@@ -95,6 +95,36 @@ export const useCourseDelete = () => {
   });
 };
 
+export const useCourseSuspend = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => CourseAPI.suspend(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["course", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["course", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useCourseRestore = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: DetailPayload) => CourseAPI.restore(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["course", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["course", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const useCourseExport = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -118,5 +148,7 @@ export const CourseService = {
   useCourseUpdate,
   useUpsertCourse,
   useCourseDelete,
+  useCourseSuspend,
+  useCourseRestore,
   useCourseExport,
 };

@@ -1,8 +1,8 @@
 /* Import: library */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button, PlusCircleOutlined } from "tera-dls";
 
 /* Import: packages */
@@ -43,6 +43,29 @@ const LeadListPage = observer(() => {
     type: "create",
     id: undefined,
   });
+
+  // Trang create/update/detail (mobile) redirect về đây khi resize sang desktop,
+  // kèm state.openModal = { type, id } để mở tiếp đúng modal.
+  const location = useLocation();
+  useEffect(() => {
+    const m = (location.state as any)?.openModal;
+    if (m?.type) {
+      setModalData({ open: true, type: m.type, id: m.id });
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, location.pathname, navigate]);
+
+  // Chiều ngược: desktop đang mở modal → resize xuống mobile thì đóng modal
+  // và chuyển sang trang riêng (create/update/detail) tương ứng.
+  useEffect(() => {
+    if (isMobile && modalData.open) {
+      const { type, id } = modalData;
+      setModalData({ open: false, type: "create", id: undefined });
+      if (type === "update" && id != null) navigate(LEAD_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null) navigate(LEAD_PAGE_URL.detail.path(id));
+      else navigate(LEAD_PAGE_URL.create.path);
+    }
+  }, [isMobile, modalData, navigate]);
 
   const statusOptions = globalStore.getOptions("lead_status") ?? [];
   const statusTabs = [
@@ -97,6 +120,9 @@ const LeadListPage = observer(() => {
     course_ids: courseFilter.length ? courseFilter.map(Number) : undefined,
     tag_ids: tagFilter.length ? tagFilter.map(Number) : undefined,
     owner_id: ownerFilter || undefined,
+    // Mặc định sắp xếp tăng dần theo mã (id) khi mở màn
+    sort_by: "id",
+    sort_dir: "asc",
   };
 
   const handleStatusChange = (status: string) => {
@@ -115,7 +141,7 @@ const LeadListPage = observer(() => {
                 ? navigate(LEAD_PAGE_URL.create.path)
                 : setModalData({ open: true, type: "create" })
             }
-            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1"
+            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer"
           >
             <div className="flex items-center gap-1 shrink-0">
               <PlusCircleOutlined className="w-5 h-5" />
@@ -132,7 +158,7 @@ const LeadListPage = observer(() => {
                 key={tab.key}
                 type="button"
                 onClick={() => handleStatusChange(tab.key)}
-                className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors ${
+                className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors cursor-pointer ${
                   activeStatus === tab.key
                     ? "bg-blue-500 text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"

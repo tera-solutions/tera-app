@@ -1,7 +1,7 @@
 /* Import: library */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button, PlusCircleOutlined } from "tera-dls";
 
 /* Import: packages */
@@ -46,6 +46,39 @@ const LessonListPage = () => {
   });
   const [generateOpen, setGenerateOpen] = useState(false);
 
+  // Trang generate/update/detail (mobile) redirect về đây khi resize sang desktop.
+  // create → mở modal generate; update/detail → mở modal thường.
+  const location = useLocation();
+  useEffect(() => {
+    const m = (location.state as any)?.openModal;
+    if (m?.type === "create") {
+      setGenerateOpen(true);
+      navigate(location.pathname, { replace: true, state: null });
+    } else if (m?.type) {
+      setModalData({ open: true, type: m.type, id: m.id });
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, location.pathname, navigate]);
+
+  // Chiều ngược: desktop đang mở modal update/detail → resize xuống mobile.
+  useEffect(() => {
+    if (isMobile && modalData.open) {
+      const { type, id } = modalData;
+      setModalData({ open: false, type: "create", id: undefined });
+      if (type === "update" && id != null) navigate(LESSON_PAGE_URL.update.path(String(id)));
+      else if (type === "detail" && id != null) navigate(LESSON_PAGE_URL.detail.path(String(id)));
+      else navigate(LESSON_PAGE_URL.create.path);
+    }
+  }, [isMobile, modalData, navigate]);
+
+  // Chiều ngược: desktop đang mở modal generate → resize xuống mobile.
+  useEffect(() => {
+    if (isMobile && generateOpen) {
+      setGenerateOpen(false);
+      navigate(LESSON_PAGE_URL.create.path);
+    }
+  }, [isMobile, generateOpen, navigate]);
+
   const resetPage = () => setParams((p: any) => ({ ...p, page: 1 }));
 
   const patchFilters = (patch: Partial<LessonFilterValue>) => {
@@ -86,7 +119,7 @@ const LessonListPage = () => {
                 ? navigate(LESSON_PAGE_URL.create.path)
                 : setGenerateOpen(true)
             }
-            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1"
+            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer"
           >
             <div className="flex items-center gap-1 shrink-0">
               <PlusCircleOutlined className="w-5 h-5" />
@@ -105,7 +138,7 @@ const LessonListPage = () => {
                 setActiveStatus(tab.key);
                 resetPage();
               }}
-              className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors ${
+              className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors cursor-pointer ${
                 activeStatus === tab.key
                   ? "bg-blue-500 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"

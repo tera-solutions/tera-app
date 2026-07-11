@@ -3,11 +3,15 @@ import type { AttendanceStatus } from "pages/ClassroomDetail/_interface";
 export interface AttendanceClassOption {
   id: number;
   name: string;
+  category: string;
   level: string;
   room: string;
+  branch: string;
   schedule_days: string;
   start_time: string;
   end_time: string;
+  max_students: number;
+  cover_image: string;
 }
 
 export interface AttendanceSession {
@@ -28,7 +32,8 @@ export interface AttendanceRow {
   code: string;
   /** Attendance record id, if one already exists for this session. */
   record_id: number | null;
-  status: AttendanceStatus;
+  /** `null` until the teacher explicitly marks a status. */
+  status: AttendanceStatus | null;
   time: string;
   /** True once the user changes the status in this session (needs saving). */
   dirty: boolean;

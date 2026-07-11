@@ -1,5 +1,5 @@
 /* Import: library */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
 import { Button, PlusCircleOutlined } from "tera-dls";
@@ -9,7 +9,7 @@ import HeaderViewList from "@tera/components/web/HeaderViewList";
 import { IModalProps } from "@tera/commons/interfaces";
 import { useStores } from "@tera/stores/useStores";
 import useIsMobile from "@tera/commons/hooks/useIsMobile";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { BUSINESS_PAGE_URL } from "@tera/commons/constants/url";
 
 /* Import: pages */
@@ -30,14 +30,37 @@ const BusinessListPage = observer(() => {
   const [managerFilter, setManagerFilter] = useState("");
   const [selectedManager, setSelectedManager] = useState<any>(null);
   const [dateFilter, setDateFilter] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [sortBy, setSortBy] = useState("business_code");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
     type: "create",
     id: undefined,
   });
+
+  // Trang create/update/detail (mobile) redirect về đây khi resize sang desktop,
+  // kèm state.openModal = { type, id } để mở tiếp đúng modal.
+  const location = useLocation();
+  useEffect(() => {
+    const m = (location.state as any)?.openModal;
+    if (m?.type) {
+      setModalData({ open: true, type: m.type, id: m.id });
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, location.pathname, navigate]);
+
+  // Chiều ngược: desktop đang mở modal → resize xuống mobile thì đóng modal
+  // và chuyển sang trang riêng (create/update/detail) tương ứng.
+  useEffect(() => {
+    if (isMobile && modalData.open) {
+      const { type, id } = modalData;
+      setModalData({ open: false, type: "create", id: undefined });
+      if (type === "update" && id != null) navigate(BUSINESS_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null) navigate(BUSINESS_PAGE_URL.detail.path(id));
+      else navigate(BUSINESS_PAGE_URL.create.path);
+    }
+  }, [isMobile, modalData, navigate]);
 
   const statusOptions = (
     globalStore.getOptions("business_status") ?? []
@@ -77,7 +100,7 @@ const BusinessListPage = observer(() => {
                 ? navigate(BUSINESS_PAGE_URL.create.path)
                 : setModalData({ open: true, type: "create" })
             }
-            className='rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1'
+            className='rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer'
           >
             <div className='flex items-center gap-1 shrink-0'>
               <PlusCircleOutlined className='w-5 h-5' />
@@ -93,7 +116,7 @@ const BusinessListPage = observer(() => {
               key={tab.key}
               type='button'
               onClick={() => handleStatusChange(tab.key)}
-              className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors ${
+              className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors cursor-pointer ${
                 activeStatus === tab.key
                   ? "bg-blue-500 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"

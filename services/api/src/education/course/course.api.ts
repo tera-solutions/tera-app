@@ -35,7 +35,18 @@ export const CourseAPI = {
     await api
       .delete(`${endpoint}/edu/course/delete/${id}`)
       .then((result) => result.data),
-  
+
+  // Ngừng hoạt động (body { reason } tuỳ chọn) / kích hoạt lại (không body)
+  suspend: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/edu/course/suspend/${id}`, params)
+      .then((result) => result.data),
+
+  restore: async ({ id }: DetailPayload) =>
+    await api
+      .post(`${endpoint}/edu/course/restore/${id}`)
+      .then((result) => result.data),
+
   export: async ({ params }: ExportPayload) =>
     await api
       .post(`${endpoint}/edu/course/export`, params)

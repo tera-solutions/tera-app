@@ -1,37 +1,47 @@
 import { useMemo, useState } from "react";
+import { observer } from "mobx-react-lite";
 import classNames from "classnames";
 import { Button, CheckOutlined } from "tera-dls";
 
 import Avatar from "_common/components/Avatar";
-import Badge from "_common/components/Badge";
 import SearchInput from "_common/components/SearchInput";
+import StatusBadge from "_common/components/StatusBadge";
 import WidgetState from "_common/components/WidgetState";
-import { ATTENDANCE_STYLE } from "pages/ClassroomDetail/constants";
+import { getOutlineButtonVariant } from "_common/utils/badgeColor";
+import { useMeta } from "_common/hooks/useMeta";
 
 import type { AttendanceRow } from "../_interface";
 import { STATUS_ACTIONS } from "../constants";
+import type { AttendanceStatus } from "pages/ClassroomDetail/_interface";
 
 interface AttendanceGridProps {
   rows: AttendanceRow[];
   loading?: boolean;
   isError?: boolean;
   onRetry?: () => void;
-  selectedId: number | null;
-  onSelect: (studentId: number) => void;
-  onSetStatus: (studentId: number, status: AttendanceRow["status"]) => void;
+  selectedIds: Set<number>;
+  onToggleSelect: (studentId: number) => void;
+  onSetStatus: (status: AttendanceStatus) => void;
   onMarkAllPresent: () => void;
+  dirtyCount: number;
+  saving?: boolean;
+  onSave: () => void;
 }
 
-const AttendanceGrid = ({
+const AttendanceGrid = observer(({
   rows,
   loading,
   isError,
   onRetry,
-  selectedId,
-  onSelect,
+  selectedIds,
+  onToggleSelect,
   onSetStatus,
   onMarkAllPresent,
+  dirtyCount,
+  saving,
+  onSave,
 }: AttendanceGridProps) => {
+  const { getItem } = useMeta();
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -47,16 +57,26 @@ const AttendanceGrid = ({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Tìm kiếm học viên..."
-          wrapperClassName="sm:max-w-xs"
+          wrapperClassName="flex-1"
         />
-        <Button
-          outlined
-          icon={<CheckOutlined />}
-          onClick={onMarkAllPresent}
-          className="whitespace-nowrap text-emerald-600 border-emerald-500 hover:bg-emerald-500"
-        >
-          Đánh dấu có mặt tất cả
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            outlined
+            icon={<CheckOutlined />}
+            onClick={onMarkAllPresent}
+            disabled={saving}
+            className="whitespace-nowrap text-emerald-600 border-emerald-500 hover:bg-emerald-500"
+          >
+            Đánh dấu có mặt tất cả
+          </Button>
+          <Button
+            disabled={dirtyCount === 0 || saving}
+            onClick={onSave}
+            className="whitespace-nowrap"
+          >
+            {saving ? "Đang lưu..." : "Lưu điểm danh"}
+          </Button>
+        </div>
       </div>
 
       <WidgetState
@@ -68,20 +88,24 @@ const AttendanceGrid = ({
       >
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
           {filtered.map((row) => {
-            const style = ATTENDANCE_STYLE[row.status];
-            const selected = row.student_id === selectedId;
+            const selected = selectedIds.has(row.student_id);
             return (
               <button
                 key={row.student_id}
                 type="button"
-                onClick={() => onSelect(row.student_id)}
+                onClick={() => onToggleSelect(row.student_id)}
                 className={classNames(
-                  "flex flex-col items-center gap-1.5 rounded-xl border p-3 text-center transition-colors",
+                  "relative flex flex-col items-center gap-1.5 rounded-xl border p-3 text-center transition-colors",
                   selected
                     ? "border-brand bg-sky-50/60"
                     : "border-slate-100 hover:border-slate-200",
                 )}
               >
+                {selected && (
+                  <span className="absolute right-1.5 top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand text-white [&_svg]:h-2.5 [&_svg]:w-2.5">
+                    <CheckOutlined />
+                  </span>
+                )}
                 <Avatar
                   src={row.avatar}
                   alt={row.name}
@@ -92,9 +116,13 @@ const AttendanceGrid = ({
                 <p className="w-full truncate text-xs font-medium text-slate-700">
                   {row.name}
                 </p>
-                <Badge className={`px-2 py-0.5 text-[10px] ${style.badge}`}>
-                  {style.label}
-                </Badge>
+                {row.status ? (
+                  <StatusBadge name="attendance_status" value={row.status} />
+                ) : (
+                  <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] text-slate-400">
+                    Chưa điểm danh
+                  </span>
+                )}
               </button>
             );
           })}
@@ -102,15 +130,20 @@ const AttendanceGrid = ({
       </WidgetState>
 
       <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
+        <span className="mr-1 text-xs text-slate-500">
+          {selectedIds.size > 0
+            ? `Đã chọn ${selectedIds.size} học viên`
+            : "Chọn học viên để điểm danh"}
+        </span>
         {STATUS_ACTIONS.map((action) => (
           <Button
             key={action.status}
             outlined
-            disabled={!selectedId}
-            onClick={() => selectedId && onSetStatus(selectedId, action.status)}
+            disabled={selectedIds.size === 0}
+            onClick={() => onSetStatus(action.status)}
             className={classNames(
               "whitespace-nowrap",
-              ATTENDANCE_STYLE[action.status].button,
+              getOutlineButtonVariant(getItem("attendance_status", action.status)?.color),
             )}
           >
             {action.label}
@@ -119,6 +152,6 @@ const AttendanceGrid = ({
       </div>
     </div>
   );
-};
+});
 
 export default AttendanceGrid;

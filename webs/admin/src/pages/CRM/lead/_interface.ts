@@ -30,6 +30,7 @@ export interface ILead {
 }
 
 export interface ILeadGuardianForm {
+  parent_id?: number | string; // phụ huynh được chọn (auto-fill họ tên/sđt/email)
   full_name?: string;
   relationship?: string;
   phone?: string;

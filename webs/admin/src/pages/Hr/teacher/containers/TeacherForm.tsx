@@ -12,14 +12,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import moment from "moment";
-import { Col, Row, notification, PlusCircleOutlined, UserOutlined, DatePicker } from "tera-dls";
+import { Col, Row, Modal, notification, PlusCircleOutlined, UserOutlined } from "tera-dls";
 import debounce from "lodash/debounce";
 
 /* Import: packages */
 import { IFormProps, IFileUpload } from "@tera/commons/interfaces";
-import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import Input from "@tera/components/dof/Control/Input";
+import Select, { SelectField } from "@tera/components/dof/Control/Select";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import UploadFiles from "@tera/components/dof/UploadFiles";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
@@ -29,6 +28,7 @@ import { TeacherService, BranchService } from "@tera/modules";
 import { TeacherAPI } from "@tera/api";
 
 /* Import: pages */
+import DateField from "_common/components/DateField";
 import UserSelect from "_common/components/UserSelect";
 import { ITeacherForm } from "pages/Hr/teacher/_interface";
 
@@ -39,6 +39,7 @@ const SELECT_CLASS =
 const preventNegativeKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
   if (["-", "+", "e", "E"].includes(e.key)) e.preventDefault();
 };
+
 
 const defaultValues: ITeacherForm = {
   code: "",
@@ -76,6 +77,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
 
     const [activeTab, setActiveTab] = useState("basic");
     const [showAddSkill, setShowAddSkill] = useState(false);
+    const [showAvatarPreview, setShowAvatarPreview] = useState(false);
     const [newSkillName, setNewSkillName] = useState("");
     const [newSkillLevel, setNewSkillLevel] = useState("");
 
@@ -219,15 +221,8 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
     const { reset, formState, watch } = form;
     const errors = formState.errors as any;
 
-    const typeValue = watch("teacher_type");
-    const statusValue = watch("status");
-    const genderValue = watch("gender");
-    const branchIdValue = watch("branch_id");
-    const employmentTypeValue = watch("employment_type" as any);
     const managerIdValue = watch("manager_id" as any);
     const avatarValue = watch("avatar" as any);
-    const joinedAtValue = watch("joined_at" as any);
-    const isMobile = useIsMobile();
 
     const {
       fields: skillFields,
@@ -428,15 +423,24 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
                     </UploadFiles>
                   </div>
                   {avatarValue && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        form.setValue("avatar" as any, "", { shouldDirty: true })
-                      }
-                      className="text-[13px] text-red-500 hover:text-red-600 transition-colors"
-                    >
-                      {t("button.delete")}
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowAvatarPreview(true)}
+                        className="text-[13px] text-blue-500 hover:text-blue-600 transition-colors cursor-pointer"
+                      >
+                        {t("button.detail")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          form.setValue("avatar" as any, "", { shouldDirty: true })
+                        }
+                        className="text-[13px] text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                      >
+                        {t("button.delete")}
+                      </button>
+                    </div>
                   )}
                 </div>
               </Col>
@@ -456,21 +460,14 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
             </Col>
             <Col>
               <FormTeraItem label={t("teacher.branch")} name="branch_id" rules={[{ required: t("validate.required") }]}>
-                <div className="w-full overflow-hidden">
-                  <select
-                    className={SELECT_CLASS}
-                    style={{ borderRadius: "3px", color: branchIdValue ? "#111827" : "#9ca3af" }}
-                    disabled={isView}
-                    {...form.register("branch_id")}
-                  >
-                    <option value="" disabled hidden>{t("form.enter_value", { key: t("teacher.branch") })}</option>
-                    {branches.map((branch) => (
-                      <option key={branch.id} value={String(branch.id)} style={{ color: "#111827" }}>
-                        {branch.name}{branch.code ? ` (${branch.code})` : ""}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  options={branches.map((branch) => ({
+                    value: String(branch.id),
+                    label: branch.code ? `${branch.name} (${branch.code})` : branch.name,
+                  }))}
+                  placeholder={t("form.enter_value", { key: t("teacher.branch") })}
+                  disabled={isView}
+                />
               </FormTeraItem>
             </Col>
             <Col>
@@ -480,7 +477,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
             </Col>
             <Col>
               <FormTeraItem label={t("teacher.dob")} name="dob">
-                <Input type="date" disabled={isView} />
+                <DateField disabled={isView} />
               </FormTeraItem>
             </Col>
             <Col>
@@ -490,19 +487,15 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
             </Col>
             <Col>
               <FormTeraItem label={t("teacher.gender")} name="gender">
-                <div className="w-full overflow-hidden">
-                  <select
-                    className={SELECT_CLASS}
-                    style={{ borderRadius: "3px", color: genderValue ? "#111827" : "#9ca3af" }}
-                    disabled={isView}
-                    {...form.register("gender")}
-                  >
-                    <option value="" disabled hidden>{t("form.enter_value", { key: t("teacher.gender") })}</option>
-                    <option value="male" style={{ color: "#111827" }}>{t("teacher.gender_male")}</option>
-                    <option value="female" style={{ color: "#111827" }}>{t("teacher.gender_female")}</option>
-                    <option value="other" style={{ color: "#111827" }}>{t("teacher.gender_other")}</option>
-                  </select>
-                </div>
+                <Select
+                  options={[
+                    { value: "male", label: t("teacher.gender_male") },
+                    { value: "female", label: t("teacher.gender_female") },
+                    { value: "other", label: t("teacher.gender_other") },
+                  ]}
+                  placeholder={t("form.enter_value", { key: t("teacher.gender") })}
+                  disabled={isView}
+                />
               </FormTeraItem>
             </Col>
             <Col>
@@ -523,20 +516,16 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
           <Row className="grid grid-cols-1">
             <Col>
               <FormTeraItem label={t("teacher.type")} name="teacher_type" rules={[{ required: t("validate.required") }]}>
-                <div className="w-full overflow-hidden">
-                  <select
-                    className={SELECT_CLASS}
-                    style={{ borderRadius: "3px", color: typeValue ? "#111827" : "#9ca3af" }}
-                    disabled={isView}
-                    {...form.register("teacher_type")}
-                  >
-                    <option value="" disabled hidden>{t("form.enter_value", { key: t("teacher.type") })}</option>
-                    <option value="part_time" style={{ color: "#111827" }}>{t("teacher.type_part_time")}</option>
-                    <option value="full_time" style={{ color: "#111827" }}>{t("teacher.type_full_time")}</option>
-                    <option value="assistant" style={{ color: "#111827" }}>{t("teacher.type_assistant")}</option>
-                    <option value="freelancer" style={{ color: "#111827" }}>{t("teacher.type_freelancer")}</option>
-                  </select>
-                </div>
+                <Select
+                  options={[
+                    { value: "part_time", label: t("teacher.type_part_time") },
+                    { value: "full_time", label: t("teacher.type_full_time") },
+                    { value: "assistant", label: t("teacher.type_assistant") },
+                    { value: "freelancer", label: t("teacher.type_freelancer") },
+                  ]}
+                  placeholder={t("form.enter_value", { key: t("teacher.type") })}
+                  disabled={isView}
+                />
               </FormTeraItem>
             </Col>
 
@@ -574,18 +563,17 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
                         className={SELECT_CLASS}
                         style={{ borderRadius: "3px" }}
                       />
-                      <select
+                      <SelectField
+                        options={[
+                          { value: "beginner", label: t("teacher.skill_level_beginner") },
+                          { value: "intermediate", label: t("teacher.skill_level_intermediate") },
+                          { value: "advanced", label: t("teacher.skill_level_advanced") },
+                          { value: "expert", label: t("teacher.skill_level_expert") },
+                        ]}
+                        placeholder={t("teacher.skill_level")}
                         value={newSkillLevel}
-                        onChange={(e) => setNewSkillLevel(e.target.value)}
-                        className={SELECT_CLASS}
-                        style={{ borderRadius: "3px", color: newSkillLevel ? "#111827" : "#9ca3af" }}
-                      >
-                        <option value="" disabled hidden>{t("teacher.skill_level")}</option>
-                        <option value="beginner" style={{ color: "#111827" }}>{t("teacher.skill_level_beginner")}</option>
-                        <option value="intermediate" style={{ color: "#111827" }}>{t("teacher.skill_level_intermediate")}</option>
-                        <option value="advanced" style={{ color: "#111827" }}>{t("teacher.skill_level_advanced")}</option>
-                        <option value="expert" style={{ color: "#111827" }}>{t("teacher.skill_level_expert")}</option>
-                      </select>
+                        onChange={(val) => setNewSkillLevel(String(val ?? ""))}
+                      />
                       <div className="flex gap-2 justify-end">
                         <button type="button" onClick={handleCancelSkill} className="px-3 py-1.5 text-[13px] border border-gray-300 rounded hover:bg-gray-100 transition-colors">{t("button.cancel")}</button>
                         <button type="button" onClick={handleAddSkill} className="px-3 py-1.5 text-[13px] bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">{t("button.create")}</button>
@@ -610,46 +598,20 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
           <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
             <Col>
               <FormTeraItem label={t("teacher.employment_type")} name="employment_type" rules={[{ required: t("validate.required") }]}>
-                <div className="w-full overflow-hidden">
-                  <select
-                    className={SELECT_CLASS}
-                    style={{ borderRadius: "3px", color: employmentTypeValue ? "#111827" : "#9ca3af" }}
-                    disabled={isView}
-                    {...form.register("employment_type" as any)}
-                  >
-                    <option value="" disabled hidden>{t("form.enter_value", { key: t("teacher.employment_type") })}</option>
-                    <option value="contract" style={{ color: "#111827" }}>{t("teacher.employment_type_contract")}</option>
-                    <option value="collaborator" style={{ color: "#111827" }}>{t("teacher.employment_type_collaborator")}</option>
-                    <option value="probation" style={{ color: "#111827" }}>{t("teacher.employment_type_probation")}</option>
-                  </select>
-                </div>
+                <Select
+                  options={[
+                    { value: "contract", label: t("teacher.employment_type_contract") },
+                    { value: "collaborator", label: t("teacher.employment_type_collaborator") },
+                    { value: "probation", label: t("teacher.employment_type_probation") },
+                  ]}
+                  placeholder={t("form.enter_value", { key: t("teacher.employment_type") })}
+                  disabled={isView}
+                />
               </FormTeraItem>
             </Col>
             <Col>
               <FormTeraItem label={t("teacher.joined_at")} name="joined_at" rules={[{ required: t("validate.required") }]}>
-                {isMobile ? (
-                  <Input type="date" disabled={isView} />
-                ) : (
-                  <DatePicker
-                    className="w-full"
-                    value={
-                      joinedAtValue
-                        ? moment(String(joinedAtValue), "YYYY-MM-DD")
-                        : undefined
-                    }
-                    format="DD/MM/YYYY"
-                    placeholder="DD/MM/YYYY"
-                    disabled={isView}
-                    allowClear
-                    onChange={(date: any) =>
-                      form.setValue(
-                        "joined_at",
-                        date ? moment(date).format("YYYY-MM-DD") : "",
-                        { shouldDirty: true, shouldValidate: true },
-                      )
-                    }
-                  />
-                )}
+                <DateField disabled={isView} disableFuture={false} />
               </FormTeraItem>
             </Col>
             <Col>
@@ -681,19 +643,15 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
             {!isUpdate && (
               <Col>
                 <FormTeraItem label={t("teacher.status")} name="status" rules={[{ required: t("validate.required") }]}>
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: statusValue ? "#111827" : "#9ca3af" }}
-                      disabled={isView}
-                      {...form.register("status")}
-                    >
-                      <option value="" disabled hidden>{t("form.enter_value", { key: t("teacher.status") })}</option>
-                      <option value="active" style={{ color: "#111827" }}>{t("teacher.status_active")}</option>
-                      <option value="suspended" style={{ color: "#111827" }}>{t("teacher.status_suspended")}</option>
-                      <option value="resigned" style={{ color: "#111827" }}>{t("teacher.status_resigned")}</option>
-                    </select>
-                  </div>
+                  <Select
+                    options={[
+                      { value: "active", label: t("teacher.status_active") },
+                      { value: "suspended", label: t("teacher.status_suspended") },
+                      { value: "resigned", label: t("teacher.status_resigned") },
+                    ]}
+                    placeholder={t("form.enter_value", { key: t("teacher.status") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
             )}
@@ -737,6 +695,21 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
           </Row>
         </div>
         </FormTera>
+        {showAvatarPreview && (
+          <Modal
+            title={t("teacher.avatar")}
+            open={showAvatarPreview}
+            cancelText={t("button.close")}
+            okButtonProps={{ className: "hidden" }}
+            onCancel={() => setShowAvatarPreview(false)}
+          >
+            <img
+              src={avatarValue}
+              alt="avatar"
+              className="max-h-[70vh] max-w-full mx-auto rounded"
+            />
+          </Modal>
+        )}
       </div>
     );
   },

@@ -21,6 +21,7 @@ import debounce from "lodash/debounce";
 /* Import: packages */
 import { IFormProps } from "@tera/commons/interfaces";
 import Input from "@tera/components/dof/Control/Input";
+import Select, { SelectField } from "@tera/components/dof/Control/Select";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import { useStores } from "@tera/stores/useStores";
@@ -39,8 +40,6 @@ import { ClassRoomAPI } from "@tera/api";
 import UserSelect from "_common/components/UserSelect";
 import { IClassRoomForm } from "pages/education/class-room/_interface";
 
-const SELECT_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
 
 const TIME_CLASS =
   "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-2 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed box-border rounded-[3px]";
@@ -206,7 +205,7 @@ const ClassRoomForm = observer(
         resolver: yupResolver(schema) as any,
       });
 
-      const { reset, formState, watch, register, control } = form;
+      const { reset, formState, watch, register, control, setValue } = form;
       const errors = formState.errors as any;
 
       const {
@@ -215,11 +214,7 @@ const ClassRoomForm = observer(
         remove: removeSchedule,
       } = useFieldArray({ control, name: "schedules" });
 
-      const courseIdValue = watch("course_id");
-      const lessonPlanIdValue = watch("lesson_plan_id");
-      const teacherIdValue = watch("teacher_id");
       const assigneeIdValue = watch("assignee_id");
-      const roomIdValue = watch("room_id");
       const learningTypeValue = watch("learning_type");
       const useCurriculumValue = watch("use_course_curriculum" as any);
       const schedulesValue = watch("schedules");
@@ -238,6 +233,26 @@ const ClassRoomForm = observer(
             lesson_plan_id: dataDetail.lesson_plan_id
               ? String(dataDetail.lesson_plan_id)
               : "",
+            teacher_id: dataDetail.teacher_id
+              ? String(dataDetail.teacher_id)
+              : "",
+            assignee_id: dataDetail.assignee_id
+              ? String(dataDetail.assignee_id)
+              : "",
+            use_course_curriculum: !!dataDetail.use_course_curriculum,
+            description: dataDetail.description ?? "",
+            learning_type: dataDetail.learning_type ?? "",
+            start_date: dataDetail.start_date
+              ? String(dataDetail.start_date).slice(0, 10)
+              : "",
+            end_date: dataDetail.end_date
+              ? String(dataDetail.end_date).slice(0, 10)
+              : "",
+            room_id: dataDetail.room_id ? String(dataDetail.room_id) : "",
+            min_warning_capacity:
+              dataDetail.min_warning_capacity != null
+                ? String(dataDetail.min_warning_capacity)
+                : "",
           min_capacity:
             dataDetail.min_capacity != null
               ? String(dataDetail.min_capacity)
@@ -439,31 +454,14 @@ const ClassRoomForm = observer(
                   name='course_id'
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <div className='w-full overflow-hidden'>
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: courseIdValue ? "#111827" : "#9ca3af",
-                      }}
-                      disabled={isView || lockedBySessions}
-                      {...register("course_id")}
-                    >
-                      <option value='' disabled hidden>
-                        {t("form.enter_value", { key: t("classroom.course") })}
-                      </option>
-                      {courses.map((c) => (
-                        <option
-                          key={c.id}
-                          value={String(c.id)}
-                          style={{ color: "#111827" }}
-                        >
-                          {c.name}
-                          {c.code ? ` (${c.code})` : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={courses.map((c) => ({
+                      value: String(c.id),
+                      label: c.code ? `${c.name} (${c.code})` : c.name,
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("classroom.course") })}
+                    disabled={isView || lockedBySessions}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -471,62 +469,28 @@ const ClassRoomForm = observer(
                   label={t("classroom.lesson_plan")}
                   name='lesson_plan_id'
                 >
-                  <div className='w-full overflow-hidden'>
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: lessonPlanIdValue ? "#111827" : "#9ca3af",
-                      }}
-                      disabled={isView}
-                      {...register("lesson_plan_id")}
-                    >
-                      <option value='' disabled hidden>
-                        {t("form.enter_value", {
-                          key: t("classroom.lesson_plan"),
-                        })}
-                      </option>
-                      {lessonPlans.map((lp) => (
-                        <option
-                          key={lp.id}
-                          value={String(lp.id)}
-                          style={{ color: "#111827" }}
-                        >
-                          {lp.plan_name ?? lp.name}
-                          {lp.plan_code ? ` (${lp.plan_code})` : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={lessonPlans.map((lp) => ({
+                      value: String(lp.id),
+                      label: lp.plan_code
+                        ? `${lp.plan_name ?? lp.name} (${lp.plan_code})`
+                        : (lp.plan_name ?? lp.name),
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("classroom.lesson_plan") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
                 <FormTeraItem label={t("classroom.teacher")} name='teacher_id'>
-                  <div className='w-full overflow-hidden'>
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: teacherIdValue ? "#111827" : "#9ca3af",
-                      }}
-                      disabled={isView}
-                      {...register("teacher_id")}
-                    >
-                      <option value='' disabled hidden>
-                        {t("form.enter_value", { key: t("classroom.teacher") })}
-                      </option>
-                      {teachers.map((tc) => (
-                        <option
-                          key={tc.id}
-                          value={String(tc.id)}
-                          style={{ color: "#111827" }}
-                        >
-                          {tc.full_name}
-                          {tc.code ? ` (${tc.code})` : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={teachers.map((tc) => ({
+                      value: String(tc.id),
+                      label: tc.code ? `${tc.full_name} (${tc.code})` : tc.full_name,
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("classroom.teacher") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
             </Row>
@@ -541,32 +505,11 @@ const ClassRoomForm = observer(
                   name='learning_type'
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <div className='w-full overflow-hidden'>
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: learningTypeValue ? "#111827" : "#9ca3af",
-                      }}
-                      disabled={isView}
-                      {...register("learning_type")}
-                    >
-                      <option value='' disabled hidden>
-                        {t("form.enter_value", {
-                          key: t("classroom.learning_type"),
-                        })}
-                      </option>
-                      {learningTypeOptions.map((opt: any) => (
-                        <option
-                          key={opt.value}
-                          value={opt.value}
-                          style={{ color: "#111827" }}
-                        >
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={learningTypeOptions}
+                    placeholder={t("form.enter_value", { key: t("classroom.learning_type") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -637,34 +580,18 @@ const ClassRoomForm = observer(
               </Col>
               <Col>
                 <FormTeraItem label={t("classroom.room")} name='room_id'>
-                  <div className='w-full overflow-hidden'>
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: roomIdValue ? "#111827" : "#9ca3af",
-                      }}
-                      disabled={isView}
-                      {...register("room_id")}
-                    >
-                      <option value='' disabled hidden>
-                        {t("form.enter_value", { key: t("classroom.room") })}
-                      </option>
-                      {rooms.map((r) => (
-                        <option
-                          key={r.id}
-                          value={String(r.id)}
-                          style={{ color: "#111827" }}
-                        >
-                          {r.room_name ?? r.name ?? `#${r.id}`}
-                          {r.room_code ? ` (${r.room_code})` : ""}
-                          {r.capacity != null
-                            ? ` · ${r.capacity} ${t("classroom.seats")}`
-                            : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={rooms.map((r) => ({
+                      value: String(r.id),
+                      label: [
+                        r.room_name ?? r.name ?? `#${r.id}`,
+                        r.room_code ? ` (${r.room_code})` : "",
+                        r.capacity != null ? ` · ${r.capacity} ${t("classroom.seats")}` : "",
+                      ].join(""),
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("classroom.room") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -756,30 +683,21 @@ const ClassRoomForm = observer(
                     <label className='block text-[12px] text-gray-500 mb-1'>
                       {t("classroom.weekday")}
                     </label>
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: schedulesValue?.[index]?.weekday
-                          ? "#111827"
-                          : "#9ca3af",
-                      }}
+                    <SelectField
+                      options={weekdayOptions.map((w) => ({
+                        value: String(w.value),
+                        label: w.label,
+                      }))}
+                      placeholder={t("classroom.select_weekday")}
                       disabled={isView}
-                      {...register(`schedules.${index}.weekday` as const)}
-                    >
-                      <option value='' disabled hidden>
-                        {t("classroom.select_weekday")}
-                      </option>
-                      {weekdayOptions.map((w) => (
-                        <option
-                          key={w.value}
-                          value={String(w.value)}
-                          style={{ color: "#111827" }}
-                        >
-                          {w.label}
-                        </option>
-                      ))}
-                    </select>
+                      value={String(schedulesValue?.[index]?.weekday ?? "")}
+                      onChange={(val) =>
+                        setValue(`schedules.${index}.weekday` as const, String(val ?? ""), {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        })
+                      }
+                    />
                   </div>
                   <div className='flex-1 min-w-0'>
                     <label className='block text-[12px] text-gray-500 mb-1'>

@@ -1,7 +1,7 @@
 /* Import: library */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button, PlusCircleOutlined } from "tera-dls";
 
 /* Import: packages */
@@ -38,14 +38,37 @@ const CourseListPage = () => {
   const [activeStatus, setActiveStatus] = useState("");
   const [keyword, setKeyword] = useState("");
   const [filters, setFilters] = useState<CourseFilterValue>(defaultFilters);
-  const [sortBy, setSortBy] = useState("");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [sortBy, setSortBy] = useState("code");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
     type: "create",
     id: undefined,
   });
+
+  // Trang create/update/detail (mobile) redirect về đây khi resize sang desktop,
+  // kèm state.openModal = { type, id } để mở tiếp đúng modal.
+  const location = useLocation();
+  useEffect(() => {
+    const m = (location.state as any)?.openModal;
+    if (m?.type) {
+      setModalData({ open: true, type: m.type, id: m.id });
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, location.pathname, navigate]);
+
+  // Chiều ngược: desktop đang mở modal → resize xuống mobile thì đóng modal
+  // và chuyển sang trang riêng (create/update/detail) tương ứng.
+  useEffect(() => {
+    if (isMobile && modalData.open) {
+      const { type, id } = modalData;
+      setModalData({ open: false, type: "create", id: undefined });
+      if (type === "update" && id != null) navigate(COURSE_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null) navigate(COURSE_PAGE_URL.detail.path(id));
+      else navigate(COURSE_PAGE_URL.create.path);
+    }
+  }, [isMobile, modalData, navigate]);
 
   const resetPage = () => setParams((p: any) => ({ ...p, page: 1 }));
 
@@ -86,7 +109,7 @@ const CourseListPage = () => {
                 ? navigate(COURSE_PAGE_URL.create.path)
                 : setModalData({ open: true, type: "create" })
             }
-            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1"
+            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer"
           >
             <div className="flex items-center gap-1 shrink-0">
               <PlusCircleOutlined className="w-5 h-5" />
@@ -105,7 +128,7 @@ const CourseListPage = () => {
                 setActiveStatus(tab.key);
                 resetPage();
               }}
-              className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors ${
+              className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors cursor-pointer ${
                 activeStatus === tab.key
                   ? "bg-blue-500 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -119,7 +142,7 @@ const CourseListPage = () => {
         {/* Search + quick filters row */}
         <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center">
           <SearchBar
-            className="xmd:flex-1"
+            className="w-full xmd:flex-1 xmd:min-w-[140px]"
             value={keyword}
             placeholder={t("course.search_placeholder")}
             onChange={(v) => {

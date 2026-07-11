@@ -1,5 +1,5 @@
 /* Import: library */
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -13,6 +13,7 @@ import {
 /* Import: packages */
 import { IFormRef } from "@tera/commons/interfaces";
 import useConfirm from "@tera/commons/hooks/useConfirm";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { messageWarning } from "@tera/commons/constants/message";
 import { CLASS_ROOM_PAGE_URL } from "@tera/commons/constants/url";
 
@@ -26,6 +27,18 @@ const ClassRoomUpdatePage = () => {
   const navigate = useNavigate();
   const confirm = useConfirm();
   const { id } = useParams();
+  const isMobile = useIsMobile();
+
+  // Trang này chỉ dành cho mobile; desktop dùng modal trên trang danh sách.
+  // Resize sang desktop → quay về danh sách và nhắn nó mở modal update.
+  useEffect(() => {
+    if (!isMobile) {
+      navigate(CLASS_ROOM_PAGE_URL.list.path, {
+        replace: true,
+        state: { openModal: { type: "update", id } },
+      });
+    }
+  }, [isMobile, navigate, id]);
   const { t } = useTranslation();
 
   const actionRef = useRef<IFormRef>(null);

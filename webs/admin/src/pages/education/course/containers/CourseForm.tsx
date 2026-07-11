@@ -12,12 +12,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Col, Row, notification, BookOpenOutlined } from "tera-dls";
+import { Col, Row, Modal, notification, BookOpenOutlined } from "tera-dls";
 import debounce from "lodash/debounce";
 
 /* Import: packages */
 import { IFormProps, IFileUpload } from "@tera/commons/interfaces";
 import Input from "@tera/components/dof/Control/Input";
+import Select from "@tera/components/dof/Control/Select";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import UploadFiles from "@tera/components/dof/UploadFiles";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
@@ -29,8 +30,6 @@ import { CourseAPI } from "@tera/api";
 /* Import: pages */
 import { ICourseForm } from "pages/education/course/_interface";
 
-const SELECT_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
 
 const defaultValues: ICourseForm = {
   code: "",
@@ -54,6 +53,7 @@ const CourseForm = forwardRef<
     const { t } = useTranslation();
 
     const [activeTab, setActiveTab] = useState("basic");
+    const [showThumbnailPreview, setShowThumbnailPreview] = useState(false);
 
     const { data: businessData } = BusinessService.useBusinessList({
       params: { page: 1, per_page: 100, status: "active" },
@@ -130,8 +130,6 @@ const CourseForm = forwardRef<
     const { reset, formState, watch } = form;
     const errors = formState.errors as any;
 
-    const businessIdValue = watch("business_id");
-    const isActiveValue = watch("is_active");
     const thumbnailValue = watch("thumbnail" as any);
 
     const queryClient = useQueryClient();
@@ -148,8 +146,9 @@ const CourseForm = forwardRef<
               ? String(dataDetail.duration_minutes)
               : "",
           price_per_lesson:
-            dataDetail.price_per_lesson != null
-              ? String(dataDetail.price_per_lesson)
+            dataDetail.price_per_lesson != null &&
+            dataDetail.price_per_lesson !== ""
+              ? String(Number(dataDetail.price_per_lesson))
               : "",
           description: dataDetail.description ?? "",
           is_active:
@@ -291,17 +290,26 @@ const CourseForm = forwardRef<
                       </UploadFiles>
                     </div>
                     {thumbnailValue && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          form.setValue("thumbnail" as any, "", {
-                            shouldDirty: true,
-                          })
-                        }
-                        className="text-[13px] text-red-500 hover:text-red-600 transition-colors"
-                      >
-                        {t("button.delete")}
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowThumbnailPreview(true)}
+                          className="text-[13px] text-blue-500 hover:text-blue-600 transition-colors cursor-pointer"
+                        >
+                          {t("button.detail")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            form.setValue("thumbnail" as any, "", {
+                              shouldDirty: true,
+                            })
+                          }
+                          className="text-[13px] text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                        >
+                          {t("button.delete")}
+                        </button>
+                      </div>
                     )}
                   </div>
                 </Col>
@@ -332,30 +340,14 @@ const CourseForm = forwardRef<
               </Col>
               <Col>
                 <FormTeraItem label={t("course.business")} name="business_id">
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: businessIdValue ? "#111827" : "#9ca3af",
-                      }}
-                      disabled={isView}
-                      {...form.register("business_id")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("course.business") })}
-                      </option>
-                      {businesses.map((b) => (
-                        <option
-                          key={b.id}
-                          value={String(b.id)}
-                          style={{ color: "#111827" }}
-                        >
-                          {b.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={businesses.map((b) => ({
+                      value: String(b.id),
+                      label: b.name,
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("course.business") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
               {!isUpdate && (
@@ -365,27 +357,14 @@ const CourseForm = forwardRef<
                     name="is_active"
                     rules={[{ required: t("validate.required") }]}
                   >
-                    <div className="w-full overflow-hidden">
-                      <select
-                        className={SELECT_CLASS}
-                        style={{
-                          borderRadius: "3px",
-                          color: isActiveValue ? "#111827" : "#9ca3af",
-                        }}
-                        disabled={isView}
-                        {...form.register("is_active")}
-                      >
-                        <option value="" disabled hidden>
-                          {t("form.enter_value", { key: t("course.status") })}
-                        </option>
-                        <option value="1" style={{ color: "#111827" }}>
-                          {t("course.status_active")}
-                        </option>
-                        <option value="0" style={{ color: "#111827" }}>
-                          {t("course.status_inactive")}
-                        </option>
-                      </select>
-                    </div>
+                    <Select
+                      options={[
+                        { value: "1", label: t("course.status_active") },
+                        { value: "0", label: t("course.status_inactive") },
+                      ]}
+                      placeholder={t("form.enter_value", { key: t("course.status") })}
+                      disabled={isView}
+                    />
                   </FormTeraItem>
                 </Col>
               )}
@@ -447,6 +426,21 @@ const CourseForm = forwardRef<
             </Row>
           </div>
         </FormTera>
+        {showThumbnailPreview && (
+          <Modal
+            title={t("course.thumbnail")}
+            open={showThumbnailPreview}
+            cancelText={t("button.close")}
+            okButtonProps={{ className: "hidden" }}
+            onCancel={() => setShowThumbnailPreview(false)}
+          >
+            <img
+              src={thumbnailValue}
+              alt="thumbnail"
+              className="max-h-[70vh] max-w-full mx-auto rounded"
+            />
+          </Modal>
+        )}
       </div>
     );
   },

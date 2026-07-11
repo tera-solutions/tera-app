@@ -12,16 +12,9 @@ export const WEEKDAY_FULL = [
   "Chủ nhật",
 ];
 
-/** Statuses offered in the filter panel, in display order. */
-export const STATUS_FILTER_OPTIONS: ScheduleStatus[] = [
-  "upcoming",
-  "ongoing",
-  "done",
-  "cancelled",
-];
-
-/** Statuses checked by default (everything except cancelled). */
-export const DEFAULT_STATUSES: ScheduleStatus[] = ["upcoming", "ongoing", "done"];
+/** Statuses checked by default (everything except cancelled). Kept in sync
+ * with the `class_session_status` metadata list's values. */
+export const DEFAULT_STATUSES: ScheduleStatus[] = ["upcoming", "ongoing", "completed"];
 
 /** Deterministic colour per class so the same class keeps its colour. */
 const CLASS_PALETTE = [
@@ -55,9 +48,3 @@ const CLASS_PALETTE = [
 
 export const getClassColor = (classId: number) =>
   CLASS_PALETTE[Math.abs(classId) % CLASS_PALETTE.length];
-
-/** Minutes from midnight for a "HH:mm" string (used to order slots). */
-export const toMinutes = (time: string): number => {
-  const [h, m] = time.split(":").map(Number);
-  return (h || 0) * 60 + (m || 0);
-};

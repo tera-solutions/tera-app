@@ -1,9 +1,14 @@
-import Badge from "_common/components/Badge";
-import type { ScheduleItem } from "_common/types/schedule";
-import { SCHEDULE_STATUS } from "_common/constants/schedule";
+import { observer } from "mobx-react-lite";
 
-const ScheduleRow = ({ item }: { item: ScheduleItem }) => {
-  const status = SCHEDULE_STATUS[item.status] ?? SCHEDULE_STATUS.upcoming;
+import StatusBadge from "_common/components/StatusBadge";
+import type { ScheduleItem } from "_common/types/schedule";
+import { useMeta } from "_common/hooks/useMeta";
+import { getBarClass } from "_common/utils/badgeColor";
+
+const ScheduleRow = observer(({ item }: { item: ScheduleItem }) => {
+  const { getItem } = useMeta();
+  const bar = getBarClass(getItem("class_session_status", item.status)?.color);
+
   return (
     <div className="flex items-center gap-3 py-2.5">
       <div className="w-14 shrink-0 text-center">
@@ -12,7 +17,7 @@ const ScheduleRow = ({ item }: { item: ScheduleItem }) => {
         </p>
         <p className="text-[11px] text-slate-400">{item.end_time}</p>
       </div>
-      <span className={`h-9 w-1 rounded-full ${status.bar}`} />
+      <span className={`h-9 w-1 rounded-full ${bar}`} />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-slate-800">
           {item.class_name}
@@ -21,11 +26,9 @@ const ScheduleRow = ({ item }: { item: ScheduleItem }) => {
           {[item.level, item.room].filter(Boolean).join(" · ")}
         </p>
       </div>
-      <Badge className={`px-2.5 py-1 text-[11px] ${status.badge}`}>
-        {status.label}
-      </Badge>
+      <StatusBadge name="class_session_status" value={item.status} />
     </div>
   );
-};
+});
 
 export default ScheduleRow;

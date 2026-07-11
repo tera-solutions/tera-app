@@ -1,7 +1,7 @@
 /* Import: library */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button, PlusCircleOutlined } from "tera-dls";
 
@@ -11,9 +11,6 @@ import { IModalProps } from "@tera/commons/interfaces";
 import { useStores } from "@tera/stores/useStores";
 import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { ENROLLMENT_PAGE_URL } from "@tera/commons/constants/url";
-
-/* Import: services */
-import { StudentService, ClassRoomService, CourseService } from "@tera/modules";
 
 /* Import: pages */
 import SearchBar from "_common/components/SearchBar";
@@ -31,8 +28,11 @@ const EnrollmentListPage = observer(() => {
   const [activeStatus, setActiveStatus] = useState("");
   const [keyword, setKeyword] = useState("");
   const [studentFilter, setStudentFilter] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [classFilter, setClassFilter] = useState("");
+  const [selectedClass, setSelectedClass] = useState<any>(null);
   const [courseFilter, setCourseFilter] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [salesFilter, setSalesFilter] = useState("");
   const [selectedSales, setSelectedSales] = useState<any>(null);
   const [debtFilter, setDebtFilter] = useState("");
@@ -45,20 +45,29 @@ const EnrollmentListPage = observer(() => {
     id: undefined,
   });
 
-  const { data: studentData } = StudentService.useStudentList({
-    params: { page: 1, per_page: 100 },
-  });
-  const studentsList: any[] = studentData?.data?.items ?? [];
+  // Trang create/update/detail (mobile) redirect về đây khi resize sang desktop,
+  // kèm state.openModal = { type, id } để mở tiếp đúng modal.
+  const location = useLocation();
+  useEffect(() => {
+    const m = (location.state as any)?.openModal;
+    if (m?.type) {
+      setModalData({ open: true, type: m.type, id: m.id });
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, location.pathname, navigate]);
 
-  const { data: classData } = ClassRoomService.useClassRoomList({
-    params: { page: 1, per_page: 100 },
-  });
-  const classes: any[] = classData?.data?.items ?? [];
+  // Chiều ngược: desktop đang mở modal → resize xuống mobile thì đóng modal
+  // và chuyển sang trang riêng (create/update/detail) tương ứng.
+  useEffect(() => {
+    if (isMobile && modalData.open) {
+      const { type, id } = modalData;
+      setModalData({ open: false, type: "create", id: undefined });
+      if (type === "update" && id != null) navigate(ENROLLMENT_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null) navigate(ENROLLMENT_PAGE_URL.detail.path(id));
+      else navigate(ENROLLMENT_PAGE_URL.create.path);
+    }
+  }, [isMobile, modalData, navigate]);
 
-  const { data: courseData } = CourseService.useCourseList({
-    params: { page: 1, per_page: 100 },
-  });
-  const courses: any[] = courseData?.data?.items ?? [];
 
   const statusOptions = globalStore.getOptions("enrollment_status") ?? [];
   const statusTabs = [
@@ -97,7 +106,7 @@ const EnrollmentListPage = observer(() => {
                 ? navigate(ENROLLMENT_PAGE_URL.create.path)
                 : setModalData({ open: true, type: "create" })
             }
-            className='rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1'
+            className='rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer'
           >
             <div className='flex items-center gap-1 shrink-0'>
               <PlusCircleOutlined className='w-5 h-5' />
@@ -113,7 +122,7 @@ const EnrollmentListPage = observer(() => {
               key={tab.key}
               type='button'
               onClick={() => handleStatusChange(tab.key)}
-              className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors ${
+              className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors cursor-pointer ${
                 activeStatus === tab.key
                   ? "bg-blue-500 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -126,8 +135,9 @@ const EnrollmentListPage = observer(() => {
 
         {/* Search + filter row */}
         <div className='relative z-20 flex flex-wrap items-center gap-2 mb-3'>
+          {/* Search nuốt phần dư của hàng → luôn dài nhất; các select co lại cho vừa 1 hàng */}
           <SearchBar
-            className='w-full xmd:w-[240px] xmd:shrink-0'
+            className='w-full xmd:flex-1 xmd:min-w-[130px]'
             value={keyword}
             placeholder={t("enrollment.search_placeholder")}
             onChange={(v) => {
@@ -137,36 +147,30 @@ const EnrollmentListPage = observer(() => {
           />
 
           <EnrollmentFilter
-            studentOptions={studentsList.map((s) => ({
-              value: String(s.id),
-              label: s.code ? `${s.code} - ${s.name}` : s.name,
-            }))}
-            classOptions={classes.map((c) => ({
-              value: String(c.id),
-              label: c.code ? `${c.code} - ${c.name}` : c.name,
-            }))}
-            courseOptions={courses.map((c) => ({
-              value: String(c.id),
-              label: c.code ? `${c.code} - ${c.name}` : c.name,
-            }))}
             studentId={studentFilter}
+            selectedStudent={selectedStudent}
             classId={classFilter}
+            selectedClass={selectedClass}
             courseId={courseFilter}
+            selectedCourse={selectedCourse}
             sales={salesFilter}
             selectedSales={selectedSales}
             debt={debtFilter}
             dateFrom={dateFrom}
             dateTo={dateTo}
-            onStudentChange={(v) => {
-              setStudentFilter(v);
+            onStudentChange={(id, item) => {
+              setStudentFilter(id);
+              setSelectedStudent(item ?? null);
               resetPage();
             }}
-            onClassChange={(v) => {
-              setClassFilter(v);
+            onClassChange={(id, item) => {
+              setClassFilter(id);
+              setSelectedClass(item ?? null);
               resetPage();
             }}
-            onCourseChange={(v) => {
-              setCourseFilter(v);
+            onCourseChange={(id, item) => {
+              setCourseFilter(id);
+              setSelectedCourse(item ?? null);
               resetPage();
             }}
             onSalesChange={(id, user) => {

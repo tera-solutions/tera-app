@@ -5,9 +5,9 @@ import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 import { AuthApi } from "@tera/api/auth/auth";
 import { useStores } from "@tera/stores/useStores";
-import { AcademicCapOutlined, Button, notification } from "tera-dls";
+import { Button, notification } from "tera-dls";
 
-import { tokenStorage } from "_common/constants/auth";
+import logo from "@/assets/logo.webp";
 import {
   LoginFieldErrors,
   validateLogin,
@@ -32,8 +32,17 @@ const resolveErrorMessage = (error: any): string => {
     return ERROR_MESSAGES.timeout;
   }
 
-  const status: number | undefined =
-    error?.response?.status ?? error?.data?.code ?? error?.status;
+  // The API always answers with HTTP 200 and embeds its own business status in
+  // `data.code` (e.g. 500 for "account not found"/"wrong password"), so that
+  // field must never be read as a transport status — doing so misclassified
+  // every login failure as a 5xx "connection error" and hid the real message.
+  const backendMsg =
+    (typeof error?.data?.msg === "string" && error.data.msg) ||
+    (typeof error?.data?.msg?.message === "string" && error.data.msg.message) ||
+    (typeof error?.data?.message === "string" && error.data.message);
+  if (backendMsg) return backendMsg;
+
+  const status: number | undefined = error?.response?.status ?? error?.status;
 
   if (status === 401) return ERROR_MESSAGES.invalidCredentials;
   if (status === 403) return ERROR_MESSAGES.locked;
@@ -43,11 +52,7 @@ const resolveErrorMessage = (error: any): string => {
 
   if (!error?.response && error?.data == null) return ERROR_MESSAGES.connection;
 
-  const backendMsg =
-    (typeof error?.data?.msg === "string" && error.data.msg) ||
-    (typeof error?.data?.msg?.message === "string" && error.data.msg.message) ||
-    (typeof error?.data?.message === "string" && error.data.message);
-  return backendMsg || ERROR_MESSAGES.invalidCredentials;
+  return ERROR_MESSAGES.invalidCredentials;
 };
 
 const GoogleIcon = () => (
@@ -84,7 +89,12 @@ const Content = observer(() => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const {
-    globalStore: { authenticated, updateUser, updateAccessId },
+    globalStore: {
+      authenticated,
+      updateUser,
+      updateAccessId,
+      setRememberMe: persistRememberMe,
+    },
   } = useStores();
 
   const [identifier, setIdentifier] = useState("");
@@ -97,14 +107,8 @@ const Content = observer(() => {
       AuthApi.login(variables),
     onSuccess: async (res: any) => {
       const data = res?.data ?? {};
-      const accessToken = data.token ?? data.access_token ?? data.accessToken;
-      const refreshToken = data.refresh_token ?? data.refreshToken;
 
-      tokenStorage.saveTokens({
-        accessToken,
-        refreshToken,
-        remember: rememberMe,
-      });
+      persistRememberMe(rememberMe);
 
       data.access_id && updateAccessId(data.access_id);
       updateUser(data);
@@ -149,9 +153,7 @@ const Content = observer(() => {
       <div className="flex min-h-full items-center justify-center p-4 sm:p-6 xmd:justify-end xmd:pr-24!">
           <div className="w-full max-w-[min(660px,100%)] rounded-3xl bg-white p-8 shadow-[0_8px_40px_rgba(15,23,42,0.08)] sm:p-12 lg:p-14">
             <div className="mb-5 flex flex-col items-center text-center sm:mb-6">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand text-white [&_svg]:h-7 [&_svg]:w-7">
-                <AcademicCapOutlined />
-              </div>
+              <img src={logo} alt="Hana Edu" className="mb-4 h-16 w-auto object-contain" />
               <h1 className="text-2xl font-bold text-slate-800">Đăng nhập</h1>
               <p className="mt-1 text-sm text-slate-500">
                 Chào mừng bạn trở lại với Hana Edu

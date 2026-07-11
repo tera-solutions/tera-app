@@ -66,13 +66,13 @@ export const QUICK_ACTIONS: QuickAction[] = [
   {
     label: "Bài tập",
     icon: <DocumentTextOutlined />,
-    to: PATHS.homework,
+    to: PATHS.assignment,
     iconClassName: "bg-orange-50 text-orange-500",
   },
   {
-    label: "Nhận xét",
+    label: "Đánh giá",
     icon: <ChatBubbleLeftRightOutlined />,
-    to: PATHS.comments,
+    to: PATHS.evaluation,
     iconClassName: "bg-violet-50 text-violet-500",
   },
   {

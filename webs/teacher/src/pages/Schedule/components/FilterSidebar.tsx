@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import moment from "moment";
 import classNames from "classnames";
 import { Checkbox, RangePicker } from "tera-dls";
@@ -6,19 +7,15 @@ import BranchSelect from "_common/components/BranchSelect";
 import ClassroomSelect from "_common/components/ClassroomSelect";
 import FilterCard from "_common/components/FilterCard";
 import FilterField from "_common/components/FilterField";
-import SearchInput from "_common/components/SearchInput";
-import { SCHEDULE_STATUS } from "_common/constants/schedule";
+import { useMeta } from "_common/hooks/useMeta";
 
 import type { ScheduleStatus } from "../_interface";
-import { STATUS_FILTER_OPTIONS } from "../constants";
 
 interface FilterSidebarProps {
-  search: string;
   classId: number | "";
   statuses: ScheduleStatus[];
   branch: number | "";
   range: [moment.Moment, moment.Moment];
-  onSearchChange: (value: string) => void;
   onClassChange: (value: number | "") => void;
   onStatusToggle: (status: ScheduleStatus) => void;
   onBranchChange: (value: number | "") => void;
@@ -28,13 +25,11 @@ interface FilterSidebarProps {
   onReset?: () => void;
 }
 
-const FilterSidebar = ({
-  search,
+const FilterSidebar = observer(({
   classId,
   statuses,
   branch,
   range,
-  onSearchChange,
   onClassChange,
   onStatusToggle,
   onBranchChange,
@@ -43,14 +38,11 @@ const FilterSidebar = ({
   rangeActive,
   onReset,
 }: FilterSidebarProps) => {
+  const { getOptions } = useMeta();
+  const statusOptions = getOptions("class_session_status");
+
   return (
     <FilterCard onReset={onReset}>
-      <SearchInput
-        value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
-        placeholder="Tìm kiếm lớp học..."
-      />
-
       <FilterField label="Lọc lớp học">
         <ClassroomSelect
           value={classId === "" ? undefined : classId}
@@ -62,14 +54,14 @@ const FilterSidebar = ({
 
       <FilterField label="Lọc trạng thái">
         <div className="flex flex-col gap-2">
-          {STATUS_FILTER_OPTIONS.map((status) => (
+          {statusOptions.map((option) => (
             <Checkbox
-              key={status}
-              checked={statuses.includes(status)}
-              onChange={() => onStatusToggle(status)}
+              key={option.value}
+              checked={statuses.includes(option.value)}
+              onChange={() => onStatusToggle(option.value)}
             >
-              <span className={classNames("text-sm", !statuses.includes(status) && "text-slate-600")}>
-                {SCHEDULE_STATUS[status].label}
+              <span className={classNames("text-sm", !statuses.includes(option.value) && "text-slate-600")}>
+                {option.label}
               </span>
             </Checkbox>
           ))}
@@ -98,6 +90,6 @@ const FilterSidebar = ({
       </FilterField>
     </FilterCard>
   );
-};
+});
 
 export default FilterSidebar;

@@ -13,12 +13,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Col, Row, notification, UserOutlined } from "tera-dls";
+import { Col, Row, Modal, notification, UserOutlined } from "tera-dls";
 
 /* Import: packages */
 import { IFormProps, IFileUpload } from "@tera/commons/interfaces";
 import { useStores } from "@tera/stores/useStores";
 import Input from "@tera/components/dof/Control/Input";
+import Select from "@tera/components/dof/Control/Select";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import UploadFiles from "@tera/components/dof/UploadFiles";
 
@@ -26,10 +27,10 @@ import UploadFiles from "@tera/components/dof/UploadFiles";
 import { UserService, RoleService, BranchService, BusinessService } from "@tera/modules";
 
 /* Import: pages */
+import DateField from "_common/components/DateField";
 import { IUserForm } from "pages/System/user/_interface";
 
-const SELECT_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
+
 
 const defaultValues: IUserForm = {
   full_name: "",
@@ -58,6 +59,7 @@ const UserForm = observer(
       const { globalStore } = useStores();
 
       const [activeTab, setActiveTab] = useState("basic");
+      const [showAvatarPreview, setShowAvatarPreview] = useState(false);
 
       const isUpdateRef = useRef(isUpdate);
       isUpdateRef.current = isUpdate;
@@ -161,11 +163,6 @@ const UserForm = observer(
 
       const { reset, formState, watch } = form;
       const errors = formState.errors as any;
-      const genderValue = watch("gender");
-      const statusValue = watch("status");
-      const roleValue = watch("role_id");
-      const businessValue = watch("business_id");
-      const branchValue = watch("branch_id");
       const avatarValue = watch("avatar" as any);
       const isAdminValue = watch("is_admin" as any);
 
@@ -334,15 +331,24 @@ const UserForm = observer(
                       </UploadFiles>
                     </div>
                     {avatarValue && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          form.setValue("avatar" as any, "", { shouldDirty: true })
-                        }
-                        className="text-[13px] text-red-500 hover:text-red-600 transition-colors"
-                      >
-                        {t("button.delete")}
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowAvatarPreview(true)}
+                          className="text-[13px] text-blue-500 hover:text-blue-600 transition-colors cursor-pointer"
+                        >
+                          {t("button.detail")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            form.setValue("avatar" as any, "", { shouldDirty: true })
+                          }
+                          className="text-[13px] text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                        >
+                          {t("button.delete")}
+                        </button>
+                      </div>
                     )}
                   </div>
                 </Col>
@@ -384,31 +390,16 @@ const UserForm = observer(
               </Col>
               <Col>
                 <FormTeraItem label={t("user.gender")} name="gender">
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: genderValue ? "#111827" : "#9ca3af",
-                      }}
+                    <Select
+                      options={genderOptions}
+                      placeholder={t("form.enter_value", { key: t("user.gender") })}
                       disabled={isView}
-                      {...form.register("gender")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("user.gender") })}
-                      </option>
-                      {genderOptions.map((o: any) => (
-                        <option key={o.value} value={o.value} style={{ color: "#111827" }}>
-                          {o.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                    />
                 </FormTeraItem>
               </Col>
               <Col>
                 <FormTeraItem label={t("user.dob")} name="dob">
-                  <Input type="date" disabled={isView} />
+                  <DateField disabled={isView} />
                 </FormTeraItem>
               </Col>
             </Row>
@@ -470,26 +461,14 @@ const UserForm = observer(
                   name="role_id"
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: roleValue ? "#111827" : "#9ca3af",
-                      }}
+                    <Select
+                      options={roles.map((r: any) => ({
+                      value: String(r.id),
+                      label: r.title ?? r.name ?? r.role_name ?? `#${r.id}`,
+                    }))}
+                      placeholder={t("form.enter_value", { key: t("user.role") })}
                       disabled={isView}
-                      {...form.register("role_id")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("user.role") })}
-                      </option>
-                      {roles.map((r: any) => (
-                        <option key={r.id} value={String(r.id)} style={{ color: "#111827" }}>
-                          {r.title ?? r.name ?? r.role_name ?? `#${r.id}`}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                    />
                 </FormTeraItem>
               </Col>
               {!isUpdate && (
@@ -499,26 +478,11 @@ const UserForm = observer(
                     name="status"
                     rules={[{ required: t("validate.required") }]}
                   >
-                    <div className="w-full overflow-hidden">
-                      <select
-                        className={SELECT_CLASS}
-                        style={{
-                          borderRadius: "3px",
-                          color: statusValue ? "#111827" : "#9ca3af",
-                        }}
+                      <Select
+                        options={statusOptions}
+                        placeholder={t("form.enter_value", { key: t("user.status") })}
                         disabled={isView}
-                        {...form.register("status")}
-                      >
-                        <option value="" disabled hidden>
-                          {t("form.enter_value", { key: t("user.status") })}
-                        </option>
-                        {statusOptions.map((o: any) => (
-                          <option key={o.value} value={o.value} style={{ color: "#111827" }}>
-                            {o.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                      />
                   </FormTeraItem>
                 </Col>
               )}
@@ -552,50 +516,20 @@ const UserForm = observer(
                   name="business_id"
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: businessValue ? "#111827" : "#9ca3af",
-                      }}
+                    <Select
+                      options={businesses.map((b: any) => ({ value: String(b.id), label: b.name }))}
+                      placeholder={t("form.enter_value", { key: t("user.business") })}
                       disabled={isView}
-                      {...form.register("business_id")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("user.business") })}
-                      </option>
-                      {businesses.map((b: any) => (
-                        <option key={b.id} value={String(b.id)} style={{ color: "#111827" }}>
-                          {b.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                    />
                 </FormTeraItem>
               </Col>
               <Col>
                 <FormTeraItem label={t("user.branch")} name="branch_id">
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: branchValue ? "#111827" : "#9ca3af",
-                      }}
+                    <Select
+                      options={branches.map((b: any) => ({ value: String(b.id), label: b.name }))}
+                      placeholder={t("form.enter_value", { key: t("user.branch") })}
                       disabled={isView}
-                      {...form.register("branch_id")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("user.branch") })}
-                      </option>
-                      {branches.map((b: any) => (
-                        <option key={b.id} value={String(b.id)} style={{ color: "#111827" }}>
-                          {b.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                    />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -608,6 +542,21 @@ const UserForm = observer(
               </Col>
             </Row>
           </div>
+          {showAvatarPreview && (
+            <Modal
+              title={t("user.avatar")}
+              open={showAvatarPreview}
+              cancelText={t("button.close")}
+              okButtonProps={{ className: "hidden" }}
+              onCancel={() => setShowAvatarPreview(false)}
+            >
+              <img
+                src={avatarValue}
+                alt="avatar"
+                className="max-h-[70vh] max-w-full mx-auto rounded"
+              />
+            </Modal>
+          )}
         </FormTera>
       );
     },

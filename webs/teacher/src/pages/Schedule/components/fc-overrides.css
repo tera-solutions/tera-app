@@ -1,0 +1,111 @@
+/* Reskin FullCalendar to match the app's slate/brand palette. */
+.fc-tera .fc {
+  --fc-border-color: var(--color-slate-100);
+  --fc-today-bg-color: transparent;
+  --fc-now-indicator-color: var(--color-brand);
+  --fc-page-bg-color: transparent;
+  font-family: inherit;
+}
+
+.fc-tera .fc-scrollgrid {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.fc-tera .fc-col-header-cell {
+  padding: 0.5rem 0;
+  background: color-mix(in srgb, var(--color-slate-50) 60%, transparent);
+}
+
+.fc-tera .fc-col-header-cell-cushion {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-slate-600);
+}
+
+.fc-tera .fc-daygrid-day.fc-day-other {
+  background: color-mix(in srgb, var(--color-slate-50) 60%, transparent);
+}
+
+.fc-tera .fc-daygrid-day-number {
+  padding: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-slate-700);
+}
+
+.fc-tera .fc-day-other .fc-daygrid-day-number {
+  color: var(--color-slate-300);
+}
+
+.fc-tera .fc-day-today .fc-daygrid-day-number {
+  display: inline-flex;
+  height: 1.5rem;
+  width: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--color-brand);
+  color: white;
+}
+
+.fc-tera .fc-daygrid-more-link {
+  color: var(--color-brand);
+  font-size: 0.625rem;
+  font-weight: 500;
+}
+
+.fc-tera .fc-timegrid-slot-label {
+  font-size: 0.6875rem;
+  color: var(--color-slate-400);
+}
+
+.fc-tera .fc-event {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.fc-tera .fc-event:focus-visible {
+  outline: none;
+}
+
+.fc-tera .fc-daygrid-event-harness {
+  margin-top: 2px;
+}
+
+.fc-tera .fc-timegrid-event-harness-inset .fc-timegrid-event,
+.fc-tera .fc-timegrid-col-events {
+  margin: 0 1px;
+}
+
+.fc-tera .fc-list {
+  border-color: var(--color-slate-100);
+  border-radius: 0.5rem;
+}
+
+.fc-tera .fc-list-day-cushion {
+  background: color-mix(in srgb, var(--color-slate-50) 60%, transparent);
+}
+
+.fc-tera .fc-list-day-text,
+.fc-tera .fc-list-day-side-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-slate-600);
+  text-decoration: none;
+}
+
+.fc-tera .fc-list-table td {
+  border-color: var(--color-slate-100);
+}
+
+.fc-tera .fc-list-event:hover td {
+  background: transparent;
+}
+
+.fc-tera .fc-list-event-graphic,
+.fc-tera .fc-list-event-time {
+  font-size: 0.75rem;
+  color: var(--color-slate-500);
+}

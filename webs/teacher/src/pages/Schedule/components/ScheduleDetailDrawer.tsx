@@ -13,11 +13,10 @@ import {
 } from "tera-dls";
 import moment from "moment";
 
-import Badge from "_common/components/Badge";
 import IconBox from "_common/components/IconBox";
 import { PATHS } from "_common/components/Layout/Menu/menus";
+import StatusBadge from "_common/components/StatusBadge";
 
-import { SCHEDULE_STATUS } from "_common/constants/schedule";
 import { ClassSessionService } from "@tera/modules/education";
 
 import { toSessionDetail } from "../_utils";
@@ -62,16 +61,13 @@ const ScheduleDetailDrawer = ({
   const { isLoading } = query;
   const detail = useMemo(() => toSessionDetail(query.data), [query.data]);
 
-  const status = detail
-    ? (SCHEDULE_STATUS[detail.status] ?? SCHEDULE_STATUS.upcoming)
-    : null;
-
   return (
     <Drawer
       open={scheduleId != null}
       onClose={onClose}
       placement="right"
-      containerClassName="w-full max-w-[420px]"
+      containerClassName="w-full max-w-[420px] transition-transform duration-300 ease-out"
+      maskClassName="bg-black/40 tera-drawer-mask-fade-in"
     >
       <div className="flex h-full flex-col bg-white">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
@@ -100,11 +96,7 @@ const ScheduleDetailDrawer = ({
                       {detail.session_name}
                     </p>
                   </div>
-                  {status && (
-                    <Badge className={`px-2.5 py-1 text-[11px] ${status.badge}`}>
-                      {status.label}
-                    </Badge>
-                  )}
+                  <StatusBadge name="class_session_status" value={detail.status} />
                 </div>
 
                 <div className="divide-y divide-slate-100">
@@ -152,6 +144,7 @@ const ScheduleDetailDrawer = ({
             <Button
               type="primary"
               className="w-full"
+              disabled={detail.status === "completed"}
               onClick={() => navigate(`${PATHS.lesson}/${detail.id}`)}
             >
               Bắt đầu buổi học

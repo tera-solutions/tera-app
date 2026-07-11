@@ -6,6 +6,7 @@ import {
   QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { MaterialAPI } from "@tera/api";
+import type { AttachMaterialToEntityPayload } from "@tera/api";
 import {
   CreatePayload,
   DeletePayload,
@@ -81,6 +82,20 @@ export const useUpsertMaterial = () => {
   });
 };
 
+export const useMaterialAttach = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter<any, Error, AttachMaterialToEntityPayload>({
+    mutationFn: (payload) => MaterialAPI.attach(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["material", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const useMaterialDelete = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -116,6 +131,7 @@ export const MaterialService = {
   useMaterialCreate,
   useMaterialUpdate,
   useUpsertMaterial,
+  useMaterialAttach,
   useMaterialDelete,
   useMaterialExport,
 };

@@ -19,6 +19,7 @@ import debounce from "lodash/debounce";
 /* Import: packages */
 import { IFormProps } from "@tera/commons/interfaces";
 import Input from "@tera/components/dof/Control/Input";
+import Select from "@tera/components/dof/Control/Select";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import { useStores } from "@tera/stores/useStores";
 
@@ -32,8 +33,6 @@ import { BusinessAPI } from "@tera/api";
 /* Import: pages */
 import { IBusinessForm } from "pages/System/business/_interface";
 
-const SELECT_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
 
 const defaultValues: IBusinessForm = {
   business_code: "",
@@ -158,7 +157,6 @@ const BusinessForm = observer(
 
       const { reset, formState, watch } = form;
       const errors = formState.errors as any;
-      const statusValue = watch("status");
       const managerIdValue = watch("manager_id");
       const prefixValue = watch("prefix");
 
@@ -453,30 +451,11 @@ const BusinessForm = observer(
                     name='status'
                     rules={[{ required: t("validate.required") }]}
                   >
-                    <div className='w-full overflow-hidden'>
-                      <select
-                        className={SELECT_CLASS}
-                        style={{
-                          borderRadius: "3px",
-                          color: statusValue ? "#111827" : "#9ca3af",
-                        }}
-                        disabled={isView}
-                        {...form.register("status")}
-                      >
-                        <option value='' disabled hidden>
-                          {t("form.enter_value", { key: t("business.status") })}
-                        </option>
-                        {statusOptions.map((opt: any) => (
-                          <option
-                            key={opt.value}
-                            value={opt.value}
-                            style={{ color: "#111827" }}
-                          >
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <Select
+                      options={statusOptions}
+                      placeholder={t("form.enter_value", { key: t("business.status") })}
+                      disabled={isView}
+                    />
                   </FormTeraItem>
                 </Col>
               )}

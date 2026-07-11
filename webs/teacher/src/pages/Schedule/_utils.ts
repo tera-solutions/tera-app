@@ -1,7 +1,24 @@
+import moment from "moment";
+import type { EventInput } from "@fullcalendar/core";
+
 import { toScheduleStatus, toTime } from "_common/utils/schedule";
 import type { ScheduleStatus } from "_common/types/schedule";
 
 import type { ScheduleItem } from "./_interface";
+
+export interface ScheduleEventInput extends EventInput {
+  extendedProps: { item: ScheduleItem };
+}
+
+/** Map schedule items to FullCalendar events (local date/time, no timezone conversion). */
+export const toFullCalendarEvents = (schedules: ScheduleItem[]): ScheduleEventInput[] =>
+  schedules.map((item) => ({
+    id: String(item.id),
+    title: item.class_name,
+    start: moment(`${item.date} ${item.start_time}`, "YYYY-MM-DD HH:mm").toDate(),
+    end: moment(`${item.date} ${item.end_time}`, "YYYY-MM-DD HH:mm").toDate(),
+    extendedProps: { item },
+  }));
 
 export interface SessionDetail {
   id: number;
@@ -30,7 +47,7 @@ export const toSessionDetail = (res: any): SessionDetail | null => {
     date: d.session_date ?? "",
     start_time: toTime(d.start_time),
     end_time: toTime(d.end_time),
-    room: d.room?.name ?? "",
+    room: d.room?.room_name ?? "",
     teacher_name: d.teacher?.full_name ?? "",
     status: toScheduleStatus(d.status),
   };
@@ -40,10 +57,3 @@ export const computeMonthStats = (schedules: ScheduleItem[]) => ({
   total: schedules.length,
   completed: schedules.filter((item) => item.status === "done").length,
 });
-
-export const scheduleDateSet = (schedules: ScheduleItem[]): Set<string> =>
-  new Set(schedules.map((item) => item.date));
-
-/** Class names for the homeroom summary card. */
-export const homeroomNames = (items: any[] | null | undefined): string[] =>
-  (items ?? []).map((item) => item?.name ?? "").filter(Boolean);

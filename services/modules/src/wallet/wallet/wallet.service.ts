@@ -8,12 +8,15 @@ import {
 import { WalletAPI } from "@tera/api";
 import {
   CreatePayload,
-  DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
+
+/**
+ * Khớp 1-1 với route thật (Postman `Modules` → `Finance/Wallet`, 2026-07-09).
+ * KHÔNG có create/update/delete/export — đừng thêm hook cho route không tồn tại.
+ */
 
 // QUERY
 export const useWalletList = (payload: ListPayload, options?: QueryHookOptions) => {
@@ -34,88 +37,117 @@ export const useWalletDetail = (payload: DetailPayload, options?: QueryHookOptio
   });
 };
 
-// MUTATION
-export const useWalletCreate = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: CreatePayload) => WalletAPI.create(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["wallet", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
+/** `fin/wallet/transactions` — lịch sử giao dịch ví. Mọi filter optional, truyền qua params:
+ * wallet_id, transaction_type, reference_type, reference_id, date_from, date_to,
+ * sort_by, sort_dir, per_page (chỉ nhận 20 | 50 | 100).
+ * Bỏ trống `wallet_id` = ví của user đang đăng nhập. */
+export const useWalletTransactions = (payload: ListPayload, options?: QueryHookOptions) => {
+  return useQueryAdapter({
+    queryKey: ["wallet", "transactions", payload.params],
+    queryFn: () => WalletAPI.getTransactions(payload),
+    keepPreviousData: true,
+    ...options,
   });
 };
 
-export const useWalletUpdate = () => {
+// ===== Action ledger (mỗi action ghi 1 giao dịch bất biến) =====
+// Mọi action đổi số dư → invalidate cả list + detail + transactions.
+const invalidateWallet = (queryClient: ReturnType<typeof useQueryClient>) => {
+  queryClient.invalidateQueries({ queryKey: ["wallet", "list"] });
+  queryClient.invalidateQueries({ queryKey: ["wallet", "detail"] });
+  queryClient.invalidateQueries({ queryKey: ["wallet", "transactions"] });
+};
+
+export const useWalletDeposit = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => WalletAPI.update(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["wallet", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
+    mutationFn: (payload: CreatePayload) => WalletAPI.deposit(payload),
+    onSuccess: () => invalidateWallet(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
   });
 };
 
-export const useUpsertWallet = () => {
+export const useWalletPayment = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => {
-      if (payload?.id) return WalletAPI.update(payload);
-      return WalletAPI.create(payload);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
+    mutationFn: (payload: CreatePayload) => WalletAPI.payment(payload),
+    onSuccess: () => invalidateWallet(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
   });
 };
 
-export const useWalletDelete = () => {
+export const useWalletRefund = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => WalletAPI.delete(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["wallet", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
+    mutationFn: (payload: CreatePayload) => WalletAPI.refund(payload),
+    onSuccess: () => invalidateWallet(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
   });
 };
 
-export const useWalletExport = () => {
+export const useWalletAdjustment = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => WalletAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
+    mutationFn: (payload: CreatePayload) => WalletAPI.adjustment(payload),
+    onSuccess: () => invalidateWallet(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
+  });
+};
+
+export const useWalletFromInvoice = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: CreatePayload) => WalletAPI.fromInvoice(payload),
+    onSuccess: () => invalidateWallet(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
+  });
+};
+
+export const useWalletFromPayment = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: CreatePayload) => WalletAPI.fromPayment(payload),
+    onSuccess: () => invalidateWallet(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
+  });
+};
+
+export const useWalletLock = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => WalletAPI.lock(payload),
+    onSuccess: () => invalidateWallet(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
+  });
+};
+
+export const useWalletUnlock = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => WalletAPI.unlock(payload),
+    onSuccess: () => invalidateWallet(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
   });
 };
 
 export const WalletService = {
   useWalletList,
   useWalletDetail,
-  useWalletCreate,
-  useWalletUpdate,
-  useUpsertWallet,
-  useWalletDelete,
-  useWalletExport,
+  useWalletTransactions,
+  useWalletDeposit,
+  useWalletPayment,
+  useWalletRefund,
+  useWalletAdjustment,
+  useWalletFromInvoice,
+  useWalletFromPayment,
+  useWalletLock,
+  useWalletUnlock,
 };

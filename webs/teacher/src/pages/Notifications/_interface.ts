@@ -1,7 +1,7 @@
 export type NotificationCategory =
   | "general"
   | "schedule"
-  | "homework"
+  | "assignment"
   | "attendance"
   | "system";
 

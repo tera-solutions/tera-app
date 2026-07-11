@@ -1,19 +1,25 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQueries } from "@tanstack/react-query";
 import { Button, PlusOutlined } from "tera-dls";
 
 import Card from "_common/components/Card";
 import DonutStatsCard from "_common/components/DonutStatsCard";
+import { PATHS } from "_common/components/Layout/Menu/menus";
 import SearchInput from "_common/components/SearchInput";
-import StudentDetailModal from "_common/components/StudentDetailModal";
+import SortControl from "_common/components/SortControl";
+import StatusTabs from "_common/components/StatusTabs";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
+import { useMeta } from "_common/hooks/useMeta";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
-import { todo } from "_common/utils/todo";
-import { StudentService } from "@tera/modules/education";
+import { StudentAPI } from "@tera/api";
+import { ClassRoomService, EvaluationService, StudentService } from "@tera/modules/education";
 
 import type { StudentSortBy, StudentSortDir } from "./_interface";
-import { toStudentListResult, toStudentSummary } from "./_utils";
+import { SORT_OPTIONS, STUDENT_STATUS_META, STUDENT_SUMMARY_SEGMENTS } from "./constants";
+import { enrichStudentRows, toStudentListResult, toStudentSummary } from "./_utils";
 import StudentStats from "./components/StudentStats";
 import StudentTable from "./components/StudentTable";
 import StudentFilterSidebar, {
@@ -21,30 +27,28 @@ import StudentFilterSidebar, {
 } from "./components/StudentFilterSidebar";
 
 const Students = () => {
-  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
+  const navigate = useNavigate();
+  const { getTabs, getItem } = useMeta();
 
   const [filters, setFilters] = useUrlFilters({
     search: { type: "string", default: "" },
     class_id: { type: "number", default: 0 },
-    level: { type: "string[]", default: [] as string[] },
-    status: { type: "string[]", default: [] as string[] },
-    rank: { type: "string", default: "" },
+    level_id: { type: "number", default: 0 },
+    status: { type: "string", default: "" },
     date_from: { type: "string", default: "" },
     date_to: { type: "string", default: "" },
     sort_by: { type: "string", default: "name" as StudentSortBy },
     sort_dir: { type: "string", default: "asc" as StudentSortDir },
     page: { type: "number", default: 1 },
     per_page: { type: "number", default: DEFAULT_PAGE_SIZE },
-  });
+  }, { syncDefaultsOnMount: true });
 
   const [searchDraft, setSearchDraft] = useDebouncedSearch(filters.search, (trimmed) =>
     setFilters({ search: trimmed, page: 1 }),
   );
   const filterValues: StudentFilterDraft = {
     class_id: filters.class_id,
-    level: filters.level,
-    status: filters.status,
-    rank: filters.rank,
+    level_id: filters.level_id,
     date_from: filters.date_from,
     date_to: filters.date_to,
   };
@@ -52,8 +56,8 @@ const Students = () => {
   const listParams = {
     search: filters.search || undefined,
     class_id: filters.class_id || undefined,
-    level: filters.level.length ? filters.level.join(",") : undefined,
-    status: filters.status.length ? filters.status.join(",") : undefined,
+    level_id: filters.level_id || undefined,
+    status: filters.status || undefined,
     date_from: filters.date_from || undefined,
     date_to: filters.date_to || undefined,
     sort_by: filters.sort_by,
@@ -64,10 +68,53 @@ const Students = () => {
   const listQuery = StudentService.useStudentList({ params: listParams });
   const { isLoading, isFetching, isError, refetch } = listQuery;
 
-  const data = useMemo(() => toStudentListResult(listQuery.data?.data), [listQuery.data]);
+  const rawData = useMemo(() => toStudentListResult(listQuery.data?.data), [listQuery.data]);
 
-  // Totals come from `/edu/student/summary` (server-wide, ignores pagination);
-  // fall back to counting the loaded page if that endpoint has no value yet.
+  // Student list/detail carries no class field for the teacher role, so it's
+  // resolved by scanning the teacher's own classes' rosters — same fix as
+  // Feedback/StudentDetail.
+  const classesQuery = ClassRoomService.useClassRoomList({ params: { per_page: 50 } });
+  const classes = useMemo(() => classesQuery.data?.data?.items ?? [], [classesQuery.data]);
+
+  const rosterQueries = useQueries({
+    queries: classes.map((c: any) => ({
+      queryKey: ["students", "class-roster", c.id],
+      queryFn: () => StudentAPI.getList({ params: { class_id: c.id, per_page: 100 } }),
+      enabled: classes.length > 0,
+    })),
+  });
+  const studentClassMap = useMemo(() => {
+    const map = new Map<number, string>();
+    classes.forEach((c: any, i: number) => {
+      const items = (rosterQueries[i]?.data as any)?.data?.items ?? [];
+      items.forEach((s: any) => {
+        if (!map.has(s.id)) map.set(s.id, c.name);
+      });
+    });
+    return map;
+  }, [classes, rosterQueries]);
+
+  // No dedicated avg-score field either — the latest `Evaluation` score per
+  // student stands in, same as Feedback/Ranking.
+  const evaluationsQuery = EvaluationService.useEvaluationList({
+    params: { filters: { evaluation_type: "student" } },
+  });
+  const studentScoreMap = useMemo(() => {
+    const map = new Map<number, { score: number; date: string }>();
+    (evaluationsQuery.data?.data?.items ?? []).forEach((e: any) => {
+      if (e.score == null || !e.target_id) return;
+      const date = e.evaluated_at ?? e.created_at ?? "";
+      const current = map.get(e.target_id);
+      if (!current || date >= current.date) map.set(e.target_id, { score: Number(e.score), date });
+    });
+    return new Map(Array.from(map, ([id, v]) => [id, v.score]));
+  }, [evaluationsQuery.data]);
+
+  const data = useMemo(
+    () => ({ ...rawData, items: enrichStudentRows(rawData.items, studentClassMap, studentScoreMap) }),
+    [rawData, studentClassMap, studentScoreMap],
+  );
+
   const summaryQuery = StudentService.useStudentSummary();
   const isSummaryLoading = summaryQuery.isLoading;
   const summary = useMemo(
@@ -76,7 +123,6 @@ const Students = () => {
   );
 
   const perPage = data.per_page || filters.per_page;
-  const from = data.total === 0 ? 0 : (filters.page - 1) * perPage + 1;
 
   const handleChangePage = (nextPage: number, nextSize: number) => {
     if (nextSize !== perPage) {
@@ -88,15 +134,21 @@ const Students = () => {
 
   const resetFilters = () => {
     setFilters({
+      search: "",
       class_id: 0,
-      level: [],
-      status: [],
-      rank: "",
+      level_id: 0,
+      status: "",
       date_from: "",
       date_to: "",
+      sort_by: "name",
+      sort_dir: "asc",
       page: 1,
+      per_page: DEFAULT_PAGE_SIZE,
     });
   };
+
+  const handleTabChange = (key: string) =>
+    setFilters({ status: key === "all" ? "" : key, page: 1 });
 
   const handleSort = (sortBy: StudentSortBy) => {
     if (filters.sort_by === sortBy) {
@@ -106,67 +158,87 @@ const Students = () => {
     }
   };
 
+  const toggleSortDir = () =>
+    setFilters({ sort_dir: filters.sort_dir === "asc" ? "desc" : "asc" });
+
   return (
     <div className="p-4 xmd:p-6">
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-slate-800">Học viên</h1>
           <p className="mt-0.5 text-sm text-slate-400">
             Quản lý thông tin học tập của học viên
           </p>
         </div>
-        <Button
-          icon={<PlusOutlined />}
-          onClick={todo}
-          className="whitespace-nowrap bg-brand hover:bg-brand/80"
-        >
-          Thêm học viên
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            outlined
+            onClick={() => navigate(PATHS.transfer)}
+            className="text-brand border-brand hover:bg-brand"
+          >
+            Chuyển lớp
+          </Button>
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => navigate(PATHS.enrollmentNew)}
+            className="whitespace-nowrap bg-brand hover:bg-brand/80"
+          >
+            Ghi danh học viên
+          </Button>
+        </div>
       </div>
 
       <div className="mb-4">
         <StudentStats summary={summary} loading={isSummaryLoading} />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_280px]">
-        <div className="flex flex-col gap-4">
-          <Card>
-            <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm font-semibold text-slate-700">
-                Danh sách học viên
-              </p>
-              <SearchInput
-                value={searchDraft}
-                onChange={(e) => setSearchDraft(e.target.value)}
-                placeholder="Tìm kiếm học viên..."
-                wrapperClassName="sm:max-w-sm"
-              />
-            </div>
-            <StudentTable
-              items={data.items}
-              loading={isLoading || isFetching}
-              isError={isError}
-              onRetry={() => refetch()}
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_300px]">
+        <Card>
+          <StatusTabs
+            className="mb-3"
+            tabs={getTabs(STUDENT_STATUS_META)}
+            activeKey={filters.status || "all"}
+            onChange={handleTabChange}
+          />
+
+          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <SearchInput
+              value={searchDraft}
+              onChange={(e) => setSearchDraft(e.target.value)}
+              placeholder="Tìm kiếm học viên..."
+              wrapperClassName="flex-1"
+            />
+            <SortControl
               sortBy={filters.sort_by}
               sortDir={filters.sort_dir}
-              onSortChange={handleSort}
-              onView={(student) => setSelectedStudentId(student.id)}
-              onComment={todo}
-              onMessage={todo}
-              from={from}
+              options={SORT_OPTIONS}
+              onSortByChange={(value) => handleSort(value as StudentSortBy)}
+              onToggleDir={toggleSortDir}
             />
+          </div>
+          <StudentTable
+            items={data.items}
+            loading={isLoading || isFetching}
+            isError={isError}
+            onRetry={() => refetch()}
+            sortBy={filters.sort_by}
+            sortDir={filters.sort_dir}
+            onSortChange={handleSort}
+            onView={(student) => navigate(`${PATHS.studentDetail}/${student.id}`)}
+            onComment={(student) => navigate(`${PATHS.evaluation}?student_id=${student.id}`)}
+            onMessage={() => navigate(PATHS.messages)}
+          />
 
-            <TablePagination
-              total={data.total}
-              page={filters.page}
-              perPage={perPage}
-              unit="học viên"
-              onChange={handleChangePage}
-            />
-          </Card>
-        </div>
+          <TablePagination
+            total={data.total}
+            page={filters.page}
+            perPage={perPage}
+            unit="học viên"
+            onChange={handleChangePage}
+          />
+        </Card>
 
-        <div className="flex flex-col gap-4">
+        <div className="hidden flex-col gap-4 xl:flex">
           <StudentFilterSidebar
             draft={filterValues}
             onChange={(patch) => setFilters({ ...patch, page: 1 })}
@@ -178,35 +250,18 @@ const Students = () => {
             centerValue={String(summary.total)}
             centerCaption="Tổng học viên"
             loading={isSummaryLoading}
-            legend={[
-              {
-                key: "active",
-                label: "Đang học",
-                color: "#10b981",
-                value: summary.active,
-              },
-              {
-                key: "dropped",
-                label: "Đã nghỉ",
-                color: "#ef4444",
-                value: summary.dropped,
-              },
-              {
-                key: "completed",
-                label: "Hoàn thành",
-                color: "#8b5cf6",
-                value: summary.completed,
-              },
-            ]}
+            legend={STUDENT_SUMMARY_SEGMENTS.map(({ key, metaValue, fallbackLabel, fallbackColor, value }) => {
+              const meta = getItem(STUDENT_STATUS_META, metaValue);
+              return {
+                key,
+                label: meta?.label ?? fallbackLabel,
+                color: meta?.color ?? fallbackColor,
+                value: value(summary),
+              };
+            })}
           />
         </div>
       </div>
-
-      <StudentDetailModal
-        studentId={selectedStudentId}
-        open={selectedStudentId != null}
-        onClose={() => setSelectedStudentId(null)}
-      />
     </div>
   );
 };

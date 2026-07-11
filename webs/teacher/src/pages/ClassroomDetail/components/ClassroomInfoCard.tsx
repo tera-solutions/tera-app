@@ -1,34 +1,32 @@
 import { ReactNode } from "react";
+import { observer } from "mobx-react-lite";
 import moment from "moment";
 import {
   AcademicCapOutlined,
-  ArrowDownTrayOutlined,
   BookOpenOutlined,
-  Button,
   CalendarDaysOutlined,
   ClockOutlined,
   IdentificationOutlined,
   MapPinOutlined,
-  PencilSquareOutlined,
   UserOutlined,
   UsersOutlined,
   VideoCameraOutlined,
 } from "tera-dls";
 
-import Badge from "_common/components/Badge";
+import StatusBadge from "_common/components/StatusBadge";
 import { CARD } from "_common/constants/dashboard";
+import { useMeta } from "_common/hooks/useMeta";
 import { getCoverGradient } from "pages/Classroom/constants";
 
 import type { ClassroomDetail } from "../_interface";
-import { getClassStatus, LEARNING_TYPE_LABEL } from "../constants";
 
 interface ClassroomInfoCardProps {
   detail: ClassroomDetail;
   maxStudents: number;
   lessonPlan?: { id: number; name: string };
   onViewLessonPlan?: () => void;
-  onEdit: () => void;
-  onExport: () => void;
+  onViewCourse?: () => void;
+  onViewRoom?: () => void;
 }
 
 const InfoRow = ({
@@ -52,23 +50,20 @@ const InfoRow = ({
 const fmtDate = (value: string) =>
   value ? moment(value, "YYYY-MM-DD").format("DD/MM/YYYY") : "—";
 
-const ClassroomInfoCard = ({
+const ClassroomInfoCard = observer(({
   detail,
   maxStudents,
   lessonPlan,
   onViewLessonPlan,
-  onEdit,
-  onExport,
+  onViewCourse,
+  onViewRoom,
 }: ClassroomInfoCardProps) => {
-  const status = getClassStatus(detail.status);
+  const { getLabel } = useMeta();
   const timeRange =
     detail.start_time && detail.end_time
       ? `(${detail.start_time} - ${detail.end_time})`
       : "";
-  const learning =
-    LEARNING_TYPE_LABEL[detail.learning_type?.toLowerCase()] ??
-    detail.learning_type ??
-    "—";
+  const learning = getLabel("class_learning_type", detail.learning_type) || "—";
 
   return (
     <div className={`${CARD} overflow-hidden`}>
@@ -79,7 +74,7 @@ const ClassroomInfoCard = ({
           )}`}
         >
           <span className="self-start rounded-full bg-white/25 px-2.5 py-1 text-[11px] font-medium backdrop-blur">
-            {status.label}
+            {getLabel("class_status", detail.status)}
           </span>
           <div className="flex flex-1 items-center justify-center py-4 [&_svg]:h-16 [&_svg]:w-16 [&_svg]:opacity-80">
             {detail.cover_image ? (
@@ -101,34 +96,11 @@ const ClassroomInfoCard = ({
         </div>
 
         <div className="p-5">
-          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-lg font-bold text-slate-800">
-                  {detail.name}
-                </h2>
-                <Badge className={`px-2.5 py-0.5 text-[11px] ${status.badge}`}>
-                  {status.label}
-                </Badge>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                icon={<PencilSquareOutlined />}
-                onClick={onEdit}
-                className="whitespace-nowrap bg-brand hover:bg-brand/80"
-              >
-                Sửa thông tin lớp
-              </Button>
-              <Button
-                outlined
-                icon={<ArrowDownTrayOutlined />}
-                onClick={onExport}
-                className="whitespace-nowrap text-brand border-brand hover:bg-brand"
-              >
-                Tải danh sách lớp
-              </Button>
-            </div>
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <h2 className="text-lg font-bold text-slate-800">
+              {detail.name}
+            </h2>
+            <StatusBadge name="class_status" value={detail.status} />
           </div>
 
           <div className="grid grid-cols-1 gap-x-6 sm:grid-cols-2">
@@ -139,8 +111,20 @@ const ClassroomInfoCard = ({
             />
             <InfoRow
               icon={<AcademicCapOutlined />}
-              label="Trình độ"
-              value={detail.level || "—"}
+              label="Khóa học"
+              value={
+                detail.level && onViewCourse ? (
+                  <button
+                    type="button"
+                    onClick={onViewCourse}
+                    className="text-brand hover:underline"
+                  >
+                    {detail.level}
+                  </button>
+                ) : (
+                  detail.level || "—"
+                )
+              }
             />
             <InfoRow
               icon={<UserOutlined />}
@@ -162,7 +146,19 @@ const ClassroomInfoCard = ({
             <InfoRow
               icon={<MapPinOutlined />}
               label="Phòng học"
-              value={detail.room || "—"}
+              value={
+                detail.room && onViewRoom ? (
+                  <button
+                    type="button"
+                    onClick={onViewRoom}
+                    className="text-brand hover:underline"
+                  >
+                    {detail.room}
+                  </button>
+                ) : (
+                  detail.room || "—"
+                )
+              }
             />
             <InfoRow
               icon={<CalendarDaysOutlined />}
@@ -213,6 +209,6 @@ const ClassroomInfoCard = ({
       </div>
     </div>
   );
-};
+});
 
 export default ClassroomInfoCard;

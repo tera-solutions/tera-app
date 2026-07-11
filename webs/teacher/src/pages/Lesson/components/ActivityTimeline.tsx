@@ -1,10 +1,24 @@
+import { Button, CheckOutlined, PlayOutlined } from "tera-dls";
+
+import StatusBadge from "_common/components/StatusBadge";
+
 import type { LessonActivity } from "../_interface";
+import { LESSON_ACTIVITY_STATUS_META } from "../constants";
 
 interface ActivityTimelineProps {
   activities: LessonActivity[];
+  /** When provided, each row exposes Start/Complete controls (session-local). */
+  onStart?: (activityId: LessonActivity["id"]) => void;
+  onComplete?: (activityId: LessonActivity["id"]) => void;
 }
 
-const ActivityTimeline = ({ activities }: ActivityTimelineProps) => {
+const ActivityTimeline = ({
+  activities,
+  onStart,
+  onComplete,
+}: ActivityTimelineProps) => {
+  const interactive = !!onStart || !!onComplete;
+
   if (activities.length === 0) {
     return (
       <p className="text-sm text-slate-400">
@@ -17,12 +31,23 @@ const ActivityTimeline = ({ activities }: ActivityTimelineProps) => {
     <ol className="flex flex-col gap-2">
       {activities.map((activity, index) => (
         <li
-          key={index}
-          className="flex items-center gap-3 rounded-xl border border-slate-100 p-3"
+          key={activity.id}
+          className={`flex items-center gap-3 rounded-xl border p-3 transition-colors ${
+            activity.status === "in_progress"
+              ? "border-brand bg-sky-50/60"
+              : "border-slate-100"
+          }`}
         >
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-50 text-xs font-semibold text-brand">
             {index + 1}
           </span>
+          {activity.avatar && (
+            <img
+              src={activity.avatar}
+              alt=""
+              className="h-7 w-7 shrink-0 rounded-full object-cover"
+            />
+          )}
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-slate-700">
               {activity.name}
@@ -38,6 +63,32 @@ const ActivityTimeline = ({ activities }: ActivityTimelineProps) => {
               </p>
             )}
           </div>
+
+          <StatusBadge
+            name={LESSON_ACTIVITY_STATUS_META}
+            value={activity.status}
+            className="shrink-0"
+          />
+
+          {interactive && activity.status === "pending" && (
+            <Button
+              icon={<PlayOutlined />}
+              onClick={() => onStart?.(activity.id)}
+              className="shrink-0 whitespace-nowrap bg-brand hover:bg-brand/80"
+            >
+              Bắt đầu
+            </Button>
+          )}
+          {interactive && activity.status === "in_progress" && (
+            <Button
+              type="success"
+              icon={<CheckOutlined />}
+              onClick={() => onComplete?.(activity.id)}
+              className="shrink-0 whitespace-nowrap"
+            >
+              Kết thúc
+            </Button>
+          )}
         </li>
       ))}
     </ol>

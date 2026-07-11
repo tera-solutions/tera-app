@@ -40,9 +40,10 @@ export interface ListParams<TFilter = any> {
   page?: number;
   per_page?: number;
   search?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  sort_by?: string;
+  sort_dir?: "asc" | "desc";
   filters?: TFilter;
+  class_id?: string | number;
 }
 
 // ==========================

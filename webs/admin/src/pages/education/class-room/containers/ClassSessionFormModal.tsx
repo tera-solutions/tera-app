@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
 import { Modal, notification, DatePicker } from "tera-dls";
+import { SelectField } from "@tera/components/dof/Control/Select";
 
 /* Import: packages */
 import { useStores } from "@tera/stores/useStores";
@@ -16,8 +17,6 @@ import { ClassSessionService, RoomService, TeacherService } from "@tera/modules"
 import MultiSelect, { MultiOption } from "_common/components/MultiSelect";
 import { IClassSession } from "pages/education/class-room/_interface";
 
-const SELECT_CLASS =
-  "w-full h-9 border border-gray-300 rounded-[3px] bg-white px-3 text-[13px] focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-100 box-border";
 const INPUT_CLASS =
   "w-full h-9 border border-gray-300 rounded-[3px] bg-white px-3 text-[13px] focus:outline-none focus:ring focus:ring-blue-300 disabled:bg-gray-100 box-border";
 
@@ -270,57 +269,46 @@ const ClassSessionFormModal = observer(
 
           <div className="grid grid-cols-1 xmd:grid-cols-2 gap-3">
             <Field label={t("classroom.teacher")}>
-              <select
-                className={SELECT_CLASS}
+              <SelectField
+                options={teachers.map((tc) => ({
+                  value: String(tc.id),
+                  label: tc.code ? `${tc.full_name} (${tc.code})` : tc.full_name,
+                }))}
+                placeholder="—"
                 value={form.teacher_id}
                 disabled={isView}
-                onChange={(e) => set("teacher_id", e.target.value)}
-              >
-                <option value="">—</option>
-                {teachers.map((tc) => (
-                  <option key={tc.id} value={String(tc.id)}>
-                    {tc.full_name}
-                    {tc.code ? ` (${tc.code})` : ""}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => set("teacher_id", String(val ?? ""))}
+              />
             </Field>
             <Field label={t("classroom.substitute_teacher")}>
-              <select
-                className={SELECT_CLASS}
+              <SelectField
+                options={teachers.map((tc) => ({
+                  value: String(tc.id),
+                  label: tc.code ? `${tc.full_name} (${tc.code})` : tc.full_name,
+                }))}
+                placeholder="—"
                 value={form.substitute_teacher_id}
                 disabled={isView}
-                onChange={(e) => set("substitute_teacher_id", e.target.value)}
-              >
-                <option value="">—</option>
-                {teachers.map((tc) => (
-                  <option key={tc.id} value={String(tc.id)}>
-                    {tc.full_name}
-                    {tc.code ? ` (${tc.code})` : ""}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => set("substitute_teacher_id", String(val ?? ""))}
+              />
             </Field>
           </div>
 
           <Field label={t("classroom.room")}>
-            <select
-              className={SELECT_CLASS}
+            <SelectField
+              options={rooms.map((r) => ({
+                value: String(r.id),
+                label: [
+                  r.room_name ?? r.name ?? `#${r.id}`,
+                  r.room_code ? ` (${r.room_code})` : "",
+                  r.capacity != null ? ` · ${r.capacity} ${t("classroom.seats")}` : "",
+                ].join(""),
+              }))}
+              placeholder="—"
               value={form.room_id}
               disabled={isView}
-              onChange={(e) => set("room_id", e.target.value)}
-            >
-              <option value="">—</option>
-              {rooms.map((r) => (
-                <option key={r.id} value={String(r.id)}>
-                  {r.room_name ?? r.name ?? `#${r.id}`}
-                  {r.room_code ? ` (${r.room_code})` : ""}
-                  {r.capacity != null
-                    ? ` · ${r.capacity} ${t("classroom.seats")}`
-                    : ""}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => set("room_id", String(val ?? ""))}
+            />
           </Field>
 
           <Field label={t("classroom.tags")}>

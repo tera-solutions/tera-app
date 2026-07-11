@@ -8,24 +8,25 @@ import {
   useState,
 } from "react";
 import { observer } from "mobx-react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import moment from "moment";
 import {
   Col,
   Row,
+  Modal,
   notification,
   PlusCircleOutlined,
   UserOutlined,
-  DatePicker as DatePickerTera,
 } from "tera-dls";
 
 /* Import: packages */
 import { IFormProps, IFileUpload } from "@tera/commons/interfaces";
 import Input from "@tera/components/dof/Control/Input";
+import Select from "@tera/components/dof/Control/Select";
+
 import TextArea from "@tera/components/dof/Control/TextArea";
 import UploadFiles from "@tera/components/dof/UploadFiles";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
@@ -42,11 +43,9 @@ import {
 } from "@tera/modules";
 
 /* Import: pages */
+import DateField from "_common/components/DateField";
 import { IStudentForm } from "pages/education/student/_interface";
 import { syncParentStudentLinks } from "_common/utils/parentStudentLinks";
-
-const SELECT_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
 
 const defaultValues: IStudentForm = {
   code: "",
@@ -81,6 +80,7 @@ const StudentForm = observer(
       const queryClient = useQueryClient();
 
       const [activeTab, setActiveTab] = useState("general");
+      const [showAvatarPreview, setShowAvatarPreview] = useState(false);
 
       const isUpdateRef = useRef(isUpdate);
       isUpdateRef.current = isUpdate;
@@ -222,13 +222,8 @@ const StudentForm = observer(
         resolver: yupResolver(schema) as any,
       });
 
-      const { reset, formState, watch, control } = form;
+      const { reset, formState, watch } = form;
       const errors = formState.errors as any;
-      const businessIdValue = watch("business_id");
-      const branchIdValue = watch("branch_id");
-      const genderValue = watch("gender");
-      const statusValue = watch("status");
-      const levelValue = watch("level_id");
       const avatarValue = watch("avatar" as any);
 
       const {
@@ -495,15 +490,24 @@ const StudentForm = observer(
                       </UploadFiles>
                     </div>
                     {avatarValue && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          form.setValue("avatar" as any, "", { shouldDirty: true })
-                        }
-                        className="text-[13px] text-red-500 hover:text-red-600 transition-colors"
-                      >
-                        {t("button.delete")}
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowAvatarPreview(true)}
+                          className="text-[13px] text-blue-500 hover:text-blue-600 transition-colors cursor-pointer"
+                        >
+                          {t("button.detail")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            form.setValue("avatar" as any, "", { shouldDirty: true })
+                          }
+                          className="text-[13px] text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                        >
+                          {t("button.delete")}
+                        </button>
+                      </div>
                     )}
                   </div>
                 </Col>
@@ -537,23 +541,11 @@ const StudentForm = observer(
                   name="gender"
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: genderValue ? "#111827" : "#9ca3af" }}
-                      disabled={isView}
-                      {...form.register("gender")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("student.gender") })}
-                      </option>
-                      {genderOptions.map((opt: any) => (
-                        <option key={opt.value} value={opt.value} style={{ color: "#111827" }}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={genderOptions}
+                    placeholder={t("form.enter_value", { key: t("student.gender") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -562,30 +554,7 @@ const StudentForm = observer(
                   name="dob"
                   rules={!isUpdate ? [{ required: t("validate.required") }] : undefined}
                 >
-                  <Controller
-                    control={control}
-                    name="dob"
-                    render={({ field }) => (
-                      <DatePickerTera
-                        className="w-full"
-                        format="DD/MM/YYYY"
-                        placeholder="dd/mm/yyyy"
-                        disabled={isView}
-                        allowClear
-                        disabledDate={(d: any) => d && d.isAfter(moment(), "day")}
-                        value={
-                          field.value
-                            ? moment(String(field.value), "YYYY-MM-DD")
-                            : undefined
-                        }
-                        onChange={(date: any) =>
-                          field.onChange(
-                            date ? moment(date).format("YYYY-MM-DD") : "",
-                          )
-                        }
-                      />
-                    )}
-                  />
+                  <DateField disabled={isView} />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -611,23 +580,11 @@ const StudentForm = observer(
                     name="status"
                     rules={[{ required: t("validate.required") }]}
                   >
-                    <div className="w-full overflow-hidden">
-                      <select
-                        className={SELECT_CLASS}
-                        style={{ borderRadius: "3px", color: statusValue ? "#111827" : "#9ca3af" }}
-                        disabled={isView}
-                        {...form.register("status")}
-                      >
-                        <option value="" disabled hidden>
-                          {t("form.enter_value", { key: t("student.status") })}
-                        </option>
-                        {statusOptions.map((opt: any) => (
-                          <option key={opt.value} value={opt.value} style={{ color: "#111827" }}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <Select
+                      options={statusOptions}
+                      placeholder={t("form.enter_value", { key: t("student.status") })}
+                      disabled={isView}
+                    />
                   </FormTeraItem>
                 </Col>
               )}
@@ -689,23 +646,14 @@ const StudentForm = observer(
                   name="business_id"
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: businessIdValue ? "#111827" : "#9ca3af" }}
-                      disabled={isView || isUpdate}
-                      {...form.register("business_id")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("student.business") })}
-                      </option>
-                      {businesses.map((business) => (
-                        <option key={business.id} value={String(business.id)} style={{ color: "#111827" }}>
-                          {business.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={businesses.map((business) => ({
+                      value: String(business.id),
+                      label: business.name,
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("student.business") })}
+                    disabled={isView || isUpdate}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -714,49 +662,32 @@ const StudentForm = observer(
                   name="branch_id"
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: branchIdValue ? "#111827" : "#9ca3af" }}
-                      disabled={isView || isUpdate}
-                      {...form.register("branch_id")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("student.branch") })}
-                      </option>
-                      {branches.map((branch) => (
-                        <option key={branch.id} value={String(branch.id)} style={{ color: "#111827" }}>
-                          {branch.name}
-                          {branch.code ? ` (${branch.code})` : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={branches.map((branch) => ({
+                      value: String(branch.id),
+                      label: branch.code
+                        ? `${branch.name} (${branch.code})`
+                        : branch.name,
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("student.branch") })}
+                    disabled={isView || isUpdate}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
                 <FormTeraItem label={t("student.level")} name="level_id">
-                  <div className="w-full overflow-hidden">
-                    {/* Xem chi tiết: lấy trình độ từ chính record student (level_id),
-                        KHÔNG gọi student-level/detail (backend chưa có bảng) */}
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: levelValue ? "#111827" : "#9ca3af" }}
-                      disabled={isView}
-                      {...form.register("level_id")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("student.level") })}
-                      </option>
-                      {levels.map((lv: any) => (
-                        <option key={lv.id} value={String(lv.id)} style={{ color: "#111827" }}>
-                          {lv.level_code
-                            ? `${lv.level_name} (${lv.level_code})`
-                            : lv.level_name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {/* Xem chi tiết: lấy trình độ từ chính record student (level_id),
+                      KHÔNG gọi student-level/detail (backend chưa có bảng) */}
+                  <Select
+                    options={levels.map((lv: any) => ({
+                      value: String(lv.id),
+                      label: lv.level_code
+                        ? `${lv.level_name} (${lv.level_code})`
+                        : lv.level_name,
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("student.level") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -765,29 +696,8 @@ const StudentForm = observer(
                   name="enrollment_date"
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <Controller
-                    control={control}
-                    name="enrollment_date"
-                    render={({ field }) => (
-                      <DatePickerTera
-                        className="w-full"
-                        format="DD/MM/YYYY"
-                        placeholder="dd/mm/yyyy"
-                        disabled={isView}
-                        allowClear
-                        value={
-                          field.value
-                            ? moment(String(field.value), "YYYY-MM-DD")
-                            : undefined
-                        }
-                        onChange={(date: any) =>
-                          field.onChange(
-                            date ? moment(date).format("YYYY-MM-DD") : "",
-                          )
-                        }
-                      />
-                    )}
-                  />
+                  {/* Ngày nhập học có thể ở tương lai (ghi danh trước) → không chặn. */}
+                  <DateField disabled={isView} disableFuture={false} />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -814,10 +724,8 @@ const StudentForm = observer(
           <div className={activeTab === "parents" ? "block" : "hidden"}>
             <div className="flex flex-col gap-3">
               {parentFields.map((field, index) => {
-                const relationValue = watch(`parents.${index}.relation` as any);
                 const modeValue =
                   watch(`parents.${index}.mode` as any) || "new";
-                const parentIdValue = watch(`parents.${index}.parent_id` as any);
                 const isExisting = modeValue === "existing";
                 return (
                   <div
@@ -870,24 +778,14 @@ const StudentForm = observer(
                             label={t("student.parents")}
                             name={`parents.${index}.parent_id`}
                           >
-                            <div className="w-full overflow-hidden">
-                              <select
-                                className={SELECT_CLASS}
-                                style={{ borderRadius: "3px", color: parentIdValue ? "#111827" : "#9ca3af" }}
-                                disabled={isView}
-                                {...form.register(`parents.${index}.parent_id` as any)}
-                              >
-                                <option value="" disabled hidden>
-                                  {t("student.select_parent")}
-                                </option>
-                                {parentOptions.map((p: any) => (
-                                  <option key={p.id} value={String(p.id)} style={{ color: "#111827" }}>
-                                    {p.name}
-                                    {p.phone ? ` - ${p.phone}` : ""}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
+                            <Select
+                              options={parentOptions.map((p: any) => ({
+                                value: String(p.id),
+                                label: p.phone ? `${p.name} - ${p.phone}` : p.name,
+                              }))}
+                              placeholder={t("student.select_parent")}
+                              disabled={isView}
+                            />
                           </FormTeraItem>
                         </Col>
                       ) : (
@@ -922,25 +820,13 @@ const StudentForm = observer(
                               : undefined
                           }
                         >
-                          <div className="w-full overflow-hidden">
-                            <select
-                              className={SELECT_CLASS}
-                              style={{ borderRadius: "3px", color: relationValue ? "#111827" : "#9ca3af" }}
-                              disabled={isView}
-                              {...form.register(`parents.${index}.relation` as any)}
-                            >
-                              <option value="" disabled hidden>
-                                {t("form.enter_value", {
-                                  key: t("student.parent_relation"),
-                                })}
-                              </option>
-                              {relationOptions.map((opt: any) => (
-                                <option key={opt.value} value={opt.value} style={{ color: "#111827" }}>
-                                  {opt.label}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
+                          <Select
+                            options={relationOptions}
+                            placeholder={t("form.enter_value", {
+                              key: t("student.parent_relation"),
+                            })}
+                            disabled={isView}
+                          />
                         </FormTeraItem>
                         {errors?.parents?.[index]?.relation?.message && (
                           <p className="text-red-500 text-xs -mt-2 mb-2">
@@ -1012,6 +898,21 @@ const StudentForm = observer(
               )}
             </div>
           </div>
+          {showAvatarPreview && (
+            <Modal
+              title={t("student.avatar")}
+              open={showAvatarPreview}
+              cancelText={t("button.close")}
+              okButtonProps={{ className: "hidden" }}
+              onCancel={() => setShowAvatarPreview(false)}
+            >
+              <img
+                src={avatarValue}
+                alt="avatar"
+                className="max-h-[70vh] max-w-full mx-auto rounded"
+              />
+            </Modal>
+          )}
         </FormTera>
       );
     },

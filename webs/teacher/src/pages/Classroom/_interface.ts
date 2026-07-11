@@ -13,6 +13,7 @@ export interface Classroom {
   category: string;
   level: string;
   room: string;
+  room_id: number | null;
   branch: string;
   schedule_days: string;
   start_time: string;
@@ -38,3 +39,8 @@ export interface ClassroomFilters {
   status: ClassroomStatus | "";
   level: string | "";
 }
+
+/** Kept in sync with the sortable columns ClassService::paginate() allows. */
+export type ClassroomSortBy = "created_at" | "name" | "start_date" | "status";
+
+export type ClassroomSortDir = "asc" | "desc";

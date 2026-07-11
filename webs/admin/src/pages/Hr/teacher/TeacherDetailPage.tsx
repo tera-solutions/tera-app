@@ -1,4 +1,5 @@
 /* Import: library */
+import { useEffect } from "react";
 import { observer } from "mobx-react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -12,6 +13,7 @@ import {
 
 /* Import: packages */
 import { TEACHER_PAGE_URL } from "@tera/commons/constants/url";
+import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { useStores } from "@tera/stores/useStores";
 
 /* Import: services */
@@ -28,6 +30,18 @@ const TeacherDetailPage = observer(() => {
   const { id } = useParams();
   const { t } = useTranslation();
   const { globalStore } = useStores();
+  const isMobile = useIsMobile();
+
+  // Trang này chỉ dành cho mobile; desktop dùng modal trên trang danh sách.
+  // Resize sang desktop → quay về danh sách và nhắn nó mở modal detail.
+  useEffect(() => {
+    if (!isMobile) {
+      navigate(TEACHER_PAGE_URL.list.path, {
+        replace: true,
+        state: { openModal: { type: "detail", id } },
+      });
+    }
+  }, [isMobile, navigate, id]);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "general";

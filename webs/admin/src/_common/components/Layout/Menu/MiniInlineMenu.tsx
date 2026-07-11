@@ -159,7 +159,7 @@ const MiniInlineMenu: React.FC<MiniInlineMenuProps> = observer(
                 (i) => i.key === key,
               )?.title;
               return (
-                <div className={classNames("flex flex-col gap-y-[5px]")}>
+                <div key={key} className={classNames("flex flex-col gap-y-[5px]")}>
                   <h3
                     className={classNames(
                       "ml-2.5 uppercase text-gray-200 font-medium transition-all leading-6",

@@ -4,6 +4,7 @@ import { toClassroom } from "pages/Classroom/_utils";
 import type {
   AttendanceRecord,
   AttendanceStatus,
+  ClassMaterial,
   ClassroomDetail,
   ClassroomDetailResult,
   ClassSession,
@@ -30,6 +31,10 @@ const toStatistics = (raw: any): ClassStatistics => {
       pending_sessions: o.pending_sessions ?? 0,
       completion_rate: o.completion_rate ?? 0,
       avg_attendance_rate: o.avg_attendance_rate ?? 0,
+      avg_score: o.avg_score ?? null,
+      score_distribution: Array.isArray(o.score_distribution) ? o.score_distribution : [],
+      assignments_count: o.assignments_count ?? 0,
+      assignment_completion_rate: o.homework_completion_rate ?? 0,
     },
   };
 };
@@ -117,4 +122,50 @@ export const toClassStudentResult = (raw: any): ClassStudentResult => {
     page: pagination.current_page ?? 1,
     per_page: pagination.per_page ?? items.length,
   };
+};
+
+const formatFileSize = (bytes: number | null | undefined): string => {
+  if (!bytes) return "";
+  const units = ["B", "KB", "MB", "GB"];
+  let value = bytes;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex++;
+  }
+  return `${value.toFixed(unitIndex > 0 && value < 10 ? 1 : 0)} ${units[unitIndex]}`;
+};
+
+const toClassMaterial = (raw: any): ClassMaterial => ({
+  id: raw.id ?? 0,
+  name: raw.material_name ?? "",
+  type: raw.material_type ?? "",
+  category: raw.category?.category_name ?? "",
+  version: raw.current_version ?? 0,
+  status: raw.status ?? "",
+  file_id: raw.current_file?.file_id ?? null,
+  file_name: raw.current_file?.file_name ?? "",
+  file_size: formatFileSize(raw.current_file?.file_size),
+});
+
+/**
+ * Merges the course- and lesson-plan-scoped material lists for a class
+ * (`/edu/material/list?entity_type=...`), de-duplicated by id — a material
+ * can legitimately be linked to both.
+ */
+export const toClassMaterials = (
+  courseRaw: any[] | null | undefined,
+  lessonPlanRaw: any[] | null | undefined,
+): ClassMaterial[] => {
+  const seen = new Set<number>();
+  const items: ClassMaterial[] = [];
+
+  for (const raw of [...(courseRaw ?? []), ...(lessonPlanRaw ?? [])]) {
+    const material = toClassMaterial(raw);
+    if (seen.has(material.id)) continue;
+    seen.add(material.id);
+    items.push(material);
+  }
+
+  return items;
 };

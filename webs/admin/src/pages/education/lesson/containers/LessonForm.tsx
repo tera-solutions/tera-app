@@ -15,6 +15,7 @@ import { Col, Row, notification } from "tera-dls";
 
 /* Import: packages */
 import { IFormProps } from "@tera/commons/interfaces";
+import Select from "@tera/components/dof/Control/Select";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 
@@ -26,8 +27,6 @@ import { ILessonForm } from "pages/education/lesson/_interface";
 import LessonAttendanceTab from "./LessonAttendanceTab";
 import LessonEvaluationTab from "./LessonEvaluationTab";
 
-const SELECT_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
 
 const fmtDate = (v?: string) =>
   v ? new Date(v).toLocaleDateString("vi-VN") : "—";
@@ -100,8 +99,7 @@ const LessonForm = forwardRef<any, LessonFormProps>(
       resolver: yupResolver(schema) as any,
     });
 
-    const { reset, formState, watch, register } = form;
-    const teacherIdValue = watch("teacher_id");
+    const { reset, formState } = form;
 
     const { mutate: onUpdate, isPending } = LessonService.useLessonUpdate();
 
@@ -171,6 +169,22 @@ const LessonForm = forwardRef<any, LessonFormProps>(
     const histories: any[] = Array.isArray(dataDetail?.histories)
       ? dataDetail.histories
       : [];
+
+    // Hiển thị giá trị lịch sử: change_status → nhãn trạng thái;
+    // reschedule ("2026-06-26 18:00:00-19:30:00 room:1") → "26/06/2026 18:00-19:30 · Phòng 1"
+    const histValue = (action: string, v?: string | null): string => {
+      if (!v) return "—";
+      if (action === "change_status")
+        return t(`lesson.status_${v}`, { defaultValue: v });
+      const m = String(v).match(
+        /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}:\d{2}):\d{2}-(\d{2}:\d{2}):\d{2}\s*room:(\d*)$/,
+      );
+      if (m) {
+        const [, y, mo, d, st, et, room] = m;
+        return `${d}/${mo}/${y} ${st}-${et}${room ? ` · ${t("lesson.room")} ${room}` : ""}`;
+      }
+      return String(v);
+    };
 
     const hasLesson = !!dataDetail?.id;
 
@@ -269,31 +283,16 @@ const LessonForm = forwardRef<any, LessonFormProps>(
               </Col>
               <Col className="sm:col-span-2">
                 <FormTeraItem label={t("lesson.teacher")} name="teacher_id">
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{
-                        borderRadius: "3px",
-                        color: teacherIdValue ? "#111827" : "#9ca3af",
-                      }}
-                      disabled={isView}
-                      {...register("teacher_id")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("lesson.teacher") })}
-                      </option>
-                      {teachers.map((tc) => (
-                        <option
-                          key={tc.id}
-                          value={String(tc.id)}
-                          style={{ color: "#111827" }}
-                        >
-                          {tc.full_name ?? tc.name}
-                          {tc.code ? ` (${tc.code})` : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={teachers.map((tc) => ({
+                      value: String(tc.id),
+                      label: tc.code
+                        ? `${tc.full_name ?? tc.name} (${tc.code})`
+                        : (tc.full_name ?? tc.name),
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("lesson.teacher") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
             </Row>
@@ -378,6 +377,17 @@ const LessonForm = forwardRef<any, LessonFormProps>(
                           : ""}
                       </span>
                     </div>
+                    {(h.old_value || h.new_value) && (
+                      <span className="text-[12px] text-gray-500 flex flex-wrap items-center gap-1.5">
+                        <span className="line-through text-gray-400 break-words">
+                          {histValue(h.action, h.old_value)}
+                        </span>
+                        <span className="text-gray-400">→</span>
+                        <span className="font-medium text-gray-700 break-words">
+                          {histValue(h.action, h.new_value)}
+                        </span>
+                      </span>
+                    )}
                     {h.reason && (
                       <span className="text-[12px] text-gray-500">
                         {t("common.reason")}: {h.reason}

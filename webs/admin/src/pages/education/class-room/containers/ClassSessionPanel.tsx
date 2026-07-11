@@ -13,7 +13,6 @@ import {
   Modal,
   PaginationProps,
   PlusOutlined,
-  RangePicker,
   notification,
 } from "tera-dls";
 import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdown";
@@ -21,7 +20,6 @@ import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdow
 /* Import: packages */
 import { TableTera } from "@tera/components/dof";
 import { useStores } from "@tera/stores/useStores";
-import useIsMobile from "@tera/commons/hooks/useIsMobile";
 
 /* Import: services */
 import {
@@ -32,15 +30,13 @@ import {
 
 /* Import: pages */
 import SearchBar from "_common/components/SearchBar";
+import DateRangeFilter from "_common/components/DateRangeFilter";
 import FilterSelect from "_common/components/FilterSelect";
 import MultiSelect from "_common/components/MultiSelect";
 import Pagination from "_common/components/Pagination";
 import { IClassSession } from "pages/education/class-room/_interface";
 import ClassSessionFormModal from "./ClassSessionFormModal";
 import ClassSessionCalendar from "./ClassSessionCalendar";
-
-const DATE_INPUT_CLASS =
-  "w-full h-9 border border-gray-300 bg-white px-2 text-[13px] rounded-[3px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 box-border";
 
 const time = (v?: string) => (v ? String(v).slice(0, 5) : "—");
 const fmtDate = (v?: string) =>
@@ -51,7 +47,6 @@ const money = (v?: number | string) =>
 const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
   const { t } = useTranslation();
   const { globalStore } = useStores();
-  const isMobile = useIsMobile();
   const queryClient = useQueryClient();
 
   const statusOptions = globalStore.getOptions("class_session_status") ?? [];
@@ -574,54 +569,19 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
               }}
             />
           </div>
-          {/* Khoảng ngày: desktop dùng RangePicker (popup 2 lịch OK); mobile dùng
-              native <input type="date"> — picker là dialog của OS, KHÔNG tràn màn hình */}
-          {isMobile ? (
-            <div className="shrink-0 flex items-center gap-1 h-9 border border-gray-300 rounded-[3px] px-2">
-              <input
-                type="date"
-                className="bg-transparent text-[13px] text-gray-700 outline-none w-[100px]"
-                value={fromDate}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setFromDate(v);
-                  if (v && toDate && toDate < v) setToDate("");
-                  resetPage();
-                }}
-              />
-              <span className="text-gray-300 shrink-0">–</span>
-              <input
-                type="date"
-                className="bg-transparent text-[13px] text-gray-700 outline-none w-[100px]"
-                value={toDate}
-                min={fromDate || undefined}
-                onChange={(e) => {
-                  setToDate(e.target.value);
-                  resetPage();
-                }}
-              />
-            </div>
-          ) : (
-            <RangePicker
-              className="shrink-0 w-[290px]"
-              value={
-                fromDate && toDate
-                  ? [
-                      moment(fromDate, "YYYY-MM-DD"),
-                      moment(toDate, "YYYY-MM-DD"),
-                    ]
-                  : undefined
-              }
-              format="DD/MM/YYYY"
-              placeholder={[t("common.from"), t("common.to")]}
-              allowClear
-              onChange={(dates: any) => {
-                setFromDate(dates?.[0] ? moment(dates[0]).format("YYYY-MM-DD") : "");
-                setToDate(dates?.[1] ? moment(dates[1]).format("YYYY-MM-DD") : "");
-                resetPage();
-              }}
-            />
-          )}
+          {/* Hàng filter này cuộn ngang (`overflow-x-auto`) → mọi control `shrink-0` + rộng cố định.
+              Cho `w-full` ở đây sẽ bị co về đúng chiều rộng icon lịch. */}
+          <DateRangeFilter
+            className="shrink-0 w-[290px]"
+            from={fromDate}
+            to={toDate}
+            placeholder={[t("common.from"), t("common.to")]}
+            onChange={(from, to) => {
+              setFromDate(from);
+              setToDate(to);
+              resetPage();
+            }}
+          />
         </div>
       </div>
 
