@@ -18,7 +18,7 @@
   "dependencies": {
     "@cyntler/react-doc-viewer": "^1.17.1",
     "@hookform/resolvers": "catalog:",
-    "@tanstack/react-query": "^5.95.2",
+    "@tanstack/react-query": "catalog:",
     "@tera/api": "workspace:*",
     "@tera/assets": "workspace:*",
     "@tera/commons": "workspace:*",

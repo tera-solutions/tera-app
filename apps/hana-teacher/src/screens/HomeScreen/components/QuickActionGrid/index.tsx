@@ -50,6 +50,7 @@ const actions: QuickAction[] = [
   {
     key: 'more',
     title: 'Khác',
+    link: '/setting/more-app',
     icon: require('@tera/assets/app/element_62.png'),
   },
 ];
