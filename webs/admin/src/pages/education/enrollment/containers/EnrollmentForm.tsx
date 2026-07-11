@@ -13,14 +13,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import moment from "moment";
-import { Col, Row, notification, DatePicker } from "tera-dls";
+import { Col, Row, notification } from "tera-dls";
 
 /* Import: packages */
 import { IFormProps } from "@tera/commons/interfaces";
-import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { useStores } from "@tera/stores/useStores";
 import Input from "@tera/components/dof/Control/Input";
+import Select from "@tera/components/dof/Control/Select";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 
@@ -30,15 +29,15 @@ import {
   StudentService,
   CourseService,
   ClassRoomService,
+  ClassSessionService,
 } from "@tera/modules";
 
 /* Import: pages */
+import DateField from "_common/components/DateField";
 import UserSelect from "_common/components/UserSelect";
 import ClassCapacity from "./ClassCapacity";
 import { IEnrollmentForm } from "pages/education/enrollment/_interface";
 
-const SELECT_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
 
 const defaultValues: IEnrollmentForm = {
   student_id: "",
@@ -61,6 +60,13 @@ const toNum = (v: any) => {
   return Number.isFinite(n) && String(v ?? "").trim() !== "" ? n : undefined;
 };
 
+// "200000.00" → "200000" (bỏ đuôi thập phân thừa để input number không hiện .00)
+const cleanNum = (v: any): string => {
+  if (v == null || v === "") return "";
+  const n = Number(v);
+  return Number.isFinite(n) ? String(n) : String(v);
+};
+
 const EnrollmentForm = observer(
   forwardRef<any, IFormProps & { onSuccess?: () => void }>(
     ({ dataDetail, type = "create", onSuccess }, ref) => {
@@ -68,7 +74,6 @@ const EnrollmentForm = observer(
       const isUpdate = type === "update";
       const { t } = useTranslation();
       const { globalStore } = useStores();
-      const isMobile = useIsMobile();
 
       const [activeTab, setActiveTab] = useState("student");
 
@@ -153,52 +158,72 @@ const EnrollmentForm = observer(
 
       const { reset, formState, watch } = form;
       const errors = formState.errors as any;
-      const studentValue = watch("student_id");
-      const courseValue = watch("course_id");
       const classValue = watch("class_id");
       const salesValue = watch("sales_id");
-      const paymentValue = watch("payment_method");
-      const enrolledAtValue = watch("enrolled_at");
       const totalLessonsValue = watch("total_lessons");
       const priceValue = watch("price_per_lesson");
       // Thành tiền = số buổi × đơn giá/buổi (hiển thị, không gửi — backend tự tính)
       const totalAmount =
         (Number(totalLessonsValue) || 0) * (Number(priceValue) || 0);
 
-      // Lớp đang chọn → khóa học của lớp đó (khóa học phụ thuộc lớp)
-      const selectedClass = useMemo(
-        () => classes.find((c: any) => String(c.id) === String(classValue)),
-        [classes, classValue],
-      );
-      const classCourseId =
-        selectedClass?.course_id ?? selectedClass?.course?.id;
-      // Đã chọn lớp + lớp có khóa học → select khóa học CHỈ hiện khóa của lớp đó
-      const courseOptions: any[] = useMemo(() => {
-        if (classValue && classCourseId != null) {
-          const found =
-            courses.find((c: any) => String(c.id) === String(classCourseId)) ??
-            selectedClass?.course;
-          return found ? [found] : [];
-        }
-        return courses;
-      }, [courses, classValue, classCourseId, selectedClass]);
+      const courseValue = watch("course_id");
+
+      // Lớp học phụ thuộc khóa học: chọn khóa → chỉ hiện lớp thuộc khóa đó.
+      const courseIdOfClass = (cls: any) => cls?.course_id ?? cls?.course?.id;
+      const classOptions: any[] = useMemo(() => {
+        if (!courseValue) return classes;
+        return classes.filter(
+          (c: any) => String(courseIdOfClass(c)) === String(courseValue),
+        );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [classes, courseValue]);
 
       const queryClient = useQueryClient();
       const { mutate: onSubmit, isPending } =
         EnrollmentService.useUpsertEnrollment();
 
-      // Chọn lớp → tự set khóa học theo lớp
+      // Số buổi của lớp = tổng session của lớp (chỉ fetch khi tạo mới + đã chọn lớp)
+      const { data: sessionCountData } = ClassSessionService.useClassSessionList(
+        { params: { class_id: classValue, page: 1, per_page: 1 } },
+        { enabled: type === "create" && !!classValue },
+      );
+      const classSessionTotal: number | undefined =
+        sessionCountData?.data?.pagination?.total;
+
+      // Đổi khóa học → (1) nếu lớp đang chọn không thuộc khóa mới thì xóa lớp;
+      // (2) tự điền giá/buổi theo khóa. (2) CHỈ khi tạo mới — sửa thì giữ giá đã lưu.
       useEffect(() => {
-        if (classValue && classCourseId != null) {
-          const cur = form.getValues("course_id");
-          if (String(cur ?? "") !== String(classCourseId)) {
-            form.setValue("course_id", String(classCourseId), {
+        const cur = form.getValues("class_id");
+        if (cur) {
+          const cls = classes.find((c: any) => String(c.id) === String(cur));
+          if (cls && String(courseIdOfClass(cls)) !== String(courseValue)) {
+            form.setValue("class_id", "", { shouldValidate: true });
+          }
+        }
+        if (type === "create" && courseValue) {
+          const course = courses.find(
+            (c: any) => String(c.id) === String(courseValue),
+          );
+          if (course?.price_per_lesson != null) {
+            form.setValue("price_per_lesson", cleanNum(course.price_per_lesson), {
+              shouldDirty: true,
               shouldValidate: true,
             });
           }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [classValue, classCourseId]);
+      }, [courseValue]);
+
+      // Chọn lớp → tự điền Tổng số buổi = số buổi của lớp. CHỈ khi tạo mới.
+      useEffect(() => {
+        if (type === "create" && classValue && classSessionTotal != null) {
+          form.setValue("total_lessons", String(classSessionTotal), {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [classValue, classSessionTotal]);
 
       useEffect(() => {
         if (dataDetail?.id) {
@@ -210,14 +235,8 @@ const EnrollmentForm = observer(
             enrolled_at: dataDetail.enrolled_at
               ? String(dataDetail.enrolled_at).split("T")[0]
               : "",
-            total_lessons:
-              dataDetail.total_lessons != null
-                ? String(dataDetail.total_lessons)
-                : "",
-            price_per_lesson:
-              dataDetail.price_per_lesson != null
-                ? String(dataDetail.price_per_lesson)
-                : "",
+            total_lessons: cleanNum(dataDetail.total_lessons),
+            price_per_lesson: cleanNum(dataDetail.price_per_lesson),
             discount_percent: "",
             discount_amount:
               dataDetail.discount_amount != null
@@ -339,23 +358,14 @@ const EnrollmentForm = observer(
                   name="student_id"
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: studentValue ? "#111827" : "#9ca3af" }}
-                      disabled={lockBasic}
-                      {...form.register("student_id")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("enrollment.student") })}
-                      </option>
-                      {students.map((s) => (
-                        <option key={s.id} value={String(s.id)} style={{ color: "#111827" }}>
-                          {s.code ? `${s.code} - ${s.name}` : s.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={students.map((s) => ({
+                      value: String(s.id),
+                      label: s.code ? `${s.code} - ${s.name}` : s.name,
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("enrollment.student") })}
+                    disabled={lockBasic}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -387,52 +397,35 @@ const EnrollmentForm = observer(
             <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
               <Col>
                 <FormTeraItem
-                  label={t("enrollment.class")}
-                  name="class_id"
-                  rules={[{ required: t("validate.required") }]}
-                >
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: classValue ? "#111827" : "#9ca3af" }}
-                      disabled={lockBasic}
-                      {...form.register("class_id")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("enrollment.class") })}
-                      </option>
-                      {classes.map((c) => (
-                        <option key={c.id} value={String(c.id)} style={{ color: "#111827" }}>
-                          {c.code ? `${c.code} - ${c.name}` : c.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </FormTeraItem>
-              </Col>
-              <Col>
-                <FormTeraItem
                   label={t("enrollment.course")}
                   name="course_id"
                   rules={[{ required: t("validate.required") }]}
                 >
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: courseValue ? "#111827" : "#9ca3af" }}
-                      disabled={lockBasic || (!!classValue && classCourseId != null)}
-                      {...form.register("course_id")}
-                    >
-                      <option value="" style={{ color: "#9ca3af" }}>
-                        {t("enrollment.all_courses")}
-                      </option>
-                      {courseOptions.map((c) => (
-                        <option key={c.id} value={String(c.id)} style={{ color: "#111827" }}>
-                          {c.code ? `${c.code} - ${c.name}` : c.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={courses.map((c) => ({
+                      value: String(c.id),
+                      label: c.code ? `${c.code} - ${c.name}` : c.name,
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("enrollment.course") })}
+                    disabled={lockBasic}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("enrollment.class")}
+                  name="class_id"
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  {/* Lớp phụ thuộc khóa: disable đến khi chọn khóa; options lọc theo khóa */}
+                  <Select
+                    options={classOptions.map((c) => ({
+                      value: String(c.id),
+                      label: c.code ? `${c.code} - ${c.name}` : c.name,
+                    }))}
+                    placeholder={t("form.enter_value", { key: t("enrollment.class") })}
+                    disabled={lockBasic || !courseValue}
+                  />
                 </FormTeraItem>
               </Col>
               <Col className="sm:col-span-2">
@@ -446,8 +439,8 @@ const EnrollmentForm = observer(
             <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
               <Col>
                 <FormTeraItem
-                  label={t("enrollment.total_lessons")}
-                  name="total_lessons"
+                  label={t("enrollment.price_per_lesson")}
+                  name="price_per_lesson"
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Input type="number" min={0} disabled={lockBasic} />
@@ -455,8 +448,8 @@ const EnrollmentForm = observer(
               </Col>
               <Col>
                 <FormTeraItem
-                  label={t("enrollment.price_per_lesson")}
-                  name="price_per_lesson"
+                  label={t("enrollment.total_lessons")}
+                  name="total_lessons"
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Input type="number" min={0} disabled={lockBasic} />
@@ -508,29 +501,7 @@ const EnrollmentForm = observer(
             <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
               <Col>
                 <FormTeraItem label={t("enrollment.enrolled_at")} name="enrolled_at">
-                  {isMobile ? (
-                    <Input type="date" disabled={lockBasic} />
-                  ) : (
-                    <DatePicker
-                      className="w-full"
-                      value={
-                        enrolledAtValue
-                          ? moment(String(enrolledAtValue), "YYYY-MM-DD")
-                          : undefined
-                      }
-                      format="DD/MM/YYYY"
-                      placeholder="DD/MM/YYYY"
-                      disabled={lockBasic}
-                      allowClear
-                      onChange={(date: any) =>
-                        form.setValue(
-                          "enrolled_at",
-                          date ? moment(date).format("YYYY-MM-DD") : "",
-                          { shouldDirty: true, shouldValidate: true },
-                        )
-                      }
-                    />
-                  )}
+                  <DateField disabled={lockBasic} disableFuture={false} />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -538,23 +509,11 @@ const EnrollmentForm = observer(
                   label={t("enrollment.payment_method")}
                   name="payment_method"
                 >
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: paymentValue ? "#111827" : "#9ca3af" }}
-                      disabled={lockBasic}
-                      {...form.register("payment_method")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("enrollment.payment_method") })}
-                      </option>
-                      {paymentOptions.map((o: any) => (
-                        <option key={o.value} value={o.value} style={{ color: "#111827" }}>
-                          {o.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={paymentOptions}
+                    placeholder={t("form.enter_value", { key: t("enrollment.payment_method") })}
+                    disabled={lockBasic}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>

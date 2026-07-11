@@ -16,6 +16,7 @@ import { Col, Row, notification } from "tera-dls";
 
 /* Import: packages */
 import { IFormProps } from "@tera/commons/interfaces";
+import Select from "@tera/components/dof/Control/Select";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import { useStores } from "@tera/stores/useStores";
@@ -30,8 +31,6 @@ import {
 /* Import: pages */
 import { IParentStudentLinkForm } from "pages/CRM/parent-student/_interface";
 
-const SELECT_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
 
 const defaultValues: IParentStudentLinkForm = {
   parent_id: "",
@@ -100,10 +99,7 @@ const ParentStudentForm = observer(
         resolver: yupResolver(schema) as any,
       });
 
-      const { reset, formState, watch } = form;
-      const parentIdValue = watch("parent_id");
-      const studentIdValue = watch("student_id");
-      const relationValue = watch("relation");
+      const { reset, formState } = form;
 
       const { mutate: onCreate, isPending: isCreating } =
         ParentStudentService.useParentStudentCreate();
@@ -206,31 +202,16 @@ const ParentStudentForm = observer(
                 name="parent_id"
                 rules={[{ required: t("validate.required") }]}
               >
-                <div className="w-full overflow-hidden">
-                  <select
-                    className={SELECT_CLASS}
-                    style={{
-                      borderRadius: "3px",
-                      color: parentIdValue ? "#111827" : "#9ca3af",
-                    }}
-                    disabled={isView || isUpdate}
-                    {...form.register("parent_id")}
-                  >
-                    <option value="" disabled hidden>
-                      {t("parent_student.select_parent")}
-                    </option>
-                    {parents.map((parent: any) => (
-                      <option
-                        key={parent.id}
-                        value={String(parent.id)}
-                        style={{ color: "#111827" }}
-                      >
-                        {parent.name}
-                        {parent.code ? ` (${parent.code})` : ""}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  options={parents.map((parent: any) => ({
+                    value: String(parent.id),
+                    label: parent.code
+                      ? `${parent.name} (${parent.code})`
+                      : parent.name,
+                  }))}
+                  placeholder={t("parent_student.select_parent")}
+                  disabled={isView || isUpdate}
+                />
               </FormTeraItem>
             </Col>
             <Col>
@@ -239,31 +220,16 @@ const ParentStudentForm = observer(
                 name="student_id"
                 rules={[{ required: t("validate.required") }]}
               >
-                <div className="w-full overflow-hidden">
-                  <select
-                    className={SELECT_CLASS}
-                    style={{
-                      borderRadius: "3px",
-                      color: studentIdValue ? "#111827" : "#9ca3af",
-                    }}
-                    disabled={isView || isUpdate}
-                    {...form.register("student_id")}
-                  >
-                    <option value="" disabled hidden>
-                      {t("parent_student.select_student")}
-                    </option>
-                    {students.map((student: any) => (
-                      <option
-                        key={student.id}
-                        value={String(student.id)}
-                        style={{ color: "#111827" }}
-                      >
-                        {student.name}
-                        {student.code ? ` (${student.code})` : ""}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  options={students.map((student: any) => ({
+                    value: String(student.id),
+                    label: student.code
+                      ? `${student.name} (${student.code})`
+                      : student.name,
+                  }))}
+                  placeholder={t("parent_student.select_student")}
+                  disabled={isView || isUpdate}
+                />
               </FormTeraItem>
             </Col>
             <Col>
@@ -272,32 +238,13 @@ const ParentStudentForm = observer(
                 name="relation"
                 rules={[{ required: t("validate.required") }]}
               >
-                <div className="w-full overflow-hidden">
-                  <select
-                    className={SELECT_CLASS}
-                    style={{
-                      borderRadius: "3px",
-                      color: relationValue ? "#111827" : "#9ca3af",
-                    }}
-                    disabled={isView}
-                    {...form.register("relation")}
-                  >
-                    <option value="" disabled hidden>
-                      {t("form.enter_value", {
-                        key: t("parent_student.relation"),
-                      })}
-                    </option>
-                    {relationOptions.map((opt: any) => (
-                      <option
-                        key={opt.value}
-                        value={opt.value}
-                        style={{ color: "#111827" }}
-                      >
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  options={relationOptions}
+                  placeholder={t("form.enter_value", {
+                    key: t("parent_student.relation"),
+                  })}
+                  disabled={isView}
+                />
               </FormTeraItem>
             </Col>
 

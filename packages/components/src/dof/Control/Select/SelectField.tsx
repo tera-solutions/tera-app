@@ -48,16 +48,35 @@ function SelectField({
   const btnRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const [rect, setRect] = useState<{ top: number; left: number; width: number } | null>(
-    null,
-  );
+  const [rect, setRect] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    maxHeight: number;
+  } | null>(null);
 
   const updateRect = () => {
     const r = btnRef.current?.getBoundingClientRect();
     if (!r) return;
     const width = r.width;
     const left = Math.min(Math.max(8, r.left), window.innerWidth - width - 8);
-    setRect({ top: r.bottom + 4, left, width });
+
+    // Menu là `position: fixed` → tràn đáy viewport thì KHÔNG cuộn tới được.
+    // Field cuối form (vd `status` của StudentForm) luôn sát đáy → phải lật lên trên.
+    const GAP = 4;
+    const MARGIN = 8;
+    const MAX_H = 240; // = max-h-60
+    const below = window.innerHeight - r.bottom - GAP - MARGIN;
+    const above = r.top - GAP - MARGIN;
+    const wanted = Math.min(MAX_H, options.length * 37 + 8);
+    const openUp = below < wanted && above > below;
+
+    setRect({
+      top: openUp ? Math.max(MARGIN, r.top - GAP - Math.min(wanted, above)) : r.bottom + GAP,
+      left,
+      width,
+      maxHeight: Math.max(80, Math.min(MAX_H, openUp ? above : below)),
+    });
   };
 
   useLayoutEffect(() => {
@@ -130,9 +149,10 @@ function SelectField({
               top: rect.top,
               left: rect.left,
               width: rect.width,
+              maxHeight: rect.maxHeight,
               zIndex: 9999,
             }}
-            className="bg-white border border-gray-200 rounded shadow-lg max-h-60 overflow-auto py-1"
+            className="bg-white border border-gray-200 rounded shadow-lg overflow-auto py-1"
           >
             {options.map((opt) => {
               const active = opt.value === value;

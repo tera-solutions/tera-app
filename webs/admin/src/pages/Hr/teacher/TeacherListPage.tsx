@@ -92,6 +92,9 @@ const TeacherListPage = () => {
     branch_id: branchFilter || undefined,
     manager_id: managerFilter || undefined,
     skills: skillsFilter.length ? skillsFilter : undefined,
+    // Mặc định sắp xếp tăng dần theo mã giáo viên khi mở màn
+    sort_by: "code",
+    sort_dir: "asc",
   };
 
   const resetPage = () => setParams((p: any) => ({ ...p, page: 1 }));

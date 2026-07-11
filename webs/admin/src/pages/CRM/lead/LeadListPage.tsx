@@ -120,6 +120,9 @@ const LeadListPage = observer(() => {
     course_ids: courseFilter.length ? courseFilter.map(Number) : undefined,
     tag_ids: tagFilter.length ? tagFilter.map(Number) : undefined,
     owner_id: ownerFilter || undefined,
+    // Mặc định sắp xếp tăng dần theo mã (id) khi mở màn
+    sort_by: "id",
+    sort_dir: "asc",
   };
 
   const handleStatusChange = (status: string) => {

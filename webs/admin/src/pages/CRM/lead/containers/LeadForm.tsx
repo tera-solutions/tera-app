@@ -12,14 +12,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import moment from "moment";
-import { Col, Row, notification, PlusCircleOutlined, DatePicker } from "tera-dls";
+import { Col, Row, notification, PlusCircleOutlined } from "tera-dls";
 
 /* Import: packages */
 import { IFormProps } from "@tera/commons/interfaces";
-import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { useStores } from "@tera/stores/useStores";
 import Input from "@tera/components/dof/Control/Input";
+import Select, { SelectField } from "@tera/components/dof/Control/Select";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 
@@ -34,12 +33,11 @@ import {
 } from "@tera/modules";
 
 /* Import: pages */
+import DateField from "_common/components/DateField";
 import UserSelect from "_common/components/UserSelect";
 import MultiSelect from "_common/components/MultiSelect";
 import { ILeadForm } from "pages/CRM/lead/_interface";
 
-const SELECT_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
 const INPUT_CLASS =
   "w-full h-9 border border-gray-300 rounded px-3 text-[13px] bg-white focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500 disabled:bg-gray-100";
 
@@ -75,7 +73,6 @@ const LeadForm = observer(
       const { t } = useTranslation();
       const { globalStore } = useStores();
       const queryClient = useQueryClient();
-      const isMobile = useIsMobile();
 
       const [activeTab, setActiveTab] = useState("basic");
 
@@ -207,11 +204,6 @@ const LeadForm = observer(
 
       const { reset, watch, control } = form;
       const errors = form.formState.errors as any;
-      const genderValue = watch("gender");
-      const dobValue = watch("dob");
-      const statusValue = watch("status");
-      const businessValue = watch("business_id");
-      const branchValue = watch("branch_id");
       const ownerValue = watch("owner_id");
       const tagValue = watch("tag_ids") ?? [];
       const courseValue = watch("course_ids") ?? [];
@@ -401,49 +393,16 @@ const LeadForm = observer(
               </Col>
               <Col>
                 <FormTeraItem label={t("lead.gender")} name="gender">
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: genderValue ? "#111827" : "#9ca3af" }}
-                      disabled={isView}
-                      {...form.register("gender")}
-                    >
-                      <option value="" disabled hidden>
-                        {t("form.enter_value", { key: t("lead.gender") })}
-                      </option>
-                      {genderOptions.map((opt: any) => (
-                        <option key={opt.value} value={opt.value} style={{ color: "#111827" }}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={genderOptions}
+                    placeholder={t("form.enter_value", { key: t("lead.gender") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
                 <FormTeraItem label={t("lead.dob")} name="dob">
-                  {isMobile ? (
-                    <Input type="date" disabled={isView} />
-                  ) : (
-                    <DatePicker
-                      className="w-full"
-                      format="DD/MM/YYYY"
-                      placeholder="DD/MM/YYYY"
-                      disabled={isView}
-                      allowClear
-                      disabledDate={(d: any) => d && d.isAfter(moment(), "day")}
-                      value={
-                        dobValue ? moment(String(dobValue), "YYYY-MM-DD") : undefined
-                      }
-                      onChange={(date: any) =>
-                        form.setValue(
-                          "dob",
-                          date ? moment(date).format("YYYY-MM-DD") : "",
-                          { shouldDirty: true, shouldValidate: true },
-                        )
-                      }
-                    />
-                  )}
+                  <DateField disabled={isView} />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -509,41 +468,20 @@ const LeadForm = observer(
               </Col>
               <Col>
                 <FormTeraItem label={t("lead.business")} name="business_id">
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: businessValue ? "#111827" : "#9ca3af" }}
-                      disabled={isView}
-                      {...form.register("business_id")}
-                    >
-                      <option value="" disabled hidden></option>
-                      {businesses.map((b) => (
-                        <option key={b.id} value={String(b.id)} style={{ color: "#111827" }}>
-                          {b.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={businesses.map((b: any) => ({ value: String(b.id), label: b.name }))}
+                    placeholder={t("form.enter_value", { key: t("lead.business") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
                 <FormTeraItem label={t("lead.branch")} name="branch_id">
-                  <div className="w-full overflow-hidden">
-                    <select
-                      className={SELECT_CLASS}
-                      style={{ borderRadius: "3px", color: branchValue ? "#111827" : "#9ca3af" }}
-                      disabled={isView}
-                      {...form.register("branch_id")}
-                    >
-                      <option value="" disabled hidden></option>
-                      {branches.map((b) => (
-                        <option key={b.id} value={String(b.id)} style={{ color: "#111827" }}>
-                          {b.name}
-                          {b.code ? ` (${b.code})` : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Select
+                    options={branches.map((b: any) => ({ value: String(b.id), label: b.name }))}
+                    placeholder={t("form.enter_value", { key: t("lead.branch") })}
+                    disabled={isView}
+                  />
                 </FormTeraItem>
               </Col>
               <Col>
@@ -576,21 +514,11 @@ const LeadForm = observer(
               {isView && (
                 <Col>
                   <FormTeraItem label={t("lead.status")} name="status">
-                    <div className="w-full overflow-hidden">
-                      <select
-                        className={SELECT_CLASS}
-                        style={{ borderRadius: "3px", color: statusValue ? "#111827" : "#9ca3af" }}
-                        disabled
-                        {...form.register("status")}
-                      >
-                        <option value="" disabled hidden></option>
-                        {statusOptions.map((opt: any) => (
-                          <option key={opt.value} value={opt.value} style={{ color: "#111827" }}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <Select
+                      options={statusOptions}
+                      placeholder={t("form.enter_value", { key: t("lead.status") })}
+                      disabled={isView}
+                    />
                   </FormTeraItem>
                 </Col>
               )}
@@ -624,23 +552,20 @@ const LeadForm = observer(
                       <label className="text-[13px] text-gray-600 font-medium mb-1 block">
                         {t("lead.guardian_parent")} <span className="text-red-500">*</span>
                       </label>
-                      <select
-                        className={SELECT_CLASS}
-                        style={{ borderRadius: "3px" }}
+                      <SelectField
+                        options={parents.map((p: any) => ({
+                          value: String(p.id),
+                          label: p.code ? `${p.code} - ${p.name}` : p.name,
+                        }))}
+                        placeholder={t("lead.guardian_parent")}
                         disabled={isView}
-                        value={String(
-                          form.watch(`guardians.${index}.parent_id`) ?? "",
-                        )}
-                        onChange={(e) => {
-                          const pid = e.target.value;
-                          form.setValue(
-                            `guardians.${index}.parent_id` as const,
-                            pid,
-                            { shouldDirty: true },
-                          );
-                          const p = parents.find(
-                            (x: any) => String(x.id) === pid,
-                          );
+                        value={String(form.watch(`guardians.${index}.parent_id`) ?? "")}
+                        onChange={(val) => {
+                          const pid = String(val ?? "");
+                          form.setValue(`guardians.${index}.parent_id` as const, pid, {
+                            shouldDirty: true,
+                          });
+                          const p = parents.find((x: any) => String(x.id) === pid);
                           form.setValue(
                             `guardians.${index}.full_name` as const,
                             p?.name ?? "",
@@ -657,14 +582,7 @@ const LeadForm = observer(
                             { shouldDirty: true },
                           );
                         }}
-                      >
-                        <option value="" disabled hidden></option>
-                        {parents.map((p: any) => (
-                          <option key={p.id} value={String(p.id)}>
-                            {p.code ? `${p.code} - ${p.name}` : p.name}
-                          </option>
-                        ))}
-                      </select>
+                      />
                       {errors?.guardians?.[index]?.full_name?.message && (
                         <p className="text-red-500 text-xs mt-1">
                           {errors.guardians[index].full_name.message}
@@ -675,19 +593,19 @@ const LeadForm = observer(
                       <label className="text-[13px] text-gray-600 font-medium mb-1 block">
                         {t("lead.relationship")} <span className="text-red-500">*</span>
                       </label>
-                      <select
-                        className={SELECT_CLASS}
-                        style={{ borderRadius: "3px" }}
+                      <SelectField
+                        options={relationOptions}
+                        placeholder={t("lead.relationship")}
                         disabled={isView}
-                        {...form.register(`guardians.${index}.relationship` as const)}
-                      >
-                        <option value="" disabled hidden></option>
-                        {relationOptions.map((opt: any) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
+                        value={String(form.watch(`guardians.${index}.relationship`) ?? "")}
+                        onChange={(val) =>
+                          form.setValue(
+                            `guardians.${index}.relationship` as const,
+                            String(val ?? ""),
+                            { shouldDirty: true, shouldValidate: true },
+                          )
+                        }
+                      />
                       {errors?.guardians?.[index]?.relationship?.message && (
                         <p className="text-red-500 text-xs mt-1">
                           {errors.guardians[index].relationship.message}
@@ -759,29 +677,31 @@ const LeadForm = observer(
                       <label className="text-[13px] text-gray-600 font-medium mb-1 block">
                         {t("lead.student")} <span className="text-red-500">*</span>
                       </label>
-                      <select
-                        className={SELECT_CLASS}
-                        style={{ borderRadius: "3px" }}
-                        disabled={isView}
-                        {...form.register(`students.${index}.student_id` as const)}
-                      >
-                        <option value="" disabled hidden></option>
-                        {students
+                      <SelectField
+                        options={students
                           .filter((s) => {
                             const sid = String(s.id);
                             // ẩn HV đã chọn ở dòng khác (giữ HV của chính dòng này)
                             return !studentsWatch.some(
                               (row: any, i: number) =>
-                                i !== index &&
-                                String(row?.student_id ?? "") === sid,
+                                i !== index && String(row?.student_id ?? "") === sid,
                             );
                           })
-                          .map((s) => (
-                            <option key={s.id} value={String(s.id)}>
-                              {s.code ? `${s.code} - ${s.name}` : s.name}
-                            </option>
-                          ))}
-                      </select>
+                          .map((s) => ({
+                            value: String(s.id),
+                            label: s.code ? `${s.code} - ${s.name}` : s.name,
+                          }))}
+                        placeholder={t("lead.student")}
+                        disabled={isView}
+                        value={String(form.watch(`students.${index}.student_id`) ?? "")}
+                        onChange={(val) =>
+                          form.setValue(
+                            `students.${index}.student_id` as const,
+                            String(val ?? ""),
+                            { shouldDirty: true, shouldValidate: true },
+                          )
+                        }
+                      />
                       {errors?.students?.[index]?.student_id?.message && (
                         <p className="text-red-500 text-xs mt-1">
                           {errors.students[index].student_id.message}
@@ -792,19 +712,19 @@ const LeadForm = observer(
                       <label className="text-[13px] text-gray-600 font-medium mb-1 block">
                         {t("lead.relationship")}
                       </label>
-                      <select
-                        className={SELECT_CLASS}
-                        style={{ borderRadius: "3px" }}
+                      <SelectField
+                        options={relationOptions}
+                        placeholder={t("lead.relationship")}
                         disabled={isView}
-                        {...form.register(`students.${index}.relationship` as const)}
-                      >
-                        <option value="" disabled hidden></option>
-                        {relationOptions.map((opt: any) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
+                        value={String(form.watch(`students.${index}.relationship`) ?? "")}
+                        onChange={(val) =>
+                          form.setValue(
+                            `students.${index}.relationship` as const,
+                            String(val ?? ""),
+                            { shouldDirty: true },
+                          )
+                        }
+                      />
                     </Col>
                   </Row>
                 </div>

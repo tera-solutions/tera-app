@@ -9,13 +9,12 @@ import moment from "moment";
 import { Col, Row, notification, DatePicker as DatePickerTera } from "tera-dls";
 
 /* Import: packages */
+import Select from "@tera/components/dof/Control/Select";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 
 /* Import: services */
 import { LessonService, ClassRoomService } from "@tera/modules";
 
-const SELECT_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-3 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer box-border";
 
 interface IGenerateForm {
   class_room_id: string;
@@ -61,7 +60,6 @@ const LessonGenerateForm = forwardRef<any, LessonGenerateFormProps>(
     });
 
     const { formState, watch, register, control } = form;
-    const classRoomIdValue = watch("class_room_id");
     const overrideValue = watch("override");
 
     const { mutate: onGenerate, isPending } = LessonService.useLessonGenerate();
@@ -107,30 +105,13 @@ const LessonGenerateForm = forwardRef<any, LessonGenerateFormProps>(
               name="class_room_id"
               rules={[{ required: t("validate.required") }]}
             >
-              <div className="w-full overflow-hidden">
-                <select
-                  className={SELECT_CLASS}
-                  style={{
-                    borderRadius: "3px",
-                    color: classRoomIdValue ? "#111827" : "#9ca3af",
-                  }}
-                  {...register("class_room_id")}
-                >
-                  <option value="" disabled hidden>
-                    {t("form.enter_value", { key: t("lesson.class") })}
-                  </option>
-                  {classes.map((c) => (
-                    <option
-                      key={c.id}
-                      value={String(c.id)}
-                      style={{ color: "#111827" }}
-                    >
-                      {c.name}
-                      {c.code ? ` (${c.code})` : ""}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <Select
+                options={classes.map((c) => ({
+                  value: String(c.id),
+                  label: c.code ? `${c.name} (${c.code})` : c.name,
+                }))}
+                placeholder={t("form.enter_value", { key: t("lesson.class") })}
+              />
             </FormTeraItem>
           </Col>
           <Col className="sm:col-span-2">

@@ -15,6 +15,7 @@ import { Col, Row, notification } from "tera-dls";
 /* Import: packages */
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import Input from "@tera/components/dof/Control/Input";
+import Select from "@tera/components/dof/Control/Select";
 import TextArea from "@tera/components/dof/Control/TextArea";
 
 /* Import: services */
@@ -23,8 +24,6 @@ import { LevelService, CourseService } from "@tera/modules";
 /* Import: pages */
 import { CEFR_LEVELS, ILevel, ILevelForm } from "../_interface";
 
-const SELECT_CLASS =
-  "w-full h-9 border border-gray-300 rounded bg-white px-3 text-[13px] focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed cursor-pointer";
 
 const defaultValues: ILevelForm = {
   level_code: "",
@@ -80,7 +79,7 @@ const LevelForm = forwardRef<any, IProps>(
       defaultValues,
       resolver: yupResolver(schema) as any,
     });
-    const { reset, register, formState } = form;
+    const { reset, formState } = form;
 
     const { mutate: upsert, isPending } = LevelService.useUpsertLevel();
 
@@ -174,36 +173,23 @@ const LevelForm = forwardRef<any, IProps>(
               name="course_id"
               rules={[{ required: t("validate.required") }]}
             >
-              <select
-                {...register("course_id")}
+              <Select
+                options={courses.map((c: any) => ({
+                  value: String(c.id),
+                  label: c.code ? `${c.name} (${c.code})` : c.name,
+                }))}
+                placeholder={t("level.select_course")}
                 disabled={isView}
-                className={SELECT_CLASS}
-              >
-                <option value="" disabled hidden>
-                  {t("level.select_course")}
-                </option>
-                {courses.map((c: any) => (
-                  <option key={c.id} value={String(c.id)}>
-                    {c.code ? `${c.name} (${c.code})` : c.name}
-                  </option>
-                ))}
-              </select>
+              />
             </FormTeraItem>
           </Col>
           <Col>
             <FormTeraItem label={t("level.cefr")} name="cefr_level">
-              <select
-                {...register("cefr_level")}
+              <Select
+                options={CEFR_LEVELS.map((c) => ({ value: c, label: c }))}
+                placeholder="—"
                 disabled={isView}
-                className={SELECT_CLASS}
-              >
-                <option value="">—</option>
-                {CEFR_LEVELS.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+              />
             </FormTeraItem>
           </Col>
           <Col>
@@ -214,14 +200,14 @@ const LevelForm = forwardRef<any, IProps>(
           {!isUpdate && (
             <Col>
               <FormTeraItem label={t("level.status")} name="status">
-                <select
-                  {...register("status")}
+                <Select
+                  options={[
+                    { value: "active", label: t("level.status_active") },
+                    { value: "inactive", label: t("level.status_inactive") },
+                  ]}
+                  placeholder={t("form.enter_value", { key: t("level.status") })}
                   disabled={isView}
-                  className={SELECT_CLASS}
-                >
-                  <option value="active">{t("level.status_active")}</option>
-                  <option value="inactive">{t("level.status_inactive")}</option>
-                </select>
+                />
               </FormTeraItem>
             </Col>
           )}

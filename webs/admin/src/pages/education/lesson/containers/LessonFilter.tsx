@@ -1,8 +1,6 @@
 /* Import: library */
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import moment from "moment";
-import { RangePicker } from "tera-dls";
 
 /* Import: services */
 import {
@@ -13,9 +11,9 @@ import {
 } from "@tera/modules";
 
 /* Import: pages */
+import DateRangeFilter from "_common/components/DateRangeFilter";
 import FilterSelect from "_common/components/FilterSelect";
 import SortSelect from "_common/components/SortSelect";
-import useIsMobile from "@tera/commons/hooks/useIsMobile";
 
 export interface LessonFilterValue {
   branch: string;
@@ -34,9 +32,6 @@ interface LessonFilterProps {
   onSortChange: (sortBy: string, sortDir: "asc" | "desc") => void;
 }
 
-const DATE_INPUT_MOBILE =
-  "w-full h-9 border border-gray-300 bg-white px-2 text-[13px] rounded-[3px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 box-border";
-
 /**
  * Bộ lọc nhanh danh sách bài học: Lớp học + Giáo viên + Ngày học (date range) +
  * Sắp xếp. Inline — status tabs + search nằm ngoài (list page).
@@ -49,7 +44,6 @@ const LessonFilter = ({
   onSortChange,
 }: LessonFilterProps) => {
   const { t } = useTranslation();
-  const isMobile = useIsMobile();
 
   const { data: branchData } = BranchService.useBranchList({
     params: { page: 1, per_page: 100, status: "active" },
@@ -144,48 +138,13 @@ const LessonFilter = ({
 
       {/* Ngày học + Sắp xếp — mobile: chung 1 hàng; desktop: tách inline */}
       <div className="w-full flex items-center gap-2 xmd:contents">
-        {isMobile ? (
-          <div className="flex flex-1 min-w-0 items-center gap-1.5">
-            <input
-              type="date"
-              className={DATE_INPUT_MOBILE}
-              value={value.dateFrom}
-              max={value.dateTo || undefined}
-              onChange={(e) => onChange({ dateFrom: e.target.value })}
-            />
-            <span className="text-gray-400 shrink-0">→</span>
-            <input
-              type="date"
-              className={DATE_INPUT_MOBILE}
-              value={value.dateTo}
-              min={value.dateFrom || undefined}
-              onChange={(e) => onChange({ dateTo: e.target.value })}
-            />
-          </div>
-        ) : (
-          <RangePicker
-            className="shrink-0 w-[290px]"
-            value={
-              value.dateFrom && value.dateTo
-                ? [
-                    moment(value.dateFrom, "YYYY-MM-DD"),
-                    moment(value.dateTo, "YYYY-MM-DD"),
-                  ]
-                : undefined
-            }
-            format="DD/MM/YYYY"
-            placeholder={[t("lesson.lesson_date"), t("common.to")]}
-            allowClear
-            onChange={(dates: any) =>
-              onChange({
-                dateFrom: dates?.[0]
-                  ? moment(dates[0]).format("YYYY-MM-DD")
-                  : "",
-                dateTo: dates?.[1] ? moment(dates[1]).format("YYYY-MM-DD") : "",
-              })
-            }
-          />
-        )}
+        <DateRangeFilter
+          className="flex-1 xmd:flex-none xmd:w-[290px]"
+          from={value.dateFrom}
+          to={value.dateTo}
+          placeholder={[t("lesson.lesson_date"), t("common.to")]}
+          onChange={(dateFrom, dateTo) => onChange({ dateFrom, dateTo })}
+        />
         <div className="shrink-0">
           <SortSelect
             options={sortOptions}

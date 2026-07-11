@@ -20,6 +20,7 @@ import { EnrollmentService } from "@tera/modules";
 
 /* Import: pages */
 import Pagination from "_common/components/Pagination";
+import { DatePickerField } from "_common/components/DateField";
 import TransferStudent from "./TransferStudent";
 import { IEnrollment } from "pages/education/enrollment/_interface";
 
@@ -368,23 +369,21 @@ const EnrollmentTable = observer(
                 <label className="text-[13px] text-gray-600 font-medium">
                   {t("enrollment.start_date")} <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="date"
+                <DatePickerField
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-[13px] focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500"
+                  onChange={setStartDate}
+                  disableFuture={false}
                 />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-[13px] text-gray-600 font-medium">
                   {t("enrollment.end_date")} <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="date"
+                <DatePickerField
                   value={endDate}
-                  min={startDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 text-[13px] focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500"
+                  onChange={setEndDate}
+                  disableFuture={false}
+                  minDate={startDate}
                 />
               </div>
             </div>
