@@ -6,9 +6,6 @@
  * không có route nào tạo/duyệt yêu cầu rút. Ví là **số dư trả trước để thanh toán hóa đơn**,
  * không rút về ngân hàng.
  *
- * ⚠️ Đây là ràng buộc **nghiệp vụ**, không phải thiếu quyền như [051]. Bật cờ này lên cũng không
- * có gì để gọi. Cần product chốt: BE làm module rút tiền + luồng duyệt, hay bỏ task khỏi sprint.
- * Xem `agents/claude/teacher/sprint4-wallet-checklist.md` §[052].
  */
 export const WITHDRAW_ENABLED = false;
 
