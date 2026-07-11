@@ -1,10 +1,4 @@
-export type LessonDetailTab =
-  | "overview"
-  | "content"
-  | "activities"
-  | "attendance"
-  | "materials"
-  | "notes";
+export type LessonDetailTab = "overview" | "materials" | "homework";
 
 export type LessonActivityStatus = "pending" | "in_progress" | "completed";
 

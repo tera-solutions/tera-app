@@ -173,6 +173,10 @@ export const useAttendanceSession = ({
     counts,
     absentRows,
     dirtyCount: dirtyRows.length,
+    // Reflects persisted records only — unaffected by unsaved local edits, so
+    // callers can gate actions (e.g. "Start lesson") on attendance actually
+    // having been saved rather than merely marked in the UI.
+    hasSavedAttendance: records.length > 0,
     saving,
     loading: rosterQuery.isLoading || recordsQuery.isLoading,
     isError: rosterQuery.isError || recordsQuery.isError,

@@ -2,6 +2,7 @@ import { useEffect, useMemo } from "react";
 import moment from "moment";
 import { ArrowDownTrayOutlined, Button, Spin } from "tera-dls";
 
+import Card from "_common/components/Card";
 import EmptyState from "_common/components/EmptyState";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 import { toClassrooms } from "pages/Classroom/_utils";
@@ -15,7 +16,8 @@ import {
 import { SESSION_RANGE_MONTHS } from "./constants";
 import { useAttendanceSession } from "./hooks/useAttendanceSession";
 import AttendanceHeader from "./components/AttendanceHeader";
-import AttendanceEditor from "./components/AttendanceEditor";
+import AttendanceTable from "./components/AttendanceTable";
+import AttendanceStatsCard from "./components/AttendanceStatsCard";
 
 const SESSION_RANGE = {
   date_from: moment().subtract(SESSION_RANGE_MONTHS, "months").format("YYYY-MM-DD"),
@@ -113,16 +115,28 @@ const Attendance = () => {
           sessionsLoading={sessionsLoading}
         />
 
-        {!classId ? null : sessionsLoading ? (
-          <div className="flex h-40 items-center justify-center">
-            <Spin spinning>
-              <div className="h-20" />
-            </Spin>
-          </div>
-        ) : !sessionId ? (
-          <EmptyState description="Lớp học này chưa có buổi học nào" />
+        {!classId ? null : !sessionsLoading && !sessionId ? (
+          <Card>
+            <EmptyState description="Lớp học này chưa có buổi học nào" />
+          </Card>
         ) : (
-          <AttendanceEditor session={session} />
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_320px]">
+            <Card>
+              <AttendanceTable
+                rows={session.rows}
+                isError={session.isError}
+                onRetry={session.refetch}
+                loading={sessionsLoading || session.loading}
+              />
+            </Card>
+
+            <div className="xl:block">
+              <AttendanceStatsCard
+                counts={session.counts}
+                loading={sessionsLoading || session.loading}
+              />
+            </div>
+          </div>
         )}
       </div>
     </div>

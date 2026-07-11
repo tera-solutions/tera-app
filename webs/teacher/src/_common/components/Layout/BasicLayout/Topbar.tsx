@@ -70,6 +70,7 @@ const Topbar = observer(() => {
 
         <button
           type="button"
+          onClick={() => navigate(PATHS.notifications)}
           className="relative flex h-9 w-9 items-center justify-center rounded-full text-slate-500"
         >
           <BellOutlined className="size-6" />
@@ -80,6 +81,7 @@ const Topbar = observer(() => {
 
         <button
           type="button"
+          onClick={() => navigate(PATHS.messages)}
           className="relative flex h-9 w-9 items-center justify-center rounded-full text-slate-500"
         >
           <ChatBubbleLeftOutlined className="size-6" />

@@ -182,7 +182,7 @@ const StepReviewCreate = ({
           outlined
           onClick={onBack}
           disabled={submitting}
-          className="text-slate-600 border-slate-200 hover:bg-slate-50"
+          className="text-brand border-brand hover:bg-brand"
         >
           Quay lại
         </Button>
