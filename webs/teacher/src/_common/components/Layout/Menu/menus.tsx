@@ -256,6 +256,7 @@ export const PATHS = {
   wallet: "/wallet",
   // Menu active dò segment ("wallet" nằm trong pathname) → sidebar vẫn sáng ở "Ví cá nhân".
   walletDeposit: "/wallet/deposit",
+  walletWithdraw: "/wallet/withdraw",
   messages: "/messages",
   more: "/more",
   profile: "/profile",

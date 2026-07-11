@@ -121,6 +121,7 @@ const Wallet = () => {
             balance={wallet.balance}
             loading={walletLoading}
             onDeposit={() => navigate(PATHS.walletDeposit)}
+            onWithdraw={() => navigate(PATHS.walletWithdraw)}
           />
         </div>
         <div className="lg:col-start-2 lg:row-start-1">

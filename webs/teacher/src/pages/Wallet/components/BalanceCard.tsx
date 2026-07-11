@@ -18,6 +18,7 @@ interface BalanceCardProps {
   showDeposit?: boolean;
   showWithdraw?: boolean;
   onDeposit?: () => void;
+  onWithdraw?: () => void;
   /** `stretch` (mặc định, màn Ví): nút chia đều hết bề ngang thẻ.
    * `end` (trang Nạp tiền): **từ `lg` trở lên** nút co theo nội dung + dạt phải;
    * dưới `lg` vẫn full-width (nút ngắn nằm giữa thẻ rộng trông hụt hơn là full-width). */
@@ -31,12 +32,12 @@ const BalanceCard = ({
   showDeposit = true,
   showWithdraw = true,
   onDeposit,
+  onWithdraw,
   actionsAlign = "stretch",
 }: BalanceCardProps) => {
   // Mặc định ẩn số dư — người dùng bấm con mắt mới hiện (không nhớ lựa chọn giữa các lần vào trang).
   const [hidden, setHidden] = useState(true);
 
-  // Rút tiền = task [052] — backend không có khái niệm rút tiền, chưa làm.
   const notReady = () =>
     notification.warning({ message: "Tính năng đang được phát triển" });
 
@@ -94,7 +95,7 @@ const BalanceCard = ({
           {showWithdraw && (
             <button
               type="button"
-              onClick={notReady}
+              onClick={onWithdraw ?? notReady}
               className={classNames(
                 "flex items-center justify-center gap-2 rounded-xl border border-white/60 font-semibold text-white transition-colors hover:bg-white/10",
                 actionsAlign === "end"
