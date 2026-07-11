@@ -40,6 +40,7 @@ const UserFilter = ({
   const { t } = useTranslation();
 
   const sortOptions = [
+    { value: "user_id", label: t("user.user_id") },
     { value: "full_name", label: t("user.full_name") },
     { value: "username", label: t("user.username") },
     { value: "created_at", label: t("user.created_at") },
