@@ -139,6 +139,7 @@ const Deposit = () => {
             balance={wallet.balance}
             loading={walletLoading}
             showDeposit={false}
+            onWithdraw={() => navigate(PATHS.walletWithdraw)}
             actionsAlign="end"
           />
         </div>

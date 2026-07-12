@@ -88,8 +88,15 @@ const toActivityParams = (
   status: activity.status,
 });
 
+/**
+ * `includeActivities: false` omits the `activities` key entirely so the
+ * backend's full-replace sync is skipped — used once a lesson has a real id
+ * and its activities are edited individually via the activity endpoints
+ * instead of being bundled into the lesson payload.
+ */
 export const toTemplateParams = (
   template: WizardLessonTemplate,
+  options?: { includeActivities?: boolean },
 ): LessonPlanLessonParams => ({
   lesson_title: template.lesson_title.trim(),
   objective: joinObjective(template.objective) || undefined,
@@ -97,7 +104,11 @@ export const toTemplateParams = (
   grammar: template.grammar.trim() || undefined,
   homework: template.homework.trim() || undefined,
   duration: template.duration || undefined,
-  activities: template.activities
-    .filter((a) => a.title.trim())
-    .map(toActivityParams),
+  ...((options?.includeActivities ?? true)
+    ? {
+        activities: template.activities
+          .filter((a) => a.title.trim())
+          .map(toActivityParams),
+      }
+    : {}),
 });

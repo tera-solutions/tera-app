@@ -214,6 +214,16 @@ const Schedule = () => {
     setCurrentDate(moment());
   };
 
+  const handleSelectDate = (date: moment.Moment) => {
+    setRangeFilter(null);
+    setCurrentDate(date.clone());
+  };
+
+  const handleSelectRange = (value: [moment.Moment, moment.Moment]) => {
+    setRangeFilter(value);
+    setCurrentDate(value[0].clone());
+  };
+
   const handleStatusToggle = (status: ScheduleStatus) =>
     setStatuses((prev) =>
       prev.includes(status)
@@ -302,10 +312,7 @@ const Schedule = () => {
     onClassChange: setClassId,
     onStatusToggle: handleStatusToggle,
     onBranchChange: setBranch,
-    onRangeChange: (value: [moment.Moment, moment.Moment]) => {
-      setRangeFilter(value);
-      setCurrentDate(value[0].clone());
-    },
+    onRangeChange: handleSelectRange,
     onRangeClear: () => setRangeFilter(null),
     rangeActive: !!rangeFilter,
     onReset: handleResetFilters,
@@ -336,6 +343,8 @@ const Schedule = () => {
           onPrev={() => step(-1)}
           onNext={() => step(1)}
           onToday={handleToday}
+          onSelectDate={handleSelectDate}
+          onSelectRange={handleSelectRange}
         />
       </div>
 

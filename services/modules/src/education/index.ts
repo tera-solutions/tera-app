@@ -1,4 +1,5 @@
 export * from "./attendance";
+export * from "./class-session-feedback";
 export * from "./class-room";
 export * from "./class-schedule";
 export * from "./class-session";
@@ -14,6 +15,7 @@ export * from "./level";
 export * from "./lesson";
 export * from "./lesson-plan";
 export * from "./lesson-plan-lesson";
+export * from "./lesson-plan-lesson-activity";
 export * from "./student";
 export * from "./student-level";
 export * from "./material";

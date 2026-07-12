@@ -1,22 +1,13 @@
 import type { CourseDetail, CourseStats, CurriculumItem } from "./_interface";
 
-/** Objective is stored as a single ";"-joined string; count the non-empty entries. */
-const countObjectives = (value: unknown): number =>
-  typeof value === "string"
-    ? value.split(";").map((v) => v.trim()).filter(Boolean).length
-    : 0;
-
-/** Maps a lesson plan's `lessons` (edu_lesson_plan_lessons) — the course's reusable curriculum, independent of any specific class's schedule. */
+/** Maps a course's `curriculums` (edu_course_curriculums) — its syllabus outline, independent of any lesson plan or class. */
 export const toCurriculumItems = (raw: any[] | null | undefined): CurriculumItem[] =>
   (raw ?? [])
     .map((item) => ({
       id: item.id ?? 0,
-      order: item.lesson_no ?? 0,
-      title: item.lesson_title ?? "",
-      duration: item.duration ?? 0,
-      objective_count: countObjectives(item.objective),
-      activities_count: Array.isArray(item.activities) ? item.activities.length : 0,
-      materials_count: Array.isArray(item.materials) ? item.materials.length : 0,
+      order: item.order ?? 0,
+      title: item.title ?? "",
+      content: item.content ?? "",
     }))
     .sort((a, b) => a.order - b.order);
 
@@ -29,6 +20,8 @@ export const toCourseDetail = (raw: any): CourseDetail | null => {
     thumbnail: raw.thumbnail ?? "",
     description: raw.description ?? "",
     duration_minutes: raw.duration_minutes ?? 0,
+    price_per_lesson: Number(raw.price_per_lesson ?? 0),
+    is_active: !!raw.is_active,
   };
 };
 

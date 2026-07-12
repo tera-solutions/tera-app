@@ -142,20 +142,16 @@ const ScheduleDetailDrawer = ({
         {detail && (
           <div className="flex flex-col gap-2 border-t border-slate-100 px-5 py-4">
             <Button
-              type="primary"
-              className="w-full"
               disabled={detail.status === "completed"}
-              onClick={() => navigate(`${PATHS.lesson}/${detail.id}`)}
+              onClick={() => navigate(`${PATHS.session}/${detail.id}`)}
+              className="whitespace-nowrap bg-brand hover:bg-brand/80"
             >
               Bắt đầu buổi học
             </Button>
             <Button
-              type="alternative"
               outlined
-              className="w-full"
-              onClick={() =>
-                navigate(`${PATHS.classroom}/${detail.class_id ?? ""}`)
-              }
+              onClick={() => navigate(`${PATHS.classroom}/${detail.class_id ?? ""}`)}
+              className="text-brand border-brand hover:bg-brand"
             >
               Xem chi tiết lớp
             </Button>

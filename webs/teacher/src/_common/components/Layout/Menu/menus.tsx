@@ -256,10 +256,12 @@ export const PATHS = {
   wallet: "/wallet",
   // Menu active dò segment ("wallet" nằm trong pathname) → sidebar vẫn sáng ở "Ví cá nhân".
   walletDeposit: "/wallet/deposit",
+  walletWithdraw: "/wallet/withdraw",
   messages: "/messages",
   more: "/more",
   profile: "/profile",
   lesson: "/lesson",
+  session: "/session",
 } as const;
 
 export interface MenuItem {
@@ -307,16 +309,27 @@ export const MENU: MenuItem[] = [
     icon: <DocumentTextOutlined />,
   },
   {
-    key: "exam",
-    title: "Bài kiểm tra",
-    path: PATHS.exam,
-    icon: <PencilSquareOutlined />,
-  },
-  {
     key: "students",
     title: "Học viên",
     path: PATHS.students,
     icon: <AcademicCapOutlined />,
+  },
+  {
+    key: "more",
+    title: "Khác",
+    path: PATHS.more,
+    icon: <SquaresPlusOutlined />,
+  },
+];
+
+// Secondary items, reached via the "Khác" entry above instead of the pinned
+// sidebar (webs/teacher/src/pages/More).
+export const MORE_MENU_ITEMS: MenuItem[] = [
+  {
+    key: "exam",
+    title: "Bài kiểm tra",
+    path: PATHS.exam,
+    icon: <PencilSquareOutlined />,
   },
   {
     key: "evaluation",
@@ -355,22 +368,10 @@ export const MENU: MenuItem[] = [
     icon: <ChartBarOutlined />,
   },
   {
-    key: "notifications",
-    title: "Thông báo",
-    path: PATHS.notifications,
-    icon: <BellOutlined />,
-  },
-  {
     key: "wallet",
     title: "Ví cá nhân",
     path: PATHS.wallet,
     icon: <WalletOutlined />,
-  },
-  {
-    key: "more",
-    title: "Khác",
-    path: PATHS.more,
-    icon: <SquaresPlusOutlined />,
   },
 ];
 

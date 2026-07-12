@@ -8,11 +8,8 @@ export const LESSON_ACTIVITY_STATUS_META = "lesson_activity_status";
 
 export const DETAIL_TABS: { key: LessonDetailTab; label: string }[] = [
   { key: "overview", label: "Tổng quan" },
-  { key: "content", label: "Nội dung" },
-  { key: "activities", label: "Hoạt động" },
-  { key: "attendance", label: "Điểm danh" },
   { key: "materials", label: "Tài liệu" },
-  { key: "notes", label: "Ghi chú" },
+  { key: "homework", label: "Bài tập" },
 ];
 
 /** Tailwind background/text tokens per material extension group. */

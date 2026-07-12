@@ -1,16 +1,28 @@
 import type { WizardLessonTemplate } from "../_interface";
 import ActivityListEditor from "./ActivityListEditor";
+import ActivityListEditorServer from "./ActivityListEditorServer";
 
 interface LessonTemplateFieldsProps {
   form: WizardLessonTemplate;
   onChange: (patch: Partial<WizardLessonTemplate>) => void;
+  /**
+   * Once a lesson has a real id, activities are edited directly against the
+   * server (see `ActivityListEditorServer`) instead of the in-memory list
+   * bundled into the lesson's own save. Omitted entirely for the create
+   * wizard, where no lesson id exists until the final submit.
+   */
+  lessonPlanLessonId?: number;
 }
 
 export const templateInputClass =
   "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:border-brand";
 
 /** The lesson-template form body, shared by the server-backed (edit) and local (create) cards. */
-const LessonTemplateFields = ({ form, onChange }: LessonTemplateFieldsProps) => (
+const LessonTemplateFields = ({
+  form,
+  onChange,
+  lessonPlanLessonId,
+}: LessonTemplateFieldsProps) => (
   <div className="flex flex-col gap-3">
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_120px]">
       <div>
@@ -91,10 +103,14 @@ const LessonTemplateFields = ({ form, onChange }: LessonTemplateFieldsProps) => 
       </div>
     </div>
 
-    <ActivityListEditor
-      activities={form.activities}
-      onChange={(activities) => onChange({ activities })}
-    />
+    {lessonPlanLessonId ? (
+      <ActivityListEditorServer lessonPlanLessonId={lessonPlanLessonId} />
+    ) : (
+      <ActivityListEditor
+        activities={form.activities}
+        onChange={(activities) => onChange({ activities })}
+      />
+    )}
   </div>
 );
 

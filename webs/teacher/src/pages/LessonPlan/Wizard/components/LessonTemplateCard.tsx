@@ -56,7 +56,10 @@ const LessonTemplateCard = ({
       return;
     }
 
-    const params = toTemplateParams(form);
+    // Once the lesson has a real id, activities are edited independently via
+    // ActivityListEditorServer — omit them here so the update doesn't
+    // destructively replace what's already been saved per-row.
+    const params = toTemplateParams(form, { includeActivities: !form.id });
     const onSuccess = (res: any) => {
       notification.success({ message: res?.msg ?? "Lưu buổi học thành công" });
       onSaved();
@@ -154,6 +157,7 @@ const LessonTemplateCard = ({
           <LessonTemplateFields
             form={form}
             onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
+            lessonPlanLessonId={form.id}
           />
 
           <div className="flex justify-end gap-2 border-t border-slate-100 pt-3">

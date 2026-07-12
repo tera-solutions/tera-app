@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import { Button, Spin } from "tera-dls";
+import { Button, notification, Spin } from "tera-dls";
 
 import { LessonPlanService } from "@tera/modules/education";
 
@@ -32,7 +32,6 @@ const EditWizard = observer(({ planId: routePlanId }: EditWizardProps) => {
 
   const [step, setStep] = useState(1);
   const [planId, setPlanId] = useState<number>(routePlanId);
-  // How far the flow has been unlocked; steps before this are shown as done.
   const [maxStep, setMaxStep] = useState(4);
 
   const planQuery = LessonPlanService.useLessonPlanDetail({ id: planId });
@@ -41,6 +40,19 @@ const EditWizard = observer(({ planId: routePlanId }: EditWizardProps) => {
     if (!payload) return null;
     return toLessonPlan(payload.plan ?? payload);
   }, [planQuery.data]);
+
+  const isNotFound = useMemo(() => {
+    if (!planQuery.isError) return false;
+    const error = planQuery.error as any;
+    const status = error?.data?.code ?? error?.response?.status;
+    return status === 404;
+  }, [planQuery.isError, planQuery.error]);
+
+  useEffect(() => {
+    if (!isNotFound) return;
+    notification.error({ message: "Không tìm thấy giáo án." });
+    navigate(PATHS.lessonPlans);
+  }, [isNotFound, navigate]);
 
   const completedSteps = useMemo(
     () => Array.from({ length: Math.max(maxStep - 1, 0) }, (_, i) => i + 1),
@@ -70,7 +82,7 @@ const EditWizard = observer(({ planId: routePlanId }: EditWizardProps) => {
         ]}
       />
 
-      {planQuery.isLoading ? (
+      {planQuery.isLoading || isNotFound ? (
         <Card>
           <Spin spinning>
             <div className="h-[30vh]" />

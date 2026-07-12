@@ -96,6 +96,27 @@ export const useClassSessionCancel = () => {
   });
 };
 
+export const useClassSessionStart = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => ClassSessionAPI.start(payload),
+    onSuccess: (res: any) => {
+      queryClient.invalidateQueries({ queryKey: ["class-session", "list"] });
+      const id = res?.data?.id;
+      if (id) {
+        queryClient.invalidateQueries({
+          queryKey: ["class-session", "detail", id],
+        });
+      }
+      queryClient.invalidateQueries({ queryKey: ["room", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const useClassSessionEnd = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -132,6 +153,7 @@ export const ClassSessionService = {
   useClassSessionGenerate,
   useClassSessionUpdate,
   useClassSessionCancel,
+  useClassSessionStart,
   useClassSessionEnd,
   useClassSessionDelete,
 };
