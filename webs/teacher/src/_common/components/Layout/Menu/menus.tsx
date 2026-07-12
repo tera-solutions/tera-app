@@ -253,6 +253,7 @@ export const PATHS = {
   reports: "/reports",
   evaluation: "/evaluation",
   notifications: "/notifications",
+  timesheet: "/timesheet",
   wallet: "/wallet",
   // Menu active dò segment ("wallet" nằm trong pathname) → sidebar vẫn sáng ở "Ví cá nhân".
   walletDeposit: "/wallet/deposit",
@@ -366,6 +367,12 @@ export const MORE_MENU_ITEMS: MenuItem[] = [
     title: "Báo cáo",
     path: PATHS.reports,
     icon: <ChartBarOutlined />,
+  },
+  {
+    key: "timesheet",
+    title: "Bảng công",
+    path: PATHS.timesheet,
+    icon: <ClipboardDocumentCheckOutlined />,
   },
   {
     key: "wallet",

@@ -43,6 +43,7 @@ import Transfer from "pages/Transfer";
 import Wallet from "pages/Wallet";
 import Deposit from "pages/Deposit";
 import Withdraw from "pages/Withdraw";
+import Timesheet from "pages/Timesheet";
 import Placeholder from "pages/Placeholder";
 import More from "pages/More";
 
@@ -120,6 +121,7 @@ export const Routers = () => {
         <Route path={PATHS.wallet} element={<Wallet />} />
         <Route path={PATHS.walletDeposit} element={<Deposit />} />
         <Route path={PATHS.walletWithdraw} element={<Withdraw />} />
+        <Route path={PATHS.timesheet} element={<Timesheet />} />
         <Route path={PATHS.profile} element={<MyInfo />} />
         <Route path={PATHS.more} element={<More />} />
         {PLACEHOLDER_PATHS.map((path) => (
