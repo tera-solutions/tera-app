@@ -14,10 +14,9 @@ const STATUS_CONFIG: Record<
   ExamStatus,
   { label: string; bg: string; color: string }
 > = {
-  ongoing: { label: 'Đang diễn ra', bg: '#F0FDF4', color: '#16A34A' },
-  needs_grading: { label: 'Cần chấm bài', bg: '#FFF7ED', color: '#EA580C' },
-  completed: { label: 'Đã hoàn thành', bg: '#F0FDF4', color: '#16A34A' },
-  upcoming: { label: 'Chưa bắt đầu', bg: '#F1F5F9', color: '#64748B' },
+  in_progress: { label: 'Đang diễn ra', bg: '#F0FDF4', color: '#16A34A' },
+  closed: { label: 'Đã đóng', bg: '#EEF5FF', color: '#0066CC' },
+  scheduled: { label: 'Chưa bắt đầu', bg: '#F1F5F9', color: '#64748B' },
 };
 
 export default function ExamItem({ item }: Props) {
@@ -44,11 +43,6 @@ export default function ExamItem({ item }: Props) {
                   {statusCfg.label}
                 </Text>
               </View>
-              {item.status === 'needs_grading' && item.needsGradingCount != null && (
-                <View style={styles.gradingCountBadge}>
-                  <Text style={styles.gradingCountText}>{item.needsGradingCount}</Text>
-                </View>
-              )}
               <TouchableOpacity style={styles.examMenuBtn}>
                 <Ellipsis size={16} color="#94A3B8" />
               </TouchableOpacity>
@@ -60,7 +54,8 @@ export default function ExamItem({ item }: Props) {
           <View style={styles.examMetaRow}>
             <Icon source="calendar-outline" size={14} color="#94A3B8" />
             <Text style={styles.examMetaText}>
-              Thời gian: {item.date} • {item.duration} phút
+              Ngày kiểm tra: {item.date}
+              {item.timeRange ? ` • ${item.timeRange}` : ''}
             </Text>
           </View>
 
@@ -74,7 +69,7 @@ export default function ExamItem({ item }: Props) {
       <View style={styles.examItemBottom}>
         <TouchableOpacity
           style={styles.detailBtn}
-          onPress={() => router.push(`/edu/exam-detail?examId=${item.id}` as any)}
+          onPress={() => router.push(`/edu/exam-detail?sessionId=${item.sessionId}` as any)}
         >
           <Text style={styles.detailBtnText}>Xem chi tiết</Text>
         </TouchableOpacity>

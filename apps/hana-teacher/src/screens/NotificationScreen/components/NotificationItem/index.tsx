@@ -12,6 +12,7 @@ import {
 import { LucideIcon } from 'lucide-react-native';
 
 import { NotificationItemType, NotificationType } from '../../types';
+import { formatTime } from '../../_utils';
 import { styles } from '../../styles';
 
 interface NotificationItemProps {
@@ -59,7 +60,7 @@ export default function NotificationItem({ item, showSeparator = false, onPress 
             >
               {item.title}
             </Text>
-            <Text style={styles.itemTime}>{item.time}</Text>
+            <Text style={styles.itemTime}>{formatTime(item.createdAt)}</Text>
           </View>
 
           <Text style={styles.itemDescription} numberOfLines={2}>

@@ -213,20 +213,6 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1E293B',
   },
-  semesterSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#EEF5FF',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 10,
-  },
-  semesterText: {
-    fontSize: 12,
-    color: '#0066CC',
-    fontWeight: '600',
-  },
 
   // ─── OVERVIEW STATS ──────────────────────────────────────────────────────────
   overviewGrid: {
@@ -308,22 +294,6 @@ export const styles = StyleSheet.create({
     fontSize: 11,
     color: '#94A3B8',
     textAlign: 'right',
-  },
-  activityTime: {
-    fontSize: 11,
-    color: '#94A3B8',
-    textAlign: 'right',
-  },
-  overdueBadge: {
-    backgroundColor: '#FFF1F2',
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  overdueBadgeText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#EF4444',
   },
   viewAllBtn: {
     flexDirection: 'row',
@@ -433,5 +403,100 @@ export const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     color: '#FFFFFF',
+  },
+
+  // ─── GENERIC LIST ROW (attendance/scores/comments/homework tabs) ────────────
+  listRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 11,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  listRowBody: {
+    flex: 1,
+  },
+  listRowTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  listRowSubtitle: {
+    fontSize: 12,
+    color: '#94A3B8',
+    marginTop: 2,
+  },
+  listRowRight: {
+    alignItems: 'flex-end',
+    gap: 3,
+  },
+  listRowValue: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#0066CC',
+  },
+  statusBadge: {
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  statusBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+
+  // ─── EMPTY / ERROR STATE ─────────────────────────────────────────────────────
+  emptyWrapper: {
+    alignItems: 'center',
+    paddingVertical: 28,
+    gap: 8,
+  },
+  emptyText: {
+    fontSize: 13,
+    color: '#94A3B8',
+    textAlign: 'center',
+  },
+  retryText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#0066CC',
+  },
+
+  // ─── INFO TAB ────────────────────────────────────────────────────────────────
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  infoLabel: {
+    fontSize: 12,
+    color: '#94A3B8',
+    width: 100,
+  },
+  infoValue: {
+    flex: 1,
+    fontSize: 13,
+    color: '#1E293B',
+    fontWeight: '500',
+  },
+  parentCard: {
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 8,
+    gap: 3,
+  },
+  parentName: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  parentMeta: {
+    fontSize: 12,
+    color: '#64748B',
   },
 });

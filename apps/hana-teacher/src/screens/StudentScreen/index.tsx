@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { useStudentList } from '@tera/modules/education/student';
+import { ClassRoomService } from '@tera/modules/education';
 import { getListData } from '@tera/commons/hooks';
 
 import StudentHeader from './components/StudentHeader';
 import ClassInfoCard from './components/ClassInfoCard';
-import StatsRow from './components/StatsRow';
 import StudentTabs from './components/StudentTabs';
 import StudentSearchBar from './components/StudentSearchBar';
 import StudentItem from './components/StudentItem';
@@ -20,8 +20,8 @@ import {
   StudentResponse,
   StudentApiStatus,
   StudentTag,
+  ClassInfo,
 } from './types';
-import { CLASS_INFO } from './constants';
 import { styles } from './styles';
 
 // ─── Avatar pool ─────────────────────────────────────────────────────────────
@@ -74,11 +74,24 @@ function mapToStudentItem(item: StudentResponse, index: number): StudentItemType
 // ─── Screen ──────────────────────────────────────────────────────────────────
 export default function StudentScreen() {
   const router = useRouter();
+  const { classId } = useLocalSearchParams<{ classId?: string }>();
+  const hasClass = !!classId;
+
   const [activeTab, setActiveTab] = useState<StudentTab>('list');
   const [search, setSearch] = useState('');
 
+  const classDetailQuery = ClassRoomService.useClassRoomDetail(
+    { id: classId ?? '' },
+    { enabled: hasClass },
+  );
+  const classRaw = classDetailQuery.data?.data?.class ?? classDetailQuery.data?.data;
+
   const { data, isLoading, isFetching, refetch } = useStudentList({
-    params: { search: search || undefined, per_page: 50 },
+    params: {
+      search: search || undefined,
+      per_page: 50,
+      filters: hasClass ? { class_id: Number(classId) } : undefined,
+    },
   });
 
   const { items, pagination } = getListData<StudentResponse>(data);
@@ -94,6 +107,26 @@ export default function StudentScreen() {
 
   const absentCount = studentList.filter((s) => s.status === 'absent').length;
 
+  // Không có endpoint chi tiết điểm danh/ngày hôm nay theo lớp, nên chỉ hiển
+  // thị các thông tin tĩnh của lớp thật, không bịa số liệu "Đi học/Vắng học".
+  const classInfo: ClassInfo | null =
+    hasClass && classRaw
+      ? {
+          id: String(classRaw.id ?? classId),
+          name: classRaw.name ?? '',
+          ageGroup: '',
+          level: classRaw.course?.name ?? '',
+          room: classRaw.room?.name ?? '',
+          branch: classRaw.branch?.name ?? '',
+          image: require('@tera/assets/app/element_84.png'),
+          color: '#0B84FF',
+          totalStudents: pagination.total,
+          presentCount: 0,
+          absentCount: 0,
+          attendanceRate: 0,
+        }
+      : null;
+
   const handlePressStudent = (item: StudentItemType) => {
     router.push(`/student/student-detail?studentId=${item.id}`);
   };
@@ -108,9 +141,7 @@ export default function StudentScreen() {
         refreshing={isFetching}
         onRefresh={refetch}
       >
-        <ClassInfoCard info={CLASS_INFO} />
-
-        <StatsRow info={CLASS_INFO} totalStudents={pagination.total} />
+        {classInfo && <ClassInfoCard info={classInfo} />}
 
         <StudentTabs
           activeTab={activeTab}
@@ -137,10 +168,20 @@ export default function StudentScreen() {
           ))
         )}
 
-        <QuickAttendanceBanner classId={CLASS_INFO.id} />
+        {hasClass && <QuickAttendanceBanner classId={classId} />}
       </ScrollView>
 
-      <EnrollFAB onPress={() => router.push(`/student/enrollment?classId=${CLASS_INFO.id}`)} />
+      {hasClass ? (
+        <EnrollFAB
+          label="Ghi danh"
+          onPress={() => router.push(`/student/enrollment?classId=${classId}`)}
+        />
+      ) : (
+        <EnrollFAB
+          label="Tạo mới"
+          onPress={() => router.push('/student/student-create')}
+        />
+      )}
     </View>
   );
 }

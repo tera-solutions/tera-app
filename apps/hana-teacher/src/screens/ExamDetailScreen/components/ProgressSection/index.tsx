@@ -25,7 +25,7 @@ export default function ProgressSection({ percent, updatedAt }: Props) {
         <Text style={styles.progressCaption}>
           {percent}% học viên đã nộp bài
         </Text>
-        <Text style={styles.progressUpdated}>Cập nhật: {updatedAt}</Text>
+        <Text style={styles.progressUpdated}>Ngày thi: {updatedAt}</Text>
       </View>
     </View>
   );

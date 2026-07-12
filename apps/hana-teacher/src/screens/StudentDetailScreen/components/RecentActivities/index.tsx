@@ -30,13 +30,7 @@ function ActivityRow({ item, showSep }: { item: ActivityItem; showSep: boolean }
         </View>
 
         <View style={styles.activityRight}>
-          {item.isOverdue ? (
-            <View style={styles.overdueBadge}>
-              <Text style={styles.overdueBadgeText}>Quá hạn</Text>
-            </View>
-          ) : null}
           <Text style={styles.activityDate}>{item.date}</Text>
-          {!!item.time && <Text style={styles.activityTime}>{item.time}</Text>}
         </View>
 
         <ChevronRight size={16} color="#CBD5E1" />
@@ -55,14 +49,18 @@ export default function RecentActivities({ activities, onViewAll }: RecentActivi
         </View>
       </View>
 
-      {activities.map((item, idx) => (
-        <ActivityRow key={item.id} item={item} showSep={idx > 0} />
-      ))}
+      {activities.length === 0 ? (
+        <Text style={styles.emptyText}>Chưa có hoạt động nào gần đây</Text>
+      ) : (
+        activities.map((item, idx) => <ActivityRow key={item.id} item={item} showSep={idx > 0} />)
+      )}
 
-      <TouchableOpacity style={styles.viewAllBtn} onPress={onViewAll}>
-        <Text style={styles.viewAllText}>Xem tất cả hoạt động</Text>
-        <ChevronRight size={14} color="#0066CC" />
-      </TouchableOpacity>
+      {activities.length > 0 && (
+        <TouchableOpacity style={styles.viewAllBtn} onPress={onViewAll}>
+          <Text style={styles.viewAllText}>Xem tất cả hoạt động</Text>
+          <ChevronRight size={14} color="#0066CC" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }

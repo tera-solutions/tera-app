@@ -112,37 +112,25 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // ─── GRADING BANNER ──────────────────────────────────────────────────────────
-  gradingBanner: {
+  // ─── SEARCH BAR ──────────────────────────────────────────────────────────────
+  searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EEF5FF',
+    gap: 8,
+    backgroundColor: '#FFFFFF',
     marginHorizontal: 16,
-    marginTop: 12,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    gap: 10,
+    marginTop: 10,
+    paddingHorizontal: 12,
+    height: 42,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  gradingBannerText: {
+  searchInput: {
     flex: 1,
-    fontSize: 13,
-    color: '#334155',
-    lineHeight: 18,
-  },
-  gradingBannerHighlight: {
-    fontWeight: '700',
-    color: '#0066CC',
-  },
-  gradingBannerLink: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-  gradingBannerLinkText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#0066CC',
+    fontSize: 14,
+    color: '#1E293B',
+    padding: 0,
   },
 
   // ─── FILTER TABS ─────────────────────────────────────────────────────────────
@@ -240,19 +228,6 @@ export const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
   },
-  gradingCountBadge: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#EF4444',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  gradingCountText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
   examMenuBtn: {
     padding: 4,
   },
@@ -289,89 +264,19 @@ export const styles = StyleSheet.create({
     color: '#0066CC',
   },
 
-  // ─── RESULTS REPORT ──────────────────────────────────────────────────────────
-  reportSection: {
-    marginHorizontal: 16,
-    marginTop: 20,
-  },
-  reportHeader: {
-    flexDirection: 'row',
+  // ─── EMPTY / ERROR STATE ─────────────────────────────────────────────────────
+  emptyWrapper: {
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
+    paddingVertical: 32,
+    gap: 8,
   },
-  reportTitle: {
-    fontSize: 16,
+  emptyText: {
+    fontSize: 13,
+    color: '#94A3B8',
+  },
+  retryText: {
+    fontSize: 13,
     fontWeight: '700',
     color: '#0066CC',
-  },
-  reportLink: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#0066CC',
-  },
-  reportCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 1,
-  },
-  reportChartWrapper: {
-    width: 90,
-    height: 90,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  reportChartLabel: {
-    position: 'absolute',
-    alignItems: 'center',
-  },
-  reportChartPct: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#1E293B',
-  },
-  reportChartCaption: {
-    fontSize: 10,
-    color: '#94A3B8',
-    textAlign: 'center',
-  },
-  gradeList: {
-    flex: 1,
-    gap: 8,
-  },
-  gradeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  gradeLabel: {
-    fontSize: 12,
-    color: '#475569',
-    width: 72,
-  },
-  gradeBarTrack: {
-    flex: 1,
-    height: 6,
-    backgroundColor: '#E2E8F0',
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  gradeBarFill: {
-    height: 6,
-    borderRadius: 3,
-  },
-  gradeCount: {
-    fontSize: 12,
-    color: '#64748B',
-    width: 46,
-    textAlign: 'right',
   },
 });

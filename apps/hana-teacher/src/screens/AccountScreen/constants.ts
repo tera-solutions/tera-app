@@ -43,6 +43,13 @@ export const MENUS = [
     color: '#0066cc',
   },
   {
+    id: 'students',
+    title: 'Học viên',
+    icon: Users,
+    color: '#0EA5E9',
+    link: '/student/students'
+  },
+  {
     id: 'teaching',
     title: 'Bài kiểm tra',
     icon: CalendarDays,

@@ -1,20 +1,26 @@
-export type ExamDetailTab =
-  | 'overview'
-  | 'questions'
-  | 'results'
-  | 'students'
-  | 'settings';
+export type ExamDetailTab = 'overview' | 'questions' | 'results' | 'students' | 'settings';
 
-export type ExamStatus = 'ongoing' | 'needs_grading' | 'completed' | 'upcoming';
+export type ExamStatus = 'scheduled' | 'in_progress' | 'closed';
+
+export type RegistrationStatus =
+  | 'registered'
+  | 'in_progress'
+  | 'submitted'
+  | 'absent'
+  | 'graded'
+  | 'published';
+
+export type ExamResultGrade = 'excellent' | 'good' | 'pass' | 'fail';
 
 export interface ExamDetailInfo {
-  id: string;
+  id: number;
+  examId: number | null;
   title: string;
   className: string;
-  subject: string;
+  roomName: string;
+  teacherName: string;
   duration: number; // minutes
-  startDate: string;
-  endDate: string;
+  examDate: string;
   status: ExamStatus;
   iconName: string;
   iconBg: string;
@@ -30,18 +36,38 @@ export interface ExamDetailStats {
   avgScore: number;
 }
 
-export interface SubmissionItem {
-  id: string;
-  name: string;
-  submittedAt: string;
-  score: number;
+export interface ExamScoreSummary {
+  totalScore: number;
+  passingScore: number;
   maxScore: number;
-  avatar: number;
+  minScore: number;
 }
 
-export interface QuestionBankInfo {
-  totalQuestions: number;
-  multipleChoice: number;
-  essay: number;
-  totalScore: number;
+// ── API response shape (từ /v1/edu/exam-session/detail/:id + /v1/edu/exam/detail/:id) ──
+
+export interface ExamResultRow {
+  registrationId: number;
+  studentId: number;
+  studentCode: string;
+  studentName: string;
+  registrationStatus: RegistrationStatus;
+  totalScore: number | null;
+  passed: boolean | null;
+  grade: ExamResultGrade | null;
+}
+
+export interface ExamScoreStats {
+  avg: number;
+  max: number;
+  min: number;
+  passRate: number;
+  gradedCount: number;
+  totalCount: number;
+  pendingCount: number;
+}
+
+export interface ExamSessionSummaryStats {
+  submittedCount: number;
+  completionRate: number;
+  needsRegradeCount: number;
 }

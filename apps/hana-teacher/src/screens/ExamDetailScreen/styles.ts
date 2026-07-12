@@ -384,11 +384,18 @@ export const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#F1F5F9',
   },
-  avatar: {
+  avatarCircle: {
     width: 44,
     height: 44,
     borderRadius: 22,
     backgroundColor: '#EEF5FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#0066CC',
   },
   submissionInfo: {
     flex: 1,
@@ -448,5 +455,135 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#64748B',
     textAlign: 'center',
+  },
+
+  // ─── TAB CONTENT (Questions / Results / Students / Settings) ─────────────────
+  tabCard: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginTop: 12,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  tabCardTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1E293B',
+    marginBottom: 4,
+  },
+  tabCardHint: {
+    fontSize: 12,
+    color: '#94A3B8',
+    marginBottom: 12,
+  },
+  emptyWrapper: {
+    alignItems: 'center',
+    paddingVertical: 24,
+    gap: 8,
+  },
+  emptyText: {
+    fontSize: 13,
+    color: '#94A3B8',
+  },
+
+  // Questions tab
+  questionRow: {
+    flexDirection: 'row',
+    gap: 12,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  questionNoBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#EEF5FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexShrink: 0,
+  },
+  questionNoText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#0066CC',
+  },
+  questionBody: {
+    flex: 1,
+  },
+  questionTypeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#8B5CF6',
+    marginBottom: 3,
+  },
+  questionContent: {
+    fontSize: 13,
+    color: '#334155',
+    lineHeight: 19,
+  },
+  questionScore: {
+    fontSize: 12,
+    color: '#94A3B8',
+    marginTop: 3,
+  },
+
+  // Students tab
+  studentListRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  studentListInfo: {
+    flex: 1,
+  },
+  studentListName: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1E293B',
+    marginBottom: 2,
+  },
+  studentListCode: {
+    fontSize: 12,
+    color: '#94A3B8',
+  },
+  gradeBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  gradeBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+
+  // Settings tab
+  settingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  settingIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: '#F8FAFC',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  settingLabel: {
+    flex: 1,
+    fontSize: 13,
+    color: '#334155',
   },
 });

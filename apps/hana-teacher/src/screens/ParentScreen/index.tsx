@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { useParentList } from '@tera/modules/crm/parent';
 import { getListData } from '@tera/commons/hooks';
@@ -41,6 +42,7 @@ function mapToParentItem(parent: ParentResponse, index: number): ParentItemType 
 }
 
 export default function ParentScreen() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<ParentFilterTab>('all');
   const [search, setSearch] = useState('');
 
@@ -119,7 +121,7 @@ export default function ParentScreen() {
         <PromoBanner />
       </ScrollView>
 
-      <FAB />
+      <FAB onPress={() => router.push('/student/parent-create')} />
     </View>
   );
 }

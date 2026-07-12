@@ -6,30 +6,50 @@ export type DetailTab =
   | 'comment'
   | 'info';
 
-export type ActivityType =
-  | 'attendance'
-  | 'homework'
-  | 'comment'
-  | 'praise'
-  | 'deadline';
+export type ActivityType = 'attendance' | 'comment';
+
+export interface StudentParent {
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  relation: string;
+}
 
 export interface StudentDetail {
-  id: string;
+  id: number;
   name: string;
   studentCode: string;
   birthday: string;
-  age: number;
-  gender: 'Nam' | 'Nữ';
+  age: number | null;
+  gender: string;
   className: string;
-  avatar: number;
-  isStar: boolean;
+  email: string;
+  phone: string;
+  address: string;
+  enrolledAt: string;
+  note: string;
+  parents: StudentParent[];
+}
+
+export interface StudentStats {
+  attendanceRate: number;
+  totalSessions: number;
+  avgScore: number | null;
+  assignmentCompletion: number;
+  skills: {
+    listening: number;
+    speaking: number;
+    reading: number;
+    writing: number;
+  };
 }
 
 export interface OverviewStat {
   value: string;
   label: string;
   sublabel: string;
-  iconName: string;       // react-native-paper icon name
+  iconName: string;
   iconColor: string;
   iconBg: string;
 }
@@ -40,8 +60,7 @@ export interface ActivityItem {
   title: string;
   description: string;
   date: string;
-  time: string;
-  isOverdue?: boolean;
+  sortKey: string;
 }
 
 export interface SkillItem {
@@ -50,6 +69,34 @@ export interface SkillItem {
   color: string;
 }
 
-export interface AbsenceItem {
+export interface AttendanceRow {
+  id: number;
+  sessionName: string;
+  sessionDate: string;
+  sessionDateRaw: string;
+  status: string;
+  note: string;
+}
+
+export interface CommentItem {
+  id: number;
+  content: string;
   date: string;
+  dateRaw: string;
+}
+
+export interface ScoreItem {
+  id: number;
+  score: number | null;
+  classificationLabel: string | null;
+  periodLabel: string | null;
+  date: string;
+  dateRaw: string;
+}
+
+export interface HomeworkItem {
+  id: number;
+  title: string;
+  dueDate: string;
+  maxScore: string;
 }

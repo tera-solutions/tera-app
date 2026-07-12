@@ -112,10 +112,10 @@ export const HOC_SINH_ITEMS: MoreItemType[] = [
   },
   {
     id: 'nhan-xet-hoc-sinh',
-    label: 'Nhận xét học sinh',
+    label: 'Nhận xét & Đánh giá',
     icon: Heart,
     color: '#EA580C',
-    url: undefined,
+    url: '/student/evaluation',
   },
   {
     id: 'khen-thuong',

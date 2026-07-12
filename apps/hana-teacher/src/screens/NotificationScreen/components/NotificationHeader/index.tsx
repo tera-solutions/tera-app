@@ -7,10 +7,12 @@ import { styles } from '../../styles';
 
 interface NotificationHeaderProps {
   onMarkAllRead?: () => void;
+  disabled?: boolean;
 }
 
 export default function NotificationHeader({
   onMarkAllRead,
+  disabled,
 }: NotificationHeaderProps) {
   const router = useRouter();
   return (
@@ -24,7 +26,11 @@ export default function NotificationHeader({
         <Icon source="chevron-left" size={28} color="#FFFFFF" />
       </TouchableOpacity>
       <Text style={styles.headerTitle}>Thông báo</Text>
-      <TouchableOpacity style={styles.headerMarkBtn} onPress={onMarkAllRead}>
+      <TouchableOpacity
+        style={[styles.headerMarkBtn, disabled && { opacity: 0.5 }]}
+        onPress={onMarkAllRead}
+        disabled={disabled}
+      >
         <CheckCheck size={15} color="#FFFFFF" />
         <Text style={styles.headerMarkText}>Đã đọc</Text>
       </TouchableOpacity>

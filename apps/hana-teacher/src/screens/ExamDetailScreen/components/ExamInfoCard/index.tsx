@@ -42,9 +42,9 @@ export default function ExamInfoCard({ exam, onGrade }: Props) {
       {/* Meta row */}
       <View style={styles.metaRow}>
         <View style={styles.metaItem}>
-          <Icon source="book-open-outline" size={16} color="#94A3B8" />
-          <Text style={styles.metaLabel}>Môn học</Text>
-          <Text style={styles.metaValue}>{exam.subject}</Text>
+          <Icon source="door-open" size={16} color="#94A3B8" />
+          <Text style={styles.metaLabel}>Phòng thi</Text>
+          <Text style={styles.metaValue}>{exam.roomName || '—'}</Text>
         </View>
         <View style={[styles.metaItem, styles.metaItemBorder]}>
           <Icon source="clock-outline" size={16} color="#94A3B8" />
@@ -52,14 +52,14 @@ export default function ExamInfoCard({ exam, onGrade }: Props) {
           <Text style={styles.metaValue}>{exam.duration} phút</Text>
         </View>
         <View style={[styles.metaItem, styles.metaItemBorder]}>
-          <Icon source="calendar-start-outline" size={16} color="#94A3B8" />
-          <Text style={styles.metaLabel}>Ngày bắt đầu</Text>
-          <Text style={styles.metaValue}>{exam.startDate}</Text>
+          <Icon source="calendar-outline" size={16} color="#94A3B8" />
+          <Text style={styles.metaLabel}>Ngày kiểm tra</Text>
+          <Text style={styles.metaValue}>{exam.examDate}</Text>
         </View>
         <View style={[styles.metaItem, styles.metaItemBorder]}>
-          <Icon source="calendar-end-outline" size={16} color="#94A3B8" />
-          <Text style={styles.metaLabel}>Ngày kết thúc</Text>
-          <Text style={styles.metaValue}>{exam.endDate}</Text>
+          <Icon source="account-tie-outline" size={16} color="#94A3B8" />
+          <Text style={styles.metaLabel}>Giáo viên</Text>
+          <Text style={styles.metaValue}>{exam.teacherName || '—'}</Text>
         </View>
       </View>
     </View>

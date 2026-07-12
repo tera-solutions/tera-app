@@ -1,18 +1,17 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, TextInput, View } from 'react-native';
+import { Icon } from 'react-native-paper';
+import { useRouter } from 'expo-router';
 
-import { useExamList } from '@tera/modules/education/exam';
+import { ExamSessionService } from '@tera/modules/education';
 import { getListData } from '@tera/commons/hooks';
 
 import ExamHeader from './components/ExamHeader';
 import ExamStatsRow from './components/ExamStatsRow';
-import GradingBanner from './components/GradingBanner';
 import FilterTabs from './components/FilterTabs';
 import ExamItem from './components/ExamItem';
-import ResultsReport from './components/ResultsReport';
 
-import { ExamFilterTab, ExamItem as ExamItemType, ExamResponse, ExamStats } from './types';
-import { GRADE_REPORT } from './constants';
+import { ExamFilterTab, ExamItem as ExamItemType, ExamSessionResponse, ExamStats, ExamStatus } from './types';
 import { styles } from './styles';
 
 // ── Icon config per exam_type ──────────────────────────────────
@@ -24,75 +23,81 @@ const EXAM_TYPE_ICON: Record<string, Pick<ExamItemType, 'iconName' | 'iconBg' | 
   other:    { iconName: 'file-document-outline',    iconBg: '#EEF5FF', iconColor: '#2196F3' },
 };
 
-// API status → UI ExamStatus
-const STATUS_MAP: Record<string, ExamItemType['status']> = {
-  draft:     'upcoming',
-  published: 'upcoming',
-  active:    'ongoing',
-  completed: 'completed',
-  archived:  'completed',
-};
-
 function formatDate(dateStr?: string | null): string {
   if (!dateStr) return '';
   const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return '';
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
 }
 
-function mapToExamItem(exam: ExamResponse): ExamItemType {
-  const icon = EXAM_TYPE_ICON[exam.exam_type ?? 'other'] ?? EXAM_TYPE_ICON.other;
-  const courseName = exam.course?.name ?? '';
-  const levelName = exam.level?.level_name ?? '';
-  const className = [courseName, levelName].filter(Boolean).join(' - ');
+function mapToExamItem(session: ExamSessionResponse): ExamItemType {
+  const icon = EXAM_TYPE_ICON[session.exam?.exam_type ?? 'other'] ?? EXAM_TYPE_ICON.other;
+  const timeRange =
+    session.start_time && session.end_time ? `${session.start_time} - ${session.end_time}` : '';
 
   return {
-    id: String(exam.id),
-    title: exam.exam_name,
-    className,
-    date: formatDate(exam.created_at),
-    duration: exam.duration ?? 0,
-    studentCount: 0,
-    status: STATUS_MAP[exam.status ?? ''] ?? 'upcoming',
+    id: String(session.id),
+    sessionId: session.id,
+    title: session.exam?.exam_name ?? '',
+    className: session.class?.name ?? '',
+    date: formatDate(session.exam_date),
+    timeRange,
+    studentCount: session.registrations_count ?? 0,
+    status: (session.status ?? 'scheduled') as ExamStatus,
     ...icon,
   };
 }
 
+const TAB_STATUS: Record<Exclude<ExamFilterTab, 'all'>, ExamStatus> = {
+  ongoing: 'in_progress',
+  ended: 'closed',
+  upcoming: 'scheduled',
+};
+
 // ── Screen ─────────────────────────────────────────────────────
 export default function ExamScreen() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<ExamFilterTab>('all');
+  const [showSearch, setShowSearch] = useState(false);
+  const [search, setSearch] = useState('');
 
-  const { data, isLoading, isFetching, refetch } = useExamList({
+  const { data, isLoading, isFetching, isError, refetch } = ExamSessionService.useExamSessionList({
     params: { per_page: 50 },
   });
 
-  const { items, pagination } = getListData<ExamResponse>(data);
+  const { items } = getListData<ExamSessionResponse>(data);
   const exams: ExamItemType[] = useMemo(() => items.map(mapToExamItem), [items]);
 
-  const stats: ExamStats = useMemo(() => ({
-    total: pagination.total,
-    completed: items.filter((e) => e.status === 'completed' || e.status === 'archived').length,
-    ongoing:   items.filter((e) => e.status === 'active').length,
-    upcoming:  items.filter((e) => e.status === 'draft' || e.status === 'published').length,
-  }), [items, pagination.total]);
-
-  const gradingPending = useMemo(
-    () => exams.filter((e) => e.status === 'needs_grading').length,
+  // No dedicated summary endpoint — totals are derived from the loaded page.
+  const stats: ExamStats = useMemo(
+    () => ({
+      total: exams.length,
+      scheduled: exams.filter((e) => e.status === 'scheduled').length,
+      in_progress: exams.filter((e) => e.status === 'in_progress').length,
+      closed: exams.filter((e) => e.status === 'closed').length,
+    }),
     [exams],
   );
 
   const filteredExams = useMemo(() => {
-    if (activeTab === 'ongoing')
-      return exams.filter((e) => e.status === 'ongoing' || e.status === 'needs_grading');
-    if (activeTab === 'ended')
-      return exams.filter((e) => e.status === 'completed');
-    if (activeTab === 'upcoming')
-      return exams.filter((e) => e.status === 'upcoming');
-    return exams;
-  }, [exams, activeTab]);
+    let list = exams;
+    if (activeTab !== 'all') {
+      const status = TAB_STATUS[activeTab];
+      list = list.filter((e) => e.status === status);
+    }
+    const keyword = search.trim().toLowerCase();
+    if (keyword) {
+      list = list.filter(
+        (e) =>
+          e.title.toLowerCase().includes(keyword) || e.className.toLowerCase().includes(keyword),
+      );
+    }
+    return list;
+  }, [exams, activeTab, search]);
 
   return (
     <View style={styles.container}>
-      <ExamHeader />
+      <ExamHeader onCreateNew={() => router.push('/edu/exam-create')} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -103,19 +108,42 @@ export default function ExamScreen() {
       >
         <ExamStatsRow stats={stats} />
 
-        <GradingBanner count={gradingPending} />
+        <FilterTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          onSearch={() => setShowSearch((v) => !v)}
+        />
 
-        <FilterTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        {showSearch && (
+          <View style={styles.searchRow}>
+            <Icon source="magnify" size={18} color="#94A3B8" />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Tìm kiếm bài kiểm tra theo tên..."
+              placeholderTextColor="#94A3B8"
+              value={search}
+              onChangeText={setSearch}
+            />
+          </View>
+        )}
 
         {isLoading ? (
           <ActivityIndicator size="large" color="#0B84FF" style={{ marginVertical: 32 }} />
+        ) : isError ? (
+          <View style={styles.emptyWrapper}>
+            <Icon source="alert-circle-outline" size={28} color="#E74C3C" />
+            <Text style={styles.emptyText}>Không tải được danh sách bài kiểm tra</Text>
+            <Text style={styles.retryText} onPress={() => refetch()}>
+              Thử lại
+            </Text>
+          </View>
+        ) : filteredExams.length === 0 ? (
+          <View style={styles.emptyWrapper}>
+            <Text style={styles.emptyText}>Không có bài kiểm tra nào</Text>
+          </View>
         ) : (
-          filteredExams.map((exam) => (
-            <ExamItem key={exam.id} item={exam} />
-          ))
+          filteredExams.map((exam) => <ExamItem key={exam.id} item={exam} />)
         )}
-
-        <ResultsReport report={GRADE_REPORT} />
       </ScrollView>
     </View>
   );

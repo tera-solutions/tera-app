@@ -7,12 +7,14 @@ export default function LessonLayout() {
     >
       <Stack.Screen name="lesson" />
       <Stack.Screen name="lesson-plan-create" />
+      <Stack.Screen name="lesson-plan-detail" />
       <Stack.Screen name="assignment" />
       <Stack.Screen name="assignment-create" />
       <Stack.Screen name="assignment-detail" />
       <Stack.Screen name="assignment-grading" />
       <Stack.Screen name="classroom-detail" />
       <Stack.Screen name="exam" />
+      <Stack.Screen name="exam-create" />
       <Stack.Screen name="material" />
       <Stack.Screen name="exam-detail" />
       <Stack.Screen name="room" />

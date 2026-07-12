@@ -161,7 +161,7 @@ export default function LessonPlanScreen() {
           <View style={styles.renderItemContainer}>
             <LessonItem
               item={item}
-              onPress={() => router.push(`/edu/lesson?id=${item.id}` as any)}
+              onPress={() => router.push(`/edu/lesson-plan-detail?planId=${item.id}` as any)}
             />
           </View>
         )}
