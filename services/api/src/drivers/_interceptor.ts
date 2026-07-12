@@ -13,6 +13,7 @@ export const _requestHeader = async (config: any) => {
 
   if (!isWeb) {
     try {
+      console.log("AsyncStorage", AsyncStorage)
       const rawAuthStore = await AsyncStorage.getItem("AuthMobileStore");
       if (rawAuthStore) {
         const parsed = JSON.parse(rawAuthStore);

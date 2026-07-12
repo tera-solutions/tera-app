@@ -166,7 +166,9 @@ export default function LessonPlanScreen() {
           </View>
         )}
         ListHeaderComponent={renderHeaderComponents}
-        ListFooterComponent={<QuickCreateBanner onCreate={() => {}} />}
+        ListFooterComponent={
+          <QuickCreateBanner onCreate={() => router.push('/edu/lesson-plan-create')} />
+        }
         contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
         onRefresh={refetch}

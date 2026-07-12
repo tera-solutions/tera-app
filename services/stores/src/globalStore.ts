@@ -1,17 +1,16 @@
 import { makeAutoObservable, toJS } from "mobx";
 import { makePersistable } from "mobx-persist-store";
 
-// Plain (non-persisted-store) preference read once at boot to pick where the
-// session lives. Login writes "0" when "remember me" is unchecked so the next
-// app boot binds to sessionStorage instead of localStorage, and the token is
-// gone once the browser/tab is closed. Only read on construction: this
-// singleton doesn't rebind mid-session when the flag changes during login.
+const isWeb =
+  typeof window !== "undefined" && window.navigator?.product !== "ReactNative";
 const REMEMBER_ME_KEY = "tera_remember_me";
 
-const resolveAuthStorage = (): Storage =>
-  window.localStorage.getItem(REMEMBER_ME_KEY) === "0"
+const resolveAuthStorage = (): Storage | null => {
+  if (!isWeb) return null;
+  return window.localStorage.getItem(REMEMBER_ME_KEY) === "0"
     ? window.sessionStorage
     : window.localStorage;
+};
 
 export class GlobalStore {
   token = "";

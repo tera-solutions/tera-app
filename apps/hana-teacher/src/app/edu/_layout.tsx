@@ -6,6 +6,7 @@ export default function LessonLayout() {
       screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
     >
       <Stack.Screen name="lesson" />
+      <Stack.Screen name="lesson-plan-create" />
       <Stack.Screen name="assignment" />
       <Stack.Screen name="assignment-grading" />
       <Stack.Screen name="classroom-detail" />
