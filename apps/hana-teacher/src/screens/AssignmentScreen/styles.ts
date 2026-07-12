@@ -173,9 +173,11 @@ export const styles = StyleSheet.create({
     marginRight: 10,
   },
   searchInputPlaceholder: {
+    flex: 1,
     fontSize: 13,
     color: '#94A3B8',
     marginLeft: 8,
+    padding: 0,
   },
   filterButton: {
     flexDirection: 'row',

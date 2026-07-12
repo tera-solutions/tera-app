@@ -1,19 +1,4 @@
-export type AttendanceStatus =
-  | 'present'
-  | 'late'
-  | 'absent'
-  | 'unmarked';
-
-export interface StudentAttendance {
-  id: string;
-  no: string;
-  avatar: string;
-  fullName: string;
-  status: AttendanceStatus;
-  checkInTime?: string;
-}
-
-// ─── API types ────────────────────────────────────────────────────────────────
+// ─── API types ──────────────────────────────────────────────────────────────
 
 export type AttendanceApiStatus = 'present' | 'late' | 'absent' | 'excused';
 
@@ -42,9 +27,70 @@ export interface AttendanceResponse {
   checkin_time?: string | null;
   checkout_time?: string | null;
   note?: string | null;
-  created_by?: number | null;
-  created_at?: string;
-  updated_at?: string;
+}
+
+export interface ClassSessionResponse {
+  id: number;
+  session_no?: number | null;
+  name?: string;
+  session_date?: string;
+  start_time?: string;
+  end_time?: string;
+  status?: string;
+}
+
+export interface RosterStudentResponse {
+  id: number;
+  code?: string;
+  name: string;
+  avatar?: string | null;
+}
+
+export interface ClassRoomDetailResponse {
+  data?: {
+    class?: {
+      id: number;
+      name: string;
+      room?: { id?: number; name?: string } | null;
+      branch?: { id?: number; name?: string } | null;
+      business?: { id?: number; name?: string } | null;
+      schedules?: { weekday?: number; start_time?: string; end_time?: string }[];
+    };
+  };
+}
+
+// ─── UI models ──────────────────────────────────────────────────────────────
+
+export interface ClassSession {
+  id: number;
+  sessionNo: number | null;
+  name: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+}
+
+export interface AttendanceClassInfo {
+  id: number;
+  name: string;
+  room: string;
+  branch: string;
+  scheduleDays: string;
+}
+
+/** One student row in the attendance grid — draft status is editable locally. */
+export interface AttendanceRow {
+  student_id: number;
+  name: string;
+  avatar: string;
+  code: string;
+  /** Attendance record id, if one already exists for this session. */
+  record_id: number | null;
+  /** `null` until the teacher explicitly marks a status. */
+  status: AttendanceApiStatus | null;
+  /** True once the user changes the status in this session (needs saving). */
+  dirty: boolean;
 }
 
 export interface AttendanceStats {
@@ -53,3 +99,5 @@ export interface AttendanceStats {
   late: number;
   absent: number;
 }
+
+export type AttendanceTab = 'list' | 'report';

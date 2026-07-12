@@ -455,4 +455,162 @@ export const styles = StyleSheet.create({
     color: '#94A3B8',
     fontSize: 14,
   },
+
+  /*
+   * SELECT / UNMARKED STATE
+   */
+
+  studentCardSelected: {
+    borderWidth: 1.5,
+    borderColor: '#007AFF',
+    backgroundColor: '#F0F7FF',
+  },
+
+  unmarkedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F1F5F9',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginRight: 6,
+  },
+
+  unmarkedText: {
+    color: '#94A3B8',
+    fontWeight: '600',
+    fontSize: 11,
+  },
+
+  actionBtnDisabled: {
+    opacity: 0.4,
+  },
+
+  selectHint: {
+    fontSize: 12,
+    color: '#64748B',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+
+  /*
+   * SAVE ROW
+   */
+
+  saveRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 10,
+  },
+
+  markAllBtn: {
+    flex: 1,
+    height: 44,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#22C55E',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  markAllText: {
+    color: '#16A34A',
+    fontWeight: '700',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+
+  saveBtn: {
+    flex: 1,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: '#0066cc',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  saveBtnText: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 12,
+  },
+
+  /*
+   * REPORT TAB
+   */
+
+  reportCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 16,
+    marginBottom: 16,
+
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+
+  reportTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginBottom: 12,
+  },
+
+  reportRow: {
+    marginBottom: 12,
+  },
+
+  reportRowHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+
+  reportRowLabel: {
+    fontSize: 13,
+    color: '#334155',
+    fontWeight: '600',
+  },
+
+  reportRowValue: {
+    fontSize: 13,
+    color: '#64748B',
+  },
+
+  reportBarTrack: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#F1F5F9',
+    overflow: 'hidden',
+  },
+
+  reportBarFill: {
+    height: 8,
+    borderRadius: 4,
+  },
+
+  absentItemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+
+  absentItemAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#FEE2E2',
+  },
+
+  absentItemName: {
+    fontSize: 13,
+    color: '#334155',
+    flex: 1,
+  },
 });

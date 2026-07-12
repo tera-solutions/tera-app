@@ -351,4 +351,32 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#FFFFFF',
   },
+
+  // ─── FAB ─────────────────────────────────────────────────────────────────────
+  fabWrapper: {
+    position: 'absolute',
+    bottom: 24,
+    right: 20,
+    alignItems: 'center',
+    gap: 4,
+  },
+  fab: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#0066CC',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#0066CC',
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+  },
+  fabLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#0066CC',
+    textAlign: 'center',
+  },
 });

@@ -1,0 +1,27 @@
+import { WEEKDAY_LABEL } from './constants';
+import type { ClassRoomResponse, EnrollmentClassroom, EnrollmentPricing } from './types';
+
+export const formatVnd = (value: number): string =>
+  `${Math.round(value || 0).toLocaleString('vi-VN')}đ`;
+
+/** `discount_percent × tuition` — matches the real `computeMoney()` server-side. */
+export const calcTuitionAmount = (pricing: EnrollmentPricing): number => {
+  const gross = pricing.total_lessons * pricing.price_per_lesson;
+  const discount = gross * ((pricing.discount_percent || 0) / 100);
+  return Math.max(0, gross - discount);
+};
+
+const scheduleDaysOf = (schedules: ClassRoomResponse['schedules']): string =>
+  Array.from(
+    new Set((schedules ?? []).map((s) => WEEKDAY_LABEL[s.weekday ?? 0]).filter(Boolean)),
+  ).join(', ');
+
+export const toEnrollmentClassroom = (raw: ClassRoomResponse): EnrollmentClassroom => ({
+  id: raw.id,
+  name: raw.name ?? '',
+  course_id: raw.course_id ?? raw.course?.id ?? null,
+  room: raw.room?.name ?? '',
+  scheduleDays: scheduleDaysOf(raw.schedules),
+  studentCount: raw.total_students ?? 0,
+  maxStudents: raw.max_capacity ?? 0,
+});

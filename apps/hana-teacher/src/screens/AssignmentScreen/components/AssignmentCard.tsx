@@ -24,7 +24,12 @@ const badgeColorMap = {
   neutral: { bg: '#F1F5F9', text: '#64748B' },
 };
 
-export const AssignmentCard = ({ item }: { item: AssignmentItem }) => {
+interface Props {
+  item: AssignmentItem;
+  onPress?: () => void;
+}
+
+export const AssignmentCard = ({ item, onPress }: Props) => {
   const badgeStyle = badgeColorMap[item.badgeType] || badgeColorMap.neutral;
   const circleColor =
     item.progress === 100
@@ -34,7 +39,7 @@ export const AssignmentCard = ({ item }: { item: AssignmentItem }) => {
         : '#007AFF';
 
   return (
-    <View style={styles.cardContainer}>
+    <TouchableOpacity style={styles.cardContainer} onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.cardIconBg, { backgroundColor: item.iconBg }]}>
         <Icon source={item.icon} size={28} color={item.iconColor} />
       </View>
@@ -61,9 +66,9 @@ export const AssignmentCard = ({ item }: { item: AssignmentItem }) => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.moreButton}>
+      <TouchableOpacity style={styles.moreButton} onPress={onPress}>
         <Icon source="dots-vertical" size={22} color="#94A3B8" />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };

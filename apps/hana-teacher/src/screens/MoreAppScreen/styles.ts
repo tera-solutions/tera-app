@@ -27,6 +27,15 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 16,
   },
+  backButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+    marginLeft: -6,
+  },
   headerLabel: {
     flexDirection: 'row',
     alignItems: 'center',

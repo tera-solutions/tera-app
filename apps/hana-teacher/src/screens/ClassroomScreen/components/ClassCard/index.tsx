@@ -117,6 +117,7 @@ export default function ClassCard({ item }: Props) {
         <ActionButton
           icon={<CalendarCheck2 size={22} color="#22C55E" />}
           label="Điểm danh"
+          onPress={() => router.push(`/student/attendance?classId=${item.id}`)}
         />
 
         <ActionButton

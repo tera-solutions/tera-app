@@ -18,6 +18,7 @@ import {
   Shield,
   Star,
   Target,
+  Trophy,
   UserCheck,
   UserCog,
   Users,
@@ -122,6 +123,13 @@ export const HOC_SINH_ITEMS: MoreItemType[] = [
     icon: Award,
     color: '#7C3AED',
     url: '/edu/achievement',
+  },
+  {
+    id: 'bang-xep-hang',
+    label: 'Bảng xếp hạng học tập',
+    icon: Trophy,
+    color: '#F59E0B',
+    url: '/student/ranking',
   },
 ];
 

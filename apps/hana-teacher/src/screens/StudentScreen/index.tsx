@@ -12,6 +12,7 @@ import StudentTabs from './components/StudentTabs';
 import StudentSearchBar from './components/StudentSearchBar';
 import StudentItem from './components/StudentItem';
 import QuickAttendanceBanner from './components/QuickAttendanceBanner';
+import EnrollFAB from './components/EnrollFAB';
 
 import {
   StudentTab,
@@ -138,6 +139,8 @@ export default function StudentScreen() {
 
         <QuickAttendanceBanner classId={CLASS_INFO.id} />
       </ScrollView>
+
+      <EnrollFAB onPress={() => router.push(`/student/enrollment?classId=${CLASS_INFO.id}`)} />
     </View>
   );
 }

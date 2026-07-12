@@ -1,106 +1,70 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Icon, IconButton } from 'react-native-paper';
+import { useRouter } from 'expo-router';
 import { styles } from '../styles';
+import { DEFAULT_STATUS_META, STATUS_META, getClassColor } from '../constants';
+import { durationLabel } from '../_utils';
+import type { ScheduleSession } from '../types';
 
-export interface ScheduleData {
-  id: string;
-  startTime: string;
-  endTime: string;
-  duration: string;
-  className: string;
-  classColor: { bg: string; text: string; indicator: string };
-  lessonName: string;
-  room: string;
-  branch: string;
-  unit: string;
-  status: 'upcoming' | 'ongoing' | 'not_started';
-  students: string;
-  avatar: any;
-}
+const initialOf = (name: string) => (name.trim().charAt(0) || '?').toUpperCase();
 
-const getStatusStyle = (status: ScheduleData['status']) => {
-  switch (status) {
-    case 'ongoing':
-      return { text: 'Đang diễn ra', bg: '#ECFDF5', color: '#10B981' };
-    case 'upcoming':
-      return { text: 'Sắp diễn ra', bg: '#EFF6FF', color: '#3B82F6' };
-    default:
-      return { text: 'Chưa bắt đầu', bg: '#F1F5F9', color: '#64748B' };
-  }
-};
-
-export const ScheduleItem: React.FC<{ item: ScheduleData }> = ({ item }) => {
-  const statusStyle = getStatusStyle(item.status);
+export const ScheduleItem: React.FC<{ item: ScheduleSession }> = ({ item }) => {
+  const router = useRouter();
+  const statusMeta = STATUS_META[item.status] ?? { ...DEFAULT_STATUS_META, label: item.status || DEFAULT_STATUS_META.label };
+  const color = getClassColor(item.classId);
+  const subtitle = item.sessionName || (item.sessionNo ? `Buổi ${item.sessionNo}` : '');
 
   return (
     <View style={styles.scheduleRow}>
-      <View
-        style={[
-          styles.mainCardColumn,
-          { borderColor: item.classColor.indicator },
-        ]}
+      <TouchableOpacity
+        style={[styles.mainCardColumn, { borderColor: color.indicator }]}
+        activeOpacity={0.85}
+        onPress={() => router.push(`/student/attendance?classId=${item.classId}`)}
       >
         <View style={styles.timeColumn}>
           <Text style={styles.timeText}>{item.startTime}</Text>
           <Text style={styles.timeDivider}>—</Text>
           <Text style={styles.timeText}>{item.endTime}</Text>
-          <Text style={styles.durationText}>{item.duration}</Text>
+          <Text style={styles.durationText}>{durationLabel(item.startTime, item.endTime)}</Text>
         </View>
 
         <View style={styles.timeDividerVertical} />
-        <Image
-          source={item.avatar}
-          style={styles.classAvatar}
-          resizeMode="contain"
-        />
+        <View style={[styles.classAvatar, { backgroundColor: color.bg, alignItems: 'center', justifyContent: 'center' }]}>
+          <Text style={{ fontSize: 16, fontWeight: '700', color: color.text }}>{initialOf(item.className)}</Text>
+        </View>
 
         <View style={styles.cardInfo}>
-          <View
-            style={[
-              styles.classBadgeWrapper,
-              { backgroundColor: item.classColor.bg },
-            ]}
-          >
-            <Text
-              style={[styles.classBadgeText, { color: item.classColor.text }]}
-            >
-              {item.className}
-            </Text>
+          <View style={[styles.classBadgeWrapper, { backgroundColor: color.bg }]}>
+            <Text style={[styles.classBadgeText, { color: color.text }]}>{item.className || 'Chưa gán lớp'}</Text>
           </View>
           <Text style={styles.lessonName} numberOfLines={2}>
-            {item.lessonName}
+            {subtitle || item.level || 'Buổi học'}
           </Text>
           <Text style={styles.roomText}>
-            {item.room} • {item.branch}
+            {item.room || 'Chưa xếp phòng'} • {item.branch || '—'}
           </Text>
-          <Text style={styles.unitText}>{item.unit}</Text>
+          {!!item.level && <Text style={styles.unitText}>{item.level}</Text>}
         </View>
 
         <View style={styles.rightMetaColumn}>
           <IconButton
-            icon={({ size, color }) => (
-              <Icon source="dots-horizontal" size={size} color={color} />
-            )}
+            icon={({ size, color: iconColor }) => <Icon source="dots-horizontal" size={size} color={iconColor} />}
             size={20}
             style={{ margin: 0, padding: 0 }}
             onPress={() => {}}
           />
 
-          <View
-            style={[styles.statusBadge, { backgroundColor: statusStyle.bg }]}
-          >
-            <Text style={[styles.statusText, { color: statusStyle.color }]}>
-              {statusStyle.text}
-            </Text>
+          <View style={[styles.statusBadge, { backgroundColor: statusMeta.bg }]}>
+            <Text style={[styles.statusText, { color: statusMeta.color }]}>{statusMeta.label}</Text>
           </View>
 
           <View style={styles.studentCountRow}>
             <Icon source="account" size={14} color="#64748B" />
-            <Text style={styles.studentCountText}>{item.students}</Text>
+            <Text style={styles.studentCountText}>{item.studentCount} học viên</Text>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };

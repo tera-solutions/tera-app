@@ -34,15 +34,29 @@ const ACTIONS = [
   },
 ];
 
-export const QuickActions = () => (
-  <View style={styles.quickActionsContainer}>
-    {ACTIONS.map((action) => (
-      <TouchableOpacity key={action.id} style={styles.actionItem}>
-        <View style={[styles.actionIconBg, { backgroundColor: action.bg }]}>
-          <Icon source={action.icon} size={24} color={action.color} />
-        </View>
-        <Text style={styles.actionLabel}>{action.label}</Text>
-      </TouchableOpacity>
-    ))}
-  </View>
-);
+interface Props {
+  onCreate?: () => void;
+}
+
+export const QuickActions = ({ onCreate }: Props) => {
+  const ACTION_HANDLERS: Record<string, (() => void) | undefined> = {
+    '1': onCreate,
+  };
+
+  return (
+    <View style={styles.quickActionsContainer}>
+      {ACTIONS.map((action) => (
+        <TouchableOpacity
+          key={action.id}
+          style={styles.actionItem}
+          onPress={ACTION_HANDLERS[action.id]}
+        >
+          <View style={[styles.actionIconBg, { backgroundColor: action.bg }]}>
+            <Icon source={action.icon} size={24} color={action.color} />
+          </View>
+          <Text style={styles.actionLabel}>{action.label}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};

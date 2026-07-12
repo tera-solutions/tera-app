@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, View, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
 
-import { useAssignmentList } from '@tera/modules/education/assignment';
+import { useAssignmentList, useAssignmentSummary } from '@tera/modules/education/assignment';
 import { getListData } from '@tera/commons/hooks';
 
 import { styles } from './styles';
@@ -56,7 +57,7 @@ function formatDate(iso: string): string {
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
 }
 
-// ─── Mapper ───────────────────────────────────────────────────────────────────
+// ─── Mappers ───────────────────────────────────────────────────────────────────
 function mapToAssignmentItem(item: AssignmentResponse): AssignmentItem {
   const typeConfig = TYPE_CONFIG[item.assignment_type] ?? TYPE_CONFIG.homework;
   const status = item.status ?? 'draft';
@@ -85,39 +86,49 @@ function mapToAssignmentItem(item: AssignmentResponse): AssignmentItem {
   };
 }
 
+/** `useAssignmentSummary` is independent of the tab/search filters below, so
+ * the metrics row always reflects the true totals — matches the web page's
+ * split between `listQuery` (filtered) and `summaryQuery` (aggregate). */
+function toAssignmentStats(raw: any): AssignmentStats {
+  return {
+    total: raw?.total ?? 0,
+    published: raw?.by_status?.published ?? 0,
+    draft: raw?.by_status?.draft ?? 0,
+    closed: raw?.by_status?.closed ?? 0,
+  };
+}
+
 // ─── Screen ──────────────────────────────────────────────────────────────────
 export default function AssignmentScreen() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('Tất cả');
+  const [search, setSearch] = useState('');
+
+  const statusFilter = TAB_STATUS_MAP[activeTab];
 
   const { data, isLoading, isFetching, refetch } = useAssignmentList({
-    params: { per_page: 50 },
+    params: {
+      per_page: 50,
+      search: search || undefined,
+      filters: { status: statusFilter || undefined },
+    },
   });
 
-  const { items, pagination } = getListData<AssignmentResponse>(data);
+  const { items } = getListData<AssignmentResponse>(data);
+  const filtered = items.map(mapToAssignmentItem);
 
-  const assignmentList = items.map(mapToAssignmentItem);
-
-  // Filter by tab
-  const statusFilter = TAB_STATUS_MAP[activeTab];
-  const filtered = statusFilter
-    ? items.filter((i) => i.status === statusFilter).map(mapToAssignmentItem)
-    : assignmentList;
-
-  // Stats
-  const stats: AssignmentStats = {
-    total:     pagination.total,
-    published: items.filter((i) => i.status === 'published').length,
-    draft:     items.filter((i) => i.status === 'draft').length,
-    closed:    items.filter((i) => i.status === 'closed').length,
-  };
+  const summaryQuery = useAssignmentSummary();
+  const stats = toAssignmentStats((summaryQuery.data as any)?.data);
 
   return (
     <View style={styles.container}>
       <AssignmentHeader />
-      <QuickActions />
+      <QuickActions onCreate={() => router.push('/edu/assignment-create')} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        refreshing={isFetching}
+        onRefresh={refetch}
       >
         <MetricsSummary stats={stats} />
         <FilterTabs
@@ -125,14 +136,18 @@ export default function AssignmentScreen() {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
         />
-        <SearchBarSection />
+        <SearchBarSection value={search} onChangeText={setSearch} />
 
         <View style={styles.listContainer}>
-          {isLoading || isFetching ? (
+          {isLoading ? (
             <ActivityIndicator size="large" color="#007AFF" style={{ marginVertical: 32 }} />
           ) : (
             filtered.map((item) => (
-              <AssignmentCard key={item.id} item={item} />
+              <AssignmentCard
+                key={item.id}
+                item={item}
+                onPress={() => router.push(`/edu/assignment-detail?id=${item.id}`)}
+              />
             ))
           )}
 

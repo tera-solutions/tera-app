@@ -1,79 +1,67 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Icon, IconButton } from 'react-native-paper';
+import { Icon } from 'react-native-paper';
 import { styles } from '../styles';
-
-interface DayData {
-  label: string;
-  number: string;
-  fullDate: string;
-}
+import type { WeekDay } from '../types';
 
 interface WeekCalendarProps {
+  weekDays: WeekDay[];
   selectedDate: string;
-  onDateSelect: (date: string) => void;
+  headerLabel: string;
+  onSelectDate: (date: string) => void;
+  onToday: () => void;
+  onPrevWeek: () => void;
+  onNextWeek: () => void;
 }
 
 export const WeekCalendar: React.FC<WeekCalendarProps> = ({
+  weekDays,
   selectedDate,
-  onDateSelect,
+  headerLabel,
+  onSelectDate,
+  onToday,
+  onPrevWeek,
+  onNextWeek,
 }) => {
-  const days: DayData[] = [
-    { label: 'T2', number: '12', fullDate: '2025-05-12' },
-    { label: 'T3', number: '13', fullDate: '2025-05-13' },
-    { label: 'T4', number: '14', fullDate: '2025-05-14' },
-    { label: 'T5', number: '15', fullDate: '2025-05-15' },
-    { label: 'T6', number: '16', fullDate: '2025-05-16' },
-    { label: 'T7', number: '17', fullDate: '2025-05-17' },
-    { label: 'CN', number: '18', fullDate: '2025-05-18' },
-  ];
-
   return (
     <View style={styles.calendarCard}>
       <View style={styles.calendarHeader}>
-        <TouchableOpacity style={styles.btnToday} activeOpacity={0.7}>
-          <Icon source="chevron-left" size={16} color="#007AFF" />
-          <Text style={styles.todayText}>Hôm nay</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity onPress={onPrevWeek} hitSlop={8} activeOpacity={0.7}>
+            <Icon source="chevron-left" size={16} color="#007AFF" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.btnToday} onPress={onToday} activeOpacity={0.7}>
+            <Text style={styles.todayText}>Hôm nay</Text>
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity style={styles.dateSelector} activeOpacity={0.7}>
-          <Text style={styles.dateSelectorText}>Thứ 5, 15/05/2025</Text>
-          <Icon source="chevron-down" size={16} color="#0F172A" />
-        </TouchableOpacity>
+        <View style={styles.dateSelector}>
+          <Text style={styles.dateSelectorText}>{headerLabel}</Text>
+        </View>
 
-        <Icon source="chevron-right" size={20} color="#64748B" />
+        <TouchableOpacity onPress={onNextWeek} hitSlop={8} activeOpacity={0.7}>
+          <Icon source="chevron-right" size={20} color="#64748B" />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.daysRow}>
-        {days.map((day, idx) => {
+        {weekDays.map((day) => {
           const isActive = selectedDate === day.fullDate;
           return (
             <TouchableOpacity
-              key={idx}
+              key={day.fullDate}
               style={[styles.dayItem, isActive && styles.activeDayItem]}
-              onPress={() => onDateSelect(day.fullDate)}
+              onPress={() => onSelectDate(day.fullDate)}
               activeOpacity={0.8}
             >
-              <Text
-                style={[styles.dayLabel, isActive && styles.activeDayLabel]}
-              >
-                {day.label}
-              </Text>
-              <Text
-                style={[styles.dayNumber, isActive && styles.activeDayNumber]}
-              >
-                {day.number}
-              </Text>
-              {isActive && (
-                <View
-                  style={[
-                    styles.activeIndicatorDot,
-                    { backgroundColor: '#FFF' },
-                  ]}
-                />
-              )}
-              {!isActive && day.number === '15' && (
+              <Text style={[styles.dayLabel, isActive && styles.activeDayLabel]}>{day.label}</Text>
+              <Text style={[styles.dayNumber, isActive && styles.activeDayNumber]}>{day.number}</Text>
+              {isActive ? (
+                <View style={[styles.activeIndicatorDot, { backgroundColor: '#FFF' }]} />
+              ) : day.isToday ? (
                 <View style={styles.activeIndicatorDot} />
+              ) : (
+                <View style={{ height: 4, marginTop: 4 }} />
               )}
             </TouchableOpacity>
           );

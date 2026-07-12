@@ -1,15 +1,17 @@
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-
-import {
-  CheckCircle2,
-  Clock3,
-  MoreVertical,
-  XCircle,
-} from 'lucide-react-native';
+import { Check, CheckCircle2, Clock3, XCircle } from 'lucide-react-native';
 
 import { styles } from '../style';
+import type { AttendanceRow } from '../types';
 
-export default function StudentAttendanceItem({ item }: any) {
+interface Props {
+  item: AttendanceRow;
+  index: number;
+  selected: boolean;
+  onToggle: (studentId: number) => void;
+}
+
+export default function StudentAttendanceItem({ item, index, selected, onToggle }: Props) {
   const renderStatus = () => {
     switch (item.status) {
       case 'present':
@@ -19,7 +21,6 @@ export default function StudentAttendanceItem({ item }: any) {
             <Text style={styles.presentText}>Có mặt</Text>
           </View>
         );
-
       case 'late':
         return (
           <View style={styles.lateBadge}>
@@ -27,7 +28,6 @@ export default function StudentAttendanceItem({ item }: any) {
             <Text style={styles.lateText}>Đi muộn</Text>
           </View>
         );
-
       case 'absent':
         return (
           <View style={styles.absentBadge}>
@@ -35,26 +35,36 @@ export default function StudentAttendanceItem({ item }: any) {
             <Text style={styles.absentText}>Vắng mặt</Text>
           </View>
         );
+      default:
+        return (
+          <View style={styles.unmarkedBadge}>
+            <Text style={styles.unmarkedText}>Chưa điểm danh</Text>
+          </View>
+        );
     }
   };
 
   return (
-    <View style={styles.studentCard}>
+    <TouchableOpacity
+      style={[styles.studentCard, selected && styles.studentCardSelected]}
+      onPress={() => onToggle(item.student_id)}
+      activeOpacity={0.7}
+    >
       <View style={styles.no}>
-        <Text style={styles.noText}>{item.no}</Text>
+        {selected ? <Check size={16} color="#007AFF" /> : <Text style={styles.noText}>{index + 1}</Text>}
       </View>
 
-      <Image source={{ uri: item.avatar }} style={styles.studentAvatar} />
+      {item.avatar ? (
+        <Image source={{ uri: item.avatar }} style={styles.studentAvatar} />
+      ) : (
+        <View style={[styles.studentAvatar, { backgroundColor: '#EEF5FF' }]} />
+      )}
 
-      <Text style={styles.studentName}>{item.fullName}</Text>
+      <Text style={styles.studentName} numberOfLines={1}>
+        {item.name}
+      </Text>
 
       {renderStatus()}
-
-      <Text style={styles.time}>{item.checkInTime}</Text>
-
-      <TouchableOpacity>
-        <MoreVertical color="#94A3B8" size={20} />
-      </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 }

@@ -1,6 +1,8 @@
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 
-import { useAttendanceList } from '@tera/modules/education/attendance';
+import { ClassRoomService, ClassSessionService } from '@tera/modules/education';
 import { getListData } from '@tera/commons/hooks';
 
 import AttendanceHeader from './components/AttendanceHeader';
@@ -10,80 +12,118 @@ import AttendanceTabs from './components/AttendanceTabs';
 import SearchBar from './components/SearchBar';
 import StudentAttendanceList from './components/StudentAttendanceList';
 import AttendanceActionBar from './components/AttendanceActionBar';
+import AttendanceReport from './components/AttendanceReport';
 import RefreshHint from './components/RefreshHint';
 
-import {
-  AttendanceResponse,
-  AttendanceStats as AttendanceStatsType,
-  StudentAttendance,
-} from './types';
+import { useAttendanceSession } from './hooks/useAttendanceSession';
+import { getSessionDateRange, sortSessionsByProximity, toClassInfo, toClassSessions } from './_utils';
+import type { AttendanceTab, ClassRoomDetailResponse, ClassSessionResponse } from './types';
 import { styles } from './style';
 
-// ─── Mapper ──────────────────────────────────────────────────────────────────
-
-function mapToStudentAttendance(
-  item: AttendanceResponse,
-  index: number,
-): StudentAttendance {
-  return {
-    id: String(item.id),
-    no: String(index + 1).padStart(2, '0'),
-    avatar: `https://i.pravatar.cc/150?img=${(item.student_id % 50) + 1}`,
-    fullName: item.student?.name ?? `Học viên ${item.student_id}`,
-    status: (item.status as StudentAttendance['status']) ?? 'unmarked',
-    checkInTime: item.checkin_time
-      ? item.checkin_time.slice(11, 16)
-      : undefined,
-  };
-}
-
-// ─── Screen ──────────────────────────────────────────────────────────────────
-
 export default function AttendanceScreen() {
-  const { data, isLoading, isFetching, refetch } = useAttendanceList({
-    params: { per_page: 50 },
-  });
+  const { classId: classIdParam, sessionId: sessionIdParam } = useLocalSearchParams<{
+    classId?: string;
+    sessionId?: string;
+  }>();
+  const classId = classIdParam ? Number(classIdParam) : null;
 
-  const { items, pagination } = getListData<AttendanceResponse>(data);
+  const [activeTab, setActiveTab] = useState<AttendanceTab>('list');
+  const [search, setSearch] = useState('');
+  const [sessionId, setSessionId] = useState<number | null>(
+    sessionIdParam ? Number(sessionIdParam) : null,
+  );
 
-  const attendanceList = items.map(mapToStudentAttendance);
+  const classDetailQuery = ClassRoomService.useClassRoomDetail(
+    { id: classId ?? '' },
+    { enabled: !!classId },
+  );
+  const classInfo = toClassInfo(classDetailQuery.data as ClassRoomDetailResponse | undefined);
 
-  const stats: AttendanceStatsType = {
-    total:   pagination.total,
-    present: items.filter((i) => i.status === 'present').length,
-    late:    items.filter((i) => i.status === 'late').length,
-    absent:  items.filter((i) => i.status === 'absent').length,
-  };
+  const { date_from, date_to } = useMemo(getSessionDateRange, []);
+  const sessionsQuery = ClassSessionService.useClassSessionList(
+    // `ClassSessionAPI.getList` forwards `params` as-is (no `filters` flattening
+    // like the other list endpoints), so `date_from`/`date_to` must be top-level.
+    { params: { class_id: classId ?? 0, per_page: 100, date_from, date_to } as any },
+    { enabled: !!classId },
+  );
+  // Memoized on `sessionsQuery.data` (not recomputed inline) so `sessions`
+  // keeps a stable reference across unrelated re-renders — see the same fix
+  // in `useAttendanceSession.ts` for why `getListData(...).items` must never
+  // feed a `useEffect`/`useMemo` dependency array unmemoized.
+  const sessions = useMemo(() => {
+    const { items: rawSessions } = getListData<ClassSessionResponse>(sessionsQuery.data);
+    return sortSessionsByProximity(toClassSessions(rawSessions));
+  }, [sessionsQuery.data]);
 
-  const attended = stats.present + stats.late;
+  useEffect(() => {
+    if (!sessionId && sessions[0]?.id) setSessionId(sessions[0].id);
+  }, [sessions, sessionId]);
+
+  const session = sessions.find((s) => s.id === sessionId);
+
+  const attendance = useAttendanceSession({ classId, sessionId });
+
+  const filteredRows = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return attendance.rows;
+    return attendance.rows.filter(
+      (r) => r.name.toLowerCase().includes(term) || r.code.toLowerCase().includes(term),
+    );
+  }, [attendance.rows, search]);
+
+  const attended = attendance.counts.present + attendance.counts.late;
+  const loading = sessionsQuery.isLoading || attendance.loading;
 
   return (
     <View style={styles.container}>
       <AttendanceHeader />
-      <ClassInfoCard />
+
+      <ClassInfoCard
+        classInfo={classInfo}
+        session={session}
+        sessions={sessions}
+        onChangeSession={setSessionId}
+        loading={classDetailQuery.isLoading}
+      />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
-        refreshing={isFetching}
-        onRefresh={refetch}
+        refreshing={attendance.loading}
+        onRefresh={attendance.refetch}
       >
-        <AttendanceStats stats={stats} />
+        <AttendanceStats stats={attendance.counts} />
 
-        <AttendanceTabs />
+        <AttendanceTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        <SearchBar />
+        {activeTab === 'list' ? (
+          <>
+            <SearchBar value={search} onChangeText={setSearch} />
 
-        {isLoading ? (
-          <ActivityIndicator
-            size="large"
-            color="#0066cc"
-            style={{ marginVertical: 32 }}
-          />
+            {loading ? (
+              <ActivityIndicator size="large" color="#0066cc" style={{ marginVertical: 32 }} />
+            ) : (
+              <StudentAttendanceList
+                data={filteredRows}
+                selectedIds={attendance.selectedIds}
+                onToggle={attendance.toggleSelect}
+              />
+            )}
+
+            <AttendanceActionBar
+              attended={attended}
+              total={attendance.counts.total}
+              selectedCount={attendance.selectedIds.size}
+              dirtyCount={attendance.dirtyCount}
+              saving={attendance.saving}
+              onSetStatus={attendance.setStatusForSelected}
+              onSave={attendance.save}
+              onMarkAllPresent={attendance.markAllPresent}
+            />
+          </>
         ) : (
-          <StudentAttendanceList data={attendanceList} />
+          <AttendanceReport stats={attendance.counts} absentRows={attendance.absentRows} />
         )}
-
-        <AttendanceActionBar attended={attended} total={stats.total} />
 
         <RefreshHint />
       </ScrollView>

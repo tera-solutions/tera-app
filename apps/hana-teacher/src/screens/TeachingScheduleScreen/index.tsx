@@ -1,79 +1,50 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, StatusBar, Image, TouchableOpacity } from 'react-native';
-import { Icon, IconButton } from 'react-native-paper';
+import { ActivityIndicator, Icon, IconButton } from 'react-native-paper';
+import { useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
+
+import { TimetableService } from '@tera/modules/education';
 
 import { styles } from './styles';
 import { WeekCalendar } from './components/WeekCalendar';
 import { ScheduleStats } from './components/ScheduleStats';
-import { ScheduleItem, ScheduleData } from './components/ScheduleItem';
+import { ScheduleItem } from './components/ScheduleItem';
 import { WeeklyScheduleBanner } from './components/WeeklyScheduleBanner';
-
-const MOCK_SCHEDULES: ScheduleData[] = [
-  {
-    id: '1',
-    startTime: '08:00',
-    endTime: '09:30',
-    duration: '1.5 giờ',
-    className: 'Starters 2A',
-    classColor: { bg: '#EFF6FF', text: '#1D4ED8', indicator: '#3B82F6' },
-    lessonName: 'Hello! – Getting to know you',
-    room: 'Phòng 201',
-    branch: 'Cơ sở 1',
-    unit: 'Unit 1: My World',
-    status: 'upcoming',
-    students: '24/24',
-    avatar: require('@tera/assets/app/element_77.png'),
-  },
-  {
-    id: '2',
-    startTime: '09:45',
-    endTime: '11:15',
-    duration: '1.5 giờ',
-    className: 'Movers 1B',
-    classColor: { bg: '#ECFDF5', text: '#047857', indicator: '#10B981' },
-    lessonName: 'Numbers 1–10',
-    room: 'Phòng 202',
-    branch: 'Cơ sở 1',
-    unit: 'Unit 1: My World',
-    status: 'upcoming',
-    students: '24/24',
-    avatar: require('@tera/assets/app/element_78.png'),
-  },
-  {
-    id: '3',
-    startTime: '13:30',
-    endTime: '15:00',
-    duration: '1.5 giờ',
-    className: 'Flyers 3A',
-    classColor: { bg: '#FFF7ED', text: '#C2410C', indicator: '#F97316' },
-    lessonName: 'Colors around us',
-    room: 'Phòng 203',
-    branch: 'Cơ sở 1',
-    unit: 'Unit 2: My School',
-    status: 'ongoing',
-    students: '24/24',
-    avatar: require('@tera/assets/app/element_79.png'),
-  },
-  {
-    id: '4',
-    startTime: '15:15',
-    endTime: '16:45',
-    duration: '1.5 giờ',
-    className: 'Starters 2B',
-    classColor: { bg: '#F5F3FF', text: '#6D28D9', indicator: '#8B5CF6' },
-    lessonName: 'School things',
-    room: 'Phòng 204',
-    branch: 'Cơ sở 1',
-    unit: 'Unit 2: My School',
-    status: 'not_started',
-    students: '20/24',
-    avatar: require('@tera/assets/app/element_80.png'),
-  },
-];
+import { addDays, computeDayStats, formatDayHeader, getWeekDays, toDateKey, toScheduleSessions } from './_utils';
+import type { ScheduleSession } from './types';
 
 export default function TeachingScheduleScreen() {
-  const [selectedDate, setSelectedDate] = useState('2025-05-15');
+  const router = useRouter();
+  const [anchorDate, setAnchorDate] = useState(() => new Date());
+  const [sortAsc, setSortAsc] = useState(true);
+
+  const weekDays = useMemo(() => getWeekDays(anchorDate), [anchorDate]);
+  const selectedDate = toDateKey(anchorDate);
+  const isTodaySelected = selectedDate === toDateKey(new Date());
+
+  const { data, isLoading, isFetching, refetch } = TimetableService.useTimetableCalendar({
+    date_from: weekDays[0].fullDate,
+    date_to: weekDays[6].fullDate,
+  });
+  const weekSessions = useMemo(() => toScheduleSessions(data?.data), [data]);
+
+  const daySessions = useMemo<ScheduleSession[]>(
+    () =>
+      weekSessions
+        .filter((s) => s.date === selectedDate)
+        .sort((a, b) =>
+          sortAsc ? a.startTime.localeCompare(b.startTime) : b.startTime.localeCompare(a.startTime),
+        ),
+    [weekSessions, selectedDate, sortAsc],
+  );
+
+  const dayStats = useMemo(() => computeDayStats(daySessions), [daySessions]);
+
+  const goToday = () => setAnchorDate(new Date());
+  const goPrevWeek = () => setAnchorDate((d) => addDays(d, -7));
+  const goNextWeek = () => setAnchorDate((d) => addDays(d, 7));
+  const selectDate = (dateStr: string) => setAnchorDate(new Date(`${dateStr}T00:00:00`));
 
   const renderHeaderComponents = () => (
     <View>
@@ -85,31 +56,21 @@ export default function TeachingScheduleScreen() {
         />
         <View style={styles.headerTopRow}>
           <IconButton
-            icon={({ size, color }) => (
-              <Icon source="chevron-left" size={size} color={color} />
-            )}
+            icon={({ size, color }) => <Icon source="chevron-left" size={size} color={color} />}
             iconColor="#FFF"
             size={28}
-            onPress={() => {}}
+            onPress={() => router.back()}
           />
           <Text style={styles.headerTitle}>Lịch dạy</Text>
           <View style={{ flexDirection: 'row' }}>
             <IconButton
-              icon={({ size, color }) => (
-                <Icon
-                  source="calendar-month-outline"
-                  size={size}
-                  color={color}
-                />
-              )}
+              icon={({ size, color }) => <Icon source="calendar-month-outline" size={size} color={color} />}
               iconColor="#FFF"
               size={24}
-              onPress={() => {}}
+              onPress={goToday}
             />
             <IconButton
-              icon={({ size, color }) => (
-                <Icon source="filter-variant" size={size} color={color} />
-              )}
+              icon={({ size, color }) => <Icon source="filter-variant" size={size} color={color} />}
               iconColor="#FFF"
               size={24}
               onPress={() => {}}
@@ -119,14 +80,21 @@ export default function TeachingScheduleScreen() {
       </View>
       <View style={{ paddingHorizontal: 16 }}>
         <WeekCalendar
+          weekDays={weekDays}
           selectedDate={selectedDate}
-          onDateSelect={setSelectedDate}
+          headerLabel={formatDayHeader(selectedDate)}
+          onSelectDate={selectDate}
+          onToday={goToday}
+          onPrevWeek={goPrevWeek}
+          onNextWeek={goNextWeek}
         />
-        <ScheduleStats />
+        <ScheduleStats stats={dayStats} periodLabel={isTodaySelected ? 'Hôm nay' : 'Ngày đã chọn'} />
 
         <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle}>Lịch dạy hôm nay</Text>
-          <TouchableOpacity style={styles.btnSort} activeOpacity={0.7}>
+          <Text style={styles.sectionTitle}>
+            {isTodaySelected ? 'Lịch dạy hôm nay' : `Lịch dạy ${formatDayHeader(selectedDate)}`}
+          </Text>
+          <TouchableOpacity style={styles.btnSort} activeOpacity={0.7} onPress={() => setSortAsc((v) => !v)}>
             <Text style={styles.sortText}>Sắp xếp</Text>
             <Icon source="swap-vertical" size={16} color="#007AFF" />
           </TouchableOpacity>
@@ -138,23 +106,37 @@ export default function TeachingScheduleScreen() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <FlashList
-        data={MOCK_SCHEDULES}
-        ListHeaderComponent={renderHeaderComponents}
-        ListFooterComponent={
-          <View style={{ paddingHorizontal: 16 }}>
-            <WeeklyScheduleBanner />
-          </View>
-        }
-        contentContainerStyle={{ paddingBottom: 100 }}
-        showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
-          // Chỉ tác động style căn lề vào vùng render item bài học
-          <View style={styles.renderItemContainer}>
-            <ScheduleItem item={item} />
-          </View>
-        )}
-      />
+      {isLoading ? (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <ActivityIndicator size="large" color="#007AFF" />
+        </View>
+      ) : (
+        <FlashList
+          data={daySessions}
+          ListHeaderComponent={renderHeaderComponents}
+          ListEmptyComponent={
+            <View style={{ paddingHorizontal: 16, paddingVertical: 24 }}>
+              <Text style={{ textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>
+                Không có lịch dạy {isTodaySelected ? 'hôm nay' : 'trong ngày này'}
+              </Text>
+            </View>
+          }
+          ListFooterComponent={
+            <View style={{ paddingHorizontal: 16 }}>
+              <WeeklyScheduleBanner />
+            </View>
+          }
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
+          refreshing={isFetching}
+          onRefresh={refetch}
+          renderItem={({ item }) => (
+            <View style={styles.renderItemContainer}>
+              <ScheduleItem item={item} />
+            </View>
+          )}
+        />
+      )}
     </View>
   );
 }
