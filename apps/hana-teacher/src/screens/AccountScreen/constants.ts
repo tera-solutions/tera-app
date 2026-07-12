@@ -41,6 +41,7 @@ export const MENUS = [
     title: 'Hồ sơ cá nhân',
     icon: CreditCard,
     color: '#0066cc',
+    link: '/setting/profile',
   },
   {
     id: 'students',
@@ -76,12 +77,6 @@ export const MENUS = [
     icon: Award,
     color: '#EC4899',
     link: '/edu/course'
-  },
-  {
-    id: 'account',
-    title: 'Thông tin tài khoản',
-    icon: CreditCard,
-    color: '#3B82F6',
   },
   {
     id: 'security',

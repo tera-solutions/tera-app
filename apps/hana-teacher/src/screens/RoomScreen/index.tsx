@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ActivityIndicator, FlatList, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { useRoomList } from '@tera/modules/education/room';
 import { getListData } from '@tera/commons/hooks';
@@ -32,6 +33,7 @@ function mapToRoomInfo(room: RoomResponse): RoomInfo {
   const roomLabel = ROOM_TYPE_LABELS[room.room_type ?? ''] ?? '';
 
   return {
+    id: String(room.id),
     name: branchName ? `${room.room_name} - ${branchName}` : room.room_name,
     className: roomLabel,
     capacity: room.capacity ?? 0,
@@ -46,6 +48,7 @@ function mapToRoomInfo(room: RoomResponse): RoomInfo {
 }
 
 export default function RoomScreen() {
+  const router = useRouter();
   const [search, setSearch] = useState('');
 
   const { data, isLoading, isFetching, refetch } = useRoomList({
@@ -70,7 +73,11 @@ export default function RoomScreen() {
           refreshing={isFetching}
           onRefresh={refetch}
           renderItem={({ item }) => (
-            <RoomInfoCard info={item} />
+            <RoomInfoCard
+              info={item}
+              onPress={() => router.push(`/edu/room-detail?roomId=${item.id}` as any)}
+              onEdit={() => router.push(`/edu/room-create?roomId=${item.id}` as any)}
+            />
           )}
         />
       )}

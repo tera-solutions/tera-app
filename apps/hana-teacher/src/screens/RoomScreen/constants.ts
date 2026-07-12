@@ -7,6 +7,7 @@ import {
 } from './types';
 
 export const ROOM_INFO: RoomInfo = {
+  id: 'room-1',
   name: 'Phòng 201 - Cơ sở 1',
   className: 'Kids A1 - K24',
   capacity: 30,

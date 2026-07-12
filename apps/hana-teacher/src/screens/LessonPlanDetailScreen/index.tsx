@@ -115,7 +115,13 @@ export default function LessonPlanDetailScreen() {
           <Icon source="chevron-left" size={28} color="#FFFFFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Chi tiết giáo án</Text>
-        <View style={styles.headerRightPlaceholder} />
+        <TouchableOpacity
+          style={styles.createBtn}
+          onPress={() => router.push(`/edu/lesson-create?planId=${id}` as any)}
+        >
+          <Icon source="plus" size={14} color="#FFFFFF" />
+          <Text style={styles.createBtnText}>Tạo bài học</Text>
+        </TouchableOpacity>
       </View>
 
       {notFound ? (

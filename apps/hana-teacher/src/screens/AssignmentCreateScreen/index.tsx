@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ScrollView, StatusBar, View } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { Button, Icon, IconButton, Text } from 'react-native-paper';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
 
 import { AssignmentService } from '@tera/modules/education';
@@ -18,7 +18,21 @@ import SubmissionOptionsSection from './components/SubmissionOptionsSection';
 
 export default function AssignmentCreateScreen() {
   const router = useRouter();
-  const form = useForm<AssignmentCreateForm>({ defaultValues: DEFAULT_FORM_VALUES });
+  const { lessonId, classId, lessonTitle, className } = useLocalSearchParams<{
+    lessonId?: string;
+    classId?: string;
+    lessonTitle?: string;
+    className?: string;
+  }>();
+  const form = useForm<AssignmentCreateForm>({
+    defaultValues: {
+      ...DEFAULT_FORM_VALUES,
+      lesson_id: lessonId ? Number(lessonId) : null,
+      lesson_name: lessonTitle ?? '',
+      class_room_id: classId ? Number(classId) : null,
+      class_room_name: className ?? '',
+    },
+  });
   const [submitting, setSubmitting] = useState(false);
 
   const { mutateAsync: createAssignment } = AssignmentService.useAssignmentCreate();

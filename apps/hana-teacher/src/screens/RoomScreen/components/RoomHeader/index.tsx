@@ -1,5 +1,5 @@
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import { Ellipsis } from 'lucide-react-native';
+import { Plus } from 'lucide-react-native';
 import { Icon } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 
@@ -18,8 +18,8 @@ export default function RoomHeader() {
         <Icon source="chevron-left" size={28} color="#FFFFFF" />
       </TouchableOpacity>
       <Text style={styles.headerTitle}>Phòng học</Text>
-      <TouchableOpacity style={styles.iconButton}>
-        <Ellipsis size={20} color="#FFFFFF" />
+      <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/edu/room-create' as any)}>
+        <Plus size={20} color="#FFFFFF" />
       </TouchableOpacity>
     </View>
   );

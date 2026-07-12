@@ -5,6 +5,8 @@ export default function SettingLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="notification" />
       <Stack.Screen name="more-app" />
+      <Stack.Screen name="profile" />
+      <Stack.Screen name="profile-update" />
     </Stack>
   );
 }

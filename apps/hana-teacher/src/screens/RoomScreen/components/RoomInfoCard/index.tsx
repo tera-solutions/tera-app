@@ -6,12 +6,13 @@ import { styles } from '../../styles';
 
 interface Props {
   info: RoomInfo;
+  onPress?: () => void;
   onEdit?: () => void;
 }
 
-export default function RoomInfoCard({ info, onEdit }: Props) {
+export default function RoomInfoCard({ info, onPress, onEdit }: Props) {
   return (
-    <View style={styles.infoCard}>
+    <TouchableOpacity style={styles.infoCard} onPress={onPress} activeOpacity={0.7}>
       <Image source={info.image} style={styles.roomPhoto} resizeMode="cover" />
 
       <View style={styles.infoBody}>
@@ -46,6 +47,6 @@ export default function RoomInfoCard({ info, onEdit }: Props) {
           </View>
         )}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }

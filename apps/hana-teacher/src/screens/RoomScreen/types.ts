@@ -3,6 +3,7 @@ export type RoomStatus = 'active' | 'inactive';
 export type AttendanceStatus = 'checked_in' | 'present' | 'absent';
 
 export interface RoomInfo {
+  id: string;
   name: string;
   className: string;
   capacity: number;

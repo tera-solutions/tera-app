@@ -1,82 +1,77 @@
-import React, { useState } from 'react';
-import { View, ScrollView } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Icon } from 'react-native-paper';
 import { useLocalSearchParams } from 'expo-router';
 
-import { useLessonList } from '@tera/modules/education/lesson';
-import { getListData } from '@tera/commons/hooks';
+import { LessonService } from '@tera/modules/education';
 
+import { HeaderCard } from './components/HeaderCard';
+import { StatRow } from './components/StatRow';
+import { DetailTabs } from './components/DetailTabs';
+import { OverviewTab } from './components/tabs/OverviewTab';
+import { MaterialsTab } from './components/tabs/MaterialsTab';
+import { HomeworkTab } from './components/tabs/HomeworkTab';
+import { InfoSidebarCard } from './components/InfoSidebarCard';
+import { ProgressDonutCard } from './components/ProgressDonutCard';
+import { QuickNoteCard } from './components/QuickNoteCard';
+import SkillEvaluationModal from './components/SkillEvaluationModal';
+
+import { toLessonDetail } from './_utils';
+import type { LessonDetailTab } from './types';
 import { styles } from './styles';
-import { HeaderSection } from './components/HeaderSection';
-import { LessonInfoCard } from './components/LessonInfoCard';
-import { TabNavigation, LessonTab } from './components/TabNavigation';
-import { OverviewTab } from './components/OverviewTab';
-import { MaterialTab } from './components/MaterialTab';
-import { BottomActions } from './components/BottomActions';
-
-import { LessonResponse, LessonStats } from './types';
-
-const TABS: LessonTab[] = [
-  { value: 'overview',  text: 'Tổng quan' },
-  { value: 'content',   text: 'Nội dung' },
-  { value: 'activity',  text: 'Hoạt động' },
-  { value: 'material',  text: 'Tài liệu' },
-  { value: 'note',      text: 'Ghi chú' },
-];
 
 export default function LessonScreen() {
-  const [activeTab, setActiveTab] = useState('overview');
-  const { lessonId, classId } = useLocalSearchParams<{
-    lessonId?: string;
-    classId?: string;
-  }>();
+  const { lessonId } = useLocalSearchParams<{ lessonId?: string }>();
+  const id = lessonId ? Number(lessonId) : null;
 
-  const { data, isLoading } = useLessonList({
-    params: {
-      per_page: 50,
-      filters: {
-        ...(classId ? { class_room_id: classId } : {}),
-      },
-    },
-  });
+  const [activeTab, setActiveTab] = useState<LessonDetailTab>('overview');
+  const [skillEvalOpen, setSkillEvalOpen] = useState(false);
 
-  const { items, pagination } = getListData<LessonResponse>(data);
+  const detailQuery = LessonService.useLessonDetail({ id: id ?? '' });
+  const detail = useMemo(() => toLessonDetail(detailQuery.data?.data?.lesson ?? detailQuery.data?.data), [detailQuery.data]);
 
-  // Ưu tiên lessonId từ route params, fallback về item đầu tiên
-  const currentLesson: LessonResponse | undefined = lessonId
-    ? items.find((l) => String(l.id) === lessonId)
-    : items[0];
-
-  const stats: LessonStats = {
-    total:     pagination.total,
-    completed: items.filter((l) => l.status === 'completed').length,
-    upcoming:  items.filter((l) => l.status === 'upcoming').length,
-    ongoing:   items.filter((l) => l.status === 'ongoing').length,
-  };
+  const notFound = !id || (!detailQuery.isLoading && (detailQuery.isError || !detail));
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        <HeaderSection />
+      {notFound ? (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+          <Icon source="alert-circle-outline" size={32} color="#CBD5E1" />
+          <Text style={styles.emptyText}>Không tìm thấy bài học hoặc bạn không có quyền truy cập</Text>
+        </View>
+      ) : detailQuery.isLoading || !detail ? (
+        <ActivityIndicator size="large" color="#007AFF" style={{ marginTop: 80 }} />
+      ) : (
+        <>
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+            <HeaderCard detail={detail} />
 
-        <LessonInfoCard lesson={currentLesson} isLoading={isLoading} />
+            <StatRow detail={detail} />
 
-        <TabNavigation
-          tabs={TABS}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
+            <DetailTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        {activeTab === 'overview' && <OverviewTab stats={stats} />}
+            {activeTab === 'overview' && <OverviewTab detail={detail} />}
+            {activeTab === 'materials' && <MaterialsTab materials={detail.materials} />}
+            {activeTab === 'homework' && <HomeworkTab detail={detail} />}
 
-        {activeTab === 'material' && (
-          <MaterialTab lessonId={lessonId} />
-        )}
-      </ScrollView>
+            <TouchableOpacity style={styles.skillEvalBtn} onPress={() => setSkillEvalOpen(true)}>
+              <Icon source="star-outline" size={16} color="#007AFF" />
+              <Text style={styles.skillEvalBtnText}>Đánh giá kỹ năng</Text>
+            </TouchableOpacity>
 
-      <BottomActions />
+            <InfoSidebarCard detail={detail} />
+            <ProgressDonutCard activities={detail.activities} />
+            <QuickNoteCard lessonId={detail.id} initialNote={detail.lesson_note} />
+          </ScrollView>
+
+          <SkillEvaluationModal
+            visible={skillEvalOpen}
+            classId={detail.class_room_id || null}
+            lessonId={detail.id}
+            onDismiss={() => setSkillEvalOpen(false)}
+          />
+        </>
+      )}
     </View>
   );
 }

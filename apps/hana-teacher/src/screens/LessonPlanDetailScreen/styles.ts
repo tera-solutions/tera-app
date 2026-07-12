@@ -45,8 +45,21 @@ export const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
   },
-  headerRightPlaceholder: {
-    width: 36,
+  createBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.5)',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
+  createBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 
   // ─── PLAN HEADER CARD ────────────────────────────────────────────────────────
