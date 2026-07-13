@@ -12,9 +12,9 @@ import useIsMobile from "@tera/commons/hooks/useIsMobile";
 
 /* Import: pages */
 import SearchBar from "_common/components/SearchBar";
-import CourseFilter, {
-  CourseFilterValue,
-} from "./containers/CourseFilter";
+import FilterButton from "@tera/components/dof/FilterButton";
+import CourseFilter, { CourseFilterValue } from "./containers/CourseFilter";
+import CourseFilterModal from "./containers/CourseFilterModal";
 import CourseTable from "./containers/CourseTable";
 import CourseFormModal from "./CourseFormModal";
 
@@ -40,6 +40,13 @@ const CourseListPage = () => {
   const [filters, setFilters] = useState<CourseFilterValue>(defaultFilters);
   const [sortBy, setSortBy] = useState("code");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+
+  const activeFilterCount =
+    (filters.durationMin || filters.durationMax ? 1 : 0) +
+    (filters.priceMin || filters.priceMax ? 1 : 0) +
+    (filters.createdBy ? 1 : 0) +
+    (filters.createdFrom || filters.createdTo ? 1 : 0);
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
@@ -64,8 +71,10 @@ const CourseListPage = () => {
     if (isMobile && modalData.open) {
       const { type, id } = modalData;
       setModalData({ open: false, type: "create", id: undefined });
-      if (type === "update" && id != null) navigate(COURSE_PAGE_URL.update.path(id));
-      else if (type === "detail" && id != null) navigate(COURSE_PAGE_URL.detail.path(id));
+      if (type === "update" && id != null)
+        navigate(COURSE_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null)
+        navigate(COURSE_PAGE_URL.detail.path(id));
       else navigate(COURSE_PAGE_URL.create.path);
     }
   }, [isMobile, modalData, navigate]);
@@ -141,27 +150,33 @@ const CourseListPage = () => {
 
         {/* Search + quick filters row */}
         <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center">
-          <SearchBar
-            className="w-full xmd:flex-1 xmd:min-w-[140px]"
-            value={keyword}
-            placeholder={t("course.search_placeholder")}
-            onChange={(v) => {
-              setKeyword(v);
-              resetPage();
-            }}
-          />
+          <div className="flex items-center gap-2 xmd:contents">
+            <SearchBar
+              className="flex-1 min-w-0 xmd:min-w-[140px]"
+              value={keyword}
+              placeholder={t("course.search_placeholder")}
+              onChange={(v) => {
+                setKeyword(v);
+                resetPage();
+              }}
+            />
+            <FilterButton
+              onClick={() => setFilterModalOpen(true)}
+              count={activeFilterCount}
+            />
 
-          <CourseFilter
-            value={filters}
-            onChange={patchFilters}
-            sortBy={sortBy}
-            sortDir={sortDir}
-            onSortChange={(by, dir) => {
-              setSortBy(by);
-              setSortDir(dir);
-              resetPage();
-            }}
-          />
+            <CourseFilter
+              value={filters}
+              onChange={patchFilters}
+              sortBy={sortBy}
+              sortDir={sortDir}
+              onSortChange={(by, dir) => {
+                setSortBy(by);
+                setSortDir(dir);
+                resetPage();
+              }}
+            />
+          </div>
         </div>
 
         <CourseTable
@@ -181,6 +196,26 @@ const CourseListPage = () => {
           }
         />
       )}
+
+      <CourseFilterModal
+        open={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        baseParams={{
+          search: keyword || undefined,
+          is_active: activeStatus || undefined,
+        }}
+        value={{
+          durationMin: filters.durationMin,
+          durationMax: filters.durationMax,
+          priceMin: filters.priceMin,
+          priceMax: filters.priceMax,
+          createdBy: filters.createdBy,
+          selectedCreatedBy: filters.selectedCreatedBy,
+          createdFrom: filters.createdFrom,
+          createdTo: filters.createdTo,
+        }}
+        onApply={(v) => patchFilters(v)}
+      />
     </div>
   );
 };

@@ -70,72 +70,79 @@ const ClassRoomFilter = ({
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-2 xmd:contents">
-      {/* Khóa học — search server */}
-      <div className="min-w-0 xmd:flex-none xmd:w-[134px]">
-        <SearchSelect
+    <div className="flex flex-wrap items-center gap-2 xmd:contents">
+      {/* Khóa học/GV/Nhân viên/Thứ/Ca — CHỈ hiện desktop (mobile đưa vào modal "Lọc") */}
+      <div className="hidden xmd:contents">
+        {/* Khóa học — search server */}
+        <div className="min-w-0 xmd:flex-none xmd:w-[134px]">
+          <SearchSelect
+            allowClear
+            value={value.course}
+            selectedItem={value.selectedCourse}
+            placeholder={t("classroom.all_courses")}
+            useList={CourseService.useCourseList}
+            getLabel={(c) =>
+              c?.code ? `${c.code} - ${c.name}` : (c?.name ?? `#${c?.id}`)
+            }
+            onChange={(id, item) =>
+              onChange({ course: id, selectedCourse: item ?? null })
+            }
+          />
+        </div>
+        {/* Giáo viên — search server */}
+        <div className="min-w-0 xmd:flex-none xmd:w-[136px]">
+          <SearchSelect
+            allowClear
+            value={value.teacher}
+            selectedItem={value.selectedTeacher}
+            placeholder={t("classroom.all_teachers")}
+            useList={TeacherService.useTeacherList}
+            getLabel={(tc) => tc?.full_name ?? `#${tc?.id}`}
+            onChange={(id, item) =>
+              onChange({ teacher: id, selectedTeacher: item ?? null })
+            }
+          />
+        </div>
+        <div className="min-w-0 xmd:flex-none xmd:w-[160px]">
+          <UserSelect
+            value={value.assignee}
+            selectedUser={value.selectedAssignee}
+            placeholder={t("classroom.all_assignees")}
+            allowClear
+            onChange={(id, user) =>
+              onChange({ assignee: id, selectedAssignee: user ?? null })
+            }
+          />
+        </div>
+        <FilterSelect
           allowClear
-          value={value.course}
-          selectedItem={value.selectedCourse}
-          placeholder={t("classroom.all_courses")}
-          useList={CourseService.useCourseList}
-          getLabel={(c) => (c?.code ? `${c.code} - ${c.name}` : (c?.name ?? `#${c?.id}`))}
-          onChange={(id, item) =>
-            onChange({ course: id, selectedCourse: item ?? null })
-          }
+          className="min-w-0 xmd:flex-none xmd:min-w-0 xmd:w-[126px]"
+          value={value.weekday}
+          placeholder={t("classroom.all_weekdays")}
+          options={weekdayOptions}
+          onChange={(v) => onChange({ weekday: v })}
+        />
+        {/* Ca học — mobile: full-width 1 hàng (tránh ô trống vì 5 select lẻ) */}
+        <FilterSelect
+          allowClear
+          className="col-span-2 xmd:col-span-1 min-w-0 xmd:flex-none xmd:min-w-0 xmd:w-[118px]"
+          value={value.shift}
+          placeholder={t("classroom.all_shifts")}
+          options={shiftOptions}
+          onChange={(v) => onChange({ shift: v })}
         />
       </div>
-      {/* Giáo viên — search server */}
-      <div className="min-w-0 xmd:flex-none xmd:w-[136px]">
-        <SearchSelect
-          allowClear
-          value={value.teacher}
-          selectedItem={value.selectedTeacher}
-          placeholder={t("classroom.all_teachers")}
-          useList={TeacherService.useTeacherList}
-          getLabel={(tc) => tc?.full_name ?? `#${tc?.id}`}
-          onChange={(id, item) =>
-            onChange({ teacher: id, selectedTeacher: item ?? null })
-          }
-        />
-      </div>
-      <div className="min-w-0 xmd:flex-none xmd:w-[160px]">
-        <UserSelect
-          value={value.assignee}
-          selectedUser={value.selectedAssignee}
-          placeholder={t("classroom.all_assignees")}
-          allowClear
-          onChange={(id, user) =>
-            onChange({ assignee: id, selectedAssignee: user ?? null })
-          }
-        />
-      </div>
-      <FilterSelect
-        allowClear
-        className="min-w-0 xmd:flex-none xmd:min-w-0 xmd:w-[126px]"
-        value={value.weekday}
-        placeholder={t("classroom.all_weekdays")}
-        options={weekdayOptions}
-        onChange={(v) => onChange({ weekday: v })}
-      />
-      {/* Ca học — mobile: full-width 1 hàng (tránh ô trống vì 5 select lẻ) */}
-      <FilterSelect
-        allowClear
-        className="col-span-2 xmd:col-span-1 min-w-0 xmd:flex-none xmd:min-w-0 xmd:w-[118px]"
-        value={value.shift}
-        placeholder={t("classroom.all_shifts")}
-        options={shiftOptions}
-        onChange={(v) => onChange({ shift: v })}
-      />
-      {/* Ngày khai giảng + Sắp xếp — mobile: chung hàng cuối full-width; desktop: tách inline */}
-      <div className="col-span-2 flex items-center gap-2 xmd:contents">
-        <DateRangeFilter
-          className="flex-1 xmd:flex-none xmd:w-[150px]"
-          from={value.startFrom}
-          to={value.startTo}
-          placeholder={[t("common.from"), t("common.to")]}
-          onChange={(startFrom, startTo) => onChange({ startFrom, startTo })}
-        />
+      {/* Sắp xếp luôn hiện (chung hàng search+Lọc trên mobile); Ngày khai giảng CHỈ desktop — mobile vào modal */}
+      <div className="flex items-center gap-2 xmd:contents">
+        <div className="hidden xmd:contents">
+          <DateRangeFilter
+            className="flex-1 xmd:flex-none xmd:w-[150px]"
+            from={value.startFrom}
+            to={value.startTo}
+            placeholder={[t("common.from"), t("common.to")]}
+            onChange={(startFrom, startTo) => onChange({ startFrom, startTo })}
+          />
+        </div>
         <div className="shrink-0 xmd:order-last">
           <SortSelect
             options={sortOptions}

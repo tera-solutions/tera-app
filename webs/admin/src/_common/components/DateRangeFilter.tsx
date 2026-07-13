@@ -15,23 +15,11 @@ interface DateRangeFilterProps {
   disabled?: boolean;
 }
 
-/**
- * Chọn khoảng ngày cho bộ lọc list (dùng RangePicker của tera-dls, KHÔNG dùng
- * `<input type="date">` native trên mobile).
- *
- * RangePicker gốc có 6 lỗi hiển thị — các class dưới đây vá đủ cả 6, xem mục
- * "RangePicker — 6 lỗi cố định" trong CLAUDE.md trước khi sửa:
- *  - popup 2 lịch cạnh nhau (580px) tràn mép trái trên mobile → `max-w` + `flex-col`
- *  - `.tera-picker-panel-container` (`overflow-x:hidden`) cắt cột "CN" ở màn ≤340px
- *  - gạch chân `.tera-picker-active-bar` cắt ngang đáy bo tròn
- *  - `.tera-picker-input` rộng cố định 99px → ô ngày thứ 2 chui xuống dưới icon lịch
- *  - chiều cao mặc định 26px lệch với các control cạnh nó
- */
 const PICKER_CLASS =
   "h-9! pr-9! hover:border-blue-700! focus-within:border-blue-700! [&_.tera-picker-active-bar]:bottom-[3px]! [&_.tera-picker-active-bar]:rounded-full! [&_.tera-picker-input]:min-w-0! [&_.tera-picker-input]:flex-1! [&_input]:w-full! [&_input]:text-[12px]! [&_.tera-picker-range-separator]:px-1! xmd:[&_input]:text-[13px]! xmd:[&_.tera-picker-range-separator]:px-2!";
 
 const POPUP_CLASS =
-  "max-w-[min(300px,calc(100vw-2.5rem))] [&_.tera-picker-panel-container]:overflow-x-auto! [&_.tera-picker-panels]:flex-col xmd:max-w-none xmd:[&_.tera-picker-panel-container]:overflow-x-hidden! xmd:[&_.tera-picker-panels]:flex-row";
+  "max-w-[min(300px,calc(100vw-2.5rem))] max-xmd:min-w-0! [&_.tera-picker-panel-container]:overflow-x-auto! max-xmd:[&_.tera-picker-panels]:flex! max-xmd:[&_.tera-picker-panels]:flex-col! max-xmd:[&_.tera-picker-panels]:w-max-content! max-xmd:[&_.tera-picker-panels>.tera-picker-panel:nth-child(2)]:hidden! max-xmd:[&_.tera-picker-header-next-btn]:visible! max-xmd:[&_.tera-picker-header-super-next-btn]:visible! xmd:max-w-none xmd:[&_.tera-picker-panel-container]:overflow-x-hidden! xmd:[&_.tera-picker-panels]:flex-row";
 
 const DateRangeFilter = ({
   from,
@@ -52,7 +40,7 @@ const DateRangeFilter = ({
         ? [moment(from, "YYYY-MM-DD"), moment(to, "YYYY-MM-DD")]
         : undefined
     }
-    format="DD/MM/YYYY"
+    format='DD/MM/YYYY'
     placeholder={placeholder}
     allowClear
     onChange={(dates: any) =>

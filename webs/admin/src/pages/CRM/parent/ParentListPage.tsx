@@ -16,8 +16,10 @@ import { useStores } from "@tera/stores/useStores";
 import { BranchService } from "@tera/modules";
 
 /* Import: pages */
+import FilterButton from "@tera/components/dof/FilterButton";
 import SearchParent from "./containers/SearchParent";
 import ParentFilter from "./containers/ParentFilter";
+import ParentFilterModal from "./containers/ParentFilterModal";
 import ParentTable from "./containers/ParentTable";
 import ParentFormModal from "./ParentFormModal";
 
@@ -34,6 +36,9 @@ const ParentListPage = observer(() => {
   const [branchFilter, setBranchFilter] = useState("");
   const [sortBy, setSortBy] = useState("code");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+
+  const activeFilterCount = (relationFilter ? 1 : 0) + (branchFilter ? 1 : 0);
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
@@ -58,8 +63,10 @@ const ParentListPage = observer(() => {
     if (isMobile && modalData.open) {
       const { type, id } = modalData;
       setModalData({ open: false, type: "create", id: undefined });
-      if (type === "update" && id != null) navigate(PARENT_PAGE_URL.update.path(id));
-      else if (type === "detail" && id != null) navigate(PARENT_PAGE_URL.detail.path(id));
+      if (type === "update" && id != null)
+        navigate(PARENT_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null)
+        navigate(PARENT_PAGE_URL.detail.path(id));
       else navigate(PARENT_PAGE_URL.create.path);
     }
   }, [isMobile, modalData, navigate]);
@@ -132,42 +139,48 @@ const ParentListPage = observer(() => {
 
         {/* Search + quick filters row */}
         <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center">
-          <SearchParent
-            className="xmd:flex-1"
-            value={keyword}
-            onChange={(v) => {
-              setKeyword(v);
-              setParams((p: any) => ({ ...p, page: 1 }));
-            }}
-          />
+          <div className="flex items-center gap-2 xmd:contents">
+            <SearchParent
+              className="flex-1 min-w-0"
+              value={keyword}
+              onChange={(v) => {
+                setKeyword(v);
+                setParams((p: any) => ({ ...p, page: 1 }));
+              }}
+            />
+            <FilterButton
+              onClick={() => setFilterModalOpen(true)}
+              count={activeFilterCount}
+            />
 
-          <ParentFilter
-            relationOptions={relationOptions.map((opt: any) => ({
-              value: opt.value,
-              label: opt.label,
-            }))}
-            branchOptions={branches.map((b) => ({
-              value: String(b.id),
-              label: b.name,
-            }))}
-            relation={relationFilter}
-            branch={branchFilter}
-            sortBy={sortBy}
-            sortDir={sortDir}
-            onRelationChange={(v) => {
-              setRelationFilter(v);
-              setParams((p: any) => ({ ...p, page: 1 }));
-            }}
-            onBranchChange={(v) => {
-              setBranchFilter(v);
-              setParams((p: any) => ({ ...p, page: 1 }));
-            }}
-            onSortChange={(sb, sd) => {
-              setSortBy(sb);
-              setSortDir(sd);
-              setParams((p: any) => ({ ...p, page: 1 }));
-            }}
-          />
+            <ParentFilter
+              relationOptions={relationOptions.map((opt: any) => ({
+                value: opt.value,
+                label: opt.label,
+              }))}
+              branchOptions={branches.map((b) => ({
+                value: String(b.id),
+                label: b.name,
+              }))}
+              relation={relationFilter}
+              branch={branchFilter}
+              sortBy={sortBy}
+              sortDir={sortDir}
+              onRelationChange={(v) => {
+                setRelationFilter(v);
+                setParams((p: any) => ({ ...p, page: 1 }));
+              }}
+              onBranchChange={(v) => {
+                setBranchFilter(v);
+                setParams((p: any) => ({ ...p, page: 1 }));
+              }}
+              onSortChange={(sb, sd) => {
+                setSortBy(sb);
+                setSortDir(sd);
+                setParams((p: any) => ({ ...p, page: 1 }));
+              }}
+            />
+          </div>
         </div>
 
         <ParentTable
@@ -187,6 +200,29 @@ const ParentListPage = observer(() => {
           }
         />
       )}
+
+      <ParentFilterModal
+        open={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        baseParams={{
+          search: keyword || undefined,
+          status: activeStatus || undefined,
+        }}
+        value={{ relation: relationFilter, branch: branchFilter }}
+        onApply={(v) => {
+          setRelationFilter(v.relation);
+          setBranchFilter(v.branch);
+          setParams((p: any) => ({ ...p, page: 1 }));
+        }}
+        relationOptions={relationOptions.map((opt: any) => ({
+          value: opt.value,
+          label: opt.label,
+        }))}
+        branchOptions={branches.map((b) => ({
+          value: String(b.id),
+          label: b.name,
+        }))}
+      />
     </div>
   );
 });

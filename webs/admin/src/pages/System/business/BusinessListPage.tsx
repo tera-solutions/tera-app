@@ -14,7 +14,9 @@ import { BUSINESS_PAGE_URL } from "@tera/commons/constants/url";
 
 /* Import: pages */
 import SearchBar from "_common/components/SearchBar";
+import FilterButton from "@tera/components/dof/FilterButton";
 import BusinessFilter from "./containers/BusinessFilter";
+import BusinessFilterModal from "./containers/BusinessFilterModal";
 import BusinessTable from "./containers/BusinessTable";
 import BusinessFormModal from "./BusinessFormModal";
 
@@ -29,9 +31,14 @@ const BusinessListPage = observer(() => {
   const [activeStatus, setActiveStatus] = useState("");
   const [managerFilter, setManagerFilter] = useState("");
   const [selectedManager, setSelectedManager] = useState<any>(null);
-  const [dateFilter, setDateFilter] = useState("");
+  const [createdFrom, setCreatedFrom] = useState("");
+  const [createdTo, setCreatedTo] = useState("");
   const [sortBy, setSortBy] = useState("business_code");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+
+  const activeFilterCount =
+    (managerFilter ? 1 : 0) + (createdFrom || createdTo ? 1 : 0);
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
@@ -56,8 +63,10 @@ const BusinessListPage = observer(() => {
     if (isMobile && modalData.open) {
       const { type, id } = modalData;
       setModalData({ open: false, type: "create", id: undefined });
-      if (type === "update" && id != null) navigate(BUSINESS_PAGE_URL.update.path(id));
-      else if (type === "detail" && id != null) navigate(BUSINESS_PAGE_URL.detail.path(id));
+      if (type === "update" && id != null)
+        navigate(BUSINESS_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null)
+        navigate(BUSINESS_PAGE_URL.detail.path(id));
       else navigate(BUSINESS_PAGE_URL.create.path);
     }
   }, [isMobile, modalData, navigate]);
@@ -75,9 +84,8 @@ const BusinessListPage = observer(() => {
     search: keyword || undefined,
     status: activeStatus || undefined,
     manager_id: managerFilter || undefined,
-    // inline "Ngày tạo" lọc đúng 1 ngày → gửi created_from = created_to = ngày chọn
-    created_from: dateFilter || undefined,
-    created_to: dateFilter || undefined,
+    created_from: createdFrom || undefined,
+    created_to: createdTo || undefined,
     sort_by: sortBy || undefined,
     sort_dir: sortBy ? sortDir : undefined,
   };
@@ -90,7 +98,7 @@ const BusinessListPage = observer(() => {
   };
 
   return (
-    <div className='p-2.5 max-xmd:pb-[60px]'>
+    <div className="p-2.5 max-xmd:pb-[60px]">
       <HeaderViewList
         title={t("business.title")}
         buttonAddRender={() => (
@@ -100,21 +108,21 @@ const BusinessListPage = observer(() => {
                 ? navigate(BUSINESS_PAGE_URL.create.path)
                 : setModalData({ open: true, type: "create" })
             }
-            className='rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer'
+            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer"
           >
-            <div className='flex items-center gap-1 shrink-0'>
-              <PlusCircleOutlined className='w-5 h-5' />
+            <div className="flex items-center gap-1 shrink-0">
+              <PlusCircleOutlined className="w-5 h-5" />
               <span>{t("button.create")}</span>
             </div>
           </Button>
         )}
       >
         {/* Status tabs */}
-        <div className='flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent'>
+        <div className="flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent">
           {statusTabs.map((tab) => (
             <button
               key={tab.key}
-              type='button'
+              type="button"
               onClick={() => handleStatusChange(tab.key)}
               className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors cursor-pointer ${
                 activeStatus === tab.key
@@ -128,38 +136,46 @@ const BusinessListPage = observer(() => {
         </div>
 
         {/* Search + quick filters row */}
-        <div className='relative z-20 flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center'>
-          <SearchBar
-            className='xmd:flex-1'
-            value={keyword}
-            placeholder={t("business.search_placeholder")}
-            onChange={(v) => {
-              setKeyword(v);
-              resetPage();
-            }}
-          />
+        <div className="relative z-20 flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center">
+          <div className="flex items-center gap-2 xmd:contents">
+            <SearchBar
+              className="flex-1 min-w-0"
+              value={keyword}
+              placeholder={t("business.search_placeholder")}
+              onChange={(v) => {
+                setKeyword(v);
+                resetPage();
+              }}
+            />
+            <FilterButton
+              onClick={() => setFilterModalOpen(true)}
+              count={activeFilterCount}
+            />
 
-          <BusinessFilter
-            manager={managerFilter}
-            selectedManager={selectedManager}
-            date={dateFilter}
-            sortBy={sortBy}
-            sortDir={sortDir}
-            onManagerChange={(id, user) => {
-              setManagerFilter(id);
-              setSelectedManager(user ?? null);
-              resetPage();
-            }}
-            onDateChange={(v) => {
-              setDateFilter(v);
-              resetPage();
-            }}
-            onSortChange={(sb, sd) => {
-              setSortBy(sb);
-              setSortDir(sd);
-              resetPage();
-            }}
-          />
+            <BusinessFilter
+              manager={managerFilter}
+              selectedManager={selectedManager}
+              createdFrom={createdFrom}
+              createdTo={createdTo}
+              sortBy={sortBy}
+              sortDir={sortDir}
+              onManagerChange={(id, user) => {
+                setManagerFilter(id);
+                setSelectedManager(user ?? null);
+                resetPage();
+              }}
+              onDateRangeChange={(from, to) => {
+                setCreatedFrom(from);
+                setCreatedTo(to);
+                resetPage();
+              }}
+              onSortChange={(sb, sd) => {
+                setSortBy(sb);
+                setSortDir(sd);
+                resetPage();
+              }}
+            />
+          </div>
         </div>
 
         <BusinessTable
@@ -179,6 +195,28 @@ const BusinessListPage = observer(() => {
           }
         />
       )}
+
+      <BusinessFilterModal
+        open={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        baseParams={{
+          search: keyword || undefined,
+          status: activeStatus || undefined,
+        }}
+        value={{
+          manager: managerFilter,
+          selectedManager,
+          createdFrom,
+          createdTo,
+        }}
+        onApply={(v) => {
+          setManagerFilter(v.manager);
+          setSelectedManager(v.selectedManager);
+          setCreatedFrom(v.createdFrom);
+          setCreatedTo(v.createdTo);
+          resetPage();
+        }}
+      />
     </div>
   );
 });

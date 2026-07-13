@@ -54,32 +54,36 @@ const BranchFilter = ({
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-2 xmd:flex-nowrap">
-      <FilterSelect
-        allowClear
-        className="flex-1 min-w-[140px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
-        value={business}
-        placeholder={t("branch.all_business")}
-        options={businessOptions}
-        onChange={onBusinessChange}
-      />
-      <FilterSelect
-        allowClear
-        className="flex-1 min-w-[140px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
-        value={province}
-        placeholder={t("branch.all_provinces")}
-        options={provinceOptions}
-        onChange={onProvinceChange}
-      />
-      <div className="flex-1 min-w-[160px] xmd:flex-none xmd:w-auto xmd:min-w-[180px]">
-        <UserSelect
-          value={manager}
-          selectedUser={selectedManager}
-          placeholder={t("branch.all_managers")}
+    <div className="flex flex-nowrap items-center gap-2">
+      {/* Các select — CHỈ hiện desktop (mobile đưa vào modal "Lọc") */}
+      <div className="hidden xmd:contents">
+        <FilterSelect
           allowClear
-          onChange={onManagerChange}
+          className="flex-1 min-w-0 xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
+          value={business}
+          placeholder={t("branch.all_business")}
+          options={businessOptions}
+          onChange={onBusinessChange}
         />
+        <FilterSelect
+          allowClear
+          className="flex-1 min-w-0 xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
+          value={province}
+          placeholder={t("branch.all_provinces")}
+          options={provinceOptions}
+          onChange={onProvinceChange}
+        />
+        <div className="flex-1 min-w-0 xmd:flex-none xmd:w-auto xmd:min-w-[180px]">
+          <UserSelect
+            value={manager}
+            selectedUser={selectedManager}
+            placeholder={t("branch.all_managers")}
+            allowClear
+            onChange={onManagerChange}
+          />
+        </div>
       </div>
+      {/* Sắp xếp — luôn hiện */}
       <div className="shrink-0">
         <SortSelect
           options={sortOptions}

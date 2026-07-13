@@ -14,9 +14,11 @@ import { useStores } from "@tera/stores/useStores";
 
 /* Import: pages */
 import SearchBar from "_common/components/SearchBar";
+import FilterButton from "@tera/components/dof/FilterButton";
 import ClassRoomFilter, {
   ClassRoomFilterValue,
 } from "./containers/ClassRoomFilter";
+import ClassRoomFilterModal from "./containers/ClassRoomFilterModal";
 import ClassRoomTable from "./containers/ClassRoomTable";
 import ClassRoomFormModal from "./ClassRoomFormModal";
 
@@ -45,6 +47,15 @@ const ClassRoomListPage = observer(() => {
   const [filters, setFilters] = useState<ClassRoomFilterValue>(defaultFilters);
   const [sortBy, setSortBy] = useState("code");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+
+  const activeFilterCount =
+    (filters.course ? 1 : 0) +
+    (filters.teacher ? 1 : 0) +
+    (filters.assignee ? 1 : 0) +
+    (filters.weekday ? 1 : 0) +
+    (filters.shift ? 1 : 0) +
+    (filters.startFrom || filters.startTo ? 1 : 0);
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
@@ -69,8 +80,10 @@ const ClassRoomListPage = observer(() => {
     if (isMobile && modalData.open) {
       const { type, id } = modalData;
       setModalData({ open: false, type: "create", id: undefined });
-      if (type === "update" && id != null) navigate(CLASS_ROOM_PAGE_URL.update.path(id));
-      else if (type === "detail" && id != null) navigate(CLASS_ROOM_PAGE_URL.detail.path(id));
+      if (type === "update" && id != null)
+        navigate(CLASS_ROOM_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null)
+        navigate(CLASS_ROOM_PAGE_URL.detail.path(id));
       else navigate(CLASS_ROOM_PAGE_URL.create.path);
     }
   }, [isMobile, modalData, navigate]);
@@ -147,27 +160,33 @@ const ClassRoomListPage = observer(() => {
         {/* Search + quick filters: full width = chung 1 hàng; hẹp lại thì filter giữ
             nguyên (shrink-0), search co lại; dưới 1280px về layout mobile */}
         <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:flex-wrap xmd:items-center">
-          <SearchBar
-            className="w-full xmd:flex-1 xmd:min-w-[110px]"
-            value={keyword}
-            placeholder={t("classroom.search_placeholder")}
-            onChange={(v) => {
-              setKeyword(v);
-              resetPage();
-            }}
-          />
+          <div className="flex items-center gap-2 w-full xmd:contents">
+            <SearchBar
+              className="flex-1 min-w-0 xmd:min-w-[110px]"
+              value={keyword}
+              placeholder={t("classroom.search_placeholder")}
+              onChange={(v) => {
+                setKeyword(v);
+                resetPage();
+              }}
+            />
+            <FilterButton
+              onClick={() => setFilterModalOpen(true)}
+              count={activeFilterCount}
+            />
 
-          <ClassRoomFilter
-            value={filters}
-            onChange={patchFilters}
-            sortBy={sortBy}
-            sortDir={sortDir}
-            onSortChange={(by, dir) => {
-              setSortBy(by);
-              setSortDir(dir);
-              resetPage();
-            }}
-          />
+            <ClassRoomFilter
+              value={filters}
+              onChange={patchFilters}
+              sortBy={sortBy}
+              sortDir={sortDir}
+              onSortChange={(by, dir) => {
+                setSortBy(by);
+                setSortDir(dir);
+                resetPage();
+              }}
+            />
+          </div>
         </div>
 
         <ClassRoomTable
@@ -187,6 +206,28 @@ const ClassRoomListPage = observer(() => {
           }
         />
       )}
+
+      <ClassRoomFilterModal
+        open={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        baseParams={{
+          search: keyword || undefined,
+          status: activeStatus || undefined,
+        }}
+        value={{
+          course: filters.course,
+          selectedCourse: filters.selectedCourse,
+          teacher: filters.teacher,
+          selectedTeacher: filters.selectedTeacher,
+          assignee: filters.assignee,
+          selectedAssignee: filters.selectedAssignee,
+          weekday: filters.weekday,
+          shift: filters.shift,
+          startFrom: filters.startFrom,
+          startTo: filters.startTo,
+        }}
+        onApply={(v) => patchFilters(v)}
+      />
     </div>
   );
 });

@@ -103,48 +103,53 @@ const LessonFilter = ({
 
   return (
     <div className="flex flex-wrap items-center gap-2 xmd:flex-nowrap">
-      <FilterSelect
-        allowClear
-        className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[140px]"
-        value={value.branch}
-        placeholder={t("common.all_branches")}
-        options={branchOptions}
-        onChange={(v) => onChange({ branch: v })}
-      />
-      <FilterSelect
-        allowClear
-        className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
-        value={value.classRoom}
-        placeholder={t("lesson.all_classes")}
-        options={classOptions}
-        onChange={(v) => onChange({ classRoom: v })}
-      />
-      <FilterSelect
-        allowClear
-        className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[140px]"
-        value={value.teacher}
-        placeholder={t("lesson.all_teachers")}
-        options={teacherOptions}
-        onChange={(v) => onChange({ teacher: v })}
-      />
-      <FilterSelect
-        allowClear
-        className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[140px]"
-        value={value.room}
-        placeholder={t("lesson.all_rooms")}
-        options={roomOptions}
-        onChange={(v) => onChange({ room: v })}
-      />
-
-      {/* Ngày học + Sắp xếp — mobile: chung 1 hàng; desktop: tách inline */}
-      <div className="w-full flex items-center gap-2 xmd:contents">
-        <DateRangeFilter
-          className="flex-1 xmd:flex-none xmd:w-[290px]"
-          from={value.dateFrom}
-          to={value.dateTo}
-          placeholder={[t("lesson.lesson_date"), t("common.to")]}
-          onChange={(dateFrom, dateTo) => onChange({ dateFrom, dateTo })}
+      {/* Các select — CHỈ hiện desktop (mobile đưa vào modal "Lọc") */}
+      <div className="hidden xmd:contents">
+        <FilterSelect
+          allowClear
+          className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[140px]"
+          value={value.branch}
+          placeholder={t("common.all_branches")}
+          options={branchOptions}
+          onChange={(v) => onChange({ branch: v })}
         />
+        <FilterSelect
+          allowClear
+          className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
+          value={value.classRoom}
+          placeholder={t("lesson.all_classes")}
+          options={classOptions}
+          onChange={(v) => onChange({ classRoom: v })}
+        />
+        <FilterSelect
+          allowClear
+          className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[140px]"
+          value={value.teacher}
+          placeholder={t("lesson.all_teachers")}
+          options={teacherOptions}
+          onChange={(v) => onChange({ teacher: v })}
+        />
+        <FilterSelect
+          allowClear
+          className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[140px]"
+          value={value.room}
+          placeholder={t("lesson.all_rooms")}
+          options={roomOptions}
+          onChange={(v) => onChange({ room: v })}
+        />
+      </div>
+
+      {/* Sắp xếp luôn hiện (chung hàng search+Lọc trên mobile); Ngày học CHỈ desktop — mobile vào modal */}
+      <div className="flex items-center gap-2 xmd:contents">
+        <div className="hidden xmd:contents">
+          <DateRangeFilter
+            className="flex-1 xmd:flex-none xmd:w-[290px]"
+            from={value.dateFrom}
+            to={value.dateTo}
+            placeholder={[t("lesson.lesson_date"), t("common.to")]}
+            onChange={(dateFrom, dateTo) => onChange({ dateFrom, dateTo })}
+          />
+        </div>
         <div className="shrink-0">
           <SortSelect
             options={sortOptions}

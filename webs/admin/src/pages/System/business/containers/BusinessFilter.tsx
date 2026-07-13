@@ -1,35 +1,37 @@
 /* Import: library */
 import { useTranslation } from "react-i18next";
-import moment from "moment";
-import { DatePicker } from "tera-dls";
 
 /* Import: pages */
+import DateRangeFilter from "_common/components/DateRangeFilter";
 import UserSelect from "_common/components/UserSelect";
 import SortSelect from "_common/components/SortSelect";
 
 interface BusinessFilterProps {
   manager: string;
   selectedManager: any;
-  date: string;
+  createdFrom: string;
+  createdTo: string;
   sortBy: string;
   sortDir: "asc" | "desc";
   onManagerChange: (id: string, user?: any) => void;
-  onDateChange: (value: string) => void;
+  onDateRangeChange: (from: string, to: string) => void;
   onSortChange: (sortBy: string, sortDir: "asc" | "desc") => void;
 }
 
 /**
  * Bộ lọc nhanh danh sách doanh nghiệp (Người quản lý + Ngày tạo + Sắp xếp).
- * Inline — không phải drawer. Status tabs + search nằm ngoài (ở list page).
+ * Inline — Người quản lý + Ngày tạo CHỈ hiện desktop (mobile đưa vào modal "Lọc");
+ * chỉ Sắp xếp luôn hiện. Status tabs + search nằm ngoài (ở list page).
  */
 const BusinessFilter = ({
   manager,
   selectedManager,
-  date,
+  createdFrom,
+  createdTo,
   sortBy,
   sortDir,
   onManagerChange,
-  onDateChange,
+  onDateRangeChange,
   onSortChange,
 }: BusinessFilterProps) => {
   const { t } = useTranslation();
@@ -43,25 +45,26 @@ const BusinessFilter = ({
 
   return (
     <div className="flex flex-wrap items-center gap-2 xmd:flex-nowrap">
-      <div className="flex-1 min-w-[160px] xmd:flex-none xmd:w-auto xmd:min-w-[170px]">
-        <UserSelect
-          value={manager}
-          selectedUser={selectedManager}
-          placeholder={t("business.all_managers")}
-          allowClear
-          onChange={onManagerChange}
+      {/* Người quản lý + Ngày tạo — CHỈ hiện desktop (mobile đưa vào modal "Lọc") */}
+      <div className="hidden xmd:contents">
+        <div className="flex-1 min-w-[160px] xmd:flex-none xmd:w-auto xmd:min-w-[170px]">
+          <UserSelect
+            value={manager}
+            selectedUser={selectedManager}
+            placeholder={t("business.all_managers")}
+            allowClear
+            onChange={onManagerChange}
+          />
+        </div>
+        <DateRangeFilter
+          className="flex-1 xmd:flex-none xmd:w-[200px]"
+          from={createdFrom}
+          to={createdTo}
+          placeholder={[t("common.from"), t("common.to")]}
+          onChange={onDateRangeChange}
         />
       </div>
-      <DatePicker
-        className="flex-1 min-w-[140px] xmd:flex-none xmd:w-[160px]"
-        value={date ? moment(date, "YYYY-MM-DD") : undefined}
-        format="DD/MM/YYYY"
-        placeholder={t("business.created_at")}
-        allowClear
-        onChange={(d: any) =>
-          onDateChange(d ? moment(d).format("YYYY-MM-DD") : "")
-        }
-      />
+      {/* Sắp xếp — luôn hiện */}
       <div className="shrink-0">
         <SortSelect
           options={sortOptions}
