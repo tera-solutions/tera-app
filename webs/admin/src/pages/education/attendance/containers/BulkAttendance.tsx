@@ -12,7 +12,9 @@ import { ATT_STATUS_CFG, ATT_STATUS_KEYS } from "./AttendanceStatus";
 
 interface IProps {
   selectedRowKeys: (string | number)[];
-  onDone: () => void;
+  // Xong: truyền danh sách key CÒN LẠI cần giữ chọn (mặc định rỗng = bỏ chọn hết).
+  // Dùng để giữ lại các dòng lỗi khi cập nhật một phần thành công.
+  onDone: (remainingKeys?: (string | number)[]) => void;
 }
 
 const Spinner = () => (
@@ -54,22 +56,50 @@ const BulkAttendance = ({ selectedRowKeys, onDone }: IProps) => {
   const handleApply = async (status: string) => {
     if (savingStatus) return;
     setSavingStatus(status);
-    try {
-      await Promise.all(
-        selectedRowKeys.map((id) =>
-          AttendanceAPI.update({ id, params: { status } }),
-        ),
-      );
+    // allSettled thay Promise.all: 1 dòng lỗi (buổi bị cancelled/attendance_locked)
+    // KHÔNG chặn các dòng còn lại → biết chính xác dòng nào fail.
+    const results = await Promise.allSettled(
+      selectedRowKeys.map((id) =>
+        AttendanceAPI.update({ id, params: { status } }),
+      ),
+    );
+    setSavingStatus(null);
+    queryClient.invalidateQueries({ queryKey: ["attendance", "list"] });
+
+    const failedKeys = selectedRowKeys.filter(
+      (_, i) => results[i].status === "rejected",
+    );
+    const okCount = selectedRowKeys.length - failedKeys.length;
+
+    if (failedKeys.length === 0) {
       notification.success({ message: t("common.update_success") });
       onDone();
-    } catch (error: any) {
-      notification.error({
-        message: error?.message || t("common.error_message"),
-      });
-    } finally {
-      setSavingStatus(null);
-      queryClient.invalidateQueries({ queryKey: ["attendance", "list"] });
+      return;
     }
+
+    // Thông điệp lỗi đầu tiên (để hiển thị lý do backend từ chối)
+    const firstError = results.find((r) => r.status === "rejected") as
+      | PromiseRejectedResult
+      | undefined;
+    const firstErrorMsg =
+      firstError?.reason?.message || t("common.error_message");
+
+    if (okCount === 0) {
+      // Tất cả đều lỗi → giữ nguyên lựa chọn để thử lại
+      notification.error({
+        message: `${t("attendance.bulk_all_failed")}: ${firstErrorMsg}`,
+      });
+      return;
+    }
+
+    // Thành công một phần → giữ lại các dòng lỗi để thử lại
+    notification.warning({
+      message: `${t("attendance.bulk_partial", {
+        ok: okCount,
+        fail: failedKeys.length,
+      })}: ${firstErrorMsg}`,
+    });
+    onDone(failedKeys);
   };
 
   return (
@@ -115,7 +145,7 @@ const BulkAttendance = ({ selectedRowKeys, onDone }: IProps) => {
         })}
         <button
           type="button"
-          onClick={onDone}
+          onClick={() => onDone()}
           className="ml-1 text-[13px] text-gray-500 underline-offset-2 hover:text-gray-700 hover:underline cursor-pointer"
         >
           {t("attendance.clear_selection")}

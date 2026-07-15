@@ -7,6 +7,7 @@ import HeaderViewList from "@tera/components/web/HeaderViewList";
 
 /* Import: pages */
 import EvaluationFilter from "./containers/EvaluationFilter";
+import EvaluationFilterModal from "./containers/EvaluationFilterModal";
 import EvaluationTable from "./containers/EvaluationTable";
 import EvaluationDetail from "./containers/EvaluationDetail";
 import EvaluationFormModal from "./EvaluationFormModal";
@@ -20,6 +21,7 @@ const EvaluationListPage = () => {
   const [activeStatus, setActiveStatus] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [classificationFilter, setClassificationFilter] = useState("");
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [detail, setDetail] = useState<{
     open: boolean;
     record?: IEvaluation;
@@ -42,6 +44,8 @@ const EvaluationListPage = () => {
     evaluation_type: typeFilter || undefined,
     classification: classificationFilter || undefined,
   };
+
+  const filterCount = (typeFilter ? 1 : 0) + (classificationFilter ? 1 : 0);
 
   return (
     <div className="p-2.5 max-xmd:pb-[60px]">
@@ -69,44 +73,48 @@ const EvaluationListPage = () => {
 
         {/* Search + filter */}
         <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center xmd:flex-wrap">
-          <div className="relative w-full xmd:flex-1">
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </span>
-            <input
-              value={keyword}
-              onChange={(e) => {
-                setKeyword(e.target.value);
+          <div className="flex items-center gap-2 xmd:contents">
+            <div className="relative flex-1 min-w-0 xmd:flex-1">
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </span>
+              <input
+                value={keyword}
+                onChange={(e) => {
+                  setKeyword(e.target.value);
+                  resetPage();
+                }}
+                placeholder={t("evaluation.search_placeholder")}
+                className="w-full h-9 border border-gray-300 rounded pl-8 pr-3 text-[13px] bg-white focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500"
+              />
+            </div>
+            <EvaluationFilter
+              typeFilter={typeFilter}
+              onChangeType={(v) => {
+                setTypeFilter(v);
                 resetPage();
               }}
-              placeholder={t("evaluation.search_placeholder")}
-              className="w-full h-9 border border-gray-300 rounded pl-8 pr-3 text-[13px] bg-white focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500"
+              classificationFilter={classificationFilter}
+              onChangeClassification={(v) => {
+                setClassificationFilter(v);
+                resetPage();
+              }}
+              filterCount={filterCount}
+              onOpenFilter={() => setFilterModalOpen(true)}
             />
           </div>
-          <EvaluationFilter
-            typeFilter={typeFilter}
-            onChangeType={(v) => {
-              setTypeFilter(v);
-              resetPage();
-            }}
-            classificationFilter={classificationFilter}
-            onChangeClassification={(v) => {
-              setClassificationFilter(v);
-              resetPage();
-            }}
-          />
         </div>
 
         <EvaluationTable
@@ -116,6 +124,21 @@ const EvaluationListPage = () => {
           onEdit={(record) => setEdit({ open: true, record })}
         />
       </HeaderViewList>
+
+      <EvaluationFilterModal
+        open={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        baseParams={{
+          search: keyword || undefined,
+          status: activeStatus || undefined,
+        }}
+        value={{ type: typeFilter, classification: classificationFilter }}
+        onApply={(v) => {
+          setTypeFilter(v.type);
+          setClassificationFilter(v.classification);
+          resetPage();
+        }}
+      />
 
       <EvaluationDetail
         open={detail.open}
