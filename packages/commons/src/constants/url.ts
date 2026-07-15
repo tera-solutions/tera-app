@@ -387,6 +387,29 @@ export const COURSE_PAGE_URL = {
   },
 };
 
+export const ROOM_PAGE_URL = {
+  list: {
+    key: "",
+    path: "/course/room/list",
+    shortenUrl: "/course/room/list",
+  },
+  create: {
+    key: "",
+    path: "/course/room/create",
+    shortenUrl: "/course/room/create",
+  },
+  detail: {
+    key: "",
+    path: (id: number) => "/course/room/detail/" + id,
+    shortenUrl: "/course/room/detail/:id",
+  },
+  update: {
+    key: "",
+    path: (id: number) => "/course/room/update/" + id,
+    shortenUrl: "/course/room/update/:id",
+  },
+};
+
 export const ENROLLMENT_PAGE_URL = {
   list: {
     key: "",
