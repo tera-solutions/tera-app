@@ -2,11 +2,7 @@
 import { useTranslation } from "react-i18next";
 
 /* Import: services */
-import {
-  StudentService,
-  ClassRoomService,
-  CourseService,
-} from "@tera/modules";
+import { StudentService, ClassRoomService, CourseService } from "@tera/modules";
 
 /* Import: pages */
 import DateRangeFilter from "_common/components/DateRangeFilter";
@@ -68,67 +64,72 @@ const EnrollmentFilter = ({
 
   return (
     <>
-      <div className="flex-1 min-w-[140px] xmd:flex-none xmd:min-w-0 xmd:w-[128px]">
-        <SearchSelect
+      {/* Học viên/Lớp/Khóa/Sale/Công nợ — CHỈ hiện desktop (mobile đưa vào modal "Lọc") */}
+      <div className="hidden xmd:contents">
+        <div className="flex-1 min-w-[140px] xmd:flex-none xmd:min-w-0 xmd:w-[128px]">
+          <SearchSelect
+            allowClear
+            value={studentId}
+            selectedItem={selectedStudent}
+            placeholder={t("enrollment.all_students")}
+            useList={StudentService.useStudentList}
+            getLabel={withCode}
+            onChange={onStudentChange}
+          />
+        </div>
+        <div className="flex-1 min-w-[130px] xmd:flex-none xmd:min-w-0 xmd:w-[132px]">
+          <SearchSelect
+            allowClear
+            value={classId}
+            selectedItem={selectedClass}
+            placeholder={t("enrollment.all_classes")}
+            useList={ClassRoomService.useClassRoomList}
+            getLabel={withCode}
+            onChange={onClassChange}
+          />
+        </div>
+        <div className="flex-1 min-w-[130px] xmd:flex-none xmd:min-w-0 xmd:w-[132px]">
+          <SearchSelect
+            allowClear
+            value={courseId}
+            selectedItem={selectedCourse}
+            placeholder={t("enrollment.all_courses")}
+            useList={CourseService.useCourseList}
+            getLabel={withCode}
+            onChange={onCourseChange}
+          />
+        </div>
+        <div className="flex-1 min-w-[150px] xmd:flex-none xmd:min-w-0 xmd:w-[152px]">
+          <UserSelect
+            value={sales}
+            selectedUser={selectedSales}
+            placeholder={t("enrollment.all_sales")}
+            allowClear
+            onChange={onSalesChange}
+          />
+        </div>
+        <FilterSelect
           allowClear
-          value={studentId}
-          selectedItem={selectedStudent}
-          placeholder={t("enrollment.all_students")}
-          useList={StudentService.useStudentList}
-          getLabel={withCode}
-          onChange={onStudentChange}
+          className="flex-1 min-w-[120px] xmd:flex-none xmd:min-w-0 xmd:w-[104px]"
+          value={debt}
+          placeholder={t("enrollment.all_debt")}
+          options={debtOptions}
+          onChange={onDebtChange}
         />
       </div>
-      <div className="flex-1 min-w-[130px] xmd:flex-none xmd:min-w-0 xmd:w-[132px]">
-        <SearchSelect
-          allowClear
-          value={classId}
-          selectedItem={selectedClass}
-          placeholder={t("enrollment.all_classes")}
-          useList={ClassRoomService.useClassRoomList}
-          getLabel={withCode}
-          onChange={onClassChange}
+      {/* Ngày ghi danh — date range — CHỈ desktop; mobile đưa vào modal "Lọc" */}
+      <div className="hidden xmd:contents">
+        <DateRangeFilter
+          className="w-full xmd:w-[200px] xmd:shrink-0"
+          from={dateFrom}
+          to={dateTo}
+          placeholder={[t("common.from"), t("common.to")]}
+          onChange={(from, to) => {
+            onDateFromChange(from);
+            onDateToChange(to);
+          }}
         />
       </div>
-      <div className="flex-1 min-w-[130px] xmd:flex-none xmd:min-w-0 xmd:w-[132px]">
-        <SearchSelect
-          allowClear
-          value={courseId}
-          selectedItem={selectedCourse}
-          placeholder={t("enrollment.all_courses")}
-          useList={CourseService.useCourseList}
-          getLabel={withCode}
-          onChange={onCourseChange}
-        />
-      </div>
-      <div className="flex-1 min-w-[150px] xmd:flex-none xmd:min-w-0 xmd:w-[152px]">
-        <UserSelect
-          value={sales}
-          selectedUser={selectedSales}
-          placeholder={t("enrollment.all_sales")}
-          allowClear
-          onChange={onSalesChange}
-        />
-      </div>
-      <FilterSelect
-        allowClear
-        className="flex-1 min-w-[120px] xmd:flex-none xmd:min-w-0 xmd:w-[104px]"
-        value={debt}
-        placeholder={t("enrollment.all_debt")}
-        options={debtOptions}
-        onChange={onDebtChange}
-      />
-      {/* Ngày ghi danh — date range */}
-      <DateRangeFilter
-        className="w-full xmd:w-[200px] xmd:shrink-0"
-        from={dateFrom}
-        to={dateTo}
-        placeholder={[t("common.from"), t("common.to")]}
-        onChange={(from, to) => {
-          onDateFromChange(from);
-          onDateToChange(to);
-        }}
-      />
     </>
   );
 };

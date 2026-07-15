@@ -47,22 +47,26 @@ const ParentFilter = ({
 
   return (
     <div className="flex flex-wrap items-center gap-2 xmd:flex-nowrap">
-      <FilterSelect
-        allowClear
-        className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[120px]"
-        value={relation}
-        placeholder={t("parent.all_relations")}
-        options={relationOptions}
-        onChange={onRelationChange}
-      />
-      <FilterSelect
-        allowClear
-        className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
-        value={branch}
-        placeholder={t("common.all_branches")}
-        options={branchOptions}
-        onChange={onBranchChange}
-      />
+      {/* Các select — CHỈ hiện desktop (mobile đưa vào modal "Lọc") */}
+      <div className="hidden xmd:contents">
+        <FilterSelect
+          allowClear
+          className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[120px]"
+          value={relation}
+          placeholder={t("parent.all_relations")}
+          options={relationOptions}
+          onChange={onRelationChange}
+        />
+        <FilterSelect
+          allowClear
+          className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
+          value={branch}
+          placeholder={t("common.all_branches")}
+          options={branchOptions}
+          onChange={onBranchChange}
+        />
+      </div>
+      {/* Sắp xếp — luôn hiện */}
       <div className="shrink-0">
         <SortSelect
           options={sortOptions}

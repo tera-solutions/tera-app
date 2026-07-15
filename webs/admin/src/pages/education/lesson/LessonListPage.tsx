@@ -12,8 +12,10 @@ import useIsMobile from "@tera/commons/hooks/useIsMobile";
 
 /* Import: pages */
 import SearchBar from "_common/components/SearchBar";
+import FilterButton from "@tera/components/dof/FilterButton";
 import { LESSON_STATUSES } from "pages/education/lesson/_interface";
 import LessonFilter, { LessonFilterValue } from "./containers/LessonFilter";
+import LessonFilterModal from "./containers/LessonFilterModal";
 import LessonTable from "./containers/LessonTable";
 import LessonFormModal from "./LessonFormModal";
 import LessonGenerateModal from "./LessonGenerateModal";
@@ -38,6 +40,14 @@ const LessonListPage = () => {
   const [filters, setFilters] = useState<LessonFilterValue>(defaultFilters);
   const [sortBy, setSortBy] = useState("");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+
+  const activeFilterCount =
+    (filters.branch ? 1 : 0) +
+    (filters.classRoom ? 1 : 0) +
+    (filters.teacher ? 1 : 0) +
+    (filters.room ? 1 : 0) +
+    (filters.dateFrom || filters.dateTo ? 1 : 0);
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
@@ -65,8 +75,10 @@ const LessonListPage = () => {
     if (isMobile && modalData.open) {
       const { type, id } = modalData;
       setModalData({ open: false, type: "create", id: undefined });
-      if (type === "update" && id != null) navigate(LESSON_PAGE_URL.update.path(String(id)));
-      else if (type === "detail" && id != null) navigate(LESSON_PAGE_URL.detail.path(String(id)));
+      if (type === "update" && id != null)
+        navigate(LESSON_PAGE_URL.update.path(String(id)));
+      else if (type === "detail" && id != null)
+        navigate(LESSON_PAGE_URL.detail.path(String(id)));
       else navigate(LESSON_PAGE_URL.create.path);
     }
   }, [isMobile, modalData, navigate]);
@@ -151,27 +163,33 @@ const LessonListPage = () => {
 
         {/* Search + quick filters row */}
         <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center">
-          <SearchBar
-            className="xmd:flex-1"
-            value={keyword}
-            placeholder={t("lesson.search_placeholder")}
-            onChange={(v) => {
-              setKeyword(v);
-              resetPage();
-            }}
-          />
+          <div className="flex items-center gap-2 xmd:contents">
+            <SearchBar
+              className="flex-1 min-w-0"
+              value={keyword}
+              placeholder={t("lesson.search_placeholder")}
+              onChange={(v) => {
+                setKeyword(v);
+                resetPage();
+              }}
+            />
+            <FilterButton
+              onClick={() => setFilterModalOpen(true)}
+              count={activeFilterCount}
+            />
 
-          <LessonFilter
-            value={filters}
-            onChange={patchFilters}
-            sortBy={sortBy}
-            sortDir={sortDir}
-            onSortChange={(by, dir) => {
-              setSortBy(by);
-              setSortDir(dir);
-              resetPage();
-            }}
-          />
+            <LessonFilter
+              value={filters}
+              onChange={patchFilters}
+              sortBy={sortBy}
+              sortDir={sortDir}
+              onSortChange={(by, dir) => {
+                setSortBy(by);
+                setSortDir(dir);
+                resetPage();
+              }}
+            />
+          </div>
         </div>
 
         <LessonTable
@@ -198,6 +216,24 @@ const LessonListPage = () => {
           onClose={() => setGenerateOpen(false)}
         />
       )}
+
+      <LessonFilterModal
+        open={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        baseParams={{
+          search: keyword || undefined,
+          status: activeStatus || undefined,
+        }}
+        value={{
+          branch: filters.branch,
+          classRoom: filters.classRoom,
+          teacher: filters.teacher,
+          room: filters.room,
+          dateFrom: filters.dateFrom,
+          dateTo: filters.dateTo,
+        }}
+        onApply={(v) => patchFilters(v)}
+      />
     </div>
   );
 };

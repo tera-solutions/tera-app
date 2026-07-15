@@ -14,8 +14,10 @@ import useIsMobile from "@tera/commons/hooks/useIsMobile";
 import { BranchService, TeacherService } from "@tera/modules";
 
 /* Import: pages */
+import FilterButton from "@tera/components/dof/FilterButton";
 import SearchTeacher from "./containers/SearchTeacher";
 import TeacherFilter from "./containers/TeacherFilter";
+import TeacherFilterModal from "./containers/TeacherFilterModal";
 import TeacherTable from "./containers/TeacherTable";
 import TeacherFormModal from "./TeacherFormModal";
 
@@ -32,6 +34,14 @@ const TeacherListPage = () => {
   const [managerFilter, setManagerFilter] = useState("");
   const [selectedManager, setSelectedManager] = useState<any>(null);
   const [skillsFilter, setSkillsFilter] = useState<string[]>([]);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+
+  // Số bộ lọc nâng cao đang bật (hiện badge trên nút "Lọc").
+  const activeFilterCount =
+    (typeFilter ? 1 : 0) +
+    (branchFilter ? 1 : 0) +
+    (managerFilter ? 1 : 0) +
+    (skillsFilter.length ? 1 : 0);
 
   const { data: branchData } = BranchService.useBranchList({
     params: { page: 1, per_page: 100, status: "active" },
@@ -112,7 +122,7 @@ const TeacherListPage = () => {
   };
 
   return (
-    <div className='p-2.5 max-xmd:pb-[60px]'>
+    <div className="p-2.5 max-xmd:pb-[60px]">
       <HeaderViewList
         title={t("teacher.title")}
         buttonAddRender={() => (
@@ -122,21 +132,21 @@ const TeacherListPage = () => {
                 ? navigate(TEACHER_PAGE_URL.create.path)
                 : setModalData({ open: true, type: "create" })
             }
-            className='rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer'
+            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer"
           >
-            <div className='flex items-center gap-1 shrink-0'>
-              <PlusCircleOutlined className='w-5 h-5' />
+            <div className="flex items-center gap-1 shrink-0">
+              <PlusCircleOutlined className="w-5 h-5" />
               <span>{t("button.create")}</span>
             </div>
           </Button>
         )}
       >
         {/* Status tabs */}
-        <div className='flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent'>
+        <div className="flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent">
           {statusTabs.map((tab) => (
             <button
               key={tab.key}
-              type='button'
+              type="button"
               onClick={() => handleStatusChange(tab.key)}
               className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors cursor-pointer ${
                 activeStatus === tab.key
@@ -150,45 +160,56 @@ const TeacherListPage = () => {
         </div>
 
         {/* Search + quick filters row */}
-        <div className='flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center'>
-          <SearchTeacher
-            className='xmd:flex-1'
-            value={keyword}
-            onChange={(v) => {
-              setKeyword(v);
-              resetPage();
-            }}
-          />
+        <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center">
+          {/* Mobile: search + nút "Lọc" cùng 1 hàng; desktop: xmd:contents tan ra → search flex-1, nút ẩn */}
+          <div className="flex items-center gap-2 xmd:contents">
+            <SearchTeacher
+              className="flex-1 min-w-0"
+              value={keyword}
+              onChange={(v) => {
+                setKeyword(v);
+                resetPage();
+              }}
+            />
 
-          <TeacherFilter
-            branchOptions={branches.map((branch) => ({
-              value: String(branch.id),
-              label: branch.name,
-            }))}
-            skillOptions={skillOptions}
-            type={typeFilter}
-            branch={branchFilter}
-            manager={managerFilter}
-            selectedManager={selectedManager}
-            skills={skillsFilter}
-            onTypeChange={(v) => {
-              setTypeFilter(v);
-              resetPage();
-            }}
-            onBranchChange={(v) => {
-              setBranchFilter(v);
-              resetPage();
-            }}
-            onManagerChange={(id, user) => {
-              setManagerFilter(id);
-              setSelectedManager(user ?? null);
-              resetPage();
-            }}
-            onSkillsChange={(vals) => {
-              setSkillsFilter(vals);
-              resetPage();
-            }}
-          />
+            <FilterButton
+              onClick={() => setFilterModalOpen(true)}
+              count={activeFilterCount}
+            />
+          </div>
+
+          {/* Dropdown lọc inline — CHỈ hiện desktop (mobile dùng nút "Lọc") */}
+          <div className="hidden xmd:contents">
+            <TeacherFilter
+              branchOptions={branches.map((branch) => ({
+                value: String(branch.id),
+                label: branch.name,
+              }))}
+              skillOptions={skillOptions}
+              type={typeFilter}
+              branch={branchFilter}
+              manager={managerFilter}
+              selectedManager={selectedManager}
+              skills={skillsFilter}
+              onTypeChange={(v) => {
+                setTypeFilter(v);
+                resetPage();
+              }}
+              onBranchChange={(v) => {
+                setBranchFilter(v);
+                resetPage();
+              }}
+              onManagerChange={(id, user) => {
+                setManagerFilter(id);
+                setSelectedManager(user ?? null);
+                resetPage();
+              }}
+              onSkillsChange={(vals) => {
+                setSkillsFilter(vals);
+                resetPage();
+              }}
+            />
+          </div>
         </div>
 
         <TeacherTable
@@ -208,6 +229,35 @@ const TeacherListPage = () => {
           }
         />
       )}
+
+      <TeacherFilterModal
+        open={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        baseParams={{
+          search: keyword || undefined,
+          status: activeStatus || undefined,
+        }}
+        value={{
+          type: typeFilter,
+          branch: branchFilter,
+          manager: managerFilter,
+          selectedManager,
+          skills: skillsFilter,
+        }}
+        onApply={(v) => {
+          setTypeFilter(v.type);
+          setBranchFilter(v.branch);
+          setManagerFilter(v.manager);
+          setSelectedManager(v.selectedManager);
+          setSkillsFilter(v.skills);
+          resetPage();
+        }}
+        branchOptions={branches.map((branch) => ({
+          value: String(branch.id),
+          label: branch.name,
+        }))}
+        skillOptions={skillOptions}
+      />
     </div>
   );
 };

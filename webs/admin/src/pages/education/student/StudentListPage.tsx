@@ -17,7 +17,9 @@ import { BranchService, LevelService } from "@tera/modules";
 
 /* Import: pages */
 import SearchBar from "_common/components/SearchBar";
+import FilterButton from "@tera/components/dof/FilterButton";
 import StudentFilter from "./containers/StudentFilter";
+import StudentFilterModal from "./containers/StudentFilterModal";
 import StudentTable from "./containers/StudentTable";
 import StudentFormModal from "./StudentFormModal";
 
@@ -34,6 +36,9 @@ const StudentListPage = observer(() => {
   const [branchFilter, setBranchFilter] = useState("");
   const [sortBy, setSortBy] = useState("code");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+
+  const activeFilterCount = (levelFilter ? 1 : 0) + (branchFilter ? 1 : 0);
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
@@ -58,8 +63,10 @@ const StudentListPage = observer(() => {
     if (isMobile && modalData.open) {
       const { type, id } = modalData;
       setModalData({ open: false, type: "create", id: undefined });
-      if (type === "update" && id != null) navigate(STUDENT_PAGE_URL.update.path(id));
-      else if (type === "detail" && id != null) navigate(STUDENT_PAGE_URL.detail.path(id));
+      if (type === "update" && id != null)
+        navigate(STUDENT_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null)
+        navigate(STUDENT_PAGE_URL.detail.path(id));
       else navigate(STUDENT_PAGE_URL.create.path);
     }
   }, [isMobile, modalData, navigate]);
@@ -135,45 +142,52 @@ const StudentListPage = observer(() => {
 
         {/* Search + quick filters row */}
         <div className="flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center">
-          <SearchBar
-            className="xmd:flex-1"
-            value={keyword}
-            placeholder={t("student.search_placeholder")}
-            onChange={(v) => {
-              setKeyword(v);
-              setParams((p: any) => ({ ...p, page: 1 }));
-            }}
-          />
+          {/* Mobile: search + nút "Lọc" cùng hàng; desktop: xmd:contents tan ra */}
+          <div className="flex items-center gap-2 xmd:contents">
+            <SearchBar
+              className="flex-1 min-w-0"
+              value={keyword}
+              placeholder={t("student.search_placeholder")}
+              onChange={(v) => {
+                setKeyword(v);
+                setParams((p: any) => ({ ...p, page: 1 }));
+              }}
+            />
+            <FilterButton
+              onClick={() => setFilterModalOpen(true)}
+              count={activeFilterCount}
+            />
 
-          <StudentFilter
-            levelOptions={levels.map((lv) => ({
-              value: String(lv.id),
-              label: lv.level_code
-                ? `${lv.level_name} (${lv.level_code})`
-                : lv.level_name,
-            }))}
-            branchOptions={branches.map((b) => ({
-              value: String(b.id),
-              label: b.name,
-            }))}
-            level={levelFilter}
-            branch={branchFilter}
-            sortBy={sortBy}
-            sortDir={sortDir}
-            onLevelChange={(v) => {
-              setLevelFilter(v);
-              setParams((p: any) => ({ ...p, page: 1 }));
-            }}
-            onBranchChange={(v) => {
-              setBranchFilter(v);
-              setParams((p: any) => ({ ...p, page: 1 }));
-            }}
-            onSortChange={(sb, sd) => {
-              setSortBy(sb);
-              setSortDir(sd);
-              setParams((p: any) => ({ ...p, page: 1 }));
-            }}
-          />
+            <StudentFilter
+              levelOptions={levels.map((lv) => ({
+                value: String(lv.id),
+                label: lv.level_code
+                  ? `${lv.level_name} (${lv.level_code})`
+                  : lv.level_name,
+              }))}
+              branchOptions={branches.map((b) => ({
+                value: String(b.id),
+                label: b.name,
+              }))}
+              level={levelFilter}
+              branch={branchFilter}
+              sortBy={sortBy}
+              sortDir={sortDir}
+              onLevelChange={(v) => {
+                setLevelFilter(v);
+                setParams((p: any) => ({ ...p, page: 1 }));
+              }}
+              onBranchChange={(v) => {
+                setBranchFilter(v);
+                setParams((p: any) => ({ ...p, page: 1 }));
+              }}
+              onSortChange={(sb, sd) => {
+                setSortBy(sb);
+                setSortDir(sd);
+                setParams((p: any) => ({ ...p, page: 1 }));
+              }}
+            />
+          </div>
         </div>
 
         <StudentTable
@@ -193,6 +207,31 @@ const StudentListPage = observer(() => {
           }
         />
       )}
+
+      <StudentFilterModal
+        open={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        baseParams={{
+          search: keyword || undefined,
+          status: activeStatus || undefined,
+        }}
+        value={{ level: levelFilter, branch: branchFilter }}
+        onApply={(v) => {
+          setLevelFilter(v.level);
+          setBranchFilter(v.branch);
+          setParams((p: any) => ({ ...p, page: 1 }));
+        }}
+        levelOptions={levels.map((lv) => ({
+          value: String(lv.id),
+          label: lv.level_code
+            ? `${lv.level_name} (${lv.level_code})`
+            : lv.level_name,
+        }))}
+        branchOptions={branches.map((b) => ({
+          value: String(b.id),
+          label: b.name,
+        }))}
+      />
     </div>
   );
 });

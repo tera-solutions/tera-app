@@ -14,7 +14,9 @@ import { ENROLLMENT_PAGE_URL } from "@tera/commons/constants/url";
 
 /* Import: pages */
 import SearchBar from "_common/components/SearchBar";
+import FilterButton from "@tera/components/dof/FilterButton";
 import EnrollmentFilter from "./containers/EnrollmentFilter";
+import EnrollmentFilterModal from "./containers/EnrollmentFilterModal";
 import EnrollmentTable from "./containers/EnrollmentTable";
 import EnrollmentFormModal from "./EnrollmentFormModal";
 
@@ -38,6 +40,15 @@ const EnrollmentListPage = observer(() => {
   const [debtFilter, setDebtFilter] = useState("");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+
+  const activeFilterCount =
+    (studentFilter ? 1 : 0) +
+    (classFilter ? 1 : 0) +
+    (courseFilter ? 1 : 0) +
+    (salesFilter ? 1 : 0) +
+    (debtFilter ? 1 : 0) +
+    (dateFrom || dateTo ? 1 : 0);
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
@@ -62,12 +73,13 @@ const EnrollmentListPage = observer(() => {
     if (isMobile && modalData.open) {
       const { type, id } = modalData;
       setModalData({ open: false, type: "create", id: undefined });
-      if (type === "update" && id != null) navigate(ENROLLMENT_PAGE_URL.update.path(id));
-      else if (type === "detail" && id != null) navigate(ENROLLMENT_PAGE_URL.detail.path(id));
+      if (type === "update" && id != null)
+        navigate(ENROLLMENT_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null)
+        navigate(ENROLLMENT_PAGE_URL.detail.path(id));
       else navigate(ENROLLMENT_PAGE_URL.create.path);
     }
   }, [isMobile, modalData, navigate]);
-
 
   const statusOptions = globalStore.getOptions("enrollment_status") ?? [];
   const statusTabs = [
@@ -96,7 +108,7 @@ const EnrollmentListPage = observer(() => {
   };
 
   return (
-    <div className='p-2.5 max-xmd:pb-[60px]'>
+    <div className="p-2.5 max-xmd:pb-[60px]">
       <HeaderViewList
         title={t("enrollment.title")}
         buttonAddRender={() => (
@@ -106,21 +118,21 @@ const EnrollmentListPage = observer(() => {
                 ? navigate(ENROLLMENT_PAGE_URL.create.path)
                 : setModalData({ open: true, type: "create" })
             }
-            className='rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer'
+            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer"
           >
-            <div className='flex items-center gap-1 shrink-0'>
-              <PlusCircleOutlined className='w-5 h-5' />
+            <div className="flex items-center gap-1 shrink-0">
+              <PlusCircleOutlined className="w-5 h-5" />
               <span>{t("enrollment.enroll")}</span>
             </div>
           </Button>
         )}
       >
         {/* Status tabs */}
-        <div className='flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent'>
+        <div className="flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent">
           {statusTabs.map((tab) => (
             <button
               key={tab.key}
-              type='button'
+              type="button"
               onClick={() => handleStatusChange(tab.key)}
               className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors cursor-pointer ${
                 activeStatus === tab.key
@@ -134,17 +146,23 @@ const EnrollmentListPage = observer(() => {
         </div>
 
         {/* Search + filter row */}
-        <div className='relative z-20 flex flex-wrap items-center gap-2 mb-3'>
+        <div className="relative z-20 flex flex-wrap items-center gap-2 mb-3">
           {/* Search nuốt phần dư của hàng → luôn dài nhất; các select co lại cho vừa 1 hàng */}
-          <SearchBar
-            className='w-full xmd:flex-1 xmd:min-w-[130px]'
-            value={keyword}
-            placeholder={t("enrollment.search_placeholder")}
-            onChange={(v) => {
-              setKeyword(v);
-              resetPage();
-            }}
-          />
+          <div className="flex items-center gap-2 w-full xmd:contents">
+            <SearchBar
+              className="flex-1 min-w-0 xmd:min-w-[130px]"
+              value={keyword}
+              placeholder={t("enrollment.search_placeholder")}
+              onChange={(v) => {
+                setKeyword(v);
+                resetPage();
+              }}
+            />
+            <FilterButton
+              onClick={() => setFilterModalOpen(true)}
+              count={activeFilterCount}
+            />
+          </div>
 
           <EnrollmentFilter
             studentId={studentFilter}
@@ -210,6 +228,42 @@ const EnrollmentListPage = observer(() => {
           }
         />
       )}
+
+      <EnrollmentFilterModal
+        open={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        baseParams={{
+          search: keyword || undefined,
+          status: activeStatus || undefined,
+        }}
+        value={{
+          student: studentFilter,
+          selectedStudent,
+          classRoom: classFilter,
+          selectedClass,
+          course: courseFilter,
+          selectedCourse,
+          sales: salesFilter,
+          selectedSales,
+          debt: debtFilter,
+          dateFrom,
+          dateTo,
+        }}
+        onApply={(v) => {
+          setStudentFilter(v.student);
+          setSelectedStudent(v.selectedStudent);
+          setClassFilter(v.classRoom);
+          setSelectedClass(v.selectedClass);
+          setCourseFilter(v.course);
+          setSelectedCourse(v.selectedCourse);
+          setSalesFilter(v.sales);
+          setSelectedSales(v.selectedSales);
+          setDebtFilter(v.debt);
+          setDateFrom(v.dateFrom);
+          setDateTo(v.dateTo);
+          resetPage();
+        }}
+      />
     </div>
   );
 });

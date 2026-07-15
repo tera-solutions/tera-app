@@ -17,7 +17,9 @@ import { RoleService, BranchService } from "@tera/modules";
 
 /* Import: pages */
 import SearchBar from "_common/components/SearchBar";
+import FilterButton from "@tera/components/dof/FilterButton";
 import UserFilter from "./containers/UserFilter";
+import UserFilterModal from "./containers/UserFilterModal";
 import UserTable from "./containers/UserTable";
 import UserFormModal from "./UserFormModal";
 
@@ -34,6 +36,9 @@ const UserListPage = observer(() => {
   const [branchFilter, setBranchFilter] = useState("");
   const [sortBy, setSortBy] = useState("user_id");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+
+  const activeFilterCount = (roleFilter ? 1 : 0) + (branchFilter ? 1 : 0);
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
@@ -58,8 +63,10 @@ const UserListPage = observer(() => {
     if (isMobile && modalData.open) {
       const { type, id } = modalData;
       setModalData({ open: false, type: "create", id: undefined });
-      if (type === "update" && id != null) navigate(USER_PAGE_URL.update.path(id));
-      else if (type === "detail" && id != null) navigate(USER_PAGE_URL.detail.path(id));
+      if (type === "update" && id != null)
+        navigate(USER_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null)
+        navigate(USER_PAGE_URL.detail.path(id));
       else navigate(USER_PAGE_URL.create.path);
     }
   }, [isMobile, modalData, navigate]);
@@ -137,43 +144,49 @@ const UserListPage = observer(() => {
 
         {/* Search + filter row */}
         <div className="relative z-20 flex flex-col gap-2 mb-3 xmd:flex-row xmd:items-center">
-          <SearchBar
-            className="xmd:flex-1"
-            value={keyword}
-            placeholder={t("user.search_placeholder")}
-            onChange={(v) => {
-              setKeyword(v);
-              resetPage();
-            }}
-          />
+          <div className="flex items-center gap-2 xmd:contents">
+            <SearchBar
+              className="flex-1 min-w-0"
+              value={keyword}
+              placeholder={t("user.search_placeholder")}
+              onChange={(v) => {
+                setKeyword(v);
+                resetPage();
+              }}
+            />
+            <FilterButton
+              onClick={() => setFilterModalOpen(true)}
+              count={activeFilterCount}
+            />
 
-          <UserFilter
-            roleOptions={roles.map((r) => ({
-              value: String(r.id),
-              label: r.title ?? r.name ?? r.role_name ?? `#${r.id}`,
-            }))}
-            branchOptions={branches.map((b) => ({
-              value: String(b.id),
-              label: b.name,
-            }))}
-            role={roleFilter}
-            branch={branchFilter}
-            sortBy={sortBy}
-            sortDir={sortDir}
-            onRoleChange={(v) => {
-              setRoleFilter(v);
-              resetPage();
-            }}
-            onBranchChange={(v) => {
-              setBranchFilter(v);
-              resetPage();
-            }}
-            onSortChange={(sb, sd) => {
-              setSortBy(sb);
-              setSortDir(sd);
-              resetPage();
-            }}
-          />
+            <UserFilter
+              roleOptions={roles.map((r) => ({
+                value: String(r.id),
+                label: r.title ?? r.name ?? r.role_name ?? `#${r.id}`,
+              }))}
+              branchOptions={branches.map((b) => ({
+                value: String(b.id),
+                label: b.name,
+              }))}
+              role={roleFilter}
+              branch={branchFilter}
+              sortBy={sortBy}
+              sortDir={sortDir}
+              onRoleChange={(v) => {
+                setRoleFilter(v);
+                resetPage();
+              }}
+              onBranchChange={(v) => {
+                setBranchFilter(v);
+                resetPage();
+              }}
+              onSortChange={(sb, sd) => {
+                setSortBy(sb);
+                setSortDir(sd);
+                resetPage();
+              }}
+            />
+          </div>
         </div>
 
         <UserTable
@@ -193,6 +206,29 @@ const UserListPage = observer(() => {
           }
         />
       )}
+
+      <UserFilterModal
+        open={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        baseParams={{
+          search: keyword || undefined,
+          status: activeStatus || undefined,
+        }}
+        value={{ role: roleFilter, branch: branchFilter }}
+        onApply={(v) => {
+          setRoleFilter(v.role);
+          setBranchFilter(v.branch);
+          resetPage();
+        }}
+        roleOptions={roles.map((r) => ({
+          value: String(r.id),
+          label: r.title ?? r.name ?? r.role_name ?? `#${r.id}`,
+        }))}
+        branchOptions={branches.map((b) => ({
+          value: String(b.id),
+          label: b.name,
+        }))}
+      />
     </div>
   );
 });

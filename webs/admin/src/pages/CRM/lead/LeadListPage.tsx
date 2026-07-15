@@ -17,10 +17,12 @@ import { LeadService, CourseService } from "@tera/modules";
 
 /* Import: pages */
 import SearchBar from "_common/components/SearchBar";
+import FilterButton from "@tera/components/dof/FilterButton";
 import FilterSelect from "_common/components/FilterSelect";
 import MultiSelect from "_common/components/MultiSelect";
 import UserSelect from "_common/components/UserSelect";
 import LeadTable from "./containers/LeadTable";
+import LeadFilterModal from "./containers/LeadFilterModal";
 import LeadFormModal from "./LeadFormModal";
 
 const LeadListPage = observer(() => {
@@ -37,6 +39,13 @@ const LeadListPage = observer(() => {
   const [tagFilter, setTagFilter] = useState<string[]>([]);
   const [ownerFilter, setOwnerFilter] = useState("");
   const [ownerUser, setOwnerUser] = useState<any>(undefined);
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
+
+  const activeFilterCount =
+    (sourceFilter ? 1 : 0) +
+    (courseFilter.length ? 1 : 0) +
+    (tagFilter.length ? 1 : 0) +
+    (ownerFilter ? 1 : 0);
 
   const [modalData, setModalData] = useState<IModalProps>({
     open: false,
@@ -61,8 +70,10 @@ const LeadListPage = observer(() => {
     if (isMobile && modalData.open) {
       const { type, id } = modalData;
       setModalData({ open: false, type: "create", id: undefined });
-      if (type === "update" && id != null) navigate(LEAD_PAGE_URL.update.path(id));
-      else if (type === "detail" && id != null) navigate(LEAD_PAGE_URL.detail.path(id));
+      if (type === "update" && id != null)
+        navigate(LEAD_PAGE_URL.update.path(id));
+      else if (type === "detail" && id != null)
+        navigate(LEAD_PAGE_URL.detail.path(id));
       else navigate(LEAD_PAGE_URL.create.path);
     }
   }, [isMobile, modalData, navigate]);
@@ -172,62 +183,69 @@ const LeadListPage = observer(() => {
 
         {/* Search + filters */}
         <div className="relative z-20 flex flex-wrap items-center gap-2 mb-3">
-          <SearchBar
-            className="w-full xmd:flex-1"
-            value={keyword}
-            placeholder={t("lead.search_placeholder")}
-            onChange={(v) => {
-              setKeyword(v);
-              resetPage();
-            }}
-          />
-          <div className="w-full grid grid-cols-2 gap-2 xmd:w-auto xmd:flex xmd:flex-wrap xmd:items-center xmd:ml-auto">
-          <FilterSelect
-            allowClear
-            className="w-full xmd:w-[160px]"
-            options={sourceOptions}
-            value={sourceFilter}
-            placeholder={t("lead.source")}
-            onChange={(v) => {
-              setSourceFilter(v);
-              resetPage();
-            }}
-          />
-          <div className="w-full xmd:w-[180px]">
-            <MultiSelect
-              options={courseOptions}
-              value={courseFilter}
-              placeholder={t("lead.courses")}
+          <div className="flex items-center gap-2 w-full xmd:contents">
+            <SearchBar
+              className="flex-1 min-w-0"
+              value={keyword}
+              placeholder={t("lead.search_placeholder")}
               onChange={(v) => {
-                setCourseFilter(v);
+                setKeyword(v);
                 resetPage();
               }}
             />
-          </div>
-          <div className="w-full xmd:w-[160px]">
-            <MultiSelect
-              options={tagOptions}
-              value={tagFilter}
-              placeholder={t("lead.tags")}
-              onChange={(v) => {
-                setTagFilter(v);
-                resetPage();
-              }}
+            <FilterButton
+              onClick={() => setFilterModalOpen(true)}
+              count={activeFilterCount}
             />
           </div>
-          <div className="w-full xmd:w-[180px]">
-            <UserSelect
-              value={ownerFilter}
-              selectedUser={ownerUser}
+          {/* Các select lọc — CHỈ hiện desktop (mobile đưa vào modal "Lọc") */}
+          <div className="hidden gap-2 xmd:flex xmd:w-auto xmd:flex-wrap xmd:items-center xmd:ml-auto">
+            <FilterSelect
               allowClear
-              placeholder={t("lead.owner")}
-              onChange={(id, user) => {
-                setOwnerFilter(id ? String(id) : "");
-                setOwnerUser(user);
+              className="w-full xmd:w-[160px]"
+              options={sourceOptions}
+              value={sourceFilter}
+              placeholder={t("lead.source")}
+              onChange={(v) => {
+                setSourceFilter(v);
                 resetPage();
               }}
             />
-          </div>
+            <div className="w-full xmd:w-[180px]">
+              <MultiSelect
+                options={courseOptions}
+                value={courseFilter}
+                placeholder={t("lead.courses")}
+                onChange={(v) => {
+                  setCourseFilter(v);
+                  resetPage();
+                }}
+              />
+            </div>
+            <div className="w-full xmd:w-[160px]">
+              <MultiSelect
+                options={tagOptions}
+                value={tagFilter}
+                placeholder={t("lead.tags")}
+                onChange={(v) => {
+                  setTagFilter(v);
+                  resetPage();
+                }}
+              />
+            </div>
+            <div className="w-full xmd:w-[180px]">
+              <UserSelect
+                value={ownerFilter}
+                selectedUser={ownerUser}
+                allowClear
+                placeholder={t("lead.owner")}
+                onChange={(id, user) => {
+                  setOwnerFilter(id ? String(id) : "");
+                  setOwnerUser(user);
+                  resetPage();
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -248,6 +266,33 @@ const LeadListPage = observer(() => {
           }
         />
       )}
+
+      <LeadFilterModal
+        open={filterModalOpen}
+        onClose={() => setFilterModalOpen(false)}
+        baseParams={{
+          search: keyword || undefined,
+          status: activeStatus || undefined,
+        }}
+        value={{
+          source: sourceFilter,
+          courses: courseFilter,
+          tags: tagFilter,
+          owner: ownerFilter,
+          ownerUser,
+        }}
+        onApply={(v) => {
+          setSourceFilter(v.source);
+          setCourseFilter(v.courses);
+          setTagFilter(v.tags);
+          setOwnerFilter(v.owner);
+          setOwnerUser(v.ownerUser);
+          resetPage();
+        }}
+        sourceOptions={sourceOptions}
+        courseOptions={courseOptions}
+        tagOptions={tagOptions}
+      />
     </div>
   );
 });

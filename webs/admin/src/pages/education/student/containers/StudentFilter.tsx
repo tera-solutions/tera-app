@@ -48,22 +48,26 @@ const StudentFilter = ({
 
   return (
     <div className="flex flex-wrap items-center gap-2 xmd:flex-nowrap">
-      <FilterSelect
-        allowClear
-        className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[110px]"
-        value={level}
-        placeholder={t("student.all_levels")}
-        options={levelOptions}
-        onChange={onLevelChange}
-      />
-      <FilterSelect
-        allowClear
-        className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
-        value={branch}
-        placeholder={t("common.all_branches")}
-        options={branchOptions}
-        onChange={onBranchChange}
-      />
+      {/* Các select — CHỈ hiện desktop (mobile đưa vào modal "Lọc") */}
+      <div className="hidden xmd:contents">
+        <FilterSelect
+          allowClear
+          className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[110px]"
+          value={level}
+          placeholder={t("student.all_levels")}
+          options={levelOptions}
+          onChange={onLevelChange}
+        />
+        <FilterSelect
+          allowClear
+          className="flex-1 min-w-[130px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
+          value={branch}
+          placeholder={t("common.all_branches")}
+          options={branchOptions}
+          onChange={onBranchChange}
+        />
+      </div>
+      {/* Sắp xếp — luôn hiện (không đưa vào modal) */}
       <div className="shrink-0">
         <SortSelect
           options={sortOptions}

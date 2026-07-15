@@ -12,7 +12,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Col, Row, Modal, notification, PlusCircleOutlined, UserOutlined } from "tera-dls";
+import {
+  Col,
+  Row,
+  Modal,
+  notification,
+  PlusCircleOutlined,
+  UserOutlined,
+} from "tera-dls";
 import debounce from "lodash/debounce";
 
 /* Import: packages */
@@ -39,7 +46,6 @@ const SELECT_CLASS =
 const preventNegativeKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
   if (["-", "+", "e", "E"].includes(e.key)) e.preventDefault();
 };
-
 
 const defaultValues: ITeacherForm = {
   code: "",
@@ -94,7 +100,6 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
       return list;
     }, [branchData, dataDetail]);
 
-
     const isUpdateRef = useRef(isUpdate);
     isUpdateRef.current = isUpdate;
 
@@ -135,7 +140,8 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
             const items: any[] = res?.data?.items ?? [];
             const dup = items.some(
               (item: any) =>
-                (item.phone ?? "") === phone && item.id !== currentIdRef.current,
+                (item.phone ?? "") === phone &&
+                item.id !== currentIdRef.current,
             );
             resolve(!dup);
           })
@@ -270,16 +276,26 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
           phone: dataDetail.phone ?? "",
           address: dataDetail.address ?? "",
           identity_no: dataDetail.identity_no ?? "",
-          joined_at: dataDetail.joined_at ? dataDetail.joined_at.split("T")[0] : "",
+          joined_at: dataDetail.joined_at
+            ? dataDetail.joined_at.split("T")[0]
+            : "",
           employment_type: dataDetail.employment_type ?? "",
-          manager_id: dataDetail.manager_id ? String(dataDetail.manager_id) : "",
+          manager_id: dataDetail.manager_id
+            ? String(dataDetail.manager_id)
+            : "",
           monthly_salary: dataDetail.monthly_salary ?? "",
           note: dataDetail.note ?? "",
-          skills: dataDetail.skills?.map((s) => ({ skill_name: s.skill_name, level: s.level })) ?? [],
+          skills:
+            dataDetail.skills?.map((s) => ({
+              skill_name: s.skill_name,
+              level: s.level,
+            })) ?? [],
           bank_account: {
             bank_name: dataDetail.bank_account?.bank_name ?? "",
-            bank_account_number: dataDetail.bank_account?.bank_account_number ?? "",
-            bank_account_holder: dataDetail.bank_account?.bank_account_holder ?? "",
+            bank_account_number:
+              dataDetail.bank_account?.bank_account_number ?? "",
+            bank_account_holder:
+              dataDetail.bank_account?.bank_account_holder ?? "",
             bank_branch: dataDetail.bank_account?.bank_branch ?? "",
           },
         });
@@ -303,7 +319,9 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
         branch_id: values.branch_id ? Number(values.branch_id) : undefined,
         teacher_type: values.teacher_type || undefined,
         status: isUpdate ? undefined : values.status || undefined,
-        hourly_rate: values.hourly_rate ? Number(values.hourly_rate) : undefined,
+        hourly_rate: values.hourly_rate
+          ? Number(values.hourly_rate)
+          : undefined,
         gender: values.gender || undefined,
         dob: values.dob || undefined,
         email: values.email?.trim() || undefined,
@@ -313,14 +331,18 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
         joined_at: values.joined_at || undefined,
         employment_type: (values as any).employment_type || undefined,
         manager_id: values.manager_id ? Number(values.manager_id) : undefined,
-        monthly_salary: values.monthly_salary ? Number(values.monthly_salary) : undefined,
+        monthly_salary: values.monthly_salary
+          ? Number(values.monthly_salary)
+          : undefined,
         note: values.note?.trim() || undefined,
         skills: values.skills?.length ? values.skills : undefined,
         bank_account: hasBank
           ? {
               bank_name: bank?.bank_name?.trim() || undefined,
-              bank_account_number: bank?.bank_account_number?.trim() || undefined,
-              bank_account_holder: bank?.bank_account_holder?.trim() || undefined,
+              bank_account_number:
+                bank?.bank_account_number?.trim() || undefined,
+              bank_account_holder:
+                bank?.bank_account_holder?.trim() || undefined,
               bank_branch: bank?.bank_branch?.trim() || undefined,
             }
           : undefined,
@@ -338,7 +360,9 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
             onSuccess?.();
           },
           onError: (error: any) => {
-            notification.error({ message: error?.message || t("common.error_message") });
+            notification.error({
+              message: error?.message || t("common.error_message"),
+            });
           },
         },
       );
@@ -352,9 +376,20 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
 
     // Error indicators per tab
     const tabErrors: Record<string, boolean> = {
-      basic: !!(errors.code || errors.full_name || errors.phone || errors.email || errors.branch_id),
+      basic: !!(
+        errors.code ||
+        errors.full_name ||
+        errors.phone ||
+        errors.email ||
+        errors.branch_id
+      ),
       expertise: !!(errors.teacher_type || errors.skills),
-      work: !!(errors.employment_type || errors.joined_at || errors.hourly_rate || errors.status),
+      work: !!(
+        errors.employment_type ||
+        errors.joined_at ||
+        errors.hourly_rate ||
+        errors.status
+      ),
     };
 
     const tabs = [
@@ -365,335 +400,554 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
 
     return (
       <div>
-        <FormTera form={form} onSubmit={handleSubmitForm} isLoading={isPending} isDisabled={isView}>
-        {/* Tab bar */}
-        <div className="flex border-b border-gray-200 mb-4 overflow-x-auto overflow-y-hidden scrollbar-none">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setActiveTab(tab.key)}
-              className={`relative px-4 py-2 text-[13px] font-medium border-b-2 -mb-px transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                activeTab === tab.key
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              {tab.label}
-              {tabErrors[tab.key] && (
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-              )}
-            </button>
-          ))}
-        </div>
+        <FormTera
+          form={form}
+          onSubmit={handleSubmitForm}
+          isLoading={isPending}
+          isDisabled={isView}
+        >
+          {/* Tab bar */}
+          <div className='flex border-b border-gray-200 mb-4 overflow-x-auto overflow-y-hidden scrollbar-none'>
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                type='button'
+                onClick={() => setActiveTab(tab.key)}
+                className={`relative px-4 py-2 text-[13px] font-medium border-b-2 -mb-px transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+                  activeTab === tab.key
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {tab.label}
+                {tabErrors[tab.key] && (
+                  <span className='w-1.5 h-1.5 rounded-full bg-red-500 shrink-0' />
+                )}
+              </button>
+            ))}
+          </div>
 
-        {/* Tab 1: Thông tin cơ bản */}
-        <div className={activeTab === "basic" ? "block" : "hidden"}>
-          <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-            {!isView && (
-              <Col className="sm:col-span-2">
-                <label className="text-[13px] text-gray-600 font-medium mb-2 block text-center">
-                  {t("teacher.avatar")}
-                </label>
-                <div className="flex flex-col items-center gap-2 mb-3">
-                  <div className="relative group w-20 h-20">
-                    <div className="w-20 h-20 rounded-full overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center">
-                      {avatarValue ? (
-                        <img src={avatarValue} alt="avatar" className="w-full h-full object-cover" />
-                      ) : (
-                        <UserOutlined className="w-8 h-8 text-gray-300" />
-                      )}
-                    </div>
-                    <UploadFiles
-                      isSingle
-                      maxSize={10}
-                      accept="image/*"
-                      onReceiveFiles={(file: IFileUpload) =>
-                        form.setValue("avatar" as any, (file as any)?.url, {
-                          shouldDirty: true,
-                        })
-                      }
-                      onFailed={() =>
-                        notification.error({ message: t("common.error_message") })
-                      }
-                    >
-                      <div className="absolute inset-0 rounded-full flex items-center justify-center text-center px-1 bg-black/45 text-white text-[11px] font-medium leading-tight opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                        {t("teacher.upload_avatar")}
+          {/* Tab 1: Thông tin cơ bản */}
+          <div className={activeTab === "basic" ? "block" : "hidden"}>
+            <Row className='grid grid-cols-1 sm:grid-cols-2 gap-x-4'>
+              {!isView && (
+                <Col className='sm:col-span-2'>
+                  <label className='text-[13px] text-gray-600 font-medium mb-2 block text-center'>
+                    {t("teacher.avatar")}
+                  </label>
+                  <div className='flex flex-col items-center gap-2 mb-3'>
+                    <div className='relative group w-20 h-20'>
+                      <div className='w-20 h-20 rounded-full overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center'>
+                        {avatarValue ? (
+                          <img
+                            src={avatarValue}
+                            alt='avatar'
+                            className='w-full h-full object-cover'
+                          />
+                        ) : (
+                          <UserOutlined className='w-8 h-8 text-gray-300' />
+                        )}
                       </div>
-                    </UploadFiles>
-                  </div>
-                  {avatarValue && (
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setShowAvatarPreview(true)}
-                        className="text-[13px] text-blue-500 hover:text-blue-600 transition-colors cursor-pointer"
-                      >
-                        {t("button.detail")}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          form.setValue("avatar" as any, "", { shouldDirty: true })
+                      <UploadFiles
+                        isSingle
+                        maxSize={10}
+                        accept='image/*'
+                        onReceiveFiles={(file: IFileUpload) =>
+                          form.setValue("avatar" as any, (file as any)?.url, {
+                            shouldDirty: true,
+                          })
                         }
-                        className="text-[13px] text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                        onFailed={() =>
+                          notification.error({
+                            message: t("common.error_message"),
+                          })
+                        }
                       >
-                        {t("button.delete")}
-                      </button>
+                        <div className='absolute inset-0 rounded-full flex items-center justify-center text-center px-1 bg-black/45 text-white text-[11px] font-medium leading-tight opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer'>
+                          {t("teacher.upload_avatar")}
+                        </div>
+                      </UploadFiles>
                     </div>
-                  )}
-                </div>
-              </Col>
-            )}
-            <Col>
-              <FormTeraItem label={t("teacher.code")} name="code" rules={[{ required: t("validate.required") }]}>
-                <Input
-                  placeholder={isUpdate ? "" : "VD: TCH-001, TCH-002..."}
-                  disabled={isView || isUpdate}
-                />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.name")} name="full_name" rules={[{ required: t("validate.required") }]}>
-                <Input placeholder={t("form.enter_value", { key: t("teacher.name") })} disabled={isView} />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.branch")} name="branch_id" rules={[{ required: t("validate.required") }]}>
-                <Select
-                  options={branches.map((branch) => ({
-                    value: String(branch.id),
-                    label: branch.code ? `${branch.name} (${branch.code})` : branch.name,
-                  }))}
-                  placeholder={t("form.enter_value", { key: t("teacher.branch") })}
-                  disabled={isView}
-                />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.address")} name="address">
-                <Input placeholder={t("form.enter_value", { key: t("teacher.address") })} disabled={isView} />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.dob")} name="dob">
-                <DateField disabled={isView} />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.identity_no")} name="identity_no">
-                <Input placeholder={t("form.enter_value", { key: t("teacher.identity_no") })} disabled={isView} />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.gender")} name="gender">
-                <Select
-                  options={[
-                    { value: "male", label: t("teacher.gender_male") },
-                    { value: "female", label: t("teacher.gender_female") },
-                    { value: "other", label: t("teacher.gender_other") },
-                  ]}
-                  placeholder={t("form.enter_value", { key: t("teacher.gender") })}
-                  disabled={isView}
-                />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.phone")} name="phone" rules={[{ required: t("validate.required") }]}>
-                <Input placeholder={t("form.enter_value", { key: t("teacher.phone") })} disabled={isView} />
-              </FormTeraItem>
-            </Col>
-            <Col className="sm:col-span-2">
-              <FormTeraItem label={t("teacher.email")} name="email" rules={[{ required: t("validate.required") }]}>
-                <Input placeholder={t("form.enter_value", { key: t("teacher.email") })} disabled={isView} />
-              </FormTeraItem>
-            </Col>
-          </Row>
-        </div>
-
-        {/* Tab 2: Chuyên môn */}
-        <div className={activeTab === "expertise" ? "block" : "hidden"}>
-          <Row className="grid grid-cols-1">
-            <Col>
-              <FormTeraItem label={t("teacher.type")} name="teacher_type" rules={[{ required: t("validate.required") }]}>
-                <Select
-                  options={[
-                    { value: "part_time", label: t("teacher.type_part_time") },
-                    { value: "full_time", label: t("teacher.type_full_time") },
-                    { value: "assistant", label: t("teacher.type_assistant") },
-                    { value: "freelancer", label: t("teacher.type_freelancer") },
-                  ]}
-                  placeholder={t("form.enter_value", { key: t("teacher.type") })}
-                  disabled={isView}
-                />
-              </FormTeraItem>
-            </Col>
-
-            {/* Kỹ năng */}
-            <Col>
-              <div className="mb-3">
-                <label className="text-[13px] text-gray-600 font-medium mb-2 block">{t("teacher.skill_name")}</label>
-                {skillFields.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {skillFields.map((field, index) => {
-                      const skill = form.watch(`skills.${index}` as any);
-                      return (
-                        <span key={field.id} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-[13px] text-blue-700">
-                          {skill.skill_name}
-                          {skill.level && <span className="text-blue-400">·</span>}
-                          {skill.level && skillLevelLabels[skill.level]}
-                          {!isView && (
-                            <button type="button" onClick={() => removeSkill(index)} className="ml-0.5 text-blue-400 hover:text-red-500 leading-none transition-colors">×</button>
-                          )}
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
-                {errors?.skills && (
-                  <p className="text-[12px] text-red-500 mb-2">{errors.skills.message ?? t("validate.required")}</p>
-                )}
-                {!isView && showAddSkill && (
-                  <div className="border border-gray-200 rounded-md p-3 bg-gray-50 mb-2">
-                    <div className="flex flex-col gap-2">
-                      <input
-                        value={newSkillName}
-                        onChange={(e) => setNewSkillName(e.target.value)}
-                        placeholder={t("form.enter_value", { key: t("teacher.skill_name") })}
-                        className={SELECT_CLASS}
-                        style={{ borderRadius: "3px" }}
-                      />
-                      <SelectField
-                        options={[
-                          { value: "beginner", label: t("teacher.skill_level_beginner") },
-                          { value: "intermediate", label: t("teacher.skill_level_intermediate") },
-                          { value: "advanced", label: t("teacher.skill_level_advanced") },
-                          { value: "expert", label: t("teacher.skill_level_expert") },
-                        ]}
-                        placeholder={t("teacher.skill_level")}
-                        value={newSkillLevel}
-                        onChange={(val) => setNewSkillLevel(String(val ?? ""))}
-                      />
-                      <div className="flex gap-2 justify-end">
-                        <button type="button" onClick={handleCancelSkill} className="px-3 py-1.5 text-[13px] border border-gray-300 rounded hover:bg-gray-100 transition-colors">{t("button.cancel")}</button>
-                        <button type="button" onClick={handleAddSkill} className="px-3 py-1.5 text-[13px] bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">{t("button.create")}</button>
+                    {avatarValue && (
+                      <div className='flex items-center gap-3'>
+                        <button
+                          type='button'
+                          onClick={() => setShowAvatarPreview(true)}
+                          className='text-[13px] text-blue-500 hover:text-blue-600 transition-colors cursor-pointer'
+                        >
+                          {t("button.detail")}
+                        </button>
+                        <button
+                          type='button'
+                          onClick={() =>
+                            form.setValue("avatar" as any, "", {
+                              shouldDirty: true,
+                            })
+                          }
+                          className='text-[13px] text-red-500 hover:text-red-600 transition-colors cursor-pointer'
+                        >
+                          {t("button.delete")}
+                        </button>
                       </div>
-                    </div>
+                    )}
                   </div>
-                )}
-                {!isView && !showAddSkill && (
-                  <button type="button" onClick={() => setShowAddSkill(true)} className="flex items-center gap-1.5 text-[13px] text-blue-500 hover:text-blue-600 w-fit transition-colors">
-                    <PlusCircleOutlined className="w-4 h-4" />
-                    <span>{t("teacher.add_skill")}</span>
-                  </button>
-                )}
-              </div>
-            </Col>
-
-          </Row>
-        </div>
-
-        {/* Tab 3: Thông tin làm việc */}
-        <div className={activeTab === "work" ? "block" : "hidden"}>
-          <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
-            <Col>
-              <FormTeraItem label={t("teacher.employment_type")} name="employment_type" rules={[{ required: t("validate.required") }]}>
-                <Select
-                  options={[
-                    { value: "contract", label: t("teacher.employment_type_contract") },
-                    { value: "collaborator", label: t("teacher.employment_type_collaborator") },
-                    { value: "probation", label: t("teacher.employment_type_probation") },
-                  ]}
-                  placeholder={t("form.enter_value", { key: t("teacher.employment_type") })}
-                  disabled={isView}
-                />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.joined_at")} name="joined_at" rules={[{ required: t("validate.required") }]}>
-                <DateField disabled={isView} disableFuture={false} />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.salary_per_hour")} name="hourly_rate" rules={[{ required: t("validate.required") }]}>
-                <Input type="number" min={0} onKeyDown={preventNegativeKey} placeholder={t("form.enter_value", { key: t("teacher.salary_per_hour") })} disabled={isView} />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.monthly_salary")} name="monthly_salary">
-                <Input type="number" min={0} onKeyDown={preventNegativeKey} placeholder={t("form.enter_value", { key: t("teacher.monthly_salary") })} disabled={isView} />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.manager")} name="manager_id">
-                <UserSelect
-                  value={managerIdValue}
-                  selectedUser={(dataDetail as any)?.manager}
-                  disabled={isView}
-                  placeholder={t("form.enter_value", { key: t("teacher.manager") })}
-                  onChange={(id) =>
-                    form.setValue("manager_id" as any, id, {
-                      shouldDirty: true,
-                      shouldValidate: true,
-                    })
-                  }
-                />
-              </FormTeraItem>
-            </Col>
-            {!isUpdate && (
+                </Col>
+              )}
               <Col>
-                <FormTeraItem label={t("teacher.status")} name="status" rules={[{ required: t("validate.required") }]}>
-                  <Select
-                    options={[
-                      { value: "active", label: t("teacher.status_active") },
-                      { value: "suspended", label: t("teacher.status_suspended") },
-                      { value: "resigned", label: t("teacher.status_resigned") },
-                    ]}
-                    placeholder={t("form.enter_value", { key: t("teacher.status") })}
+                <FormTeraItem
+                  label={t("teacher.code")}
+                  name='code'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Input
+                    placeholder={isUpdate ? "" : "VD: GV001, GV002..."}
+                    disabled={isView || isUpdate}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.name")}
+                  name='full_name'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Input
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.name"),
+                    })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
-            )}
-            <Col className="sm:col-span-2">
-              <FormTeraItem label={t("teacher.note")} name="note">
-                <TextArea
-                  rows={3}
-                  placeholder={t("teacher.note_placeholder")}
-                  disabled={isView}
-                />
-              </FormTeraItem>
-            </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.branch")}
+                  name='branch_id'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Select
+                    options={branches.map((branch) => ({
+                      value: String(branch.id),
+                      label: branch.code
+                        ? `${branch.name} (${branch.code})`
+                        : branch.name,
+                    }))}
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.branch"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("teacher.address")} name='address'>
+                  <Input
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.address"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("teacher.dob")} name='dob'>
+                  <DateField disabled={isView} />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.identity_no")}
+                  name='identity_no'
+                >
+                  <Input
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.identity_no"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("teacher.gender")} name='gender'>
+                  <Select
+                    options={[
+                      { value: "male", label: t("teacher.gender_male") },
+                      { value: "female", label: t("teacher.gender_female") },
+                      { value: "other", label: t("teacher.gender_other") },
+                    ]}
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.gender"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.phone")}
+                  name='phone'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Input
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.phone"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col className='sm:col-span-2'>
+                <FormTeraItem
+                  label={t("teacher.email")}
+                  name='email'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Input
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.email"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+            </Row>
+          </div>
 
-            <Col className="sm:col-span-2">
-              <div className="mt-1 mb-2 pt-2 border-t border-gray-100">
-                <h3 className="text-[13px] font-semibold text-gray-700">
-                  {t("teacher.bank_info")}
-                </h3>
-              </div>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.bank_name")} name="bank_account.bank_name">
-                <Input placeholder={t("form.enter_value", { key: t("teacher.bank_name") })} disabled={isView} />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.bank_account_number")} name="bank_account.bank_account_number">
-                <Input placeholder={t("form.enter_value", { key: t("teacher.bank_account_number") })} disabled={isView} />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.bank_account_holder")} name="bank_account.bank_account_holder">
-                <Input placeholder={t("form.enter_value", { key: t("teacher.bank_account_holder") })} disabled={isView} />
-              </FormTeraItem>
-            </Col>
-            <Col>
-              <FormTeraItem label={t("teacher.bank_branch")} name="bank_account.bank_branch">
-                <Input placeholder={t("form.enter_value", { key: t("teacher.bank_branch") })} disabled={isView} />
-              </FormTeraItem>
-            </Col>
-          </Row>
-        </div>
+          {/* Tab 2: Chuyên môn */}
+          <div className={activeTab === "expertise" ? "block" : "hidden"}>
+            <Row className='grid grid-cols-1'>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.type")}
+                  name='teacher_type'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Select
+                    options={[
+                      {
+                        value: "part_time",
+                        label: t("teacher.type_part_time"),
+                      },
+                      {
+                        value: "full_time",
+                        label: t("teacher.type_full_time"),
+                      },
+                      {
+                        value: "assistant",
+                        label: t("teacher.type_assistant"),
+                      },
+                      {
+                        value: "freelancer",
+                        label: t("teacher.type_freelancer"),
+                      },
+                    ]}
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.type"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+
+              {/* Kỹ năng */}
+              <Col>
+                <div className='mb-3'>
+                  <label className='text-[13px] text-gray-600 font-medium mb-2 block'>
+                    {t("teacher.skill_name")}
+                  </label>
+                  {skillFields.length > 0 && (
+                    <div className='flex flex-wrap gap-2 mb-2'>
+                      {skillFields.map((field, index) => {
+                        const skill = form.watch(`skills.${index}` as any);
+                        return (
+                          <span
+                            key={field.id}
+                            className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-[13px] text-blue-700'
+                          >
+                            {skill.skill_name}
+                            {skill.level && (
+                              <span className='text-blue-400'>·</span>
+                            )}
+                            {skill.level && skillLevelLabels[skill.level]}
+                            {!isView && (
+                              <button
+                                type='button'
+                                onClick={() => removeSkill(index)}
+                                className='ml-0.5 text-blue-400 hover:text-red-500 leading-none transition-colors'
+                              >
+                                ×
+                              </button>
+                            )}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {errors?.skills && (
+                    <p className='text-[12px] text-red-500 mb-2'>
+                      {errors.skills.message ?? t("validate.required")}
+                    </p>
+                  )}
+                  {!isView && showAddSkill && (
+                    <div className='border border-gray-200 rounded-md p-3 bg-gray-50 mb-2'>
+                      <div className='flex flex-col gap-2'>
+                        <input
+                          value={newSkillName}
+                          onChange={(e) => setNewSkillName(e.target.value)}
+                          placeholder={t("form.enter_value", {
+                            key: t("teacher.skill_name"),
+                          })}
+                          className={SELECT_CLASS}
+                          style={{ borderRadius: "3px" }}
+                        />
+                        <SelectField
+                          options={[
+                            {
+                              value: "beginner",
+                              label: t("teacher.skill_level_beginner"),
+                            },
+                            {
+                              value: "intermediate",
+                              label: t("teacher.skill_level_intermediate"),
+                            },
+                            {
+                              value: "advanced",
+                              label: t("teacher.skill_level_advanced"),
+                            },
+                            {
+                              value: "expert",
+                              label: t("teacher.skill_level_expert"),
+                            },
+                          ]}
+                          placeholder={t("teacher.skill_level")}
+                          value={newSkillLevel}
+                          onChange={(val) =>
+                            setNewSkillLevel(String(val ?? ""))
+                          }
+                        />
+                        <div className='flex gap-2 justify-end'>
+                          <button
+                            type='button'
+                            onClick={handleCancelSkill}
+                            className='px-3 py-1.5 text-[13px] border border-gray-300 rounded hover:bg-gray-100 transition-colors'
+                          >
+                            {t("button.cancel")}
+                          </button>
+                          <button
+                            type='button'
+                            onClick={handleAddSkill}
+                            className='px-3 py-1.5 text-[13px] bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
+                          >
+                            {t("button.create")}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {!isView && !showAddSkill && (
+                    <button
+                      type='button'
+                      onClick={() => setShowAddSkill(true)}
+                      className='flex items-center gap-1.5 text-[13px] text-blue-500 hover:text-blue-600 w-fit transition-colors'
+                    >
+                      <PlusCircleOutlined className='w-4 h-4' />
+                      <span>{t("teacher.add_skill")}</span>
+                    </button>
+                  )}
+                </div>
+              </Col>
+            </Row>
+          </div>
+
+          {/* Tab 3: Thông tin làm việc */}
+          <div className={activeTab === "work" ? "block" : "hidden"}>
+            <Row className='grid grid-cols-1 sm:grid-cols-2 gap-x-4'>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.employment_type")}
+                  name='employment_type'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Select
+                    options={[
+                      {
+                        value: "contract",
+                        label: t("teacher.employment_type_contract"),
+                      },
+                      {
+                        value: "collaborator",
+                        label: t("teacher.employment_type_collaborator"),
+                      },
+                      {
+                        value: "probation",
+                        label: t("teacher.employment_type_probation"),
+                      },
+                    ]}
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.employment_type"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.joined_at")}
+                  name='joined_at'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <DateField disabled={isView} disableFuture={false} />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.salary_per_hour")}
+                  name='hourly_rate'
+                  rules={[{ required: t("validate.required") }]}
+                >
+                  <Input
+                    type='number'
+                    min={0}
+                    onKeyDown={preventNegativeKey}
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.salary_per_hour"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.monthly_salary")}
+                  name='monthly_salary'
+                >
+                  <Input
+                    type='number'
+                    min={0}
+                    onKeyDown={preventNegativeKey}
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.monthly_salary"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem label={t("teacher.manager")} name='manager_id'>
+                  <UserSelect
+                    value={managerIdValue}
+                    selectedUser={(dataDetail as any)?.manager}
+                    disabled={isView}
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.manager"),
+                    })}
+                    onChange={(id) =>
+                      form.setValue("manager_id" as any, id, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                  />
+                </FormTeraItem>
+              </Col>
+              {!isUpdate && (
+                <Col>
+                  <FormTeraItem
+                    label={t("teacher.status")}
+                    name='status'
+                    rules={[{ required: t("validate.required") }]}
+                  >
+                    <Select
+                      options={[
+                        { value: "active", label: t("teacher.status_active") },
+                        {
+                          value: "suspended",
+                          label: t("teacher.status_suspended"),
+                        },
+                        {
+                          value: "resigned",
+                          label: t("teacher.status_resigned"),
+                        },
+                      ]}
+                      placeholder={t("form.enter_value", {
+                        key: t("teacher.status"),
+                      })}
+                      disabled={isView}
+                    />
+                  </FormTeraItem>
+                </Col>
+              )}
+              <Col className='sm:col-span-2'>
+                <FormTeraItem label={t("teacher.note")} name='note'>
+                  <TextArea
+                    rows={3}
+                    placeholder={t("teacher.note_placeholder")}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+
+              <Col className='sm:col-span-2'>
+                <div className='mt-1 mb-2 pt-2 border-t border-gray-100'>
+                  <h3 className='text-[13px] font-semibold text-gray-700'>
+                    {t("teacher.bank_info")}
+                  </h3>
+                </div>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.bank_name")}
+                  name='bank_account.bank_name'
+                >
+                  <Input
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.bank_name"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.bank_account_number")}
+                  name='bank_account.bank_account_number'
+                >
+                  <Input
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.bank_account_number"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.bank_account_holder")}
+                  name='bank_account.bank_account_holder'
+                >
+                  <Input
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.bank_account_holder"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+              <Col>
+                <FormTeraItem
+                  label={t("teacher.bank_branch")}
+                  name='bank_account.bank_branch'
+                >
+                  <Input
+                    placeholder={t("form.enter_value", {
+                      key: t("teacher.bank_branch"),
+                    })}
+                    disabled={isView}
+                  />
+                </FormTeraItem>
+              </Col>
+            </Row>
+          </div>
         </FormTera>
         {showAvatarPreview && (
           <Modal
@@ -705,8 +959,8 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
           >
             <img
               src={avatarValue}
-              alt="avatar"
-              className="max-h-[70vh] max-w-full mx-auto rounded"
+              alt='avatar'
+              className='max-h-[70vh] max-w-full mx-auto rounded'
             />
           </Modal>
         )}
