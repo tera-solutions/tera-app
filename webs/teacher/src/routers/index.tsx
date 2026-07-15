@@ -44,6 +44,8 @@ import Wallet from "pages/Wallet";
 import Deposit from "pages/Deposit";
 import Withdraw from "pages/Withdraw";
 import Timesheet from "pages/Timesheet";
+import LeaveRequest from "pages/LeaveRequest";
+import LeaveRequestList from "pages/LeaveRequest/AllRequestsPage";
 import Placeholder from "pages/Placeholder";
 import More from "pages/More";
 
@@ -122,6 +124,8 @@ export const Routers = () => {
         <Route path={PATHS.walletDeposit} element={<Deposit />} />
         <Route path={PATHS.walletWithdraw} element={<Withdraw />} />
         <Route path={PATHS.timesheet} element={<Timesheet />} />
+        <Route path={PATHS.leaveRequest} element={<LeaveRequest />} />
+        <Route path={PATHS.leaveRequestAll} element={<LeaveRequestList />} />
         <Route path={PATHS.profile} element={<MyInfo />} />
         <Route path={PATHS.more} element={<More />} />
         {PLACEHOLDER_PATHS.map((path) => (
