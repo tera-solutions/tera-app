@@ -46,6 +46,12 @@ import EvaluationListPage from "pages/education/evaluation/EvaluationListPage";
 /* IMPORT:Level */
 import LevelListPage from "pages/education/level/LevelListPage";
 
+/* IMPORT:Room */
+import RoomListPage from "pages/education/room/RoomListPage";
+import RoomCreatePage from "pages/education/room/RoomCreatePage";
+import RoomUpdatePage from "pages/education/room/RoomUpdatePage";
+import RoomDetailPage from "pages/education/room/RoomDetailPage";
+
 /* IMPORT:ClassRoom */
 import ClassRoomListPage from "pages/education/class-room/ClassRoomListPage";
 import ClassRoomCreatePage from "pages/education/class-room/ClassRoomCreatePage";
@@ -138,6 +144,12 @@ export const Routers = () => {
 
         {/* BLOCK:Level */}
         <Route path='/course/level/list' element={<LevelListPage />} />
+
+        {/* BLOCK:Room */}
+        <Route path='/course/room/list' element={<RoomListPage />} />
+        <Route path='/course/room/create' element={<RoomCreatePage />} />
+        <Route path='/course/room/update/:id' element={<RoomUpdatePage />} />
+        <Route path='/course/room/detail/:id' element={<RoomDetailPage />} />
 
         {/* BLOCK:Attendance */}
         <Route path="/student/attendance/list" element={<AttendanceListPage />} />

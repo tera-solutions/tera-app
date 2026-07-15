@@ -468,6 +468,17 @@
       "permission": ""
     },
     {
+      "id": 272,
+      "title": "DS Phòng học",
+      "path": "/course/room/list",
+      "icon": "briefcase",
+      "key": "room",
+      "activeKeys": "room",
+      "parentKey": "course",
+      "parentGroupKey": "group-course2",
+      "permission": ""
+    },
+    {
       "id": 28,
       "title": "Thời khóa biểu",
       "path": "/course/list",
