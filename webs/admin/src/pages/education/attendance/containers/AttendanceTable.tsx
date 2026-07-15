@@ -1,5 +1,5 @@
 /* Import: library */
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DropdownItem, PaginationProps, notification } from "tera-dls";
 import ActionDropdown from "@tera/components/web/TableColumnCustom/ActionDropdown";
@@ -13,6 +13,7 @@ import { AttendanceService } from "@tera/modules";
 /* Import: pages */
 import Pagination from "_common/components/Pagination";
 import AttendanceStatus, { ATT_STATUS_KEYS } from "./AttendanceStatus";
+import AttendanceEditModal from "./AttendanceEditModal";
 
 // checkin_time là ISO UTC → lấy "HH:mm"
 const fmtTime = (v?: string | null) => (v ? String(v).slice(11, 16) : "");
@@ -37,6 +38,9 @@ const AttendanceTable = ({
 
   const { data, isPending } = AttendanceService.useAttendanceList({ params });
   const { mutate: upsert } = AttendanceService.useUpsertAttendance();
+
+  // Bản ghi đang mở modal "Sửa" (note + giờ check-in/out)
+  const [editRecord, setEditRecord] = useState<any | null>(null);
 
   const HeaderTitle = ({ children }: { children: ReactNode }) => (
     <span style={{ color: "#111827" }}>{children}</span>
@@ -63,12 +67,18 @@ const AttendanceTable = ({
     );
   };
 
-  const itemsAction = (record: any): DropdownItem[] =>
-    ATT_STATUS_KEYS.map((s) => ({
+  const itemsAction = (record: any): DropdownItem[] => [
+    {
+      key: "edit",
+      label: t("button.edit"),
+      onClick: () => setEditRecord(record),
+    },
+    ...ATT_STATUS_KEYS.map((s) => ({
       key: s,
       label: t("attendance.mark_as", { status: t(`attendance.status_${s}`) }),
       onClick: () => handleSaveStatus(record.id, s),
-    }));
+    })),
+  ];
 
   const columns = [
     {
@@ -128,6 +138,13 @@ const AttendanceTable = ({
       render: (_: any, record: any) => fmtTime(record.checkin_time) || EMPTY,
     },
     {
+      title: <HeaderTitle>{t("attendance.checkout_time")}</HeaderTitle>,
+      key: "checkout_time",
+      width: 120,
+      align: "center" as const,
+      render: (_: any, record: any) => fmtTime(record.checkout_time) || EMPTY,
+    },
+    {
       title: <HeaderTitle>{t("attendance.status")}</HeaderTitle>,
       key: "status",
       width: 140,
@@ -171,27 +188,34 @@ const AttendanceTable = ({
   const tableData = data?.data?.items ?? [];
 
   return (
-    <div style={{ width: "100%", overflowX: "auto", colorScheme: "light" }}>
-      <TableTera
-        rowKey={(record: any) => record.id}
-        columns={columns}
-        data={tableData}
-        scroll={{ x: 1200, y: "calc(100vh - 380px)" }}
-        loading={isPending}
-        pagination={false}
-        rowSelection={{
-          selectedRowKeys,
-          onChange: (keys: (string | number)[]) => setSelectedRowKeys(keys),
-        }}
+    <>
+      <div style={{ width: "100%", overflowX: "auto", colorScheme: "light" }}>
+        <TableTera
+          rowKey={(record: any) => record.id}
+          columns={columns}
+          data={tableData}
+          scroll={{ x: 1200, y: "calc(100vh - 380px)" }}
+          loading={isPending}
+          pagination={false}
+          rowSelection={{
+            selectedRowKeys,
+            onChange: (keys: (string | number)[]) => setSelectedRowKeys(keys),
+          }}
+        />
+        <Pagination
+          total={totalItems}
+          current={currentPage}
+          pageSize={perPage}
+          onChange={handleChangePage}
+          pageSizeOptions={[20, 50, 100]}
+        />
+      </div>
+
+      <AttendanceEditModal
+        record={editRecord}
+        onClose={() => setEditRecord(null)}
       />
-      <Pagination
-        total={totalItems}
-        current={currentPage}
-        pageSize={perPage}
-        onChange={handleChangePage}
-        pageSizeOptions={[20, 50, 100]}
-      />
-    </div>
+    </>
   );
 };
 
