@@ -92,7 +92,12 @@ const CompactSelect = ({
           className,
         )}
       >
-        <span className={customTwMerge("truncate", !selected && "text-slate-400")}>
+        <span
+          className={customTwMerge(
+            "min-w-0 flex-1 truncate text-left",
+            !selected && "text-slate-400",
+          )}
+        >
           {selected?.label ?? placeholder}
         </span>
         {allowClear && selected && !disabled ? (
