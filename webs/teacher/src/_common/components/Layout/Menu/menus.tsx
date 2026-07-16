@@ -257,6 +257,7 @@ export const PATHS = {
   leaveRequest: "/leave-request",
   // Menu active dò segment ("leave-request" trong pathname) → sidebar vẫn sáng ở "Đơn xin nghỉ".
   leaveRequestAll: "/leave-request/all",
+  subscription: "/subscription",
   wallet: "/wallet",
   // Menu active dò segment ("wallet" nằm trong pathname) → sidebar vẫn sáng ở "Ví cá nhân".
   walletDeposit: "/wallet/deposit",
@@ -382,6 +383,12 @@ export const MORE_MENU_ITEMS: MenuItem[] = [
     title: "Đơn xin nghỉ",
     path: PATHS.leaveRequest,
     icon: <CalendarDaysOutlined />,
+  },
+  {
+    key: "subscription",
+    title: "Gói đăng ký",
+    path: PATHS.subscription,
+    icon: <RectangleGroupOutlined />,
   },
   {
     key: "wallet",
