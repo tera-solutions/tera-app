@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import {
   AcademicCapOutlined,
+  BanknotesOutlined,
   BellOutlined,
   BoltOutlined,
   BookmarkOutlined,
@@ -254,11 +255,10 @@ export const PATHS = {
   evaluation: "/evaluation",
   notifications: "/notifications",
   timesheet: "/timesheet",
+  payroll: "/payroll",
   leaveRequest: "/leave-request",
-  // Menu active dò segment ("leave-request" trong pathname) → sidebar vẫn sáng ở "Đơn xin nghỉ".
   leaveRequestAll: "/leave-request/all",
   wallet: "/wallet",
-  // Menu active dò segment ("wallet" nằm trong pathname) → sidebar vẫn sáng ở "Ví cá nhân".
   walletDeposit: "/wallet/deposit",
   walletWithdraw: "/wallet/withdraw",
   messages: "/messages",
@@ -376,6 +376,12 @@ export const MORE_MENU_ITEMS: MenuItem[] = [
     title: "Bảng công",
     path: PATHS.timesheet,
     icon: <ClipboardDocumentCheckOutlined />,
+  },
+  {
+    key: "payroll",
+    title: "Bảng lương",
+    path: PATHS.payroll,
+    icon: <BanknotesOutlined />,
   },
   {
     key: "leave-request",
