@@ -7,6 +7,7 @@ import {
 } from "tera-dls";
 
 import { MENU } from "../Menu/menus";
+import useFeatures from "_common/hooks/useFeatures";
 
 const isActivePath = (pathname: string, path: string): boolean =>
   pathname === path || pathname.startsWith(`${path}/`);
@@ -18,6 +19,8 @@ interface SidebarProps {
 
 const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
   const { pathname } = useLocation();
+  const { has } = useFeatures();
+  const items = MENU.filter((item) => has(item.feature));
 
   return (
     <aside
@@ -28,7 +31,7 @@ const Sidebar = ({ collapsed, onToggleCollapse }: SidebarProps) => {
     >
       <nav className="flex-1 overflow-y-auto px-3 py-4 scrollbar-none">
         <ul className="flex flex-col gap-1">
-          {MENU.map((item) => {
+          {items.map((item) => {
             const active = isActivePath(pathname, item.path);
             return (
               <li key={item.key}>

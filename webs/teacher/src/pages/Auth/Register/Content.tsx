@@ -160,7 +160,7 @@ const Content = observer(() => {
         app_id: REGISTER_APP_ID,
       };
 
-      return AuthApi.register(payload);
+      return AuthApi.registerSchool(payload);
     },
     onSuccess: (res: any) => {
       notification.success({

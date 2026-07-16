@@ -10,7 +10,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -63,16 +62,14 @@ export const useSettingUpdate = () => {
   });
 };
 
+/** Create-or-update by `key`, matching the backend's `/sys/setting/upsert` action. */
 export const useUpsertSetting = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => {
-      if (payload?.id) return SettingAPI.update(payload);
-      return SettingAPI.create(payload);
-    },
+    mutationFn: (payload: CreatePayload) => SettingAPI.upsert(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["setting", "list"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -94,22 +91,6 @@ export const useSettingDelete = () => {
   });
 };
 
-export const useSettingExport = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => SettingAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
 export const SettingService = {
   useSettingList,
   useSettingDetail,
@@ -117,5 +98,4 @@ export const SettingService = {
   useSettingUpdate,
   useUpsertSetting,
   useSettingDelete,
-  useSettingExport,
 };

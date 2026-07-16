@@ -1,5 +1,11 @@
 import moment from "moment";
-import { ChatBubbleLeftRightOutlined, EyeOutlined, PaperAirplaneOutlined } from "tera-dls";
+import {
+  ChatBubbleLeftRightOutlined,
+  EyeOutlined,
+  PaperAirplaneOutlined,
+  PencilSquareOutlined,
+  TrashOutlined,
+} from "tera-dls";
 
 import Avatar from "_common/components/Avatar";
 import Badge from "_common/components/Badge";
@@ -20,6 +26,8 @@ interface StudentTableProps {
   onView: (student: StudentListItem) => void;
   onComment: (student: StudentListItem) => void;
   onMessage: (student: StudentListItem) => void;
+  onEdit: (student: StudentListItem) => void;
+  onDelete: (student: StudentListItem) => void;
 }
 
 const StudentTable = ({
@@ -33,6 +41,8 @@ const StudentTable = ({
   onView,
   onComment,
   onMessage,
+  onEdit,
+  onDelete,
 }: StudentTableProps) => {
   const sortableHeader = (key: StudentSortBy, label: string) => (
     <button type="button" onClick={() => onSortChange(key)} className="flex items-center gap-1 hover:text-slate-700">
@@ -129,6 +139,22 @@ const StudentTable = ({
             className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4.5 [&_svg]:w-4.5"
           >
             <PaperAirplaneOutlined />
+          </button>
+          <button
+            type="button"
+            title="Sửa"
+            onClick={() => onEdit(student)}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4.5 [&_svg]:w-4.5"
+          >
+            <PencilSquareOutlined />
+          </button>
+          <button
+            type="button"
+            title="Xóa"
+            onClick={() => onDelete(student)}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-500 [&_svg]:h-4.5 [&_svg]:w-4.5"
+          >
+            <TrashOutlined />
           </button>
         </div>
       ),

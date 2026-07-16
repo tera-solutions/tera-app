@@ -1,13 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { ChatBubbleLeftRightOutlined, EyeOutlined, HomeModernOutlined, WrenchScrewdriverOutlined } from "tera-dls";
+import { EyeOutlined, HomeModernOutlined, PencilSquareOutlined, TrashOutlined } from "tera-dls";
 
 import Avatar from "_common/components/Avatar";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 import RoomStatusBadge from "_common/components/RoomStatusBadge";
 import Table, { TableColumn } from "_common/components/Table";
 import { useMeta } from "_common/hooks/useMeta";
-import { todo } from "_common/utils/todo";
 import { toDate, toTime } from "_common/utils/schedule";
 
 import type { Room } from "../_interface";
@@ -18,9 +17,11 @@ interface RoomTableProps {
   isLoading: boolean;
   isError: boolean;
   onRetry: () => void;
+  onEdit: (room: Room) => void;
+  onDelete: (room: Room) => void;
 }
 
-const RoomTable = ({ rooms, from, isLoading, isError, onRetry }: RoomTableProps) => {
+const RoomTable = ({ rooms, from, isLoading, isError, onRetry, onEdit, onDelete }: RoomTableProps) => {
   const navigate = useNavigate();
   const { getLabel } = useMeta();
 
@@ -114,19 +115,19 @@ const RoomTable = ({ rooms, from, isLoading, isError, onRetry }: RoomTableProps)
           </button>
           <button
             type="button"
-            title="Đặt phòng"
-            onClick={todo}
+            title="Sửa"
+            onClick={() => onEdit(room)}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4.5 [&_svg]:w-4.5"
           >
-            <ChatBubbleLeftRightOutlined />
+            <PencilSquareOutlined />
           </button>
           <button
             type="button"
-            title="Báo bảo trì"
-            onClick={todo}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4.5 [&_svg]:w-4.5"
+            title="Xóa"
+            onClick={() => onDelete(room)}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-500 [&_svg]:h-4.5 [&_svg]:w-4.5"
           >
-            <WrenchScrewdriverOutlined />
+            <TrashOutlined />
           </button>
         </div>
       ),
