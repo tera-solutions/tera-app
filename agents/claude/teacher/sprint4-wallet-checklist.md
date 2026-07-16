@@ -1,4 +1,4 @@
-# Sprint 4 — Ví & Cá nhân [050]–[056] · Checklist tiến độ
+# Sprint 4 — Ví & Cá nhân [050]–[056] + [068] Đơn xin nghỉ · Checklist tiến độ
 
 > Đối chiếu `agents/claude/teacher/task.md` (§[050]–[056]) với code thật trong `webs/teacher/src/pages/`
 > và route sống trong Postman collection `Modules` → `Finance/Wallet` (xem `docs/postman-structure.md` §5).
@@ -490,14 +490,18 @@ thì chỉ cần đổ dữ liệu vào — props của các component đã sẵ
 
 ## [053] - Teacher - Bảng công
 
-Code: `webs/teacher/src/pages/Timesheet/` · Route `/timesheet` · Menu "Bảng công" (dưới "Báo cáo").
+Code: `webs/teacher/src/pages/Timesheet/` · Route `/timesheet` · Menu "Bảng công" (icon
+`ClipboardDocumentCheckOutlined`). ⚠️ **Sau khi merge master (2026-07-12)** menu item nằm trong
+`MORE_MENU_ITEMS` (menu "Khác"), ngay sau "Báo cáo" — KHÔNG còn ở sidebar chính. Wiring (PATHS +
+menu item + import + route) từng bị **gỡ tạm để merge master rồi thêm lại** — nếu mất thì khôi phục 4
+mẩu trong `menus.tsx` + `routers/index.tsx`.
 Full khung theo thiết kế `picture's page/bang cong.png`, đọc `edu/timetable/calendar` (scope sẵn theo
 GV đăng nhập). Giờ giảng hiển thị **đồng hồ `H.Mh`** (2.5h = 2 giờ 5 phút). Verify Playwright + backend
-thật (`192.168.1.190:8086`) 2026-07-11.
+thật (`192.168.1.190:8086`) 2026-07-11; tinh chỉnh UI 2026-07-12 (xem mục dưới).
 
 - [x] Xây dựng UI bảng công — full khung: 6 tile · filter (ngày/lớp/trạng thái/hình thức/search/Xuất Excel) · bảng · lịch tháng · donut · giờ/tuần · hiệu suất · hoạt động
 - [x] Xây dựng `TimesheetTable` component — `TimesheetStats.tsx` (6 tile) + `TeachingSessionTable.tsx`
-- [x] Xây dựng `MonthlySummary` component — `MonthlySummary.tsx` (donut ngang gọn, tiêu đề "Tổng hợp tháng MM/YYYY")
+- [x] Xây dựng `MonthlySummary` component — `MonthlySummary.tsx` (donut xếp DỌC: biểu đồ trên, legend + số liệu dưới; tiêu đề "Tổng hợp tháng MM/YYYY")
 - [x] Xây dựng `TeachingSessionTable` component — bảng 10 cột + Xem (`ScheduleDetailDrawer`) + phân trang client
 - [~] Tích hợp API Timesheet — 🚫 **không có endpoint Timesheet/Payroll**; thống kê (số buổi/giờ) tính client từ timetable. Các khối chờ backend để **"Sắp có"** (không mock)
 - [x] Tích hợp API Teaching Session — `TimetableService.useTimetableCalendar`, dữ liệu thật, lọc client (lớp/trạng thái/tìm kiếm) + lịch tháng điều khiển khoảng ngày
@@ -522,40 +526,53 @@ Verify payload thật `edu/timetable/calendar` (2026-07-11): mỗi buổi chỉ 
 - Nút **Xuất Excel** + select **Tất cả hình thức** (disabled/toast — không có endpoint export/hình thức)
 - → Khi BE bổ sung field/endpoint tương ứng thì nối thẳng (props/cột đã sẵn).
 
+### Tinh chỉnh UI (2026-07-12) — đã làm, verify Playwright
+
+- [x] **Mobile bỏ `DateRangeFilter`** — bọc `hidden xmd:contents` (desktop giữ nguyên); khoảng ngày ở mobile do **lịch tháng** điều khiển (tránh popup RangePicker tràn mép — bug §2 handoff-07-11 nay không còn liên quan).
+- [x] **`MonthCalendarCard`**: ngày có buổi hiển thị **gạch màu theo trạng thái** phía trên số (xanh=hoàn thành/cam=sắp diễn ra/đỏ=hủy, dùng `statusGroup`), KHÔNG tô nền cả ô; legend 3 màu + "Hôm nay". Fix **vòng tròn hôm nay bị oval** khi card thu hẹp → `aspect-square w-full max-w-9` (luôn tròn).
+- [x] **Layout desktop**: 3 card phải (Lịch dạy/Tổng hợp/Tổng giờ giảng theo hình thức) thu còn 278px dồn sát phải; bảng buổi dạy tràn lấp khoảng trống (grid `[minmax(0,1fr)_278px]`); hàng dưới thẳng cột (`[1.2fr_0.8fr_278px]` — "Hiệu suất" hẹp 1/5 để "Giờ giảng theo tuần" rộng ra; "Hoạt động gần đây" thẳng cột 278px).
+- [x] **`WeeklyHoursChart`**: bật `datalabels` (giá trị `H.Mh` trên mỗi điểm); nhãn trục X **2 dòng** "Tuần N" + khoảng ngày có ngoặc "(01 - 05/07)" (clamp trong range); trục Y **tự co, bước 5h** (`grace 25%`); bỏ vùng tô (`fill:false`); `x.offset:true` để điểm/nhãn Tuần 1 không dính trục Y. ⚠️ Thêm **plugin** cho chart → HMR chỉ `update()` không tạo lại chart, phải remount (điều hướng đi/về) mới thấy.
+- [x] **`MonthlySummary`**: donut để **trơn** (không hiệu ứng hover/dim — đã thử offset/pop/dim-others rồi user chốt bỏ); tooltip mặc định Chart.js vẫn hiện số buổi khi hover.
+
 ---
 
 ## [054] - Teacher - Bảng lương
 
-- [ ] Xây dựng UI bảng lương
-- [ ] Xây dựng `PayrollTable` component
-- [ ] Xây dựng `PayrollSummary` component
-- [ ] Xây dựng `SalaryOverview` component
-- [ ] Tích hợp API Payroll List
-- [ ] Tích hợp API Payroll Summary
-- [ ] Kiểm thử bảng lương
+> ✅ **UI XONG (UI-only, CHƯA wire API) — 2026-07-16.** Dựng theo design `picture's page/bang luong.png`.
+> Module `webs/teacher/src/pages/Payroll/`. Route `/payroll`, menu "Bảng lương" ở **MORE_MENU_ITEMS**
+> (menu "Khác", sau "Bảng công"). Verify Playwright desktop + mobile 390px; typecheck teacher **45 baseline, 0 lỗi mới**.
 
-### Chưa xong / cần xử lý
+- [x] Xây dựng UI bảng lương — full trang: 6 tile (Tổng thu nhập → Thực nhận) + filter (DateRange/loại/trạng thái/search/Xuất Excel) + bảng 13 cột + biểu đồ đường 6 tháng + lịch thanh toán + sidebar
+- [x] Xây dựng `PayrollTable` component — bảng theo kỳ, phân trang client (10/trang, 20 bản ghi mock), bấm dòng/👁 → `/payroll/:id`
+- [x] Xây dựng `PayrollSummary` component — 6 tile thu nhập tháng
+- [x] Xây dựng `SalaryOverview` component — sidebar: tổng quan thu nhập + donut cơ cấu (53.1/24.8/10.6/6.2% khớp design) + hoạt động gần đây
+- [~] Tích hợp API Payroll List — ⏭️ **bỏ (UI-only)**; data = `_mock.ts` (`PAYROLL_PERIODS`). Nút Xuất Excel/Tải = `notification.warning` demo
+- [~] Tích hợp API Payroll Summary — ⏭️ **bỏ (UI-only)**; `CURRENT_STATS`/`INCOME_TREND`/`PAYMENT_SCHEDULE`/`RECENT_ACTIVITIES` trong mock
+- [x] Kiểm thử bảng lương — Playwright 2026-07-16 (desktop + mobile 390px, list + chi tiết + điều hướng)
 
-- **🚫 Không có endpoint Payroll.** Xem [053].
-- Dữ liệu lương duy nhất đang có là **field tĩnh trên hồ sơ giáo viên** (`hourly_rate`,
-  `monthly_salary`, `employment_type`, `bank_account`) từ `hr/teacher/detail/:id` — đủ cho
-  `SalaryOverview` (mức lương cấu hình), **không đủ** cho `PayrollTable` (bảng lương theo kỳ).
-- → Chờ backend.
+### Ghi chú
+- **🚫 Vẫn không có endpoint Payroll** (xem [053]) → khi backend có module lương thì thay `_mock.ts` bằng service hook, giữ shape `_interface.ts`.
+- Component thêm ngoài spec (theo design): `IncomeChart` (line 6 tháng), `PaymentSchedule`, `PayrollStatusBadge`.
+- **Bộ lọc nâng cao mobile (2026-07-16)**: mobile ẩn 2 select (loại thu nhập/trạng thái) → nút "Lọc" (badge số bộ lọc bật) mở modal chip. Dùng **`ChipGroup` của dof** (`@tera/components/dof/ChipGroup`, KHÔNG dùng i18n) cho nội dung; nút + modal shell dựng **local hardcode tiếng Việt** vì `FilterButton`/`FilterModalShell` của dof dùng `t()` mà **web teacher KHÔNG có i18n** (không init, không dep i18next — mọi text teacher hardcode VN). Draft state trong `PayrollTable`, Áp dụng mới commit. Desktop giữ 2 `CompactSelect` inline (ẩn nút Lọc qua `hidden xmd:contents` / `xmd:hidden`). ⚠️ Web teacher thêm bộ lọc mobile sau này → theo pattern này (ChipGroup dof + shell local VN), ĐỪNG import FilterButton/FilterModalShell dof (sẽ ra raw key).
+- ⚠️ Range mặc định = phủ toàn bộ data mock (01/01/2023–31/12/2025) để bảng hiện đủ 20 kỳ (design vẽ range tháng 5 nhưng vẫn liệt kê 20 dòng — mâu thuẫn, ưu tiên filter chạy thật).
 
 ---
 
 ## [055] - Teacher - Chi tiết bảng lương
 
-- [ ] Xây dựng UI chi tiết bảng lương
-- [ ] Xây dựng `SalaryBreakdown` component
-- [ ] Xây dựng `BonusInfo` component
-- [ ] Xây dựng `DeductionInfo` component
-- [ ] Tích hợp API Payroll Detail
-- [ ] Kiểm thử chi tiết bảng lương
+> ✅ **UI XONG (UI-only, CHƯA wire API) — 2026-07-16.** Dựng theo design `picture's page/chi tiet bang luong.png`.
+> Route `/payroll/:id` (`PayrollDetailPage.tsx`). Vào từ nút 👁/dòng bảng ở màn list.
 
-### Chưa xong / cần xử lý
+- [x] Xây dựng UI chi tiết bảng lương — hồ sơ GV + thông tin kỳ + card "Thực nhận" (kèm **số tiền bằng chữ** tự sinh, `amountToWords`) + 4 mục + sidebar (donut tổng quan + timeline lịch sử thanh toán + hỗ trợ). Nút Tải PDF/In = demo
+- [x] Xây dựng `SalaryBreakdown` component — mục "1. Thu nhập" (bảng lương + phụ cấp); nhận `salaryItems`+`bonusItems`, render dòng thưởng qua `<BonusInfo>` **trong cùng 1 bảng** → giao diện y hệt bản gộp (1 bảng phẳng, thưởng gom cuối)
+- [x] Xây dựng `BonusInfo` component — **ĐÃ TÁCH RIÊNG** (user chốt 2026-07-16: tách vì nhìn vẫn giống hệt bản gộp + đúng task). Trả về fragment các `<tr>` khoản thưởng, nằm chung bảng với `SalaryBreakdown`. Data tách thành `salaryItems`/`bonusItems` ở `_interface`/`_mock`.
+- [x] Xây dựng `DeductionInfo` component — mục "2. Khấu trừ" (bảo hiểm + thuế)
+- [~] Tích hợp API Payroll Detail — ⏭️ **bỏ (UI-only)**; data suy từ `_mock.ts` theo id kỳ (`getPayrollDetail`)
+- [x] Kiểm thử chi tiết bảng lương — Playwright 2026-07-16 (desktop + mobile 390px); số tiền bằng chữ verify node ("10.600.000 → Mười triệu sáu trăm nghìn đồng")
 
-- **🚫 Không có endpoint Payroll Detail.** Phụ thuộc [054], chờ chung.
+### Ghi chú
+- Component thêm ngoài spec: `ClassIncomeTable` (mục 3 theo lớp học), `PaymentTimeline` (mục lịch sử thanh toán).
+- **🚫 Vẫn không có endpoint Payroll Detail** → chờ backend chung với [054].
 
 ---
 
@@ -613,3 +630,46 @@ Verify bằng cách gọi API thật (2026-07-09), kết quả ghi ở `docs/pos
 7. **Rút tiền [052]**: backend có định làm không, hay bỏ task? (ví trả trước hiện không rút được)
 8. **Timesheet / Payroll [053][054][055]**: bao giờ có module HR tương ứng?
 9. **Gói đăng ký [056]**: nghiệp vụ là gì, resource nào bên backend?
+
+---
+
+## [056] - Teacher - Gói đăng ký
+
+> ✅ **UI XONG (UI-only, CHƯA wire API, CHƯA commit) — 2026-07-15.** Dựng theo design
+> `picture's page/goi dang ky.png`. Module `webs/teacher/src/pages/Subscription/`. Route `/subscription`,
+> menu "Gói đăng ký" ở **MORE_MENU_ITEMS** (menu "Khác").
+
+- [x] Xây dựng UI gói đăng ký — full trang: header + breadcrumb + card "Cần hỗ trợ" + banner nâng cấp + 4 thẻ gói + sidebar (gói hiện tại / lịch sử thanh toán / phương thức thanh toán) + footer cam kết bảo mật
+- [x] Xây dựng `PackageList` component — lưới 4 thẻ (`PackageCard`): Miễn phí / Cơ bản (Phổ biến nhất, viền xanh) / Nâng cao / Premium; giá + giá năm + CTA (gói hiện tại = "Đang sử dụng" disabled, còn lại "Nâng cấp ngay")
+- [x] Xây dựng `PackageDetail` component — thẻ "Gói hiện tại của bạn" (icon + tên + badge Đang sử dụng + ngày bắt đầu + quyền lợi + nút Nâng cấp)
+- [x] Xây dựng `BenefitSection` component — danh sách quyền lợi (check xanh + tiêu đề nhóm "Tất cả tính năng của …, và:"), dùng lại ở PackageCard + PackageDetail
+- [~] Tích hợp API Package List — ⏭️ **bỏ (UI-only)**; data = `_mock.ts` (`PLANS`). Điểm nối: `index.tsx` import mock
+- [~] Tích hợp API Package Detail — ⏭️ **bỏ (UI-only)**; `CURRENT_PLAN`/`PAYMENT_HISTORY`/`PAYMENT_METHOD` trong mock. CTA nâng cấp = `notification.warning` demo
+- [x] Kiểm thử gói đăng ký — Playwright 2026-07-15 (desktop + mobile 390px); typecheck teacher **45 baseline, 0 lỗi mới**
+
+### Ghi chú
+- Icon 4 gói (plane/crown/briefcase/diamond) = inline SVG (`components/planVisual.tsx`); màu theo gói.
+- 4 thẻ: mobile 1 cột, `sm` 2 cột, `2xl` 4 cột (design gốc 4-in-row cần màn rộng); sidebar 340px ở `xl+`.
+- ⚠️ Design Google Drive `11cFOVBN...` (mục Description task) chưa xem được — nếu có màn chi tiết tính năng / thanh toán riêng thì bổ sung.
+
+---
+
+## [068] - Teacher - Đơn xin nghỉ
+
+> ✅ **UI XONG (UI-only, CHƯA wire API, CHƯA commit) — 2026-07-15.** Dựng theo design
+> `picture's page/don xin nghi.png`. Module `webs/teacher/src/pages/LeaveRequest/`. Route thật khi
+> wire: **`v1/edu/leave/*`** (`docs/postman-structure.md` §5), giữ shape ở `_interface.ts`.
+
+- [x] Xây dựng UI đơn xin nghỉ — full trang: 4 thẻ quota + form tạo đơn + lịch (3 view **Tháng·Tuần·Ngày**) + lịch sử rút gọn (4 đơn mới nhất)
+- [x] Xây dựng `LeaveRequestTable` component — bảng dùng `Table`/`TablePagination` chung; màn **"Danh sách đơn xin nghỉ"** đầy đủ (`AllRequestsPage.tsx`, route `/leave-request/all`, tab lọc trạng thái + phân trang client). Nút "Xem tất cả" ở trang chính dẫn qua.
+- [x] Xây dựng `LeaveRequestForm` component — `CreateLeaveForm.tsx` (loại/thời gian/từ–đến ngày → tự tính tổng số ngày, lý do + counter, đính kèm, Hủy/Gửi). Date picker = **tera-dls `DatePicker`** (KHÔNG native — đúng luật teacher)
+- [x] Xây dựng `LeaveRequestStatus` component — badge trạng thái (Chờ duyệt/Đã duyệt/Từ chối), chứa `LEAVE_STATUS_META` (dùng lại ở list/calendar/table)
+- [x] Validation dữ liệu đơn xin nghỉ — **field-level** (viền đỏ + text lỗi, tự xóa khi sửa): required loại/từ/đến/lý do + `đến ≥ từ`
+- [~] Tích hợp API Leave Request List — ⏭️ **bỏ (UI-only)**; data = `_mock.ts` (8 đơn). Điểm nối: `index.tsx` + `AllRequestsPage` import mock
+- [~] Tích hợp API Create Leave Request — ⏭️ **bỏ (UI-only)**. Điểm nối: `CreateLeaveForm.submit` (đang `notification.warning` demo)
+- [~] Tích hợp API Leave Request Status — ⏭️ **bỏ (UI-only)**; trạng thái hiển thị từ mock qua `LeaveRequestStatus`
+- [x] Kiểm thử đơn xin nghỉ — Playwright 2026-07-15 (desktop + mobile 390px): stat/form/validation/3 view lịch/màn "Xem tất cả" + filter; typecheck teacher **45 baseline, 0 lỗi mới**
+
+### Ghi chú
+- Menu "Đơn xin nghỉ" ở **`MORE_MENU_ITEMS`** (menu "Khác", KHÔNG sidebar chính — theo convention Timesheet/Wallet); route `/leave-request`.
+- ⚠️ Design Google Drive `1_o-7AK4...` (mục Description task) **chưa xem được** — nếu trong đó có thêm màn (chi tiết đơn / hủy đơn) thì bổ sung sau.
