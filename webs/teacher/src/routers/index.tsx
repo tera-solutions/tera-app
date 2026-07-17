@@ -44,6 +44,8 @@ import Wallet from "pages/Wallet";
 import Deposit from "pages/Deposit";
 import Withdraw from "pages/Withdraw";
 import Timesheet from "pages/Timesheet";
+import Payroll from "pages/Payroll";
+import PayrollDetail from "pages/Payroll/PayrollDetailPage";
 import LeaveRequest from "pages/LeaveRequest";
 import LeaveRequestList from "pages/LeaveRequest/AllRequestsPage";
 import Material from "pages/Material";
@@ -53,6 +55,7 @@ import Settings from "pages/Settings";
 import Report from "pages/Report";
 import PlacementTest from "pages/PlacementTest";
 import PackageManagement from "pages/PackageManagement";
+import Subscription from "pages/Subscription";
 import Placeholder from "pages/Placeholder";
 import More from "pages/More";
 import Courses from "pages/Courses";
@@ -177,6 +180,8 @@ export const Routers = () => {
         <Route path={PATHS.walletDeposit} element={<Deposit />} />
         <Route path={PATHS.walletWithdraw} element={<Withdraw />} />
         <Route path={PATHS.timesheet} element={<Timesheet />} />
+        <Route path={PATHS.payroll} element={<Payroll />} />
+        <Route path={`${PATHS.payroll}/:id`} element={<PayrollDetail />} />
         <Route path={PATHS.leaveRequest} element={<LeaveRequest />} />
         <Route path={PATHS.leaveRequestAll} element={<LeaveRequestList />} />
         <Route path={PATHS.materials} element={<Material />} />
@@ -228,6 +233,7 @@ export const Routers = () => {
           }
         />
 
+        <Route path={PATHS.subscription} element={<Subscription />} />
         <Route path={PATHS.profile} element={<MyInfo />} />
         <Route path={PATHS.more} element={<More />} />
         {PLACEHOLDER_PATHS.map((path) => (
