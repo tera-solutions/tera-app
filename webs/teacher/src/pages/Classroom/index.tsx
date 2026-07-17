@@ -1,10 +1,13 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import classNames from "classnames";
 import {
   AcademicCapOutlined,
+  Button,
   CheckBadgeOutlined,
   ClipboardDocumentCheckOutlined,
   ListBulletOutlined,
+  notification,
+  PlusOutlined,
   Spin,
   TableCellsOutlined,
   UsersOutlined,
@@ -37,6 +40,10 @@ import ClassroomFilterSidebar, {
 } from "./components/ClassroomFilterSidebar";
 import ClassroomCard from "./components/ClassroomCard";
 import ClassroomGridCard from "./components/ClassroomGridCard";
+import ClassFormModal from "./components/ClassFormModal";
+import QuotaMeter from "_common/components/QuotaMeter";
+import useConfirm from "_common/hooks/useConfirm";
+import type { Classroom as ClassroomRow } from "./_interface";
 import { ClassRoomService } from "@tera/modules/education";
 
 /** Kept in sync with the `class_status` metadata list (see ClassStatus enum). */
@@ -44,6 +51,33 @@ const CLASS_STATUS_META = "class_status";
 
 const Classroom = () => {
   const { getTabs } = useMeta();
+  const confirm = useConfirm();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState<ClassroomRow | null>(null);
+  const { mutate: deleteClass } = ClassRoomService.useClassRoomDelete();
+
+  const openCreateClass = () => {
+    setEditing(null);
+    setModalOpen(true);
+  };
+  const openEditClass = (classroom: ClassroomRow) => {
+    setEditing(classroom);
+    setModalOpen(true);
+  };
+  const handleDeleteClass = (classroom: ClassroomRow) =>
+    confirm.warning({
+      title: "Xóa lớp học",
+      content: `Xóa lớp "${classroom.name}"?`,
+      onOk: () =>
+        deleteClass(
+          { id: classroom.id },
+          {
+            onSuccess: () => notification.success({ message: "Đã xóa lớp học" }),
+            onError: (e: any) =>
+              notification.error({ message: e?.data?.msg ?? "Không thể xóa (lớp đang hoạt động)" }),
+          },
+        ),
+    });
 
   const [filters, setFilters] = useUrlFilters({
     view: { type: "string", default: "list" as ClassroomView },
@@ -184,7 +218,12 @@ const Classroom = () => {
           {filters.view === "list" ? (
             <div className="w-full flex flex-col gap-3">
               {classrooms.map((classroom) => (
-                <ClassroomCard key={classroom.id} classroom={classroom} />
+                <ClassroomCard
+                  key={classroom.id}
+                  classroom={classroom}
+                  onEdit={openEditClass}
+                  onDelete={handleDeleteClass}
+                />
               ))}
             </div>
           ) : (
@@ -207,6 +246,12 @@ const Classroom = () => {
           <p className="mt-0.5 text-sm text-slate-400">
             Quản lý và theo dõi các lớp bạn chủ nhiệm
           </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <QuotaMeter resource="classes" used={total} unit="lớp" />
+          <Button icon={<PlusOutlined />} onClick={openCreateClass} className="bg-brand hover:bg-brand/80">
+            Thêm lớp
+          </Button>
         </div>
       </div>
 
@@ -322,6 +367,8 @@ const Classroom = () => {
           />
         </div>
       </div>
+
+      <ClassFormModal open={modalOpen} classroom={editing} onClose={() => setModalOpen(false)} />
     </div>
   );
 };

@@ -1,4 +1,10 @@
-import { EyeOutlined, PaperAirplaneOutlined, PhoneOutlined } from "tera-dls";
+import {
+  EyeOutlined,
+  PaperAirplaneOutlined,
+  PencilSquareOutlined,
+  PhoneOutlined,
+  TrashOutlined,
+} from "tera-dls";
 
 import Avatar from "_common/components/Avatar";
 import Badge from "_common/components/Badge";
@@ -14,9 +20,20 @@ interface ParentTableProps {
   onRetry?: () => void;
   onView: (parent: ParentRow) => void;
   onMessage: (parent: ParentRow) => void;
+  onEdit: (parent: ParentRow) => void;
+  onDelete: (parent: ParentRow) => void;
 }
 
-const ParentTable = ({ items, loading, isError, onRetry, onView, onMessage }: ParentTableProps) => {
+const ParentTable = ({
+  items,
+  loading,
+  isError,
+  onRetry,
+  onView,
+  onMessage,
+  onEdit,
+  onDelete,
+}: ParentTableProps) => {
   const columns: TableColumn<ParentRow>[] = [
     {
       key: "name",
@@ -90,6 +107,22 @@ const ParentTable = ({ items, loading, isError, onRetry, onView, onMessage }: Pa
               <PhoneOutlined />
             </a>
           )}
+          <button
+            type="button"
+            title="Sửa"
+            onClick={() => onEdit(parent)}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4.5 [&_svg]:w-4.5"
+          >
+            <PencilSquareOutlined />
+          </button>
+          <button
+            type="button"
+            title="Xóa"
+            onClick={() => onDelete(parent)}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-500 [&_svg]:h-4.5 [&_svg]:w-4.5"
+          >
+            <TrashOutlined />
+          </button>
         </div>
       ),
     },

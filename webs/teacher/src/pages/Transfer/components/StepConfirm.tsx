@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { Button, CheckCircleOutlined, ExclamationCircleOutlined, Select, Spin, notification } from "tera-dls";
+import { Button, CheckCircleOutlined, DatePicker, ExclamationCircleOutlined, Select, Spin, TextArea, notification } from "tera-dls";
 
 import Card from "_common/components/Card";
 import EmptyState from "_common/components/EmptyState";
 import { PATHS } from "_common/components/Layout/Menu/menus";
-import DatePicker from "@tera/components/dof/Control/DatePicker";
-import TextArea from "@tera/components/dof/Control/TextArea";
 import { EnrollmentService } from "@tera/modules/education";
 import type { Classroom } from "pages/Classroom/_interface";
 

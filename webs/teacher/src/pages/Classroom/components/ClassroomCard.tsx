@@ -11,6 +11,8 @@ import {
   EllipsisVerticalOutlined,
   EyeOutlined,
   MapPinOutlined,
+  PencilSquareOutlined,
+  TrashOutlined,
   UsersOutlined,
 } from "tera-dls";
 
@@ -23,6 +25,8 @@ import ProgressDonut from "./ProgressDonut";
 
 interface ClassroomCardProps {
   classroom: Classroom;
+  onEdit?: (classroom: Classroom) => void;
+  onDelete?: (classroom: Classroom) => void;
 }
 
 interface QuickAction {
@@ -32,7 +36,7 @@ interface QuickAction {
   to: string;
 }
 
-const ClassroomCard = ({ classroom }: ClassroomCardProps) => {
+const ClassroomCard = ({ classroom, onEdit, onDelete }: ClassroomCardProps) => {
   const navigate = useNavigate();
   const detailPath = `${PATHS.classroom}/${classroom.id}`;
 
@@ -176,6 +180,26 @@ const ClassroomCard = ({ classroom }: ClassroomCardProps) => {
                 icon: <EyeOutlined />,
                 onClick: () => go(detailPath),
               },
+              ...(onEdit
+                ? [
+                    {
+                      key: "edit",
+                      label: "Sửa",
+                      icon: <PencilSquareOutlined />,
+                      onClick: () => onEdit(classroom),
+                    },
+                  ]
+                : []),
+              ...(onDelete
+                ? [
+                    {
+                      key: "delete",
+                      label: "Xóa",
+                      icon: <TrashOutlined />,
+                      onClick: () => onDelete(classroom),
+                    },
+                  ]
+                : []),
             ],
           }}
         >

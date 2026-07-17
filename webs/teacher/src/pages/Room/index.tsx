@@ -1,5 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
+  Button,
+  notification,
+  PlusOutlined,
   BuildingOffice2Outlined,
   CheckBadgeOutlined,
   HomeModernOutlined,
@@ -26,8 +29,38 @@ import { ROOM_STATUS_META, ROOM_SUMMARY_SEGMENTS, SORT_OPTIONS } from "./constan
 import { toRoomSummary, toRooms } from "./_utils";
 import RoomTable from "./components/RoomTable";
 import RoomFilterSidebar, { type RoomFilterDraft } from "./components/RoomFilterSidebar";
+import RoomFormModal from "./components/RoomFormModal";
+import useConfirm from "_common/hooks/useConfirm";
+import type { Room as RoomRow } from "./_interface";
 
 const Room = () => {
+  const confirm = useConfirm();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState<RoomRow | null>(null);
+  const { mutate: deleteRoom } = RoomService.useRoomDelete();
+
+  const openCreateRoom = () => {
+    setEditing(null);
+    setModalOpen(true);
+  };
+  const openEditRoom = (room: RoomRow) => {
+    setEditing(room);
+    setModalOpen(true);
+  };
+  const handleDeleteRoom = (room: RoomRow) =>
+    confirm.warning({
+      title: "Xóa phòng học",
+      content: `Xóa phòng "${room.name}"?`,
+      onOk: () =>
+        deleteRoom(
+          { id: room.id },
+          {
+            onSuccess: () => notification.success({ message: "Đã xóa phòng" }),
+            onError: (e: any) =>
+              notification.error({ message: e?.data?.msg ?? "Không thể xóa (phòng đang được dùng)" }),
+          },
+        ),
+    });
   const { getTabs } = useMeta();
 
   const [filters, setFilters] = useUrlFilters(
@@ -123,6 +156,9 @@ const Room = () => {
             Quản lý và theo dõi tình trạng sử dụng phòng
           </p>
         </div>
+        <Button icon={<PlusOutlined />} onClick={openCreateRoom} className="bg-brand hover:bg-brand/80">
+          Thêm phòng
+        </Button>
       </div>
 
       <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
@@ -201,6 +237,8 @@ const Room = () => {
             isLoading={isLoading || isFetching}
             isError={isError}
             onRetry={() => refetch()}
+            onEdit={openEditRoom}
+            onDelete={handleDeleteRoom}
           />
 
           <TablePagination
@@ -234,6 +272,8 @@ const Room = () => {
           />
         </div>
       </div>
+
+      <RoomFormModal open={modalOpen} room={editing} onClose={() => setModalOpen(false)} />
     </div>
   );
 };

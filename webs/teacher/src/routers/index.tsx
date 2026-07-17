@@ -48,18 +48,33 @@ import Payroll from "pages/Payroll";
 import PayrollDetail from "pages/Payroll/PayrollDetailPage";
 import LeaveRequest from "pages/LeaveRequest";
 import LeaveRequestList from "pages/LeaveRequest/AllRequestsPage";
+import Material from "pages/Material";
+import QuestionBank from "pages/QuestionBank";
+import Invoice from "pages/Invoice";
+import Settings from "pages/Settings";
+import Report from "pages/Report";
+import PlacementTest from "pages/PlacementTest";
+import PackageManagement from "pages/PackageManagement";
 import Subscription from "pages/Subscription";
 import Placeholder from "pages/Placeholder";
 import More from "pages/More";
+import Courses from "pages/Courses";
+import Levels from "pages/Levels";
+import SuperadminDashboard from "pages/Superadmin/Dashboard";
+import SuperadminTenants from "pages/Superadmin/Tenants";
+import SuperadminTenantDetail from "pages/Superadmin/TenantDetail";
+import SuperadminPackages from "pages/Superadmin/Packages";
 
 import CheckAuth from "routers/CheckAuth";
 import MiddlewareRouter from "routers/MiddlewareRouter";
+import SuperadminRoute from "routers/SuperadminRoute";
+import FeatureRoute from "routers/FeatureRoute";
 
 import BasicLayout from "_common/components/Layout/BasicLayout";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 import UnAuthLayout from "_common/components/Layout/UnAuthLayout";
 
-const PLACEHOLDER_PATHS = [PATHS.reports];
+const PLACEHOLDER_PATHS: string[] = [];
 
 export const Routers = () => {
   return (
@@ -89,6 +104,8 @@ export const Routers = () => {
         <Route path={`${PATHS.lesson}/:id`} element={<Lesson />} />
         <Route path={`${PATHS.session}/:id`} element={<SessionRuntime />} />
         <Route path={`${PATHS.classroom}/:id`} element={<ClassroomDetail />} />
+        <Route path={PATHS.courses} element={<Courses />} />
+        <Route path={PATHS.levels} element={<Levels />} />
         <Route path={`${PATHS.courseDetail}/:id`} element={<CourseDetail />} />
         <Route path={PATHS.attendance} element={<Attendance />} />
         <Route path={PATHS.students} element={<Students />} />
@@ -100,17 +117,46 @@ export const Routers = () => {
         <Route path={`${PATHS.roomDetail}/:id`} element={<RoomDetail />} />
         <Route path={PATHS.evaluation} element={<Evaluation />} />
         <Route path={PATHS.notifications} element={<Notifications />} />
-        <Route path={PATHS.assignment} element={<Assignment />} />
-        <Route path={`${PATHS.assignment}/new`} element={<AssignmentForm />} />
+        <Route
+          path={PATHS.assignment}
+          element={
+            <FeatureRoute feature="assignments">
+              <Assignment />
+            </FeatureRoute>
+          }
+        />
+        <Route
+          path={`${PATHS.assignment}/new`}
+          element={
+            <FeatureRoute feature="assignments">
+              <AssignmentForm />
+            </FeatureRoute>
+          }
+        />
         <Route
           path={`${PATHS.assignment}/:id/edit`}
-          element={<AssignmentForm />}
+          element={
+            <FeatureRoute feature="assignments">
+              <AssignmentForm />
+            </FeatureRoute>
+          }
         />
         <Route
           path={`${PATHS.assignmentDetail}/:id`}
-          element={<AssignmentDetail />}
+          element={
+            <FeatureRoute feature="assignments">
+              <AssignmentDetail />
+            </FeatureRoute>
+          }
         />
-        <Route path={`${PATHS.grading}/:id`} element={<Grading />} />
+        <Route
+          path={`${PATHS.grading}/:id`}
+          element={
+            <FeatureRoute feature="assignments">
+              <Grading />
+            </FeatureRoute>
+          }
+        />
         <Route path={PATHS.exam} element={<ExamSession />} />
         <Route path={`${PATHS.exam}/new`} element={<ExamForm />} />
         <Route path={`${PATHS.exam}/:id/edit`} element={<ExamForm />} />
@@ -122,7 +168,14 @@ export const Routers = () => {
         <Route path={`${PATHS.parentDetail}/:id`} element={<ParentDetail />} />
         <Route path={PATHS.enrollmentNew} element={<Enrollment />} />
         <Route path={PATHS.transfer} element={<Transfer />} />
-        <Route path={PATHS.messages} element={<Messages />} />
+        <Route
+          path={PATHS.messages}
+          element={
+            <FeatureRoute feature="messaging">
+              <Messages />
+            </FeatureRoute>
+          }
+        />
         <Route path={PATHS.wallet} element={<Wallet />} />
         <Route path={PATHS.walletDeposit} element={<Deposit />} />
         <Route path={PATHS.walletWithdraw} element={<Withdraw />} />
@@ -131,6 +184,55 @@ export const Routers = () => {
         <Route path={`${PATHS.payroll}/:id`} element={<PayrollDetail />} />
         <Route path={PATHS.leaveRequest} element={<LeaveRequest />} />
         <Route path={PATHS.leaveRequestAll} element={<LeaveRequestList />} />
+        <Route path={PATHS.materials} element={<Material />} />
+        <Route path={PATHS.questionBank} element={<QuestionBank />} />
+        <Route path={PATHS.invoices} element={<Invoice />} />
+        <Route path={PATHS.settings} element={<Settings />} />
+        <Route
+          path={PATHS.reports}
+          element={
+            <FeatureRoute feature="advanced_reports">
+              <Report />
+            </FeatureRoute>
+          }
+        />
+        <Route path={PATHS.placementTest} element={<PlacementTest />} />
+        <Route path={PATHS.packageManagement} element={<PackageManagement />} />
+
+        {/* Platform superadmin panel — gated to is_superadmin accounts. */}
+        <Route
+          path={PATHS.superadmin}
+          element={
+            <SuperadminRoute>
+              <SuperadminDashboard />
+            </SuperadminRoute>
+          }
+        />
+        <Route
+          path={PATHS.superadminTenants}
+          element={
+            <SuperadminRoute>
+              <SuperadminTenants />
+            </SuperadminRoute>
+          }
+        />
+        <Route
+          path={`${PATHS.superadminTenantDetail}/:id`}
+          element={
+            <SuperadminRoute>
+              <SuperadminTenantDetail />
+            </SuperadminRoute>
+          }
+        />
+        <Route
+          path={PATHS.superadminPackages}
+          element={
+            <SuperadminRoute>
+              <SuperadminPackages />
+            </SuperadminRoute>
+          }
+        />
+
         <Route path={PATHS.subscription} element={<Subscription />} />
         <Route path={PATHS.profile} element={<MyInfo />} />
         <Route path={PATHS.more} element={<More />} />

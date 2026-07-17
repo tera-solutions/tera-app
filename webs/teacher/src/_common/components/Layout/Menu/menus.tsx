@@ -13,15 +13,21 @@ import {
   ChatBubbleOvalLeftOutlined,
   CircleStackOutlined,
   ClipboardDocumentCheckOutlined,
+  ClipboardDocumentListOutlined,
+  Cog6ToothOutlined,
   CogOutlined,
   DocumentDuplicateOutlined,
   DocumentOutlined,
   DocumentTextOutlined,
   EllipsisHorizontalOutlined,
+  FolderOpenOutlined,
+  GiftOutlined,
   HomeModernOutlined,
   HomeOutlined,
   ListBulletOutlined,
   PrinterOutlined,
+  PuzzlePieceOutlined,
+  ReceiptPercentOutlined,
   RectangleGroupOutlined,
   SquaresPlusOutlined,
   PencilSquareOutlined,
@@ -244,6 +250,8 @@ export const PATHS = {
   rooms: "/rooms",
   roomDetail: "/room",
   courseDetail: "/course",
+  courses: "/courses",
+  levels: "/levels",
   exam: "/exam",
   achievement: "/achievement",
   ranking: "/ranking",
@@ -267,6 +275,16 @@ export const PATHS = {
   profile: "/profile",
   lesson: "/lesson",
   session: "/session",
+  materials: "/materials",
+  questionBank: "/question-bank",
+  invoices: "/invoices",
+  settings: "/settings",
+  placementTest: "/placement-test",
+  packageManagement: "/package-management",
+  superadmin: "/superadmin",
+  superadminTenants: "/superadmin/tenants",
+  superadminTenantDetail: "/superadmin/tenant",
+  superadminPackages: "/superadmin/packages",
 } as const;
 
 export interface MenuItem {
@@ -274,6 +292,8 @@ export interface MenuItem {
   title: string;
   path: string;
   icon: ReactNode;
+  /** Package feature key required to see this item (see useFeatures). */
+  feature?: string;
 }
 
 export const MENU: MenuItem[] = [
@@ -308,10 +328,41 @@ export const MENU: MenuItem[] = [
     icon: <BookOpenOutlined />,
   },
   {
+    key: "materials",
+    title: "Tài liệu",
+    path: PATHS.materials,
+    icon: <FolderOpenOutlined />,
+  },
+  {
+    key: "question-bank",
+    title: "Ngân hàng câu hỏi",
+    path: PATHS.questionBank,
+    icon: <PuzzlePieceOutlined />,
+  },
+  {
     key: "assignment",
     title: "Bài tập",
     path: PATHS.assignment,
     icon: <DocumentTextOutlined />,
+    feature: "assignments",
+  },
+  {
+    key: "exam",
+    title: "Bài kiểm tra",
+    path: PATHS.exam,
+    icon: <PencilSquareOutlined />,
+  },
+  {
+    key: "placement-test",
+    title: "Kiểm tra đầu vào",
+    path: PATHS.placementTest,
+    icon: <ClipboardDocumentListOutlined />,
+  },
+  {
+    key: "evaluation",
+    title: "Đánh giá",
+    path: PATHS.evaluation,
+    icon: <ChatBubbleLeftRightOutlined />,
   },
   {
     key: "students",
@@ -331,16 +382,16 @@ export const MENU: MenuItem[] = [
 // sidebar (webs/teacher/src/pages/More).
 export const MORE_MENU_ITEMS: MenuItem[] = [
   {
-    key: "exam",
-    title: "Bài kiểm tra",
-    path: PATHS.exam,
-    icon: <PencilSquareOutlined />,
+    key: "courses",
+    title: "Khóa học",
+    path: PATHS.courses,
+    icon: <BookOpenOutlined />,
   },
   {
-    key: "evaluation",
-    title: "Đánh giá",
-    path: PATHS.evaluation,
-    icon: <ChatBubbleLeftRightOutlined />,
+    key: "levels",
+    title: "Trình độ",
+    path: PATHS.levels,
+    icon: <AcademicCapOutlined />,
   },
   {
     key: "achievement",
@@ -371,6 +422,7 @@ export const MORE_MENU_ITEMS: MenuItem[] = [
     title: "Báo cáo",
     path: PATHS.reports,
     icon: <ChartBarOutlined />,
+    feature: "advanced_reports",
   },
   {
     key: "timesheet",
@@ -402,6 +454,24 @@ export const MORE_MENU_ITEMS: MenuItem[] = [
     path: PATHS.wallet,
     icon: <WalletOutlined />,
   },
+  {
+    key: "invoices",
+    title: "Hóa đơn",
+    path: PATHS.invoices,
+    icon: <ReceiptPercentOutlined />,
+  },
+  {
+    key: "package-management",
+    title: "Gói đã đăng ký",
+    path: PATHS.packageManagement,
+    icon: <GiftOutlined />,
+  },
+  {
+    key: "settings",
+    title: "Cài đặt",
+    path: PATHS.settings,
+    icon: <Cog6ToothOutlined />,
+  },
 ];
 
 export const BOTTOM_NAV: MenuItem[] = [
@@ -428,11 +498,35 @@ export const BOTTOM_NAV: MenuItem[] = [
     title: "Tin nhắn",
     path: PATHS.messages,
     icon: <ChatBubbleOvalLeftOutlined />,
+    feature: "messaging",
   },
   {
     key: "profile",
     title: "Cá nhân",
     path: PATHS.profile,
     icon: <UserOutlined />,
+  },
+];
+
+// Platform-superadmin section. Rendered only when the signed-in user is a
+// superadmin (globalStore.user.is_superadmin); see pages/More and SuperadminRoute.
+export const SUPERADMIN_MENU_ITEMS: MenuItem[] = [
+  {
+    key: "superadmin-dashboard",
+    title: "Tổng quan nền tảng",
+    path: PATHS.superadmin,
+    icon: <ChartBarOutlined />,
+  },
+  {
+    key: "superadmin-tenants",
+    title: "Quản lý trung tâm",
+    path: PATHS.superadminTenants,
+    icon: <BuildingLibraryOutlined />,
+  },
+  {
+    key: "superadmin-packages",
+    title: "Gói dịch vụ",
+    path: PATHS.superadminPackages,
+    icon: <RectangleGroupOutlined />,
   },
 ];

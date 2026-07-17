@@ -40,3 +40,6 @@ export * from "./student-profile";
 export * from "./student-status";
 export * from "./test";
 export * from "./material";
+export * from "./question";
+export * from "./teacher-report";
+export * from "./placement-test";

@@ -59,6 +59,11 @@ export const AuthApi = {
     await api
       .post(`${authEndpoint}/register`, params)
       .then((result) => result.data),
+  // Teacher-app self-service: creates a business + owner account in one call.
+  registerSchool: async (params) =>
+    await api
+      .post(`${authEndpoint}/register-school`, params)
+      .then((result) => result.data),
   verifyOtp: async (params: any) =>
     await api
       .post(`${authEndpoint}/verify-otp`, params)

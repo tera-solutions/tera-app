@@ -1,34 +1,57 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueries } from "@tanstack/react-query";
-import { Button, PlusOutlined } from "tera-dls";
+import { Button, notification, PlusOutlined } from "tera-dls";
 
 import Card from "_common/components/Card";
 import DonutStatsCard from "_common/components/DonutStatsCard";
+import QuotaMeter from "_common/components/QuotaMeter";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 import SearchInput from "_common/components/SearchInput";
 import SortControl from "_common/components/SortControl";
 import StatusTabs from "_common/components/StatusTabs";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
+import useConfirm from "_common/hooks/useConfirm";
 import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
 import { useMeta } from "_common/hooks/useMeta";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 import { StudentAPI } from "@tera/api";
 import { ClassRoomService, EvaluationService, StudentService } from "@tera/modules/education";
 
-import type { StudentSortBy, StudentSortDir } from "./_interface";
+import type { StudentListItem, StudentSortBy, StudentSortDir } from "./_interface";
 import { SORT_OPTIONS, STUDENT_STATUS_META, STUDENT_SUMMARY_SEGMENTS } from "./constants";
 import { enrichStudentRows, toStudentListResult, toStudentSummary } from "./_utils";
 import StudentStats from "./components/StudentStats";
 import StudentTable from "./components/StudentTable";
+import StudentFormModal from "./components/StudentFormModal";
 import StudentFilterSidebar, {
   type StudentFilterDraft,
 } from "./components/StudentFilterSidebar";
 
 const Students = () => {
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const { getTabs, getItem } = useMeta();
+
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const { mutate: deleteStudent } = StudentService.useStudentDelete();
+
+  const handleEditStudent = (student: StudentListItem) => setEditingId(student.id);
+  const handleDeleteStudent = (student: StudentListItem) =>
+    confirm.warning({
+      title: "Xóa học viên",
+      content: `Xóa học viên "${student.name}"? Thao tác này không thể hoàn tác.`,
+      onOk: () =>
+        deleteStudent(
+          { id: student.id },
+          {
+            onSuccess: () => notification.success({ message: "Đã xóa học viên" }),
+            onError: (e: any) =>
+              notification.error({ message: e?.data?.msg ?? "Không thể xóa học viên" }),
+          },
+        ),
+    });
 
   const [filters, setFilters] = useUrlFilters({
     search: { type: "string", default: "" },
@@ -171,6 +194,7 @@ const Students = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <QuotaMeter resource="students" used={summary.total} unit="học viên" />
           <Button
             outlined
             onClick={() => navigate(PATHS.transfer)}
@@ -227,6 +251,8 @@ const Students = () => {
             onView={(student) => navigate(`${PATHS.studentDetail}/${student.id}`)}
             onComment={(student) => navigate(`${PATHS.evaluation}?student_id=${student.id}`)}
             onMessage={() => navigate(PATHS.messages)}
+            onEdit={handleEditStudent}
+            onDelete={handleDeleteStudent}
           />
 
           <TablePagination
@@ -262,6 +288,12 @@ const Students = () => {
           />
         </div>
       </div>
+
+      <StudentFormModal
+        open={editingId !== null}
+        studentId={editingId}
+        onClose={() => setEditingId(null)}
+      />
     </div>
   );
 };

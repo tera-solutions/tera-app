@@ -1,14 +1,16 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueries } from "@tanstack/react-query";
-import { AcademicCapOutlined, Button, PlusOutlined, RectangleGroupOutlined, UserGroupOutlined } from "tera-dls";
+import { AcademicCapOutlined, Button, notification, PlusOutlined, RectangleGroupOutlined, UserGroupOutlined } from "tera-dls";
 
 import Card from "_common/components/Card";
+import QuotaMeter from "_common/components/QuotaMeter";
 import SearchInput from "_common/components/SearchInput";
 import StatisticCard from "_common/components/StatisticCard";
 import TablePagination from "_common/components/TablePagination";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
+import useConfirm from "_common/hooks/useConfirm";
 import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 import { StudentAPI } from "@tera/api";
@@ -23,7 +25,11 @@ import ParentForm from "./components/ParentForm";
 
 const Parents = () => {
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<ParentRow | null>(null);
+
+  const { mutate: deleteParent } = ParentService.useParentDelete();
 
   const [filters, setFilters] = useUrlFilters(
     {
@@ -120,6 +126,29 @@ const Parents = () => {
   const handleView = (parent: ParentRow) => navigate(`${PATHS.parentDetail}/${parent.id}`);
   const handleMessage = () => navigate(PATHS.messages);
 
+  const handleCreate = () => {
+    setEditing(null);
+    setFormOpen(true);
+  };
+  const handleEdit = (parent: ParentRow) => {
+    setEditing(parent);
+    setFormOpen(true);
+  };
+  const handleDelete = (parent: ParentRow) =>
+    confirm.warning({
+      title: "Xóa phụ huynh",
+      content: `Xóa phụ huynh "${parent.name}"? Thao tác này không thể hoàn tác.`,
+      onOk: () =>
+        deleteParent(
+          { id: parent.id },
+          {
+            onSuccess: () => notification.success({ message: "Đã xóa phụ huynh" }),
+            onError: (error: any) =>
+              notification.error({ message: error?.data?.msg ?? "Không thể xóa phụ huynh" }),
+          },
+        ),
+    });
+
   return (
     <div className="p-4 xmd:p-6">
       <div className="mb-4 flex items-center justify-between gap-3">
@@ -127,9 +156,16 @@ const Parents = () => {
           <h1 className="text-xl font-bold text-slate-800">Phụ huynh</h1>
           <p className="mt-0.5 text-sm text-slate-400">Quản lý liên lạc phụ huynh học viên</p>
         </div>
-        <Button icon={<PlusOutlined />} onClick={() => setFormOpen(true)}>
-          Thêm phụ huynh
-        </Button>
+        <div className="flex items-center gap-2">
+          <QuotaMeter
+            resource="parents"
+            used={parentsQuery.data?.data?.pagination?.total ?? allRows.length}
+            unit="phụ huynh"
+          />
+          <Button icon={<PlusOutlined />} onClick={handleCreate}>
+            Thêm phụ huynh
+          </Button>
+        </div>
       </div>
 
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -171,6 +207,8 @@ const Parents = () => {
             onRetry={() => parentsQuery.refetch()}
             onView={handleView}
             onMessage={handleMessage}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
           <TablePagination
             total={filteredRows.length}
@@ -192,7 +230,12 @@ const Parents = () => {
         </div>
       </div>
 
-      <ParentForm open={formOpen} onClose={() => setFormOpen(false)} rosterOptions={rosterOptions} />
+      <ParentForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        rosterOptions={rosterOptions}
+        parent={editing}
+      />
     </div>
   );
 };

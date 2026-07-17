@@ -5,7 +5,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -13,31 +12,32 @@ import {
 export const SettingAPI = {
   getList: async ({ params }: ListPayload) =>
     await api
-      .get(`${endpoint}/system/setting/list`, {...params, ...params?.filters})
+      .get(`${endpoint}/sys/setting/list`, {...params, ...params?.filters})
       .then((result) => result.data),
 
   getDetail: async ({ id }: DetailPayload) =>
     await api
-      .get(`${endpoint}/system/setting/detail/${id}`)
+      .get(`${endpoint}/sys/setting/detail/${id}`)
       .then((result) => result.data),
 
   create: async ({ params }: CreatePayload) =>
     await api
-      .post(`${endpoint}/system/setting/create`, params)
+      .post(`${endpoint}/sys/setting/create`, params)
       .then((result) => result.data),
 
   update: async ({ id, params }: UpdatePayload) =>
     await api
-      .put(`${endpoint}/system/setting/update/${id}`, params)
+      .put(`${endpoint}/sys/setting/update/${id}`, params)
+      .then((result) => result.data),
+
+  /** Create-or-update by `key` — used by toggles/selects that don't know the row id. */
+  upsert: async ({ params }: CreatePayload) =>
+    await api
+      .post(`${endpoint}/sys/setting/upsert`, params)
       .then((result) => result.data),
 
   delete: async ({ id }: DeletePayload) =>
     await api
-      .delete(`${endpoint}/system/setting/delete/${id}`)
-      .then((result) => result.data),
-  
-  export: async ({ params }: ExportPayload) =>
-    await api
-      .post(`${endpoint}/system/setting/export`, params)
+      .delete(`${endpoint}/sys/setting/delete/${id}`)
       .then((result) => result.data),
 };
