@@ -1,0 +1,33 @@
+# Test Case: [038] Điểm danh
+
+> Module: Teacher | Screen: Điểm danh | Route: `/attendance` hoặc `/classroom/{id}/attendance` | Task ID: 038
+> Nguồn: `tasks/038_diem_danh_screen.md` (đặc tả màn hình đã triển khai)
+
+## Tiền điều kiện chung
+
+Người dùng đã đăng nhập với tài khoản giáo viên, có ít nhất một lớp học được phân công với buổi học trong ngày. API `GET /api/teacher/attendance` và `POST /api/teacher/attendance` hoạt động bình thường trừ khi ghi chú khác.
+
+## Danh sách test case
+
+| TC ID | Tiêu đề | Loại | Ưu tiên | Tiền điều kiện | Các bước thực hiện | Dữ liệu test | Kết quả mong đợi |
+|---|---|---|---|---|---|---|---|
+| TC-038-01 | Load trang điểm danh với buổi học hiện tại | Functional | High | GV đã đăng nhập, lớp Starters 2A có buổi học 15/05/2025 | 1. Truy cập `/classroom/10/attendance`<br>2. Quan sát header, stats, grid HV | class_id=10, date=2025-05-15 | Gọi `GET /api/teacher/attendance?class_id=10&date=2025-05-15`; hiển thị đúng thông tin lớp (Starters 2A, Phòng 01, Thứ 2 4 6, 08:00, 24 học viên), grid 24 HV với avatar và trạng thái, stats Có mặt 20 / Vắng 2 / Muộn 2 / Tổng 24 khớp `summary` |
+| TC-038-02 | Toggle trạng thái điểm danh của một học viên | Functional | High | Đã load trang với HV có status hiện tại | 1. Click nút trạng thái của HV "Trần Thị Bích" (status=null)<br>2. Chọn "A" (Absent) | student_id=2, status=absent | Trạng thái HV chuyển thành Absent (đỏ) ngay lập tức (optimistic update), số liệu ở AttendanceSummary (Vắng) tăng thêm 1, donut chart cập nhật lại tỷ lệ |
+| TC-038-03 | Đánh dấu có mặt tất cả | Functional | High | Đã load trang, một số HV chưa chấm hoặc có trạng thái khác | 1. Click nút "✓ Đánh dấu có mặt tất cả" | — | Toàn bộ HV trong grid chuyển trạng thái = Present, stats Có mặt = 24, Vắng/Muộn = 0 |
+| TC-038-04 | Nút Reset đưa điểm danh về mặc định | Functional | Medium | Đã có thay đổi trạng thái một số HV | 1. Điểm danh vài HV khác Present<br>2. Click nút "Reset" | — | Toàn bộ HV trở về trạng thái mặc định (Present hoặc trạng thái ban đầu từ API), stats khớp lại |
+| TC-038-05 | Lưu điểm danh thành công | Functional | High | Tất cả 24 HV đã được điểm danh | 1. Điểm danh đủ 24 HV<br>2. Nhập ghi chú buổi học "Lớp học tốt, 2 em vắng không phép"<br>3. Click "Lưu điểm danh" | records[24], note | Gọi `POST /api/teacher/attendance` với class_id, session_id, date, records[], note; response 200 `{success:true, saved_count:24}`; hiển thị Toast "Lưu thành công"; form chuyển sang trạng thái lock (read-only) |
+| TC-038-06 | Lưu khi còn học viên chưa chấm | Functional | High | Có ít nhất 1 HV còn status=null | 1. Chỉ điểm danh 20/24 HV<br>2. Click "Lưu điểm danh" | 4 HV còn null | Hiển thị Confirm dialog cảnh báo còn HV chưa được chấm trước khi cho phép lưu tiếp |
+| TC-038-07 | Nút Lưu điểm danh bị disabled khi chưa điểm danh ai | UI-Validation | Medium | Vào buổi học mới, tất cả HV status=null | 1. Load trang buổi học chưa có điểm danh nào<br>2. Quan sát nút "Lưu điểm danh" | — | Nút "Lưu điểm danh" ở trạng thái disabled cho đến khi có ít nhất 1 HV được chấm |
+| TC-038-08 | Chọn buổi học khác trong dropdown | Functional | Medium | Lớp có nhiều buổi học trong lịch sử | 1. Click dropdown "Buổi học"<br>2. Chọn ngày khác, ví dụ 13/05/2025 | date=2025-05-13 | Gọi lại `GET /api/teacher/attendance` với date mới; grid và stats load lại đúng dữ liệu của buổi đã chọn |
+| TC-038-09 | Xem điểm danh buổi cũ đã lưu (read-only) | Functional | Medium | Buổi học 13/05/2025 đã được lưu điểm danh trước đó | 1. Chọn buổi học cũ đã lưu | date đã lưu | Hiển thị trạng thái điểm danh của từng HV nhưng các nút trạng thái ở chế độ read-only, không cho chỉnh sửa |
+| TC-038-10 | Tìm kiếm nhanh học viên trong grid | Functional | Medium | Grid có 24 HV | 1. Nhập tên HV vào ô tìm kiếm nhanh, ví dụ "Phương" | keyword="Phương" | Grid chỉ hiển thị các HV có tên khớp từ khóa, các HV khác bị ẩn |
+| TC-038-11 | Click avatar/tên học viên mở chi tiết điểm danh | Functional | Medium | Đã load trang | 1. Click vào avatar hoặc tên một HV trong grid | student_id=1 | Mở StudentAttendanceDetail (modal/panel chi tiết) của HV được chọn |
+| TC-038-12 | Xuất báo cáo điểm danh | Functional | Medium | Đã load trang lớp có dữ liệu | 1. Click nút "Xuất báo cáo" | — | Trình duyệt tải xuống file báo cáo điểm danh (ví dụ Excel/PDF) chứa dữ liệu buổi học hiện tại |
+| TC-038-13 | Xem thống kê chuyên cần theo tháng | Functional | Medium | Lớp có dữ liệu điểm danh trong tháng 5/2025 | 1. Gọi/điều hướng tới thống kê chuyên cần của lớp | class_id=10, month=5, year=2025 | Gọi `GET /api/teacher/attendance/summary?class_id=10&month=5&year=2025`; trả về total_sessions, attendance_rate, danh sách by_student đúng định dạng |
+| TC-038-14 | Donut chart hiển thị đúng tỷ lệ Có mặt/Vắng/Muộn | UI-Validation | Low | summary: present=20, absent=2, late=2, total=24 | 1. Load trang<br>2. Quan sát donut chart | — | Donut chart chia theo đúng tỷ lệ 20/2/2 trên tổng 24, màu sắc khớp bảng trạng thái (xanh/đỏ/vàng) |
+| TC-038-15 | Ghi chú điểm danh được lưu cùng buổi học | Functional | Medium | Đang điểm danh buổi hiện tại | 1. Nhập nội dung vào textarea "Ghi chú điểm danh"<br>2. Lưu điểm danh | note="Lớp học tốt, 2 em vắng không phép" | Request `POST /api/teacher/attendance` chứa field `note` đúng nội dung đã nhập |
+| TC-038-16 | Sidebar hiển thị danh sách vắng mặt đúng của lớp | Functional | Medium | Có 2 HV đang ở trạng thái Absent | 1. Load trang, quan sát mục "Danh sách vắng mặt" trong sidebar | — | Sidebar hiển thị đúng 2 HV có status=absent, cập nhật realtime khi trạng thái HV thay đổi |
+| TC-038-17 | Sidebar hiển thị thống kê điểm danh các lớp hôm nay | Functional | Low | GV phụ trách nhiều lớp có buổi học hôm nay | 1. Load trang, quan sát mục "Thống kê các lớp" | — | Sidebar hiển thị tổng quan điểm danh của các lớp GV phụ trách trong ngày hôm nay |
+| TC-038-18 | Lỗi khi tải danh sách điểm danh | Error-Handling | Medium | API `GET /api/teacher/attendance` trả lỗi 500/timeout | 1. Truy cập trang điểm danh khi API lỗi | — | Hiển thị thông báo lỗi phù hợp (Toast/EmptyState lỗi), không crash trang, có tùy chọn thử lại |
+| TC-038-19 | Lỗi khi lưu điểm danh | Error-Handling | High | Đã điểm danh đủ HV, API `POST /api/teacher/attendance` trả lỗi | 1. Điểm danh đủ HV<br>2. Click "Lưu điểm danh" khi server lỗi | — | Hiển thị Toast báo lỗi lưu điểm danh, form KHÔNG bị lock, dữ liệu đã nhập vẫn giữ nguyên để GV thử lưu lại |
+| TC-038-20 | Truy cập trang khi chưa đăng nhập | Permission | High | Chưa đăng nhập / token hết hạn | 1. Truy cập trực tiếp URL `/attendance` khi chưa đăng nhập | — | Hệ thống redirect về trang đăng nhập, không hiển thị dữ liệu điểm danh |
