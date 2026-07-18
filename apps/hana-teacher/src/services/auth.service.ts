@@ -63,6 +63,31 @@ export const useLogin = (callback?: () => void) => {
   });
 };
 
+export const useRegister = (callback?: () => void) => {
+  return useMutation({
+    mutationFn: (params: any) => AuthApi.register({ params }),
+    onSuccess: () => {
+      Toast.show({
+        type: 'success',
+        text1: 'Đăng ký thành công!',
+        text2: 'Vui lòng đăng nhập để tiếp tục',
+      });
+
+      if (typeof callback === 'function') {
+        callback();
+      }
+    },
+    onError: (error: any) => {
+      console.error(error);
+      Toast.show({
+        type: 'error',
+        text1: 'Đăng ký thất bại',
+        text2: error?.data?.msg?.message || error?.msg || error?.message,
+      });
+    },
+  });
+};
+
 export const useGetDevice = () => {
   const {
     generalStore: { setGeneral, device },

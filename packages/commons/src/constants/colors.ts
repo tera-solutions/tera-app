@@ -65,6 +65,7 @@ export const SPACING = {
   xl: 20,
   xxl: 24,
   xxxl: 32,
+  xlx5: 60,
 };
 
 export const SHADOW = {

@@ -17,6 +17,6 @@ export const AuthApi = {
       .then((result) => result.data),
   register: async ({ params }: any) =>
     await api
-      .post(`${endpointAuth}/login`, params)
+      .post(`${endpointAuth}/register`, params)
       .then((result) => result.data),
 };

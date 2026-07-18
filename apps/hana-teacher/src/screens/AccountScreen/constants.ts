@@ -5,11 +5,13 @@ import {
   CalendarDays,
   Clock3,
   CreditCard,
+  Crown,
   Lock,
   Settings,
   Shield,
   Star,
   Users,
+  Wallet,
 } from 'lucide-react-native';
 
 export const STATS = [
@@ -42,6 +44,20 @@ export const MENUS = [
     icon: CreditCard,
     color: '#0066cc',
     link: '/setting/profile',
+  },
+  {
+    id: 'wallet',
+    title: 'Ví cá nhân',
+    icon: Wallet,
+    color: '#0066cc',
+    link: '/setting/wallet',
+  },
+  {
+    id: 'subscription',
+    title: 'Gói đăng ký',
+    icon: Crown,
+    color: '#F59E0B',
+    link: '/setting/subscription-manage',
   },
   {
     id: 'students',
