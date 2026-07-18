@@ -5,7 +5,7 @@ import { ChevronRightOutlined } from "tera-dls";
 import { useStores } from "@tera/stores/useStores";
 
 import {
-  MORE_MENU_ITEMS,
+  MORE_MENU_SECTIONS,
   SUPERADMIN_MENU_ITEMS,
   type MenuItem,
 } from "_common/components/Layout/Menu/menus";
@@ -35,7 +35,10 @@ const More = observer(() => {
   const isSuperadmin = !!globalStore.user?.is_superadmin;
   const { has } = useFeatures();
 
-  const items = MORE_MENU_ITEMS.filter((item) => has(item.feature));
+  const sections = MORE_MENU_SECTIONS.map((section) => ({
+    ...section,
+    items: section.items.filter((item) => has(item.feature)),
+  })).filter((section) => section.items.length > 0);
 
   return (
     <div className="space-y-4 p-4 xmd:p-6">
@@ -48,7 +51,14 @@ const More = observer(() => {
         </div>
       )}
 
-      <MenuList items={items} />
+      {sections.map((section) => (
+        <div key={section.key} className="space-y-2">
+          <p className="px-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            {section.title}
+          </p>
+          <MenuList items={section.items} />
+        </div>
+      ))}
     </div>
   );
 });

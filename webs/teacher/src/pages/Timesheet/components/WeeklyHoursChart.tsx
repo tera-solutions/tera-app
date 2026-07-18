@@ -11,7 +11,7 @@ interface WeeklyHoursChartProps {
 }
 
 const WeeklyHoursChart = ({ buckets, loading }: WeeklyHoursChartProps) => {
-  const isEmpty = buckets.every((b) => b.minutes === 0);
+  const isEmpty = buckets.every((b) => b.hours === 0);
 
   return (
     <Card className="xmd:p-5" animated={false}>
@@ -30,7 +30,7 @@ const WeeklyHoursChart = ({ buckets, loading }: WeeklyHoursChartProps) => {
               datasets: [
                 {
                   label: "Giờ giảng",
-                  data: buckets.map((b) => b.minutes / 60),
+                  data: buckets.map((b) => b.hours),
                   borderColor: "#38bdf8",
                   pointBackgroundColor: "#38bdf8",
                   pointRadius: 3,
@@ -47,12 +47,12 @@ const WeeklyHoursChart = ({ buckets, loading }: WeeklyHoursChartProps) => {
                 legend: { display: false },
                 tooltip: {
                   callbacks: {
-                    label: (ctx) => formatDuration(buckets[ctx.dataIndex]?.minutes ?? 0),
+                    label: (ctx) => formatDuration(buckets[ctx.dataIndex]?.hours ?? 0),
                   },
                 },
                 // Nhãn giá trị hiển thị PHÍA TRÊN mỗi điểm (giống ảnh thiết kế).
                 datalabels: {
-                  display: (ctx) => (buckets[ctx.dataIndex]?.minutes ?? 0) > 0,
+                  display: (ctx) => (buckets[ctx.dataIndex]?.hours ?? 0) > 0,
                   anchor: "end",
                   align: "top",
                   offset: 4,
@@ -60,7 +60,7 @@ const WeeklyHoursChart = ({ buckets, loading }: WeeklyHoursChartProps) => {
                   color: "#334155",
                   font: { size: 11, weight: 600 },
                   formatter: (_v, ctx) =>
-                    formatDuration(buckets[ctx.dataIndex]?.minutes ?? 0),
+                    formatDuration(buckets[ctx.dataIndex]?.hours ?? 0),
                 },
               },
               scales: {

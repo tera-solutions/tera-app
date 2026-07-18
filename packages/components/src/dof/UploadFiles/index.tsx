@@ -224,6 +224,8 @@ function UploadFiles({
   };
 
   const _handleRemove = (file) => {
+    setFileListState((prev) => prev.filter((f) => f?.id !== file?.id));
+
     if (typeof onRemove === "function") {
       onRemove(file);
     }

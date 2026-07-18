@@ -1,5 +1,5 @@
 import moment from "moment";
-import { DocumentArrowDownOutlined, EyeOutlined, notification } from "tera-dls";
+import { EyeOutlined } from "tera-dls";
 
 import Avatar from "_common/components/Avatar";
 import Badge from "_common/components/Badge";
@@ -66,14 +66,7 @@ const InvoiceTable = ({ items, loading, isError, onRetry, onView }: InvoiceTable
       headerClassName: "w-20",
       render: (row) => (
         <TableRowActions
-          buttons={[
-            { title: "Xem", icon: <EyeOutlined />, onClick: () => onView(row) },
-            {
-              title: "Tải hóa đơn",
-              icon: <DocumentArrowDownOutlined />,
-              onClick: () => notification.warning({ message: "Tính năng đang được phát triển" }),
-            },
-          ]}
+          buttons={[{ title: "Xem", icon: <EyeOutlined />, onClick: () => onView(row) }]}
         />
       ),
     },

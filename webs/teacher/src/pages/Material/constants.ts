@@ -1,4 +1,4 @@
-import type { MaterialType } from "./_interface";
+import type { MaterialSummary, MaterialType } from "./_interface";
 
 export const MATERIAL_TYPE_LABELS: Record<MaterialType, string> = {
   pdf: "PDF",
@@ -44,16 +44,66 @@ export const MATERIAL_SORT_OPTIONS = [
   { value: "material_type", label: "Loại tài liệu" },
 ];
 
-export const MATERIAL_STAT_SEGMENTS: {
+/**
+ * Type-filter tabs (StatusTabs pattern). Each key maps 1:1 to a real
+ * `material_type` value the API accepts — unlike the old grouped stat-card
+ * buttons, there's no "Khác" bucket here that silently reset the filter.
+ * The remaining raw types (pdf/image/video/audio/homework/other) stay
+ * reachable via the exhaustive dropdown in MaterialFilterSidebar.
+ */
+export const MATERIAL_TYPE_TABS: { key: MaterialType | "all"; label: string }[] = [
+  { key: "all", label: "Tất cả" },
+  { key: "document", label: "Giáo án" },
+  { key: "presentation", label: "Bài giảng" },
+  { key: "exam", label: "Đề kiểm tra" },
+  { key: "worksheet", label: "Phiếu bài tập" },
+];
+
+/** Curated breakdown shown on the stat cards + summary donut. */
+export const MATERIAL_SUMMARY_SEGMENTS: {
   key: string;
   label: string;
-  types: MaterialType[] | null;
-  iconClassName: string;
+  color: string;
+  types: MaterialType[];
+  value: (summary: MaterialSummary) => number;
 }[] = [
-  { key: "all", label: "Tất cả tài liệu", types: null, iconClassName: "bg-sky-50 text-brand" },
-  { key: "document", label: "Giáo án", types: ["document"], iconClassName: "bg-emerald-50 text-emerald-500" },
-  { key: "presentation", label: "Bài giảng", types: ["presentation"], iconClassName: "bg-orange-50 text-orange-500" },
-  { key: "exam", label: "Đề kiểm tra", types: ["exam"], iconClassName: "bg-violet-50 text-violet-500" },
-  { key: "worksheet", label: "Phiếu bài tập", types: ["worksheet"], iconClassName: "bg-rose-50 text-rose-500" },
-  { key: "other", label: "Tài liệu khác", types: ["pdf", "image", "video", "audio", "homework", "other"], iconClassName: "bg-slate-100 text-slate-500" },
+  {
+    key: "document",
+    label: "Giáo án",
+    color: "#10b981",
+    types: ["document"],
+    value: (s) => s.byType.document ?? 0,
+  },
+  {
+    key: "presentation",
+    label: "Bài giảng",
+    color: "#f97316",
+    types: ["presentation"],
+    value: (s) => s.byType.presentation ?? 0,
+  },
+  {
+    key: "exam",
+    label: "Đề kiểm tra",
+    color: "#8b5cf6",
+    types: ["exam"],
+    value: (s) => s.byType.exam ?? 0,
+  },
+  {
+    key: "worksheet",
+    label: "Phiếu bài tập",
+    color: "#f43f5e",
+    types: ["worksheet"],
+    value: (s) => s.byType.worksheet ?? 0,
+  },
+  {
+    key: "other",
+    label: "Khác",
+    color: "#94a3b8",
+    types: ["pdf", "image", "video", "audio", "homework", "other"],
+    value: (s) =>
+      ["pdf", "image", "video", "audio", "homework", "other"].reduce(
+        (sum, type) => sum + (s.byType[type] ?? 0),
+        0,
+      ),
+  },
 ];

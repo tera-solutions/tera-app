@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Modal, notification, Select } from "tera-dls";
+import { notification, Select } from "tera-dls";
 
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+import FormScaff from "@tera/components/dof/FormScaff";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import InputNumber from "@tera/components/dof/Control/InputNumber";
 import { QuestionService } from "@tera/modules/education";
@@ -131,15 +132,15 @@ const QuestionFormModal = ({ open, editing, onClose }: QuestionFormModalProps) =
   };
 
   return (
-    <Modal
-      title={editing ? "Sửa câu hỏi" : "Thêm câu hỏi mới"}
+    <FormScaff
       open={open}
+      onClose={handleClose}
+      isEdit={!!editing}
+      titleCreate="Thêm câu hỏi mới"
+      titleEdit="Sửa câu hỏi"
       className="!w-[95%] xmd:!w-[640px]"
       okText="Lưu"
-      cancelText="Hủy"
-      onCancel={handleClose}
       onOk={() => form.handleSubmit(handleSubmit)()}
-      destroyOnClose
       confirmLoading={isSubmitting}
     >
       <FormTera form={form} onSubmit={form.handleSubmit(handleSubmit)}>
@@ -199,7 +200,7 @@ const QuestionFormModal = ({ open, editing, onClose }: QuestionFormModalProps) =
           <TextArea placeholder="Giải thích đáp án..." rows={2} />
         </FormTeraItem>
       </FormTera>
-    </Modal>
+    </FormScaff>
   );
 };
 

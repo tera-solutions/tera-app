@@ -1,4 +1,6 @@
-/** Một dòng trong bảng "Lịch sử rút tiền". ⚠️ Chưa có endpoint — bảng luôn rỗng, xem `constants`. */
+export type WalletRequestStatus = "pending" | "approved" | "rejected" | "completed" | "cancelled";
+
+/** Một dòng trong bảng "Lịch sử rút tiền" — dựng từ `fin/wallet-request/list?request_type=withdraw`. */
 export interface WithdrawHistoryRow {
   id: number;
   code: string;
@@ -9,11 +11,11 @@ export interface WithdrawHistoryRow {
   bankName: string;
   accountNumber: string;
   accountHolder: string;
-  /** Key trong `WITHDRAW_STATUS_CONFIG`. */
-  status: string;
+  status: WalletRequestStatus;
+  rejectReason: string | null;
 }
 
-/** Số liệu 2 tile dưới thẻ số dư. ⚠️ Không có endpoint thống kê → tạm 0. */
+/** Số liệu 2 tile dưới thẻ số dư — tính từ danh sách yêu cầu đã tải. */
 export interface WithdrawStats {
   totalWithdrawn: number;
   totalWithdrawnCount: number;

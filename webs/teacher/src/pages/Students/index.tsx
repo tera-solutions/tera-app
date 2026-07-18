@@ -35,6 +35,7 @@ const Students = () => {
   const { getTabs, getItem } = useMeta();
 
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [creating, setCreating] = useState(false);
   const { mutate: deleteStudent } = StudentService.useStudentDelete();
 
   const handleEditStudent = (student: StudentListItem) => setEditingId(student.id);
@@ -203,6 +204,14 @@ const Students = () => {
             Chuyển lớp
           </Button>
           <Button
+            outlined
+            icon={<PlusOutlined />}
+            onClick={() => setCreating(true)}
+            className="whitespace-nowrap text-brand border-brand hover:bg-brand"
+          >
+            Tạo học viên
+          </Button>
+          <Button
             icon={<PlusOutlined />}
             onClick={() => navigate(PATHS.enrollmentNew)}
             className="whitespace-nowrap bg-brand hover:bg-brand/80"
@@ -290,9 +299,13 @@ const Students = () => {
       </div>
 
       <StudentFormModal
-        open={editingId !== null}
+        open={creating || editingId !== null}
         studentId={editingId}
-        onClose={() => setEditingId(null)}
+        isCreate={creating}
+        onClose={() => {
+          setCreating(false);
+          setEditingId(null);
+        }}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import { BuildingLibraryOutlined, PlusCircleOutlined, notification } from "tera-dls";
+import { BuildingLibraryOutlined, PlusCircleOutlined } from "tera-dls";
 
 import Badge from "_common/components/Badge";
 import Card from "_common/components/Card";
@@ -10,13 +10,12 @@ import { maskAccountNumber } from "../_utils";
 interface LinkedBankAccountsProps {
   accounts: LinkedBankAccount[];
   loading?: boolean;
+  /** Mở modal thiết lập/cập nhật tài khoản ngân hàng (`fin/bank-account/me`). */
+  onManage: () => void;
 }
 
-/** "Tài khoản ngân hàng liên kết" — số tài khoản luôn hiển thị dạng che. */
-const LinkedBankAccounts = ({ accounts, loading }: LinkedBankAccountsProps) => {
-  const notReady = () =>
-    notification.warning({ message: "Tính năng đang được phát triển" });
-
+/** "Tài khoản ngân hàng liên kết" — 1 tài khoản/giáo viên, số tài khoản luôn hiển thị dạng che. */
+const LinkedBankAccounts = ({ accounts, loading, onManage }: LinkedBankAccountsProps) => {
   return (
     <Card className="xmd:p-5">
       <p className="mb-4 text-base font-semibold text-slate-800">
@@ -30,9 +29,11 @@ const LinkedBankAccounts = ({ accounts, loading }: LinkedBankAccountsProps) => {
       >
         <div className="flex flex-col gap-2">
           {accounts.map((acc) => (
-            <div
+            <button
               key={`${acc.bankName}-${acc.accountNumber}`}
-              className="flex items-center gap-3 rounded-xl border border-slate-100 p-3"
+              type="button"
+              onClick={onManage}
+              className="flex items-center gap-3 rounded-xl border border-slate-100 p-3 text-left transition-colors hover:border-brand/40 hover:bg-sky-50/30"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-600">
                 <BuildingLibraryOutlined className="h-5 w-5" />
@@ -50,18 +51,18 @@ const LinkedBankAccounts = ({ accounts, loading }: LinkedBankAccountsProps) => {
                   Mặc định
                 </Badge>
               )}
-            </div>
+            </button>
           ))}
         </div>
       </WidgetState>
 
       <button
         type="button"
-        onClick={notReady}
+        onClick={onManage}
         className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-slate-300 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:border-brand/60 hover:text-brand"
       >
         <PlusCircleOutlined className="h-4 w-4" />
-        Thêm tài khoản ngân hàng
+        {accounts.length > 0 ? "Cập nhật tài khoản ngân hàng" : "Thêm tài khoản ngân hàng"}
       </button>
     </Card>
   );

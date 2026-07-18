@@ -22,6 +22,7 @@ export interface MaterialRow {
   description: string | null;
   accessType: MaterialAccessType;
   status: string;
+  fileId: number | null;
   fileName: string | null;
   fileSize: number | null;
   mimeType: string | null;

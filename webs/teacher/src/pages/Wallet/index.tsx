@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { notification } from "tera-dls";
 
 import { PATHS } from "_common/components/Layout/Menu/menus";
 
+import { WalletAPI } from "@tera/api";
 import { WalletService } from "@tera/modules/wallet";
 
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
@@ -11,16 +11,18 @@ import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import type { DateRange } from "./_interface";
 import {
   toChartPoints,
-  toLinkedBankAccounts,
-  toSummaryStats,
+  toSummaryStatsFromApi,
   toTransactions,
 } from "./_utils";
+import { exportTransactionsCsv } from "./_export";
 import useTeacherWallet from "./useTeacherWallet";
+import useTeacherBankAccount from "./useTeacherBankAccount";
 import BalanceCard from "./components/BalanceCard";
 import WalletSummary from "./components/WalletSummary";
 import DepositMethods from "./components/DepositMethods";
 import TransactionChart from "./components/TransactionChart";
 import LinkedBankAccounts from "./components/LinkedBankAccounts";
+import BankAccountModal from "./components/BankAccountModal";
 import TransactionTable from "./components/TransactionTable";
 
 /** Số giao dịch tải rộng để tính "Tổng quan ví" + biểu đồ phía client.
@@ -51,33 +53,40 @@ const Wallet = () => {
 
   const {
     wallet,
-    profileQuery,
     walletQuery,
     isLoading: walletLoading,
   } = useTeacherWallet();
 
-  const bankAccounts = useMemo(
-    () => toLinkedBankAccounts(walletQuery.data, profileQuery.data),
-    [walletQuery.data, profileQuery.data],
+  const { bankAccount, bankAccounts, isLoading: bankAccountLoading } = useTeacherBankAccount();
+  const [bankAccountModalOpen, setBankAccountModalOpen] = useState(false);
+
+  // "Tổng quan ví" — tổng in/out + % tháng trước tính sẵn phía backend.
+  const summaryStatsQuery = WalletService.useWalletSummary(
+    { params: { wallet_id: wallet.id } },
+    { enabled: !!wallet.id },
+  );
+  const summaryStats = useMemo(
+    () => toSummaryStatsFromApi(summaryStatsQuery.data),
+    [summaryStatsQuery.data],
   );
 
-  // Query rộng dùng chung cho tổng quan + biểu đồ (không phân trang theo bảng).
+  // Biểu đồ dòng tiền theo khoảng ngày: cần từng giao dịch để gom theo bucket,
+  // `fin/wallet/summary` chỉ trả tổng nên vẫn tải rộng riêng cho việc này.
   // ⚠️ `wallet_id` BẮT BUỘC: thiếu nó backend trả giao dịch của MỌI ví (verify 2026-07-09).
-  const summaryParams: Record<string, unknown> = {
+  const chartParams: Record<string, unknown> = {
     page: 1,
     per_page: SUMMARY_FETCH_SIZE,
     wallet_id: wallet.id,
   };
-  const summaryQuery = WalletService.useWalletTransactions(
-    { params: summaryParams },
-    { enabled: !!wallet.id },
+  const chartQuery = WalletService.useWalletTransactions(
+    { params: chartParams },
+    { enabled: !!wallet.id && !!chartRange },
   );
-  const summaryTxns = useMemo(() => toTransactions(summaryQuery.data), [summaryQuery.data]);
-  const summaryStats = useMemo(() => toSummaryStats(summaryTxns), [summaryTxns]);
+  const chartTxns = useMemo(() => toTransactions(chartQuery.data), [chartQuery.data]);
   // Chưa chọn khoảng ngày thì không tính điểm nào — `TransactionChart` hiện lời mời chọn ngày.
   const chartPoints = useMemo(
-    () => (chartRange ? toChartPoints(summaryTxns, chartRange) : []),
-    [summaryTxns, chartRange],
+    () => (chartRange ? toChartPoints(chartTxns, chartRange) : []),
+    [chartTxns, chartRange],
   );
 
   // ⚠️ `search` CHƯA có trong query params của `fin/wallet/transactions` (Postman
@@ -97,11 +106,23 @@ const Wallet = () => {
   const transactions = useMemo(() => toTransactions(tableQuery.data), [tableQuery.data]);
   const total = tableQuery.data?.data?.pagination?.total ?? transactions.length;
 
-  // ⚠️ Backend KHÔNG có route export cho ví/giao dịch (Postman 2026-07-09: folder
-  // Finance → Wallet chỉ có list/detail/transactions/lock/unlock + 6 action ledger).
-  // Giữ nút để hỏi lại BE; khi có route thì nối `WalletAPI.export` vào đây.
-  const handleExport = () =>
-    notification.warning({ message: "Tính năng đang được phát triển" });
+  // Backend không có route export riêng — xuất CSV phía client từ tối đa 100 giao dịch
+  // khớp bộ lọc hiện tại (per_page trần của `fin/wallet/transactions`).
+  const [exporting, setExporting] = useState(false);
+  const handleExport = async () => {
+    const exportParams: Record<string, unknown> = {
+      wallet_id: wallet.id,
+      per_page: SUMMARY_FETCH_SIZE,
+      ...(typeFilter ? { transaction_type: typeFilter } : {}),
+    };
+    setExporting(true);
+    try {
+      const result = await WalletAPI.getTransactions({ params: exportParams });
+      exportTransactionsCsv(toTransactions(result));
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <div className="p-4 xmd:p-6">
@@ -125,7 +146,7 @@ const Wallet = () => {
           />
         </div>
         <div className="lg:col-start-2 lg:row-start-1">
-          <WalletSummary stats={summaryStats} loading={summaryQuery.isLoading} />
+          <WalletSummary stats={summaryStats} loading={summaryStatsQuery.isLoading} />
         </div>
 
         <div className="lg:col-start-1 lg:row-start-2">
@@ -140,14 +161,15 @@ const Wallet = () => {
             points={chartPoints}
             range={chartRange}
             onRangeChange={setChartRange}
-            loading={summaryQuery.isLoading}
+            loading={chartQuery.isLoading}
           />
         </div>
 
         <div className="lg:col-start-1 lg:row-start-3">
           <LinkedBankAccounts
             accounts={bankAccounts}
-            loading={walletQuery.isLoading || profileQuery.isLoading}
+            loading={bankAccountLoading}
+            onManage={() => setBankAccountModalOpen(true)}
           />
         </div>
         <div className="lg:col-start-2 lg:row-start-3">
@@ -171,10 +193,16 @@ const Wallet = () => {
               setPage(1);
             }}
             onExport={handleExport}
-            exporting={false}
+            exporting={exporting}
           />
         </div>
       </div>
+
+      <BankAccountModal
+        open={bankAccountModalOpen}
+        account={bankAccount}
+        onClose={() => setBankAccountModalOpen(false)}
+      />
     </div>
   );
 };

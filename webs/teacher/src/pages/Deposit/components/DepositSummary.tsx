@@ -1,4 +1,4 @@
-import { Button, LockClosedOutlined, ShieldCheckOutlined } from "tera-dls";
+import { Button, InformationCircleOutlined, PaperAirplaneOutlined } from "tera-dls";
 
 import Card from "_common/components/Card";
 
@@ -9,6 +9,8 @@ import { isSubmittable, validateAmount } from "../_utils";
 interface DepositSummaryProps {
   amount: number | null;
   methodKey: string;
+  hasBankAccount: boolean;
+  onManageBankAccount: () => void;
   submitting?: boolean;
   onSubmit: () => void;
 }
@@ -32,10 +34,12 @@ const Row = ({
 const DepositSummary = ({
   amount,
   methodKey,
+  hasBankAccount,
+  onManageBankAccount,
   submitting,
   onSubmit,
 }: DepositSummaryProps) => {
-  const ready = isSubmittable(amount, methodKey);
+  const ready = isSubmittable(amount, methodKey, hasBankAccount);
 
   // Số tiền ngoài hạn mức thì coi như chưa nhập: đừng hiển thị "nhận được 123đ" cho một
   // giá trị mà form đang báo lỗi.
@@ -69,28 +73,30 @@ const DepositSummary = ({
         </span>
       </div>
 
+      {!hasBankAccount && (
+        <p className="mt-3 text-xs font-medium text-amber-600">
+          Vui lòng{" "}
+          <button type="button" onClick={onManageBankAccount} className="underline underline-offset-2">
+            thiết lập tài khoản ngân hàng
+          </button>{" "}
+          trong hồ sơ giáo viên trước khi nạp tiền.
+        </p>
+      )}
+
       <Button
         className="mt-4 w-full! justify-center! gap-2 rounded-xl!"
         disabled={!DEPOSIT_ENABLED || !ready}
         loading={submitting}
         onClick={onSubmit}
       >
-        <LockClosedOutlined className="h-4 w-4" />
-        Nạp tiền ngay
+        <PaperAirplaneOutlined className="h-4 w-4" />
+        Gửi yêu cầu nạp tiền
       </Button>
 
-      {DEPOSIT_ENABLED ? (
-        <p className="mt-2.5 flex items-center justify-center gap-1.5 text-xs text-slate-400">
-          <ShieldCheckOutlined className="h-4 w-4" />
-          Giao dịch được bảo mật tuyệt đối
-        </p>
-      ) : (
-        /* Nói thật với người dùng thay vì để họ bấm một nút không bao giờ chạy.
-           Bỏ khi `DEPOSIT_ENABLED` bật — xem chú thích ở `constants.tsx`. */
-        <p className="mt-2.5 rounded-lg bg-amber-50 px-3 py-2 text-center text-xs font-medium text-amber-700">
-          Chờ tích hợp cổng thanh toán
-        </p>
-      )}
+      <p className="mt-2.5 flex items-center justify-center gap-1.5 text-center text-xs text-slate-400">
+        <InformationCircleOutlined className="h-4 w-4 shrink-0" />
+        Yêu cầu sẽ chờ quản trị viên xác nhận đã nhận tiền trước khi cộng vào ví.
+      </p>
     </Card>
   );
 };

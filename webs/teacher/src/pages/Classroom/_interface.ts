@@ -20,6 +20,9 @@ export interface Classroom {
   end_time: string;
   student_count: number;
   max_students: number;
+  min_capacity: number | null;
+  min_warning_capacity: number | null;
+  max_warning_capacity: number | null;
   completion_rate: number;
   status: ClassroomStatus;
   cover_image: string;

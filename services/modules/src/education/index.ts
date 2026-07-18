@@ -1,7 +1,6 @@
 export * from "./attendance";
 export * from "./class-session-feedback";
 export * from "./class-room";
-export * from "./class-schedule";
 export * from "./class-session";
 export * from "./course";
 export * from "./enrollment";
@@ -25,3 +24,4 @@ export * from "./placement-test";
 export * from "./room";
 export * from "./dashboard";
 export * from "./timetable";
+export * from "./leave-request";

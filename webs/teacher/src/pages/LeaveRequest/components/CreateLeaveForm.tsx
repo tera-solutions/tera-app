@@ -1,18 +1,21 @@
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
-import { Button, DatePicker, notification } from "tera-dls";
+import { Button, notification, Select } from "tera-dls";
 
 import Card from "_common/components/Card";
-import CompactSelect from "_common/components/CompactSelect";
+import ClassroomSelect from "_common/components/ClassroomSelect";
+import LessonSelect from "_common/components/LessonSelect";
+import StudentSelect from "_common/components/StudentSelect";
+import useCurrentTeacher from "_common/hooks/useCurrentTeacher";
+import { useMeta } from "_common/hooks/useMeta";
+import { LeaveRequestService, LessonService } from "@tera/modules/education";
 
-import { LEAVE_DURATION_OPTIONS, LEAVE_TYPE_OPTIONS } from "../_mock";
+import type { LeaveReasonType, LeaveRequestType } from "../_interface";
 
-const DATE_FORMAT = "DD/MM/YYYY";
 const REASON_MAX = 500;
 
-// rc-picker (tera-dls) mặc định cao 26px → chuẩn hoá cao 44px + full width cho form.
-const PICKER_CLASS =
-  "w-full h-11! [&_input]:text-sm! hover:border-blue-700! focus-within:border-blue-700!";
+type FieldError = Partial<Record<"requester" | "lesson" | "reasonType" | "reason", string>>;
+const ERR_TEXT = "mt-1 text-xs text-rose-500";
 
 const Label = ({ children }: { children: React.ReactNode }) => (
   <label className="mb-1.5 block text-sm font-medium text-slate-600">
@@ -20,7 +23,6 @@ const Label = ({ children }: { children: React.ReactNode }) => (
   </label>
 );
 
-/** Icon máy bay giấy (tiêu đề form) + đám mây (upload) — inline SVG, không phụ thuộc bộ icon. */
 const PaperPlane = () => (
   <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5">
     <path
@@ -32,72 +34,71 @@ const PaperPlane = () => (
     />
   </svg>
 );
-const CloudUp = () => (
-  <svg viewBox="0 0 24 24" fill="none" className="h-8 w-8">
-    <path
-      d="M7 18a4 4 0 0 1-.5-7.97 6 6 0 0 1 11.5 1.3A3.5 3.5 0 0 1 17.5 18M12 12v6m0-6-2.5 2.5M12 12l2.5 2.5"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-const emptyForm = {
-  type: "",
-  duration: "",
-  from: null as moment.Moment | null,
-  to: null as moment.Moment | null,
-  reason: "",
-  fileName: "",
-};
 
 /**
- * Form "Tạo đơn xin nghỉ" — UI-only (chưa wire API). Khi gửi chỉ báo thông báo demo.
- * Người làm API sẽ nối submit vào `EduLeaveService.useCreateLeave()` (route `v1/edu/leave/create`).
+ * Form "Tạo đơn xin nghỉ" — gắn với MỘT buổi học cụ thể (`v1/edu/leave/create`).
+ * `leave_date` PHẢI khớp `lesson.lesson_date` (BE guard) → tự lấy từ buổi học đã
+ * chọn thay vì cho người dùng nhập tay, tránh lỗi lệch ngày.
  */
-type FieldError = Partial<Record<"type" | "from" | "to" | "reason", string>>;
-const ERR_TEXT = "mt-1 text-xs text-rose-500";
-
 const CreateLeaveForm = () => {
-  const [form, setForm] = useState(emptyForm);
+  const { teacherId } = useCurrentTeacher();
+  const { getOptions } = useMeta();
+
+  const [requestType, setRequestType] = useState<LeaveRequestType>("student_leave");
+  const [studentId, setStudentId] = useState<number | string | undefined>(undefined);
+  const [classRoomId, setClassRoomId] = useState<number | string | undefined>(undefined);
+  const [lessonId, setLessonId] = useState<number | string | undefined>(undefined);
+  const [reasonType, setReasonType] = useState<LeaveReasonType | "">("");
+  const [reason, setReason] = useState("");
   const [errors, setErrors] = useState<FieldError>({});
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Cập nhật form + xóa lỗi của đúng field vừa sửa (validate lại khi submit).
-  const patch = (p: Partial<typeof form>) => {
-    setForm((f) => ({ ...f, ...p }));
-    setErrors((e) => {
-      const next = { ...e };
-      Object.keys(p).forEach((k) => delete (next as Record<string, string>)[k]);
-      return next;
-    });
-  };
+  const lessonDetailQuery = LessonService.useLessonDetail(
+    { id: lessonId ?? "" },
+    { enabled: !!lessonId },
+  );
+  // LessonController::detail() trả về { data: { lesson: {...} } } — buổi học nằm
+  // trong key `lesson`, không phải phẳng ở `data` (đây mới là nguyên nhân chính
+  // khiến lessonDate luôn null dù đã chọn buổi học).
+  const lessonDate: string | null = lessonDetailQuery.data?.data?.lesson?.lesson_date ?? null;
+  // BE serialize field `date` sang ISO UTC (vd "2026-07-18T17:00:00Z" cho ngày
+  // 19/07 giờ VN, app.timezone=Asia/Ho_Chi_Minh) — PHẢI parse theo giờ local (không
+  // dùng .utc()) rồi lấy Y-m-d mới ra đúng ngày, khớp với CreateLeaveRequestRequest
+  // kỳ vọng "leave_date (Y-m-d)" và LeaveRequestService::assertLessonBookable so
+  // sánh bằng Carbon::parse(...)->toDateString() (BR002).
+  const leaveDateYmd: string | null = lessonDate ? moment(lessonDate).format("YYYY-MM-DD") : null;
 
-  // Tổng số ngày (bao gồm cả ngày đầu & cuối). `.clone()` để KHÔNG mutate moment trong state.
-  const totalDays =
-    form.from && form.to
-      ? Math.max(
-          0,
-          form.to.clone().startOf("day").diff(form.from.clone().startOf("day"), "days") + 1,
-        )
-      : 0;
+  // Đổi loại đơn thì bỏ lựa chọn cũ không còn phù hợp.
+  useEffect(() => {
+    setStudentId(undefined);
+    setLessonId(undefined);
+    setClassRoomId(undefined);
+    setErrors({});
+  }, [requestType]);
+
+  const requesterId = requestType === "teacher_leave" ? teacherId ?? undefined : studentId;
+
+  const { mutate: createLeave, isPending } = LeaveRequestService.useLeaveRequestCreate();
 
   const reset = () => {
-    setForm(emptyForm);
+    setStudentId(undefined);
+    setClassRoomId(undefined);
+    setLessonId(undefined);
+    setReasonType("");
+    setReason("");
     setErrors({});
-    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const validate = (): FieldError => {
     const e: FieldError = {};
-    if (!form.type) e.type = "Vui lòng chọn loại nghỉ.";
-    if (!form.from) e.from = "Vui lòng chọn ngày bắt đầu.";
-    if (!form.to) e.to = "Vui lòng chọn ngày kết thúc.";
-    if (form.from && form.to && form.to.isBefore(form.from, "day"))
-      e.to = "Ngày kết thúc phải bằng hoặc sau ngày bắt đầu.";
-    if (!form.reason.trim()) e.reason = "Vui lòng nhập lý do nghỉ.";
+    if (!requesterId) e.requester = requestType === "student_leave" ? "Vui lòng chọn học viên." : "Không xác định được hồ sơ giáo viên.";
+    if (!lessonId) {
+      e.lesson = "Vui lòng chọn buổi học xin nghỉ.";
+    } else if (!leaveDateYmd) {
+      // lessonId đã chọn nhưng useLessonDetail (async, kích hoạt SAU khi chọn) chưa
+      // trả về kịp — đây KHÔNG phải lỗi "chưa chọn", tránh báo nhầm message đó.
+      e.lesson = "Đang tải thông tin buổi học, vui lòng thử lại sau giây lát.";
+    }
+    if (!reasonType) e.reasonType = "Vui lòng chọn loại lý do.";
     return e;
   };
 
@@ -105,10 +106,28 @@ const CreateLeaveForm = () => {
     const e = validate();
     setErrors(e);
     if (Object.keys(e).length > 0) return;
-    // ⚠️ UI-only: chưa gửi lên server. Wire API tại đây (EduLeaveService.useCreateLeave).
-    notification.warning({
-      message: "Giao diện demo — chức năng gửi đơn sẽ được kết nối API.",
-    });
+
+    createLeave(
+      {
+        params: {
+          request_type: requestType,
+          requester_id: requesterId,
+          class_room_id: classRoomId,
+          lesson_id: lessonId,
+          leave_date: leaveDateYmd,
+          reason_type: reasonType,
+          reason: reason.trim() || undefined,
+        },
+      },
+      {
+        onSuccess: () => {
+          notification.success({ message: "Đã gửi đơn xin nghỉ" });
+          reset();
+        },
+        onError: (error: any) =>
+          notification.error({ message: error?.data?.msg ?? "Không thể gửi đơn xin nghỉ" }),
+      },
+    );
   };
 
   return (
@@ -121,135 +140,91 @@ const CreateLeaveForm = () => {
       </div>
 
       <div className="flex flex-col gap-4">
-        {/* Loại nghỉ + Thời gian nghỉ */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <Label>Loại nghỉ</Label>
-            <CompactSelect
-              allowClear
-              className={`h-11 w-full text-sm ${errors.type ? "border-rose-400!" : ""}`}
-              value={form.type}
-              placeholder="Chọn loại nghỉ"
-              options={LEAVE_TYPE_OPTIONS}
-              onChange={(v) => patch({ type: v })}
-            />
-            {errors.type && <p className={ERR_TEXT}>{errors.type}</p>}
-          </div>
-          <div>
-            <Label>Thời gian nghỉ</Label>
-            <CompactSelect
-              allowClear
-              className="h-11 w-full text-sm"
-              value={form.duration}
-              placeholder="Tùy chọn"
-              options={LEAVE_DURATION_OPTIONS}
-              onChange={(v) => patch({ duration: v })}
-            />
-          </div>
-        </div>
-
-        {/* Từ ngày + Đến ngày + Tổng số ngày */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-[1fr_1fr_150px] sm:items-end">
-          <div>
-            <Label>Từ ngày</Label>
-            <DatePicker
-              className={`${PICKER_CLASS} ${errors.from ? "border-rose-400!" : ""}`}
-              format={DATE_FORMAT}
-              placeholder="Chọn ngày"
-              value={form.from ?? undefined}
-              inputReadOnly
-              onChange={(d: any) => patch({ from: d ?? null })}
-            />
-            {errors.from && <p className={ERR_TEXT}>{errors.from}</p>}
-          </div>
-          <div>
-            <Label>Đến ngày</Label>
-            <DatePicker
-              className={`${PICKER_CLASS} ${errors.to ? "border-rose-400!" : ""}`}
-              format={DATE_FORMAT}
-              placeholder="Chọn ngày"
-              value={form.to ?? undefined}
-              disabledDate={(d: any) =>
-                form.from ? d && d.isBefore(form.from, "day") : false
-              }
-              inputReadOnly
-              onChange={(d: any) => patch({ to: d ?? null })}
-            />
-            {errors.to && <p className={ERR_TEXT}>{errors.to}</p>}
-          </div>
-          <div className="col-span-2 flex flex-col items-center justify-center rounded-xl bg-sky-50 px-4 py-3.5 sm:col-span-1">
-            <span className="text-[11px] text-slate-500">Tổng số ngày</span>
-            <span className="text-slate-800">
-              <span className="text-lg font-bold text-brand">{totalDays}</span>{" "}
-              <span className="text-xs">ngày</span>
-            </span>
-          </div>
-        </div>
-
-        {/* Lý do nghỉ */}
         <div>
-          <Label>Lý do nghỉ</Label>
-          <div className="relative">
-            <textarea
-              value={form.reason}
-              maxLength={REASON_MAX}
-              onChange={(e) => patch({ reason: e.target.value })}
-              placeholder="Nhập lý do xin nghỉ..."
-              rows={3}
-              className={`w-full resize-none rounded-xl border px-3.5 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring focus:ring-blue-300 ${
-                errors.reason
-                  ? "border-rose-400 focus:border-rose-500"
-                  : "border-slate-200 focus:border-blue-500"
-              }`}
-            />
-            <span className="pointer-events-none absolute bottom-2 right-3 text-[11px] text-slate-300">
-              {form.reason.length}/{REASON_MAX}
-            </span>
-          </div>
-          {errors.reason && <p className={ERR_TEXT}>{errors.reason}</p>}
-        </div>
-
-        {/* Đính kèm tài liệu */}
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-slate-600">
-            Đính kèm tài liệu (nếu có)
-          </label>
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="flex w-full flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/60 px-4 py-6 text-center transition-colors hover:border-blue-400 hover:bg-sky-50/60"
-          >
-            <span className="text-brand">
-              <CloudUp />
-            </span>
-            <span className="text-sm text-slate-600">
-              Kéo thả file vào đây hoặc{" "}
-              <span className="font-medium text-brand">chọn file</span>
-            </span>
-            <span className="text-[11px] text-slate-400">
-              PDF, DOC, DOCX, JPG, PNG (tối đa 10MB)
-            </span>
-            {form.fileName && (
-              <span className="mt-1 max-w-full truncate text-xs font-medium text-slate-700">
-                📎 {form.fileName}
-              </span>
-            )}
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-            className="hidden"
-            onChange={(e) => patch({ fileName: e.target.files?.[0]?.name ?? "" })}
+          <Label>Loại đơn</Label>
+          <Select
+            className="h-11 w-full"
+            value={requestType}
+            onChange={(v: string) => setRequestType(v as LeaveRequestType)}
+            options={getOptions("leave_request_type")}
           />
         </div>
 
-        {/* Nút hành động — dùng tera-dls Button cho đồng bộ các trang khác */}
+        {requestType === "student_leave" && (
+          <div>
+            <Label>Học viên</Label>
+            <StudentSelect value={studentId} onChange={setStudentId} className="h-11 w-full" />
+            {errors.requester && <p className={ERR_TEXT}>{errors.requester}</p>}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <Label>Lớp học (thu hẹp danh sách buổi học)</Label>
+            <ClassroomSelect
+              value={classRoomId}
+              onChange={setClassRoomId}
+              allowClear
+              className="h-11 w-full"
+              placeholder="Tất cả lớp"
+            />
+          </div>
+          <div>
+            <Label>Buổi học xin nghỉ</Label>
+            <LessonSelect
+              value={lessonId}
+              onChange={setLessonId}
+              classRoomId={classRoomId}
+              allowClear
+              className="h-11 w-full"
+            />
+            {errors.lesson && <p className={ERR_TEXT}>{errors.lesson}</p>}
+            {lessonId && leaveDateYmd && (
+              <p className="mt-1 text-xs text-slate-400">
+                Ngày nghỉ: {moment(leaveDateYmd).format("DD/MM/YYYY")}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <Label>Loại lý do</Label>
+          <Select
+            className="h-11 w-full"
+            value={reasonType || undefined}
+            placeholder="Chọn loại lý do"
+            options={getOptions("leave_reason_type")}
+            onChange={(v: string) => setReasonType(v as LeaveReasonType)}
+          />
+          {errors.reasonType && <p className={ERR_TEXT}>{errors.reasonType}</p>}
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-600">Mô tả lý do (tùy chọn)</label>
+          <div className="relative">
+            <textarea
+              value={reason}
+              maxLength={REASON_MAX}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Nhập mô tả chi tiết..."
+              rows={3}
+              className="w-full resize-none rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-300"
+            />
+            <span className="pointer-events-none absolute bottom-2 right-3 text-[11px] text-slate-300">
+              {reason.length}/{REASON_MAX}
+            </span>
+          </div>
+        </div>
+
         <div className="flex justify-end gap-2.5 pt-1">
-          <Button outlined onClick={reset}>
+          <Button outlined onClick={reset} disabled={isPending}>
             Hủy
           </Button>
-          <Button onClick={submit} className="gap-1.5">
+          <Button
+            onClick={submit}
+            disabled={isPending || (!!lessonId && lessonDetailQuery.isLoading)}
+            className="gap-1.5"
+          >
             <PaperPlane />
             Gửi đơn xin nghỉ
           </Button>

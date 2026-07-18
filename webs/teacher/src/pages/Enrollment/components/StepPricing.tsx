@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Select } from "tera-dls";
 import classNames from "classnames";
@@ -19,20 +20,28 @@ interface StepPricingProps {
 const StepPricing = ({ values, onBack, onNext }: StepPricingProps) => {
   const form = useForm<EnrollmentPricing>({ mode: "onChange", defaultValues: values });
   const watched = form.watch();
+  const { dirtyFields } = form.formState;
+
+  // `values.price_per_lesson` arrives async (seeded from the class's course
+  // once its detail query resolves) — react-hook-form's `defaultValues` only
+  // apply at mount, so sync it in once the real price lands. `setValue`
+  // without `shouldDirty` doesn't mark the field dirty, so this only fires
+  // while the user hasn't actually typed into the field themselves.
+  useEffect(() => {
+    if (!dirtyFields.price_per_lesson) form.setValue("price_per_lesson", values.price_per_lesson);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.price_per_lesson]);
 
   const applyPreset = (preset: (typeof PRICING_PRESETS)[number]) => {
     form.setValue("total_lessons", preset.total_lessons, { shouldValidate: true });
-    form.setValue("price_per_lesson", preset.price_per_lesson, { shouldValidate: true });
   };
 
   return (
     <Card>
-      <p className="mb-3 text-sm font-semibold text-slate-700">Chọn nhanh gói học phí</p>
+      <p className="mb-3 text-sm font-semibold text-slate-700">Chọn nhanh số buổi học</p>
       <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {PRICING_PRESETS.map((preset) => {
-          const isActive =
-            watched.total_lessons === preset.total_lessons &&
-            watched.price_per_lesson === preset.price_per_lesson;
+          const isActive = watched.total_lessons === preset.total_lessons;
           return (
             <button
               key={preset.key}
@@ -44,9 +53,6 @@ const StepPricing = ({ values, onBack, onNext }: StepPricingProps) => {
               )}
             >
               <p className="text-sm font-semibold text-slate-800">{preset.label}</p>
-              {preset.price_per_lesson > 0 && (
-                <p className="mt-0.5 text-xs text-slate-400">{formatVnd(preset.price_per_lesson)}/buổi</p>
-              )}
             </button>
           );
         })}

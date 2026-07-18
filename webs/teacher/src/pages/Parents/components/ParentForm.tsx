@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Modal, notification, Select } from "tera-dls";
+import { notification, Select } from "tera-dls";
 
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+import FormScaff from "@tera/components/dof/FormScaff";
 import Input from "@tera/components/dof/Control/Input";
 import { ParentService, ParentStudentService } from "@tera/modules/crm";
 
@@ -110,15 +111,15 @@ const ParentForm = ({ open, onClose, rosterOptions, parent }: ParentFormProps) =
   };
 
   return (
-    <Modal
-      title={isEdit ? "Sửa phụ huynh" : "Thêm phụ huynh"}
+    <FormScaff
       open={open}
+      onClose={handleClose}
+      isEdit={isEdit}
+      titleCreate="Thêm phụ huynh"
+      titleEdit="Sửa phụ huynh"
       className="!w-[95%] xmd:!w-[520px]"
       okText="Lưu"
-      cancelText="Hủy"
-      onCancel={handleClose}
       onOk={() => form.handleSubmit(handleSubmit)()}
-      destroyOnClose
       confirmLoading={isSubmitting}
     >
       <FormTera form={form} onSubmit={form.handleSubmit(handleSubmit)}>
@@ -174,7 +175,7 @@ const ParentForm = ({ open, onClose, rosterOptions, parent }: ParentFormProps) =
           </>
         )}
       </FormTera>
-    </Modal>
+    </FormScaff>
   );
 };
 

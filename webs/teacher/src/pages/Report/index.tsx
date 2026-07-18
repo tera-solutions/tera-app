@@ -11,7 +11,6 @@ import {
   RangePicker,
   StarOutlined,
   UsersOutlined,
-  notification,
 } from "tera-dls";
 
 import Card from "_common/components/Card";
@@ -21,6 +20,7 @@ import StatisticCard from "_common/components/StatisticCard";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 import { TeacherReportService } from "@tera/modules/education";
 
+import { exportReportCsv } from "./_export";
 import { toTeacherReport, formatMinutesAsHours } from "./_utils";
 import ScoreByClassChart from "./components/ScoreByClassChart";
 import ActivityOverTimeChart from "./components/ActivityOverTimeChart";
@@ -99,7 +99,8 @@ const Report = () => {
           <Button
             outlined
             icon={<ArrowDownTrayOutlined />}
-            onClick={() => notification.warning({ message: "Tính năng đang được phát triển" })}
+            onClick={() => exportReportCsv(report, filters.dateFrom, filters.dateTo)}
+            disabled={isLoading}
             className="whitespace-nowrap text-brand border-brand hover:bg-brand"
           >
             Xuất báo cáo

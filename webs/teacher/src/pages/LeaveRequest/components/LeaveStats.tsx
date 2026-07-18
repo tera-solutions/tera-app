@@ -1,59 +1,23 @@
-import {
-  CalendarDaysOutlined,
-  CheckOutlined,
-  ClipboardDocumentCheckOutlined,
-  ClockOutlined,
-} from "tera-dls";
+import { CalendarDaysOutlined, CheckOutlined, ClockOutlined, XMarkOutlined } from "tera-dls";
 
 import Card from "_common/components/Card";
 import IconBox from "_common/components/IconBox";
 
-import type { LeaveStats as Stats } from "../_interface";
+import type { LeaveSummary } from "../_interface";
 
 interface LeaveStatsProps {
-  stats: Stats;
+  stats: LeaveSummary;
+  loading?: boolean;
 }
 
-const pct = (part: number, total: number) =>
-  total > 0 ? `${((part / total) * 100).toFixed(1)}%` : "0%";
-
-/** 4 thẻ tổng quan quỹ phép ở đầu trang Đơn xin nghỉ. */
-const LeaveStats = ({ stats }: LeaveStatsProps) => {
+/** 4 thẻ tổng quan đơn xin nghỉ ở đầu trang — đếm theo trạng thái thật từ BE,
+ * không phải quỹ phép năm (backend không có khái niệm này). */
+const LeaveStats = ({ stats, loading }: LeaveStatsProps) => {
   const tiles = [
-    {
-      label: "Tổng ngày phép năm",
-      value: stats.totalDays,
-      unit: "ngày",
-      sub: `(${stats.periodFrom} - ${stats.periodTo})`,
-      subClass: "text-slate-400",
-      icon: <CalendarDaysOutlined />,
-      color: "bg-sky-50 text-sky-500",
-    },
-    {
-      label: "Đã sử dụng",
-      value: stats.usedDays,
-      unit: "ngày",
-      sub: `↓ ${pct(stats.usedDays, stats.totalDays)}`,
-      subClass: "text-emerald-500",
-      icon: <ClipboardDocumentCheckOutlined />,
-      color: "bg-sky-50 text-sky-500",
-    },
-    {
-      label: "Còn lại",
-      value: stats.remainingDays,
-      unit: "ngày",
-      sub: `↓ ${pct(stats.remainingDays, stats.totalDays)}`,
-      subClass: "text-emerald-500",
-      icon: <CheckOutlined />,
-      color: "bg-sky-50 text-sky-500",
-    },
-    {
-      label: "Đang chờ duyệt",
-      value: stats.pendingCount,
-      unit: "đơn",
-      icon: <ClockOutlined />,
-      color: "bg-amber-50 text-amber-500",
-    },
+    { label: "Tổng số đơn", value: stats.total, icon: <CalendarDaysOutlined />, color: "bg-sky-50 text-sky-500" },
+    { label: "Chờ duyệt", value: stats.pending, icon: <ClockOutlined />, color: "bg-amber-50 text-amber-500" },
+    { label: "Đã duyệt", value: stats.approved, icon: <CheckOutlined />, color: "bg-emerald-50 text-emerald-500" },
+    { label: "Từ chối", value: stats.rejected, icon: <XMarkOutlined />, color: "bg-rose-50 text-rose-500" },
   ];
 
   return (
@@ -69,15 +33,7 @@ const LeaveStats = ({ stats }: LeaveStatsProps) => {
           />
           <div className="min-w-0">
             <p className="truncate text-xs text-slate-400">{t.label}</p>
-            <p className="text-slate-800">
-              <span className="text-2xl font-bold">{t.value}</span>{" "}
-              <span className="text-sm font-medium text-slate-500">
-                {t.unit}
-              </span>
-            </p>
-            {t.sub && (
-              <p className={`truncate text-[11px] ${t.subClass}`}>{t.sub}</p>
-            )}
+            <p className="text-2xl font-bold text-slate-800">{loading ? "—" : t.value}</p>
           </div>
         </Card>
       ))}

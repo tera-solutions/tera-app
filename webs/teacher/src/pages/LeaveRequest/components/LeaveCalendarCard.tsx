@@ -5,15 +5,16 @@ import {
   ChevronLeftOutlined,
   ChevronRightOutlined,
 } from "tera-dls";
+import StatusBadge from "@tera/components/dof/StatusBadge";
 
 import Card from "_common/components/Card";
 import IconBox from "_common/components/IconBox";
+import { MetaOption, useMeta } from "_common/hooks/useMeta";
 
-import type { LeaveRequestItem, LeaveStatus } from "../_interface";
-import LeaveRequestStatus, { LEAVE_STATUS_META } from "./LeaveRequestStatus";
+import type { LeaveRequestRow, LeaveStatus } from "../_interface";
 
 interface LeaveCalendarCardProps {
-  items: LeaveRequestItem[];
+  items: LeaveRequestRow[];
 }
 
 type ViewMode = "month" | "week" | "day";
@@ -35,17 +36,13 @@ const VN_DOW = [
   "Thứ Bảy",
 ];
 
-// Ưu tiên khi 1 ngày dính nhiều đơn: đã duyệt > chờ duyệt > từ chối.
-const STATUS_PRIORITY: LeaveStatus[] = ["approved", "pending", "rejected"];
-// Nền + chữ cho ô ngày nghỉ (lịch tháng) theo trạng thái.
-const DAY_FILL: Record<LeaveStatus, string> = {
-  approved: "bg-emerald-100 text-emerald-700 font-semibold",
-  pending: "bg-amber-100 text-amber-700 font-semibold",
-  rejected: "bg-rose-100 text-rose-700 font-semibold",
-};
+// Ưu tiên khi 1 ngày dính nhiều đơn: đã duyệt > chờ duyệt > từ chối > đã hủy > hoàn thành.
+const STATUS_PRIORITY: LeaveStatus[] = ["approved", "pending", "rejected", "cancelled", "completed"];
 
-/** Lịch "Lịch nghỉ của tôi" — 3 chế độ xem: Tháng / Tuần / Ngày. */
+/** Lịch "Lịch nghỉ của tôi" — 3 chế độ xem: Tháng / Tuần / Ngày. Màu/nhãn trạng
+ * thái đến từ metadata dùng chung (`leave_status`), không hardcode ở đây. */
 const LeaveCalendarCard = ({ items }: LeaveCalendarCardProps) => {
+  const { getItem, getLabel } = useMeta();
   const [view, setView] = useState<ViewMode>("month");
   // Con trỏ thời gian: tháng (month view) / tuần chứa nó (week) / đúng ngày (day).
   const [cursor, setCursor] = useState(() => moment());
@@ -53,14 +50,10 @@ const LeaveCalendarCard = ({ items }: LeaveCalendarCardProps) => {
   const today = moment();
   const isToday = (d: moment.Moment) => d.isSame(today, "day");
 
-  /** Các đơn nghỉ phủ 1 ngày (from..to bao gồm). */
+  /** Các đơn nghỉ đúng 1 ngày (mỗi đơn gắn 1 buổi học, không phải khoảng ngày). */
   const entriesOn = useMemo(
     () => (d: moment.Moment) =>
-      items.filter(
-        (it) =>
-          d.isSameOrAfter(moment(it.from), "day") &&
-          d.isSameOrBefore(moment(it.to), "day"),
-      ),
+      items.filter((it) => it.leaveDate && d.isSame(moment(it.leaveDate), "day")),
     [items],
   );
 
@@ -110,17 +103,21 @@ const LeaveCalendarCard = ({ items }: LeaveCalendarCardProps) => {
         </div>
       </div>
 
-      {view === "month" && <MonthView cursor={cursor} entriesOn={entriesOn} isToday={isToday} />}
-      {view === "week" && <WeekView cursor={cursor} entriesOn={entriesOn} isToday={isToday} />}
-      {view === "day" && <DayView cursor={cursor} entriesOn={entriesOn} />}
+      {view === "month" && <MonthView cursor={cursor} entriesOn={entriesOn} isToday={isToday} getItem={getItem} />}
+      {view === "week" && <WeekView cursor={cursor} entriesOn={entriesOn} isToday={isToday} getItem={getItem} getLabel={getLabel} />}
+      {view === "day" && <DayView cursor={cursor} entriesOn={entriesOn} getItem={getItem} getLabel={getLabel} />}
 
       <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-slate-400">
-        {STATUS_PRIORITY.map((s) => (
-          <span key={s} className="flex items-center gap-1.5">
-            <span className={`h-2.5 w-2.5 rounded-full ${LEAVE_STATUS_META[s].dot}`} />
-            {LEAVE_STATUS_META[s].label}
-          </span>
-        ))}
+        {STATUS_PRIORITY.map((s) => {
+          const meta = getItem("leave_status", s);
+          if (!meta) return null;
+          return (
+            <span key={s} className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: meta.color }} />
+              {meta.label}
+            </span>
+          );
+        })}
         <span className="flex items-center gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-brand" />
           Hôm nay
@@ -133,11 +130,12 @@ const LeaveCalendarCard = ({ items }: LeaveCalendarCardProps) => {
 /* ---------- View: Tháng ---------- */
 interface ViewProps {
   cursor: moment.Moment;
-  entriesOn: (d: moment.Moment) => LeaveRequestItem[];
+  entriesOn: (d: moment.Moment) => LeaveRequestRow[];
   isToday: (d: moment.Moment) => boolean;
+  getItem: (name: string, value?: string | null) => MetaOption | undefined;
 }
 
-const MonthView = ({ cursor, entriesOn, isToday }: ViewProps) => {
+const MonthView = ({ cursor, entriesOn, isToday, getItem }: ViewProps) => {
   const year = cursor.year();
   const monthIndex = cursor.month();
 
@@ -175,18 +173,16 @@ const MonthView = ({ cursor, entriesOn, isToday }: ViewProps) => {
         {cells.map((day, i) => {
           if (day === null) return <div key={`e${i}`} />;
           const status = statusOf(day);
+          const meta = status ? getItem("leave_status", status) : undefined;
           const todayCell = isToday(moment([year, monthIndex, day]));
           return (
             <div key={day} className="flex items-center justify-center py-0.5">
               <span
                 className={[
                   "mx-auto flex aspect-square w-full max-w-9 items-center justify-center rounded-full",
-                  todayCell
-                    ? "bg-brand font-semibold text-white"
-                    : status
-                      ? DAY_FILL[status]
-                      : "text-slate-600",
+                  todayCell ? "bg-brand font-semibold text-white" : meta ? "font-semibold" : "text-slate-600",
                 ].join(" ")}
+                style={!todayCell && meta ? { color: meta.color, backgroundColor: meta.backgroundColor } : undefined}
               >
                 {day}
               </span>
@@ -199,7 +195,11 @@ const MonthView = ({ cursor, entriesOn, isToday }: ViewProps) => {
 };
 
 /* ---------- View: Tuần ---------- */
-const WeekView = ({ cursor, entriesOn, isToday }: ViewProps) => {
+interface WeekViewProps extends ViewProps {
+  getLabel: (name: string, value?: string | null) => string;
+}
+
+const WeekView = ({ cursor, entriesOn, isToday, getItem, getLabel }: WeekViewProps) => {
   const start = cursor.clone().startOf("isoWeek"); // Thứ 2
   const days = Array.from({ length: 7 }, (_, i) => start.clone().add(i, "day"));
   const end = start.clone().add(6, "day");
@@ -226,15 +226,19 @@ const WeekView = ({ cursor, entriesOn, isToday }: ViewProps) => {
                 </span>
               </div>
               <div className="flex flex-col gap-1">
-                {entries.map((it) => (
-                  <span
-                    key={it.id}
-                    title={`${it.typeLabel} — ${LEAVE_STATUS_META[it.status].label}`}
-                    className={`truncate rounded px-1.5 py-0.5 text-[10px] font-medium ${LEAVE_STATUS_META[it.status].badge}`}
-                  >
-                    {it.typeLabel}
-                  </span>
-                ))}
+                {entries.map((it) => {
+                  const meta = getItem("leave_status", it.status);
+                  return (
+                    <span
+                      key={it.id}
+                      title={`${getLabel("leave_request_type", it.requestType)} — ${meta?.label ?? it.status}`}
+                      className="truncate rounded px-1.5 py-0.5 text-[10px] font-medium"
+                      style={{ color: meta?.color, backgroundColor: meta?.backgroundColor }}
+                    >
+                      {it.requesterName ?? getLabel("leave_request_type", it.requestType)}
+                    </span>
+                  );
+                })}
               </div>
             </div>
           );
@@ -248,7 +252,9 @@ const WeekView = ({ cursor, entriesOn, isToday }: ViewProps) => {
 const DayView = ({
   cursor,
   entriesOn,
-}: Omit<ViewProps, "isToday">) => {
+  getItem,
+  getLabel,
+}: Omit<WeekViewProps, "isToday">) => {
   const entries = entriesOn(cursor);
 
   return (
@@ -266,7 +272,7 @@ const DayView = ({
       ) : (
         <div className="flex flex-col gap-2">
           {entries.map((it) => {
-            const meta = LEAVE_STATUS_META[it.status];
+            const meta = getItem("leave_status", it.status);
             return (
               <div
                 key={it.id}
@@ -276,18 +282,18 @@ const DayView = ({
                   icon={<CalendarDaysOutlined />}
                   sizeClassName="h-10 w-10"
                   roundedClassName="rounded-xl"
-                  colorClassName={meta.badge}
+                  style={{ color: meta?.color, backgroundColor: meta?.backgroundColor }}
                 />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-slate-800">
-                    {it.typeLabel}
+                    {it.requesterName ?? getLabel("leave_request_type", it.requestType)}
                   </p>
                   <p className="truncate text-xs text-slate-500">
-                    {moment(it.from).format("DD/MM")} - {moment(it.to).format("DD/MM/YYYY")} ({it.days} ngày)
+                    {it.leaveDate ? moment(it.leaveDate).format("DD/MM/YYYY") : "—"} · {it.reasonTypeLabel ?? "—"}
                   </p>
                   <p className="truncate text-xs text-slate-400">{it.reason}</p>
                 </div>
-                <LeaveRequestStatus status={it.status} className="shrink-0" />
+                <StatusBadge name="leave_status" value={it.status} className="shrink-0" />
               </div>
             );
           })}

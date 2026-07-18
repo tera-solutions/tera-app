@@ -7,12 +7,12 @@ import {
 } from "tera-dls";
 
 /**
- * 🚩 Bật luồng nạp tiền thật. Đang `false` vì role Teacher bị BE chặn quyền `POST fin/wallet/deposit`
- * (403). UI + mutation đã wire sẵn — BE mở quyền thì đổi thành `true`.
- * ⚠️ Đừng bật khi chưa có cổng thanh toán: `deposit` ghi thẳng bút toán, người dùng tự cộng tiền
- * cho mình. Chi tiết: `agents/claude/teacher/sprint4-wallet-checklist.md` §[051].
+ * ✅ Bật thật (2026-07-17): nạp tiền giờ đi qua `fin/wallet-request/create` — một YÊU CẦU
+ * chờ admin xác nhận đã nhận tiền rồi mới ghi vào sổ ví (`WalletRequestService::complete`),
+ * không còn ghi thẳng bút toán như `fin/wallet/deposit` (route đó Teacher vẫn không có quyền,
+ * và đúng là không nên có — tự cộng tiền cho mình).
  */
-export const DEPOSIT_ENABLED = false;
+export const DEPOSIT_ENABLED = true;
 
 /** Hạn mức phía sản phẩm (BE chỉ ràng buộc `amount > 0`). */
 export const MIN_AMOUNT = 10_000;
@@ -28,18 +28,12 @@ export interface DepositMethodOption {
   desc: string;
   icon: ReactNode;
   iconClassName: string;
-  /** Giá trị gửi lên `payment_method` của `POST fin/wallet/deposit`. */
+  /** `fin_wallet_requests` không có cột phương thức — chỉ dùng để build `note` (`buildDepositNote`). */
   paymentMethod: string;
   recommended?: boolean;
 }
 
-/**
- * ⚠️ `payment_method` của BE chỉ có `cash|transfer|card|wallet|other` → MoMo và ZaloPay cùng ghi
- * thành `wallet`, 2 loại thẻ cùng ghi thành `card`; sổ cái không phân biệt được nhà cung cấp.
- * BE cũng **không validate** field này (chuỗi rác vẫn ghi thành công).
- * Workaround: nhét tên nhà cung cấp vào `note` (`buildDepositNote`) rồi đọc ngược từ `description`
- * (`_utils.methodFromDescription`). **TODO(BE)**: xin field `payment_provider`.
- */
+/** Chỉ dùng cho UI chọn hình thức + build `note` gửi kèm yêu cầu — BE không lưu field này. */
 export const DEPOSIT_METHODS: DepositMethodOption[] = [
   {
     key: "momo",
@@ -82,18 +76,6 @@ export const DEPOSIT_METHODS: DepositMethodOption[] = [
     iconClassName: "bg-amber-50 text-amber-600",
     paymentMethod: "card",
   },
-];
-
-/**
- * ⚠️ Lọc phía CLIENT, không gửi lên BE: `fin/wallet/transactions` bỏ qua param `status`, và giao
- * dịch **không có field `status`** (sổ cái bất biến, `toTransaction` gán cứng `completed`).
- * Nên chọn "Đang xử lý"/"Thất bại" → rỗng. Đó là sự thật, không phải bug.
- * Khi BE có trạng thái giao dịch thật → chuyển sang gửi param lên server.
- */
-export const STATUS_FILTER_OPTIONS = [
-  { value: "completed", label: "Thành công" },
-  { value: "pending", label: "Đang xử lý" },
-  { value: "failed", label: "Thất bại" },
 ];
 
 /** ⚠️ KHÔNG có API khuyến mãi nạp ví → nạp bao nhiêu nhận đúng bấy nhiêu. Card hiển thị xám +

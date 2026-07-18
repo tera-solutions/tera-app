@@ -29,9 +29,13 @@ export interface SessionDetail {
   date: string;
   start_time: string;
   end_time: string;
+  room_id: number | null;
   room: string;
+  teacher_id: number | null;
   teacher_name: string;
   status: ScheduleStatus;
+  /** Session-level ops (change teacher/room, reschedule, cancel) only apply when set. */
+  timetable_id: number | null;
 }
 
 /** Map `/edu/class-session/detail/:id` (nested) to the drawer's view model. */
@@ -47,9 +51,12 @@ export const toSessionDetail = (res: any): SessionDetail | null => {
     date: d.session_date ?? "",
     start_time: toTime(d.start_time),
     end_time: toTime(d.end_time),
+    room_id: d.room_id ?? d.room?.id ?? null,
     room: d.room?.room_name ?? "",
+    teacher_id: d.teacher_id ?? d.teacher?.id ?? null,
     teacher_name: d.teacher?.full_name ?? "",
     status: toScheduleStatus(d.status),
+    timetable_id: d.timetable_id ?? d.timetable?.id ?? null,
   };
 };
 

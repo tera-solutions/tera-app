@@ -50,6 +50,17 @@ export const useWalletTransactions = (payload: ListPayload, options?: QueryHookO
   });
 };
 
+export const useWalletSummary = (
+  payload: { params?: { wallet_id?: number | string } } = {},
+  options?: QueryHookOptions
+) => {
+  return useQueryAdapter({
+    queryKey: ["wallet", "summary", payload.params],
+    queryFn: () => WalletAPI.getSummary(payload),
+    ...options,
+  });
+};
+
 // ===== Action ledger (mỗi action ghi 1 giao dịch bất biến) =====
 // Mọi action đổi số dư → invalidate cả list + detail + transactions.
 const invalidateWallet = (queryClient: ReturnType<typeof useQueryClient>) => {
@@ -142,6 +153,7 @@ export const WalletService = {
   useWalletList,
   useWalletDetail,
   useWalletTransactions,
+  useWalletSummary,
   useWalletDeposit,
   useWalletPayment,
   useWalletRefund,

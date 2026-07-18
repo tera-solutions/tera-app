@@ -8,12 +8,16 @@ import {
 import { InvoiceAPI } from "@tera/api";
 import {
   CreatePayload,
-  DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
+
+type ReasonPayload = { id: number | string; params: { reason: string; note?: string } };
+type PaymentPayload = {
+  id: number | string;
+  params: { amount: number; method: string; transaction_id?: string; note?: string; paid_at?: string };
+};
 
 // QUERY
 export const useInvoiceList = (payload: ListPayload, options?: QueryHookOptions) => {
@@ -80,33 +84,78 @@ export const useUpsertInvoice = () => {
   });
 };
 
-export const useInvoiceDelete = () => {
+/** Không có `variables` trong `onSuccess` của adapter (chỉ `data`) — invalidate cả
+ * namespace "invoice" (list + mọi detail đang cache) thay vì nhắm 1 id cụ thể. */
+const invalidateAllInvoices = (queryClient: ReturnType<typeof useQueryClient>) => {
+  queryClient.invalidateQueries({ queryKey: ["invoice"] });
+};
+
+export const useInvoiceApprove = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => InvoiceAPI.delete(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["invoice", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
+    mutationFn: (payload: DetailPayload) => InvoiceAPI.approve(payload),
+    onSuccess: () => invalidateAllInvoices(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
   });
 };
 
-export const useInvoiceExport = () => {
+export const useInvoiceDeny = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => InvoiceAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
+    mutationFn: (payload: ReasonPayload) => InvoiceAPI.deny(payload),
+    onSuccess: () => invalidateAllInvoices(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
+  });
+};
+
+export const useInvoiceCancel = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: ReasonPayload) => InvoiceAPI.cancel(payload),
+    onSuccess: () => invalidateAllInvoices(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
+  });
+};
+
+export const useInvoiceRefund = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: ReasonPayload) => InvoiceAPI.refund(payload),
+    onSuccess: () => invalidateAllInvoices(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
+  });
+};
+
+export const useInvoicePay = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: PaymentPayload) => InvoiceAPI.pay(payload),
+    onSuccess: () => invalidateAllInvoices(queryClient),
+    onError: (error) => console.error(t("common.error_message"), error),
+  });
+};
+
+export const useInvoiceDownload = () => {
+  const { t } = useTranslation();
+  return useMutationAdapter({
+    mutationFn: ({ id, code }: { id: number | string; code?: string }) =>
+      InvoiceAPI.downloadPdf(id).then((blob) => ({ blob, code })),
+    onSuccess: ({ blob, code }) => {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${code ?? "hoa-don"}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
     },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
+    onError: (error) => console.error(t("common.error_message"), error),
   });
 };
 
@@ -116,6 +165,10 @@ export const InvoiceService = {
   useInvoiceCreate,
   useInvoiceUpdate,
   useUpsertInvoice,
-  useInvoiceDelete,
-  useInvoiceExport,
+  useInvoiceApprove,
+  useInvoiceDeny,
+  useInvoiceCancel,
+  useInvoiceRefund,
+  useInvoicePay,
+  useInvoiceDownload,
 };

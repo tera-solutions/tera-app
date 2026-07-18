@@ -5,6 +5,7 @@ export * from "./staff";
 export * from "./teacher";
 export * from "./teacher-performance";
 export * from "./teacher-profile";
-export * from "./teacher-salary";
 export * from "./teacher-schedule";
+export * from "./timesheet";
+export * from "./payroll";
 export * from "./work-schedule";

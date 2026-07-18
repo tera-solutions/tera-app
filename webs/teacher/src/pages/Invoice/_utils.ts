@@ -1,6 +1,6 @@
 import moment from "moment";
 
-import type { InvoiceRow, InvoiceSummary, InvoiceTab } from "./_interface";
+import type { InvoiceDetail, InvoiceRow, InvoiceSummary, InvoiceTab } from "./_interface";
 
 export const toInvoices = (raw: any): InvoiceRow[] =>
   (raw?.data?.items ?? []).map((item: any) => ({
@@ -85,3 +85,53 @@ export const summarizeInvoices = (items: InvoiceRow[]): InvoiceSummary => {
 
 export const formatCurrency = (value: number): string =>
   `${Math.round(value).toLocaleString("vi-VN")}đ`;
+
+/** ✅ Khớp `InvoiceResource` (`fin/invoice/detail/{id}`) — `data.invoice` + `data.histories`. */
+export const toInvoiceDetail = (raw: any): InvoiceDetail | null => {
+  const inv = raw?.data?.invoice;
+  if (!inv) return null;
+
+  return {
+    id: inv.id,
+    code: inv.code,
+    invoiceType: inv.invoice_type,
+    status: inv.status,
+    studentId: inv.student_id ?? null,
+    studentName: inv.student?.name ?? null,
+    invoiceDate: inv.invoice_date ?? null,
+    dueDate: inv.due_date ?? null,
+    paidAt: inv.paid_at ?? null,
+    subtotal: Number(inv.subtotal ?? 0),
+    discount: Number(inv.discount ?? 0),
+    tax: Number(inv.tax ?? 0),
+    total: Number(inv.total ?? 0),
+    paidAmount: Number(inv.paid_amount ?? 0),
+    balanceAmount: Number(inv.balance_amount ?? 0),
+    note: inv.note ?? null,
+    items: (inv.items ?? []).map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      quantity: Number(item.quantity ?? 1),
+      unitPrice: Number(item.unit_price ?? 0),
+      total: Number(item.total ?? 0),
+    })),
+    payments: (inv.payments ?? []).map((p: any) => ({
+      id: p.id,
+      amount: Number(p.amount ?? 0),
+      direction: p.payment_direction ?? null,
+      method: p.method ?? null,
+      status: p.status ?? null,
+      transactionId: p.transaction_id ?? null,
+      paidAt: p.paid_at ?? null,
+    })),
+    histories: (raw?.data?.histories ?? []).map((h: any) => ({
+      id: h.id,
+      action: h.action,
+      fromStatus: h.from_status ?? null,
+      toStatus: h.to_status ?? null,
+      reason: h.reason ?? null,
+      note: h.note ?? null,
+      createdAt: h.created_at ?? null,
+    })),
+  };
+};

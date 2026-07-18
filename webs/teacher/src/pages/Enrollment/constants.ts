@@ -12,20 +12,22 @@ export const DEFAULT_PRICING: EnrollmentPricing = {
 };
 
 /**
- * No tuition-package catalog exists on the backend — these presets are local
- * UI sugar that just pre-fill the real `total_lessons`/`price_per_lesson`
- * fields; the teacher can still edit every value before submitting.
+ * No tuition-package catalog exists on the backend — these presets only
+ * pre-fill `total_lessons` (a real packaging choice: buổi lẻ vs tháng vs kỳ).
+ * `price_per_lesson` is intentionally NOT part of a preset — it's seeded from
+ * the selected class's actual course price (`edu_courses.price_per_lesson`,
+ * see `Enrollment/index.tsx`), which presets must not silently override with
+ * a generic guess.
  */
 export const PRICING_PRESETS: {
   key: string;
   label: string;
   total_lessons: number;
-  price_per_lesson: number;
 }[] = [
-  { key: "session", label: "Theo buổi", total_lessons: 1, price_per_lesson: 94000 },
-  { key: "month", label: "Theo tháng (~8 buổi)", total_lessons: 8, price_per_lesson: 250000 },
-  { key: "term", label: "Theo kỳ (~24 buổi)", total_lessons: 24, price_per_lesson: 250000 },
-  { key: "custom", label: "Tùy chỉnh", total_lessons: 1, price_per_lesson: 0 },
+  { key: "session", label: "Theo buổi", total_lessons: 1 },
+  { key: "month", label: "Theo tháng (~8 buổi)", total_lessons: 8 },
+  { key: "term", label: "Theo kỳ (~24 buổi)", total_lessons: 24 },
+  { key: "custom", label: "Tùy chỉnh", total_lessons: 1 },
 ];
 
 export const GENDER_OPTIONS = [

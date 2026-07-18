@@ -1,56 +1,123 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeftOutlined } from "tera-dls";
+import { ArrowLeftOutlined, notification } from "tera-dls";
+
+import { WalletRequestService } from "@tera/modules/wallet";
 
 import { PATHS } from "_common/components/Layout/Menu/menus";
+import useConfirm from "_common/hooks/useConfirm";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 
 import type { DateRange } from "../Wallet/_interface";
-import { presetToRange, toLinkedBankAccounts } from "../Wallet/_utils";
+import { presetToRange } from "../Wallet/_utils";
 import useTeacherWallet from "../Wallet/useTeacherWallet";
+import useTeacherBankAccount from "../Wallet/useTeacherBankAccount";
 
 import BankAccountPicker from "./components/BankAccountPicker";
 import WithdrawBalance from "./components/WithdrawBalance";
 import WithdrawForm from "./components/WithdrawForm";
 import WithdrawHistory from "./components/WithdrawHistory";
 import WithdrawNotice from "./components/WithdrawNotice";
-import type { WithdrawHistoryRow, WithdrawStats } from "./_interface";
+import type { WithdrawHistoryRow } from "./_interface";
+import { isSubmittable, summarizeWithdraw, toWithdrawHistory } from "./_utils";
 
-/**
- * ⚠️ Backend KHÔNG có khái niệm rút tiền (không route, `transaction_type` không có `withdraw`).
- * Trang này chỉ dựng UI + component; **không gọi API rút tiền nào**. Số dư dùng lại
- * `useTeacherWallet()` của [050]. Bảng lịch sử và 2 tile thống kê cố ý để rỗng — không bịa dữ liệu
- * tiền. Xem `constants.WITHDRAW_ENABLED`.
- */
-const EMPTY_STATS: WithdrawStats = {
-  totalWithdrawn: 0,
-  totalWithdrawnCount: 0,
-  pendingAmount: 0,
-  pendingCount: 0,
-};
+const toApiDate = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-/** [052] Rút tiền — trang riêng `/wallet/withdraw`. */
+/** [052] Rút tiền — trang riêng `/wallet/withdraw`, đi qua `fin/wallet-request/*`. */
 const Withdraw = () => {
   const navigate = useNavigate();
+  const confirm = useConfirm();
 
   const [amount, setAmount] = useState<number | null>(null);
   const [note, setNote] = useState("");
-  const [bankAccountId, setBankAccountId] = useState("");
 
   const [range, setRange] = useState<DateRange>(() => presetToRange("month"));
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(DEFAULT_PAGE_SIZE);
 
-  const { wallet, profileQuery, walletQuery, isLoading: walletLoading } = useTeacherWallet();
+  const { wallet, isLoading: walletLoading } = useTeacherWallet();
+  const {
+    bankAccount,
+    bankAccounts,
+    hasBankAccount,
+    isLoading: bankAccountLoading,
+  } = useTeacherBankAccount();
 
-  const bankAccounts = useMemo(
-    () => toLinkedBankAccounts(walletQuery.data, profileQuery.data),
-    [walletQuery.data, profileQuery.data],
+  const listParams: Record<string, unknown> = {
+    page,
+    per_page: perPage,
+    wallet_id: wallet.id,
+    request_type: "withdraw",
+    status: statusFilter || undefined,
+    date_from: toApiDate(range.from),
+    date_to: toApiDate(range.to),
+  };
+  const historyQuery = WalletRequestService.useWalletRequestList(
+    { params: listParams },
+    { enabled: !!wallet.id },
   );
+  const rows = useMemo(() => toWithdrawHistory(historyQuery.data), [historyQuery.data]);
+  const total = historyQuery.data?.data?.pagination?.total ?? rows.length;
 
-  // Chưa có endpoint → luôn rỗng. Khi BE có route thì thay bằng query, giữ nguyên props bảng.
-  const rows: WithdrawHistoryRow[] = [];
+  // Thống kê 2 tile tính riêng từ 100 yêu cầu gần nhất — không phân trang, phản ánh toàn bộ lịch sử
+  // gần đây thay vì chỉ trang hiện tại.
+  const statsParams: Record<string, unknown> = {
+    page: 1,
+    per_page: 100,
+    wallet_id: wallet.id,
+    request_type: "withdraw",
+  };
+  const statsQuery = WalletRequestService.useWalletRequestList(
+    { params: statsParams },
+    { enabled: !!wallet.id },
+  );
+  const stats = useMemo(() => summarizeWithdraw(toWithdrawHistory(statsQuery.data)), [statsQuery.data]);
+
+  const withdrawMutation = WalletRequestService.useWalletRequestCreate();
+  const { mutate: cancelRequest } = WalletRequestService.useWalletRequestCancel();
+
+  const handleSubmit = () => {
+    if (amount === null || !isSubmittable(amount, wallet.balance, hasBankAccount)) return;
+
+    withdrawMutation.mutate(
+      {
+        params: {
+          request_type: "withdraw",
+          amount,
+          note: note || undefined,
+        },
+      },
+      {
+        onSuccess: () => {
+          setAmount(null);
+          setNote("");
+          notification.success({ message: "Đã gửi yêu cầu rút tiền, chờ quản trị viên duyệt" });
+        },
+        onError: (error: any) =>
+          notification.error({
+            message: error?.data?.msg ?? "Gửi yêu cầu thất bại. Vui lòng thử lại.",
+          }),
+      },
+    );
+  };
+
+  const handleCancel = (row: WithdrawHistoryRow) => {
+    confirm.warning({
+      title: "Hủy yêu cầu rút tiền",
+      content: `Bạn có chắc muốn hủy yêu cầu "${row.code}"?`,
+      onOk: () =>
+        cancelRequest(
+          { id: row.id },
+          {
+            onSuccess: () => notification.success({ message: "Đã hủy yêu cầu" }),
+            onError: (error: any) =>
+              notification.error({ message: error?.data?.msg ?? "Không thể hủy yêu cầu" }),
+          },
+        ),
+    });
+  };
 
   return (
     <div className="p-4 xmd:p-6">
@@ -70,19 +137,16 @@ const Withdraw = () => {
         </p>
       </div>
 
-      {/* Mobile: số dư → tài khoản nhận → nhập thông tin → lịch sử (form nằm sau khi đã chọn TK). */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 [&>*]:min-w-0">
-        {/* Lưu ý là card riêng, xếp ngay dưới thẻ số dư trong cùng cột 1. */}
         <div className="flex flex-col gap-4">
-          <WithdrawBalance balance={wallet.balance} stats={EMPTY_STATS} loading={walletLoading} />
+          <WithdrawBalance balance={wallet.balance} stats={stats} loading={walletLoading} />
           <WithdrawNotice />
         </div>
 
         <BankAccountPicker
           accounts={bankAccounts}
-          value={bankAccountId}
-          onChange={setBankAccountId}
-          loading={walletLoading}
+          account={bankAccount}
+          loading={bankAccountLoading}
         />
 
         <WithdrawForm
@@ -90,17 +154,21 @@ const Withdraw = () => {
           onAmountChange={setAmount}
           note={note}
           onNoteChange={setNote}
+          hasBankAccount={hasBankAccount}
           balance={wallet.balance}
-          bankAccountId={bankAccountId}
-          onSubmit={() => undefined}
+          submitting={withdrawMutation.isPending}
+          onSubmit={handleSubmit}
         />
 
         <div className="lg:col-span-3">
           <WithdrawHistory
             rows={rows}
-            total={rows.length}
+            total={total}
             page={page}
             perPage={perPage}
+            isLoading={historyQuery.isLoading}
+            isError={historyQuery.isError}
+            onRetry={() => historyQuery.refetch()}
             onPageChange={(p, size) => {
               setPage(size !== perPage ? 1 : p);
               setPerPage(size);
@@ -115,6 +183,7 @@ const Withdraw = () => {
               setStatusFilter(v);
               setPage(1);
             }}
+            onCancel={handleCancel}
           />
         </div>
       </div>

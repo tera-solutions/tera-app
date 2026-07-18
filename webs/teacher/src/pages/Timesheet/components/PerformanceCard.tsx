@@ -1,13 +1,12 @@
-import { AcademicCapOutlined, CheckCircleOutlined, StarOutlined } from "tera-dls";
+import { ClipboardDocumentCheckOutlined, StarOutlined } from "tera-dls";
 
 import Card from "_common/components/Card";
 import IconBox from "_common/components/IconBox";
 
-import type { TimesheetStats } from "../_interface";
-import { pct } from "../_utils";
+import type { TimesheetSummary } from "../_interface";
 
 interface PerformanceCardProps {
-  stats: TimesheetStats;
+  summary: TimesheetSummary;
 }
 
 const Bar = ({ value, color }: { value: number; color: string }) => (
@@ -16,47 +15,39 @@ const Bar = ({ value, color }: { value: number; color: string }) => (
   </div>
 );
 
-/**
- * "Hiệu suất giảng dạy". Chỉ **Tỷ lệ hoàn thành** có dữ liệu thật (từ trạng thái buổi);
- * Tỷ lệ HV tham gia (cần điểm danh) và Đánh giá TB (cần đánh giá) để "Sắp có".
- */
-const PerformanceCard = ({ stats }: PerformanceCardProps) => {
-  const completionRate = pct(stats.completed, stats.total);
+/** "Hiệu suất giảng dạy" — tỷ lệ chuyên cần + đánh giá trung bình, cả hai đều tính
+ * từ dữ liệu điểm danh/feedback thật (`v1/hr/timesheet/summary`). */
+const PerformanceCard = ({ summary }: PerformanceCardProps) => {
+  const attendanceRate = summary.attendanceRate ?? 0;
+  const ratingPercent = summary.averageRating !== null ? (summary.averageRating / 5) * 100 : 0;
 
   return (
     <Card className="xmd:p-5" animated={false}>
       <p className="mb-4 text-base font-semibold text-slate-800">Hiệu suất giảng dạy</p>
 
       <div className="flex items-center gap-3">
-        <IconBox icon={<CheckCircleOutlined />} colorClassName="bg-emerald-50 text-emerald-500" />
+        <IconBox icon={<ClipboardDocumentCheckOutlined />} colorClassName="bg-emerald-50 text-emerald-500" />
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-center justify-between text-sm">
-            <span className="text-slate-500">Tỷ lệ hoàn thành</span>
-            <span className="font-semibold text-slate-700">{completionRate}%</span>
+            <span className="text-slate-500">Tỷ lệ chuyên cần</span>
+            <span className="font-semibold text-slate-700">
+              {summary.attendanceRate === null ? "—" : `${summary.attendanceRate}%`}
+            </span>
           </div>
-          <Bar value={completionRate} color="bg-emerald-400" />
+          <Bar value={attendanceRate} color="bg-emerald-400" />
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-3 opacity-60">
-        <IconBox icon={<AcademicCapOutlined />} colorClassName="bg-sky-50 text-sky-500" />
-        <div className="min-w-0 flex-1">
-          <div className="mb-1 flex items-center justify-between text-sm">
-            <span className="text-slate-500">Tỷ lệ học viên tham gia</span>
-            <span className="text-xs italic text-slate-300">Sắp có</span>
-          </div>
-          <Bar value={0} color="bg-sky-400" />
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center gap-3 opacity-60">
+      <div className="mt-4 flex items-center gap-3">
         <IconBox icon={<StarOutlined />} colorClassName="bg-amber-50 text-amber-500" />
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-center justify-between text-sm">
             <span className="text-slate-500">Đánh giá trung bình</span>
-            <span className="text-xs italic text-slate-300">Sắp có</span>
+            <span className="font-semibold text-slate-700">
+              {summary.averageRating === null ? "—" : `${summary.averageRating}/5`}
+            </span>
           </div>
-          <Bar value={0} color="bg-amber-400" />
+          <Bar value={ratingPercent} color="bg-amber-400" />
         </div>
       </div>
     </Card>

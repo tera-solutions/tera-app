@@ -2,16 +2,11 @@ import type {
   ChartPeriod,
   ChartPoint,
   DateRange,
-  LinkedBankAccount,
   WalletInfo,
   WalletSummaryStats,
   WalletTransaction,
 } from "./_interface";
-import {
-  DEFAULT_TRANSACTION_STATUS,
-  FAILED_STATUSES,
-  TYPE_CONFIG,
-} from "./constants";
+import { DEFAULT_TRANSACTION_STATUS, TYPE_CONFIG } from "./constants";
 
 /** "2,450,000đ" — format tiền khớp thiết kế (dấu phẩy + hậu tố đ). */
 export const formatVnd = (value: number) =>
@@ -82,43 +77,23 @@ export const toTransaction = (t: any): WalletTransaction => {
 export const toTransactions = (raw: any): WalletTransaction[] =>
   (raw?.data?.items ?? []).map(toTransaction);
 
-const inMonth = (d: Date | null, ref: Date) =>
-  !!d && d.getFullYear() === ref.getFullYear() && d.getMonth() === ref.getMonth();
-
-const pctChange = (current: number, previous: number): number | null =>
-  previous > 0 ? ((current - previous) / previous) * 100 : null;
-
 /**
- * Tổng hợp thống kê từ danh sách giao dịch đã tải. % so sánh = tháng hiện tại vs tháng trước.
- *
- * ⚠️ KHÔNG lọc theo `status`: giao dịch ví là sổ cái bất biến, mọi bút toán đều đã hoàn tất
- * (trước đây lọc `SUCCESS_STATUSES` làm mọi chỉ số về 0 vì backend không trả field này).
- * `failedCount` do đó luôn 0 cho tới khi backend có khái niệm giao dịch thất bại.
- *
- * ⚠️ Tính từ dataset tải về phía client (tối đa per_page = 100 dòng) — khi backend có endpoint
- * wallet-summary riêng thì thay hàm này bằng dữ liệu endpoint đó.
+ * ✅ Verify với response thật của `fin/wallet/summary` (đối chiếu `WalletService::summary`,
+ * 2026-07-17): `total_in, total_out, success_count, failed_count, total_in_change,
+ * total_out_change, success_count_change, failed_count_change` — số & % đã tính sẵn phía
+ * backend theo tháng hiện tại so với tháng trước, không cần tính lại phía client.
  */
-export const toSummaryStats = (txns: WalletTransaction[]): WalletSummaryStats => {
-  const now = new Date();
-  const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-
-  const sum = (list: WalletTransaction[], dir: "in" | "out") =>
-    list.filter((t) => t.direction === dir).reduce((acc, t) => acc + t.amount, 0);
-  const countFailed = (list: WalletTransaction[]) =>
-    list.filter((t) => FAILED_STATUSES.includes(t.status)).length;
-
-  const cur = txns.filter((t) => inMonth(t.createdAt, now));
-  const prev = txns.filter((t) => inMonth(t.createdAt, prevMonth));
-
+export const toSummaryStatsFromApi = (raw: any): WalletSummaryStats => {
+  const d = raw?.data ?? {};
   return {
-    totalIn: sum(txns, "in"),
-    totalOut: sum(txns, "out"),
-    successCount: txns.length,
-    failedCount: countFailed(txns),
-    totalInChange: pctChange(sum(cur, "in"), sum(prev, "in")),
-    totalOutChange: pctChange(sum(cur, "out"), sum(prev, "out")),
-    successCountChange: pctChange(cur.length, prev.length),
-    failedCountChange: pctChange(countFailed(cur), countFailed(prev)),
+    totalIn: Number(d?.total_in ?? 0) || 0,
+    totalOut: Number(d?.total_out ?? 0) || 0,
+    successCount: Number(d?.success_count ?? 0) || 0,
+    failedCount: Number(d?.failed_count ?? 0) || 0,
+    totalInChange: d?.total_in_change ?? null,
+    totalOutChange: d?.total_out_change ?? null,
+    successCountChange: d?.success_count_change ?? null,
+    failedCountChange: d?.failed_count_change ?? null,
   };
 };
 
@@ -207,38 +182,4 @@ export const maskAccountNumber = (num: string) => {
   const digits = num.replace(/\D/g, "");
   if (digits.length <= 4) return `**** ${digits}`;
   return `**** **** ${digits.slice(-4)}`;
-};
-
-/**
- * Tài khoản ngân hàng liên kết: ưu tiên dữ liệu trên ví, fallback
- * `bank_account` trong hồ sơ giáo viên (entity teacher có sẵn nested này).
- */
-export const toLinkedBankAccounts = (
-  walletRaw: any,
-  profileRaw: any,
-): LinkedBankAccount[] => {
-  const walletItem = walletRaw?.data?.items?.[0] ?? walletRaw?.data ?? {};
-  const list = walletItem?.bank_accounts;
-  if (Array.isArray(list) && list.length > 0) {
-    return list.map((b: any, i: number) => ({
-      bankName: String(b?.bank_name ?? "—"),
-      accountNumber: String(b?.bank_account_number ?? b?.account_number ?? ""),
-      holderName: String(b?.bank_account_holder ?? b?.holder_name ?? ""),
-      isDefault: Boolean(b?.is_default ?? i === 0),
-    }));
-  }
-
-  const profile = profileRaw?.data ?? {};
-  const bank = profile?.teacher?.bank_account ?? profile?.bank_account;
-  if (bank?.bank_account_number) {
-    return [
-      {
-        bankName: String(bank.bank_name ?? "—"),
-        accountNumber: String(bank.bank_account_number),
-        holderName: String(bank.bank_account_holder ?? ""),
-        isDefault: true,
-      },
-    ];
-  }
-  return [];
 };

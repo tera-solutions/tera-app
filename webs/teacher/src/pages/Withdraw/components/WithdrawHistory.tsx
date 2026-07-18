@@ -1,16 +1,16 @@
-import { ArrowDownTrayOutlined, notification } from "tera-dls";
+import { NoSymbolOutlined } from "tera-dls";
+import StatusBadge from "@tera/components/dof/StatusBadge";
 
 import Card from "_common/components/Card";
 import CompactSelect from "_common/components/CompactSelect";
 import DateRangeFilter from "_common/components/DateRangeFilter";
 import Table, { TableColumn } from "_common/components/Table";
 import TablePagination from "_common/components/TablePagination";
+import { useMeta } from "_common/hooks/useMeta";
 
 import type { DateRange } from "../../Wallet/_interface";
 import { formatDateTime, formatVnd, maskAccountNumber } from "../../Wallet/_utils";
-import { STATUS_FILTER_OPTIONS } from "../constants";
 import type { WithdrawHistoryRow } from "../_interface";
-import WithdrawStatus from "./WithdrawStatus";
 
 interface WithdrawHistoryProps {
   rows: WithdrawHistoryRow[];
@@ -25,9 +25,10 @@ interface WithdrawHistoryProps {
   onRangeChange: (range: DateRange) => void;
   statusFilter: string;
   onStatusFilterChange: (value: string) => void;
+  onCancel: (row: WithdrawHistoryRow) => void;
 }
 
-/** "Lịch sử rút tiền". ⚠️ Chưa có endpoint → bảng luôn rỗng; bố cục sẵn để nối API sau. */
+/** "Lịch sử rút tiền" — `fin/wallet-request/list?request_type=withdraw`. */
 const WithdrawHistory = ({
   rows,
   total,
@@ -41,10 +42,9 @@ const WithdrawHistory = ({
   onRangeChange,
   statusFilter,
   onStatusFilterChange,
+  onCancel,
 }: WithdrawHistoryProps) => {
-  // 🚫 Không có endpoint hóa đơn cho yêu cầu rút tiền.
-  const notReady = () =>
-    notification.warning({ message: "Tính năng đang được phát triển" });
+  const { getOptions } = useMeta();
 
   const columns: TableColumn<WithdrawHistoryRow>[] = [
     {
@@ -103,23 +103,31 @@ const WithdrawHistory = ({
     {
       key: "status",
       title: "Trạng thái",
-      render: (r) => <WithdrawStatus status={r.status} />,
+      render: (r) => (
+        <div>
+          <StatusBadge name="wallet_request_status" value={r.status} className="whitespace-nowrap" />
+          {r.status === "rejected" && r.rejectReason && (
+            <p className="mt-1 max-w-[180px] truncate text-[11px] text-rose-500">{r.rejectReason}</p>
+          )}
+        </div>
+      ),
     },
     {
       key: "actions",
       title: "",
       cellClassName: "px-2 py-3 text-right",
-      render: () => (
-        <button
-          type="button"
-          onClick={notReady}
-          className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
-          aria-label="Tải hóa đơn"
-          title="Tải hóa đơn"
-        >
-          <ArrowDownTrayOutlined className="h-4 w-4" />
-        </button>
-      ),
+      render: (r) =>
+        r.status === "pending" ? (
+          <button
+            type="button"
+            onClick={() => onCancel(r)}
+            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-500"
+            aria-label="Hủy yêu cầu"
+            title="Hủy yêu cầu"
+          >
+            <NoSymbolOutlined className="h-4 w-4" />
+          </button>
+        ) : null,
     },
   ];
 
@@ -131,7 +139,7 @@ const WithdrawHistory = ({
         <div className="flex w-full items-center justify-end gap-2 xmd:w-auto">
           <CompactSelect
             value={statusFilter}
-            options={STATUS_FILTER_OPTIONS}
+            options={getOptions("wallet_request_status")}
             placeholder="Tất cả trạng thái"
             allowClear
             className="h-9 min-w-0 text-[13px]"

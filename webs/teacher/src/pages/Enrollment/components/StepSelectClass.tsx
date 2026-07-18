@@ -13,14 +13,27 @@ interface StepSelectClassProps {
   onNext: (classroom: Classroom) => void;
 }
 
+// Backend's `guardEnrollable` (Enrollment) only rejects suspended/completed/
+// draft classes — "active" alone is too strict and hides "upcoming" classes
+// (a class not yet started is exactly the common case you enroll into), so
+// filter client-side to mirror the same exclusion list instead of a
+// single-value server-side `status` filter.
+const NOT_ENROLLABLE_STATUSES = ["draft", "suspended", "completed"];
+
 const StepSelectClass = ({ selectedClass, onNext }: StepSelectClassProps) => {
   const [search, setSearch] = useState("");
   const [pickedId, setPickedId] = useState<number | null>(selectedClass?.id ?? null);
 
   const classesQuery = ClassRoomService.useClassRoomList({
-    params: { per_page: 50, filters: { status: "active" } },
+    params: { per_page: 50 },
   });
-  const classes = useMemo(() => toClassrooms(classesQuery.data?.data?.items), [classesQuery.data]);
+  const classes = useMemo(
+    () =>
+      toClassrooms(classesQuery.data?.data?.items).filter(
+        (c) => !NOT_ENROLLABLE_STATUSES.includes(c.status),
+      ),
+    [classesQuery.data],
+  );
 
   const filtered = classes.filter((c) =>
     c.name.toLowerCase().includes(search.trim().toLowerCase()),

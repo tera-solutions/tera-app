@@ -2,16 +2,18 @@ import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeftOutlined, Modal, notification } from "tera-dls";
 
-import { WalletService } from "@tera/modules/wallet";
+import { WalletRequestService } from "@tera/modules/wallet";
 
 import { PATHS } from "_common/components/Layout/Menu/menus";
+import useConfirm from "_common/hooks/useConfirm";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 
 import type { DateRange } from "../Wallet/_interface";
-import { DEFAULT_TRANSACTION_STATUS } from "../Wallet/constants";
 import { formatVnd, presetToRange } from "../Wallet/_utils";
 import BalanceCard from "../Wallet/components/BalanceCard";
+import BankAccountModal from "../Wallet/components/BankAccountModal";
 import useTeacherWallet from "../Wallet/useTeacherWallet";
+import useTeacherBankAccount from "../Wallet/useTeacherBankAccount";
 
 import AmountSelector from "./components/AmountSelector";
 import DepositHistory from "./components/DepositHistory";
@@ -20,6 +22,7 @@ import DepositSummary from "./components/DepositSummary";
 import PaymentMethodPicker from "./components/PaymentMethodPicker";
 import { DEPOSIT_ENABLED, DEPOSIT_METHODS } from "./constants";
 import { buildDepositNote, isSubmittable, toDepositHistory } from "./_utils";
+import type { DepositHistoryRow } from "./_interface";
 
 const toApiDate = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -36,57 +39,44 @@ const Deposit = () => {
   );
   const [amount, setAmount] = useState<number | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [bankAccountModalOpen, setBankAccountModalOpen] = useState(false);
 
   const [range, setRange] = useState<DateRange>(() => presetToRange("month"));
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(DEFAULT_PAGE_SIZE);
 
+  const confirm = useConfirm();
   const { wallet, isLoading: walletLoading } = useTeacherWallet();
+  const { bankAccount, hasBankAccount } = useTeacherBankAccount();
 
-  // "Lịch sử nạp tiền" không cần endpoint riêng — lọc đúng `transaction_type: "deposit"`.
-  // ⚠️ `wallet_id` BẮT BUỘC: thiếu nó backend trả giao dịch của MỌI ví.
   const historyParams: Record<string, unknown> = {
     page,
     per_page: perPage,
     wallet_id: wallet.id,
-    transaction_type: "deposit",
+    request_type: "deposit",
+    status: statusFilter || undefined,
     date_from: toApiDate(range.from),
     date_to: toApiDate(range.to),
   };
-  const historyQuery = WalletService.useWalletTransactions(
+  const historyQuery = WalletRequestService.useWalletRequestList(
     { params: historyParams },
     { enabled: !!wallet.id },
   );
-  const allRows = useMemo(() => toDepositHistory(historyQuery.data), [historyQuery.data]);
-  const serverTotal = historyQuery.data?.data?.pagination?.total ?? allRows.length;
+  const rows = useMemo(() => toDepositHistory(historyQuery.data), [historyQuery.data]);
+  const total = historyQuery.data?.data?.pagination?.total ?? rows.length;
 
-  /**
-   * Lọc trạng thái phía CLIENT — backend bỏ qua param `status` và giao dịch không có field này
-   * (xem `STATUS_FILTER_OPTIONS`). Mọi giao dịch đều mang trạng thái gán cứng `completed`, nên:
-   *  - không lọc, hoặc lọc "Thành công" → giữ nguyên trang + tổng của server;
-   *  - lọc trạng thái khác → rỗng, tổng 0 (thật sự không có giao dịch nào như vậy).
-   * Nhờ tính chất hằng số đó, việc lọc trên trang hiện tại không làm sai tổng số.
-   */
-  const rows = useMemo(
-    () => (statusFilter ? allRows.filter((r) => r.status === statusFilter) : allRows),
-    [allRows, statusFilter],
-  );
-  const total =
-    !statusFilter || statusFilter === DEFAULT_TRANSACTION_STATUS ? serverTotal : 0;
-
-  const depositMutation = WalletService.useWalletDeposit();
+  const depositMutation = WalletRequestService.useWalletRequestCreate();
+  const { mutate: cancelRequest } = WalletRequestService.useWalletRequestCancel();
 
   const handleConfirm = () => {
-    if (!wallet.id || !isSubmittable(amount, methodKey)) return;
-    const method = DEPOSIT_METHODS.find((m) => m.key === methodKey);
+    if (!isSubmittable(amount, methodKey, hasBankAccount) || amount === null) return;
 
     depositMutation.mutate(
       {
         params: {
-          wallet_id: wallet.id,
+          request_type: "deposit",
           amount,
-          payment_method: method?.paymentMethod,
           note: buildDepositNote(methodKey),
         },
       },
@@ -94,14 +84,30 @@ const Deposit = () => {
         onSuccess: () => {
           setConfirmOpen(false);
           setAmount(null);
-          notification.success({ message: "Nạp tiền thành công" });
+          notification.success({ message: "Đã gửi yêu cầu nạp tiền, chờ quản trị viên xác nhận" });
         },
         onError: (error: any) =>
           notification.error({
-            message: error?.message ?? "Nạp tiền thất bại. Vui lòng thử lại.",
+            message: error?.data?.msg ?? "Gửi yêu cầu thất bại. Vui lòng thử lại.",
           }),
       },
     );
+  };
+
+  const handleCancel = (row: DepositHistoryRow) => {
+    confirm.warning({
+      title: "Hủy yêu cầu nạp tiền",
+      content: `Bạn có chắc muốn hủy yêu cầu "${row.code}"?`,
+      onOk: () =>
+        cancelRequest(
+          { id: row.id },
+          {
+            onSuccess: () => notification.success({ message: "Đã hủy yêu cầu" }),
+            onError: (error: any) =>
+              notification.error({ message: error?.data?.msg ?? "Không thể hủy yêu cầu" }),
+          },
+        ),
+    });
   };
 
   const selectedMethod = DEPOSIT_METHODS.find((m) => m.key === methodKey);
@@ -150,6 +156,8 @@ const Deposit = () => {
           <DepositSummary
             amount={amount}
             methodKey={methodKey}
+            hasBankAccount={hasBankAccount}
+            onManageBankAccount={() => setBankAccountModalOpen(true)}
             submitting={depositMutation.isPending}
             onSubmit={() => setConfirmOpen(true)}
           />
@@ -185,13 +193,14 @@ const Deposit = () => {
               setStatusFilter(v);
               setPage(1);
             }}
+            onCancel={handleCancel}
           />
         </div>
       </div>
 
       {/* Chỉ mở được khi `DEPOSIT_ENABLED` bật — nút submit disable khi tắt. */}
       <Modal
-        title="Xác nhận nạp tiền"
+        title="Xác nhận gửi yêu cầu nạp tiền"
         open={confirmOpen && DEPOSIT_ENABLED}
         className="!w-[92%] overflow-hidden rounded-2xl! sm:!w-[440px]"
         okText="Xác nhận"
@@ -216,6 +225,12 @@ const Deposit = () => {
           </div>
         </div>
       </Modal>
+
+      <BankAccountModal
+        open={bankAccountModalOpen}
+        account={bankAccount}
+        onClose={() => setBankAccountModalOpen(false)}
+      />
     </div>
   );
 };

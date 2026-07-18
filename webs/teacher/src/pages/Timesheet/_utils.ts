@@ -1,80 +1,62 @@
-import type { ScheduleItem, TimesheetStats, WeekBucket, DonutData } from "./_interface";
+import type { TimesheetSessionRow, TimesheetSummary, WeekBucket } from "./_interface";
 
 /** "YYYY-MM-DD" → Date theo giờ LOCAL (tránh lệch timezone của new Date("YYYY-MM-DD")). */
-const parseLocalDate = (dateStr: string): Date | null => {
+const parseLocalDate = (dateStr: string | null): Date | null => {
   const [y, m, d] = String(dateStr ?? "").split("-").map(Number);
   if (!y || !m || !d) return null;
   return new Date(y, m - 1, d);
 };
 
-const toMinutesOfDay = (t: string | null | undefined): number | null => {
-  if (!t) return null;
-  const [h, m] = String(t).split(":").map(Number);
-  if (Number.isNaN(h)) return null;
-  return h * 60 + (m || 0);
-};
-
-/** Độ dài 1 buổi tính bằng PHÚT (0 nếu thiếu/âm). */
-export const sessionMinutes = (
-  item: Pick<ScheduleItem, "start_time" | "end_time">,
-): number => {
-  const s = toMinutesOfDay(item.start_time);
-  const e = toMinutesOfDay(item.end_time);
-  if (s == null || e == null) return 0;
-  const diff = e - s;
-  return diff > 0 ? diff : 0;
-};
-
 /**
  * Định dạng ĐỒNG HỒ "H.Mh" = giờ.phút. `2.5h` = 2 giờ 5 phút (KHÔNG phải 2.5 giờ).
- * 120→"2.0h", 125→"2.5h", 150→"2.30h", 0→"0.0h".
+ * Nhận SỐ GIỜ thập phân (vd 2.5 = 2 tiếng 30 phút) và quy đổi hiển thị.
  */
-export const formatDuration = (minutes: number): string => {
-  const total = Math.max(0, Math.round(minutes));
-  const h = Math.floor(total / 60);
-  const m = total % 60;
+export const formatDuration = (hours: number): string => {
+  const totalMinutes = Math.max(0, Math.round(hours * 60));
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
   return `${h}.${m}h`;
 };
 
 const WEEKDAYS = ["CN", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
 
-export const weekdayLabel = (dateStr: string): string => {
+export const weekdayLabel = (dateStr: string | null): string => {
   const d = parseLocalDate(dateStr);
   return d ? WEEKDAYS[d.getDay()] : "—";
-};
-
-/** Gom trạng thái buổi thô về 3 nhóm cho tile/donut. Heuristic — tinh chỉnh khi có metadata thật. */
-export const statusGroup = (
-  status: string,
-): "completed" | "cancelled" | "upcoming" => {
-  const s = String(status ?? "").toLowerCase();
-  if (s.includes("cancel")) return "cancelled";
-  if (["completed", "done", "finished", "finish"].includes(s)) return "completed";
-  return "upcoming";
-};
-
-export const computeStats = (items: ScheduleItem[]): TimesheetStats => {
-  let completed = 0;
-  let upcoming = 0;
-  let cancelled = 0;
-  let totalMinutes = 0;
-  for (const it of items) {
-    totalMinutes += sessionMinutes(it);
-    const g = statusGroup(it.status);
-    if (g === "completed") completed += 1;
-    else if (g === "cancelled") cancelled += 1;
-    else upcoming += 1;
-  }
-  return { total: items.length, completed, upcoming, cancelled, totalMinutes };
 };
 
 export const pct = (part: number, total: number): number =>
   total > 0 ? Math.round((part / total) * 100) : 0;
 
-export const donutData = (stats: TimesheetStats): DonutData => ({
-  labels: ["Đã hoàn thành", "Sắp diễn ra", "Đã hủy"],
-  data: [stats.completed, stats.upcoming, stats.cancelled],
-  colors: ["#22c55e", "#f59e0b", "#ef4444"],
+/** ✅ Khớp `TimesheetSessionResource` (`v1/hr/timesheet/list`). */
+export const toTimesheetSession = (raw: any): TimesheetSessionRow => ({
+  id: raw.id,
+  code: raw.code,
+  sessionDate: raw.session_date ?? null,
+  startTime: raw.start_time ?? null,
+  endTime: raw.end_time ?? null,
+  hours: Number(raw.hours ?? 0) || 0,
+  status: raw.status,
+  classId: raw.class_id ?? null,
+  className: raw.class_name ?? null,
+  learningType: raw.learning_type ?? null,
+  roomName: raw.room_name ?? null,
+  presentCount: Number(raw.present_count ?? 0) || 0,
+  absentCount: Number(raw.absent_count ?? 0) || 0,
+  attendancesCount: Number(raw.attendances_count ?? 0) || 0,
+  averageRating: raw.average_rating ?? null,
+});
+
+export const toTimesheetSessions = (raw: any): TimesheetSessionRow[] =>
+  (raw?.data?.items ?? []).map(toTimesheetSession);
+
+/** ✅ Khớp `TimesheetService::summary` (`v1/hr/timesheet/summary`). */
+export const toTimesheetSummary = (raw: any): TimesheetSummary => ({
+  totalSessions: Number(raw?.data?.total_sessions ?? 0) || 0,
+  totalHours: Number(raw?.data?.total_hours ?? 0) || 0,
+  hoursByType: raw?.data?.hours_by_type ?? {},
+  attendanceRate: raw?.data?.attendance_rate ?? null,
+  averageRating: raw?.data?.average_rating ?? null,
 });
 
 const startOfDayLocal = (d: Date): Date => {
@@ -102,9 +84,9 @@ const formatDateRange = (start: Date, end: Date): string => {
   return sm === em ? `(${sd} - ${ed}/${em})` : `(${sd}/${sm} - ${ed}/${em})`;
 };
 
-/** Gom tổng phút theo TUẦN trong [range.from, range.to] (đầu tuần = Thứ 2). */
-export const groupMinutesByWeek = (
-  items: ScheduleItem[],
+/** Gom tổng giờ theo TUẦN trong [range.from, range.to] (đầu tuần = Thứ 2). */
+export const groupHoursByWeek = (
+  items: TimesheetSessionRow[],
   range: { from: Date; to: Date },
 ): WeekBucket[] => {
   const from = startOfWeekLocal(range.from);
@@ -116,23 +98,35 @@ export const groupMinutesByWeek = (
   while (cursor <= to) {
     const next = new Date(cursor);
     next.setDate(next.getDate() + 7);
-    let minutes = 0;
+    let hours = 0;
     for (const it of items) {
-      const d = parseLocalDate(it.date);
-      if (d && d >= cursor && d < next) minutes += sessionMinutes(it);
+      const d = parseLocalDate(it.sessionDate);
+      if (d && d >= cursor && d < next) hours += it.hours;
     }
-    // Ngày hiển thị: clamp đầu/cuối tuần vào trong [range.from, range.to].
     const weekStart = cursor < rangeFrom ? rangeFrom : cursor;
     const weekEndRaw = new Date(next);
-    weekEndRaw.setDate(weekEndRaw.getDate() - 1); // Chủ nhật
+    weekEndRaw.setDate(weekEndRaw.getDate() - 1);
     const weekEnd = weekEndRaw > to ? to : weekEndRaw;
     buckets.push({
       label: `Tuần ${i + 1}`,
       dateLabel: formatDateRange(weekStart, weekEnd),
-      minutes,
+      hours,
     });
     cursor = next;
     i += 1;
   }
   return buckets;
+};
+
+/** Tổng present/absent trong danh sách hiện tại — dùng cho donut "Tổng hợp tháng". */
+export const summarizeAttendance = (items: TimesheetSessionRow[]) => {
+  let present = 0;
+  let absent = 0;
+  let other = 0;
+  for (const it of items) {
+    present += it.presentCount;
+    absent += it.absentCount;
+    other += Math.max(0, it.attendancesCount - it.presentCount - it.absentCount);
+  }
+  return { present, absent, other, total: present + absent + other };
 };

@@ -38,16 +38,11 @@ export const INVOICE_STATUS_FILTER_OPTIONS = [
   ...Object.entries(INVOICE_STATUS_LABELS).map(([value, label]) => ({ value, label })),
 ];
 
+/** Màu trang trí biểu đồ — không phải màu semantic của metadata (`payment_method`). */
 export const PAYMENT_METHOD_COLORS: Record<string, string> = {
-  bank_transfer: "#0ea5e9",
+  transfer: "#0ea5e9",
+  card: "#8b5cf6",
   wallet: "#10b981",
   cash: "#f59e0b",
   other: "#94a3b8",
-};
-
-export const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  bank_transfer: "Chuyển khoản",
-  wallet: "Ví Hana Edu",
-  cash: "Tiền mặt",
-  other: "Khác",
 };

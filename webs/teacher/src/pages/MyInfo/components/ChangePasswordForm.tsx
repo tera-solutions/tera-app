@@ -1,7 +1,8 @@
 import { useForm } from "react-hook-form";
-import { Modal, notification } from "tera-dls";
+import { notification } from "tera-dls";
 
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+import FormScaff from "@tera/components/dof/FormScaff";
 import InputPassword from "@tera/components/dof/Control/InputPassword";
 
 import { ProfileService } from "@tera/modules/system";
@@ -48,15 +49,15 @@ const ChangePasswordForm = ({ open, onClose }: ChangePasswordFormProps) => {
   };
 
   return (
-    <Modal
-      title="Đổi mật khẩu"
+    <FormScaff
       open={open}
+      onClose={handleClose}
+      isEdit
+      titleCreate="Đổi mật khẩu"
+      titleEdit="Đổi mật khẩu"
       className="!w-[95%] xmd:!w-[420px]"
       okText="Lưu"
-      cancelText="Hủy"
-      onCancel={handleClose}
       onOk={() => form.handleSubmit(handleSubmit)()}
-      destroyOnClose
       confirmLoading={isPending}
     >
       <FormTera form={form} onSubmit={form.handleSubmit(handleSubmit)}>
@@ -87,7 +88,7 @@ const ChangePasswordForm = ({ open, onClose }: ChangePasswordFormProps) => {
           <InputPassword />
         </FormTeraItem>
       </FormTera>
-    </Modal>
+    </FormScaff>
   );
 };
 

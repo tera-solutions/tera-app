@@ -8,6 +8,7 @@ import {
   notification,
   PlusOutlined,
   PuzzlePieceOutlined,
+  Select,
   UsersOutlined,
 } from "tera-dls";
 
@@ -29,6 +30,7 @@ import { summarizePlacementTests, toPlacementTestResults, toPlacementTests } fro
 import PlacementTestTable from "./components/PlacementTestTable";
 import PlacementTestForm from "./components/PlacementTestForm";
 import TestResultTable from "./components/TestResultTable";
+import RecordResultForm from "./components/RecordResultForm";
 
 const CEFR_COLORS: Record<string, string> = {
   "Pre-A1": "#94a3b8",
@@ -44,6 +46,7 @@ const PlacementTest = () => {
   const confirm = useConfirm();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<PlacementTestRow | null>(null);
+  const [resultFormOpen, setResultFormOpen] = useState(false);
 
   const [filters, setFilters] = useUrlFilters(
     {
@@ -63,6 +66,7 @@ const PlacementTest = () => {
   const total = listQuery.data?.data?.pagination?.total ?? items.length;
 
   const resultTestId = filters.resultTestId ?? items[0]?.id;
+  const resultTest = items.find((t) => t.id === resultTestId) ?? null;
   const resultsQuery = PlacementTestService.usePlacementTestResults(
     { id: resultTestId ?? "", params: { per_page: 100 } },
     { enabled: !!resultTestId },
@@ -205,12 +209,31 @@ const PlacementTest = () => {
           )}
 
           {filters.tab === "results" && (
-            <TestResultTable
-              items={results}
-              loading={resultsQuery.isLoading}
-              isError={resultsQuery.isError}
-              onRetry={() => resultsQuery.refetch()}
-            />
+            <>
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <Select
+                  className="w-full sm:w-72"
+                  value={resultTestId}
+                  onChange={(v: number) => setFilters({ resultTestId: v })}
+                  options={items.map((t) => ({ value: t.id, label: t.title }))}
+                  placeholder="Chọn bài kiểm tra"
+                />
+                <Button
+                  outlined
+                  disabled={!resultTest}
+                  onClick={() => setResultFormOpen(true)}
+                  className="whitespace-nowrap text-brand border-brand hover:bg-brand"
+                >
+                  Ghi nhận kết quả
+                </Button>
+              </div>
+              <TestResultTable
+                items={results}
+                loading={resultsQuery.isLoading}
+                isError={resultsQuery.isError}
+                onRetry={() => resultsQuery.refetch()}
+              />
+            </>
           )}
         </Card>
 
@@ -231,6 +254,7 @@ const PlacementTest = () => {
       </div>
 
       <PlacementTestForm open={formOpen} editing={editing} onClose={() => setFormOpen(false)} />
+      <RecordResultForm open={resultFormOpen} test={resultTest} onClose={() => setResultFormOpen(false)} />
     </div>
   );
 };

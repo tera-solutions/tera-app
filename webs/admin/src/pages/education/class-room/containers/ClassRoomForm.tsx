@@ -8,20 +8,19 @@ import {
   useState,
 } from "react";
 import { observer } from "mobx-react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
 import { Col, Row, notification, DatePicker as DatePickerTera } from "tera-dls";
-import { PlusOutlined, TrashOutlined } from "tera-dls";
 import debounce from "lodash/debounce";
 
 /* Import: packages */
 import { IFormProps } from "@tera/commons/interfaces";
 import Input from "@tera/components/dof/Control/Input";
-import Select, { SelectField } from "@tera/components/dof/Control/Select";
+import Select from "@tera/components/dof/Control/Select";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import { useStores } from "@tera/stores/useStores";
@@ -41,20 +40,9 @@ import UserSelect from "_common/components/UserSelect";
 import { IClassRoomForm } from "pages/education/class-room/_interface";
 
 
-const TIME_CLASS =
-  "w-full max-w-full min-w-0 h-9 border border-gray-300 bg-white px-2 text-[13px] hover:border-blue-700 focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-700 disabled:bg-gray-100 disabled:cursor-not-allowed box-border rounded-[3px]";
-
 // Chặn nhập số âm / ký tự không hợp lệ cho ô sĩ số
 const preventNegativeKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
   if (["-", "+", "e", "E"].includes(e.key)) e.preventDefault();
-};
-
-// Chuẩn hóa giờ về đúng định dạng H:i (HH:MM, có số 0 đầu) — backend Laravel yêu cầu
-const toHHMM = (v?: string) => {
-  if (!v) return "";
-  const m = String(v).match(/^(\d{1,2}):(\d{2})/);
-  if (!m) return v;
-  return `${m[1].padStart(2, "0")}:${m[2]}`;
 };
 
 const defaultValues: IClassRoomForm = {
@@ -76,8 +64,6 @@ const defaultValues: IClassRoomForm = {
   min_capacity: "",
   max_warning_capacity: "",
   max_capacity: "",
-  // Tab 3: Lịch học
-  schedules: [],
 };
 
 type ClassRoomFormProps = IFormProps & {
@@ -99,20 +85,6 @@ const ClassRoomForm = observer(
 
     const learningTypeOptions =
       globalStore.getOptions("class_learning_type") ?? [];
-
-    // ⚠️ weekday là SỐ (Thứ 2 = 2 ... Thứ 7 = 7, Chủ nhật = 1) — CẦN verify backend
-    const weekdayOptions = useMemo(
-      () => [
-        { value: 2, label: t("classroom.weekday_mon") },
-        { value: 3, label: t("classroom.weekday_tue") },
-        { value: 4, label: t("classroom.weekday_wed") },
-        { value: 5, label: t("classroom.weekday_thu") },
-        { value: 6, label: t("classroom.weekday_fri") },
-        { value: 7, label: t("classroom.weekday_sat") },
-        { value: 1, label: t("classroom.weekday_sun") },
-      ],
-      [t],
-    );
 
     const { data: courseData } = CourseService.useCourseList({
       params: { page: 1, per_page: 100 },
@@ -182,19 +154,6 @@ const ClassRoomForm = observer(
           course_id: yup.string().required(t("validate.required")),
           learning_type: yup.string().required(t("validate.required")),
           start_date: yup.string().required(t("validate.required")),
-          schedules: yup
-            .array()
-            .test(
-              "schedule-required",
-              t("classroom.schedule_required"),
-              function (value) {
-                if (this.parent.learning_type !== "scheduled") return true;
-                const valid = (value ?? []).filter(
-                  (s: any) => s?.weekday && s?.start_time && s?.end_time,
-                );
-                return valid.length >= 1;
-              },
-            ),
         }),
         [t],
       );
@@ -205,19 +164,11 @@ const ClassRoomForm = observer(
         resolver: yupResolver(schema) as any,
       });
 
-      const { reset, formState, watch, register, control, setValue } = form;
+      const { reset, formState, watch, control } = form;
       const errors = formState.errors as any;
 
-      const {
-        fields: scheduleFields,
-        append: appendSchedule,
-        remove: removeSchedule,
-      } = useFieldArray({ control, name: "schedules" });
-
       const assigneeIdValue = watch("assignee_id");
-      const learningTypeValue = watch("learning_type");
       const useCurriculumValue = watch("use_course_curriculum" as any);
-      const schedulesValue = watch("schedules");
       const startDateValue = watch("start_date");
 
       const queryClient = useQueryClient();
@@ -265,14 +216,6 @@ const ClassRoomForm = observer(
             dataDetail.max_capacity != null
               ? String(dataDetail.max_capacity)
               : "",
-          schedules: Array.isArray(dataDetail.schedules)
-            ? dataDetail.schedules.map((s: any) => ({
-                id: s.id,
-                weekday: s.weekday != null ? String(s.weekday) : "",
-                start_time: toHHMM(s.start_time),
-                end_time: toHHMM(s.end_time),
-              }))
-            : [],
         });
       } else {
         reset(defaultValues);
@@ -280,28 +223,6 @@ const ClassRoomForm = observer(
     }, [dataDetail, reset]);
 
     const handleSubmitForm = (values: IClassRoomForm) => {
-      // Validate giờ lịch (kết thúc > bắt đầu)
-      const scheduleRows = (values.schedules ?? []).filter(
-        (s) => s.weekday || s.start_time || s.end_time,
-      );
-      const invalidTime = scheduleRows.some((s) => {
-        const st = s.start_time ? toHHMM(s.start_time) : "";
-        const et = s.end_time ? toHHMM(s.end_time) : "";
-        return st && et && et <= st;
-      });
-      if (invalidTime) {
-        setActiveTab("schedule");
-        notification.error({ message: t("classroom.schedule_time_invalid") });
-        return;
-      }
-
-      // Nhúng schedules vào payload class-room (backend tự lưu)
-      const schedules = scheduleRows.map((s) => ({
-        weekday: s.weekday ? Number(s.weekday) : undefined,
-        start_time: s.start_time ? toHHMM(s.start_time) : undefined,
-        end_time: s.end_time ? toHHMM(s.end_time) : undefined,
-      }));
-
       const params = {
         code: isUpdate ? undefined : values.code?.trim() || undefined,
         name: values.name?.trim() || undefined,
@@ -331,7 +252,6 @@ const ClassRoomForm = observer(
         max_capacity: values.max_capacity
           ? Number(values.max_capacity)
           : undefined,
-        schedules: schedules.length ? schedules : undefined,
       };
 
       onSubmit(
@@ -362,7 +282,6 @@ const ClassRoomForm = observer(
       // Nhảy về tab có lỗi đầu tiên
       if (errs.code || errs.name || errs.course_id) setActiveTab("basic");
       else if (errs.learning_type || errs.start_date) setActiveTab("config");
-      else if (errs.schedules) setActiveTab("schedule");
     };
 
     useImperativeHandle(ref, () => ({
@@ -371,22 +290,14 @@ const ClassRoomForm = observer(
       isDirty: () => formState.isDirty,
     }));
 
-    const scheduleRequired = learningTypeValue === "scheduled";
-
     const tabErrors: Record<string, boolean> = {
       basic: !!(errors.code || errors.name || errors.course_id),
       config: !!(errors.learning_type || errors.start_date),
-      schedule: !!errors.schedules,
     };
 
     const tabs = [
       { key: "basic", label: t("classroom.tab_basic"), required: false },
       { key: "config", label: t("classroom.tab_config"), required: false },
-      {
-        key: "schedule",
-        label: t("classroom.tab_schedule"),
-        required: scheduleRequired,
-      },
     ];
 
     return (
@@ -659,97 +570,6 @@ const ClassRoomForm = observer(
                 </FormTeraItem>
               </Col>
             </Row>
-          </div>
-
-          {/* Tab 3: Lịch học */}
-          <div className={activeTab === "schedule" ? "block" : "hidden"}>
-            {errors.schedules && (
-              <p className='text-[13px] text-red-500 mb-3'>
-                {errors.schedules.message}
-              </p>
-            )}
-            {scheduleFields.length === 0 && !errors.schedules && (
-              <p className='text-[13px] text-gray-400 italic mb-3'>
-                {t("classroom.no_schedule")}
-              </p>
-            )}
-            <div className='flex flex-col gap-2'>
-              {scheduleFields.map((field, index) => (
-                <div
-                  key={field.id}
-                  className='flex items-end gap-2 rounded-md border border-gray-200 p-2'
-                >
-                  <div className='flex-1 min-w-0'>
-                    <label className='block text-[12px] text-gray-500 mb-1'>
-                      {t("classroom.weekday")}
-                    </label>
-                    <SelectField
-                      options={weekdayOptions.map((w) => ({
-                        value: String(w.value),
-                        label: w.label,
-                      }))}
-                      placeholder={t("classroom.select_weekday")}
-                      disabled={isView}
-                      value={String(schedulesValue?.[index]?.weekday ?? "")}
-                      onChange={(val) =>
-                        setValue(`schedules.${index}.weekday` as const, String(val ?? ""), {
-                          shouldDirty: true,
-                          shouldValidate: true,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className='flex-1 min-w-0'>
-                    <label className='block text-[12px] text-gray-500 mb-1'>
-                      {t("classroom.start_time")}
-                    </label>
-                    <input
-                      type='time'
-                      className={TIME_CLASS}
-                      disabled={isView}
-                      {...register(`schedules.${index}.start_time` as const)}
-                    />
-                  </div>
-                  <div className='flex-1 min-w-0'>
-                    <label className='block text-[12px] text-gray-500 mb-1'>
-                      {t("classroom.end_time")}
-                    </label>
-                    <input
-                      type='time'
-                      className={TIME_CLASS}
-                      disabled={isView}
-                      {...register(`schedules.${index}.end_time` as const)}
-                    />
-                  </div>
-                  {!isView && (
-                    <button
-                      type='button'
-                      onClick={() => removeSchedule(index)}
-                      className='h-9 w-9 shrink-0 flex items-center justify-center rounded-[3px] border border-gray-300 text-red-500 hover:bg-red-50'
-                      title={t("button.delete")}
-                    >
-                      <TrashOutlined className='w-4 h-4' />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-            {!isView && (
-              <button
-                type='button'
-                onClick={() =>
-                  appendSchedule({
-                    weekday: "",
-                    start_time: "",
-                    end_time: "",
-                  })
-                }
-                className='mt-3 inline-flex items-center gap-1.5 rounded-md border border-dashed border-blue-400 px-3 py-1.5 text-[13px] text-blue-600 hover:bg-blue-50'
-              >
-                <PlusOutlined className='w-4 h-4' />
-                {t("classroom.add_schedule")}
-              </button>
-            )}
           </div>
         </FormTera>
       </div>

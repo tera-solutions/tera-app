@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
 import classNames from "classnames";
 
 interface IconBoxProps {
@@ -8,6 +8,9 @@ interface IconBoxProps {
   colorClassName?: string;
   iconSizeClassName?: string;
   className?: string;
+  /** Inline color override (e.g. metadata hex from `useMeta`) — takes
+   * precedence over `colorClassName` when set. */
+  style?: CSSProperties;
 }
 
 /** Shared decorative icon-in-a-colored-box wrapper. */
@@ -18,16 +21,18 @@ const IconBox = ({
   colorClassName = "bg-sky-50 text-brand",
   iconSizeClassName = "[&_svg]:h-5 [&_svg]:w-5",
   className,
+  style,
 }: IconBoxProps) => (
   <span
     className={classNames(
       "flex shrink-0 items-center justify-center",
       sizeClassName,
       roundedClassName,
-      colorClassName,
+      style ? undefined : colorClassName,
       iconSizeClassName,
       className,
     )}
+    style={style}
   >
     {icon}
   </span>

@@ -1,5 +1,6 @@
 export { default as ConfigurationTable } from "./ConfigurationTable";
 export { default as CrmProvider } from "./CrmProvider";
+export { default as FormScaff } from "./FormScaff";
 export { default as FormTera } from "./FormTera";
 export { default as hrmProvider } from "./hrmProvider";
 export { default as QuickAction } from "./QuickAction";

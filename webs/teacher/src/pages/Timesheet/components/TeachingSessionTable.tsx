@@ -1,18 +1,19 @@
 import { useState } from "react";
 import moment from "moment";
-import { EyeOutlined } from "tera-dls";
+import { EyeOutlined, StarSolid } from "tera-dls";
 
+import Badge from "_common/components/Badge";
 import Card from "_common/components/Card";
-import StatusBadge from "_common/components/StatusBadge";
 import Table, { TableColumn } from "_common/components/Table";
 import TablePagination from "_common/components/TablePagination";
+import { useMeta } from "_common/hooks/useMeta";
 import ScheduleDetailDrawer from "pages/Schedule/components/ScheduleDetailDrawer";
 
-import type { ScheduleItem } from "../_interface";
-import { formatDuration, sessionMinutes, weekdayLabel } from "../_utils";
+import type { TimesheetSessionRow } from "../_interface";
+import { formatDuration, weekdayLabel } from "../_utils";
 
 interface TeachingSessionTableProps {
-  rows: ScheduleItem[];
+  rows: TimesheetSessionRow[];
   total: number;
   page: number;
   perPage: number;
@@ -32,65 +33,83 @@ const TeachingSessionTable = ({
   isError,
   onRetry,
 }: TeachingSessionTableProps) => {
+  const { getLabel } = useMeta();
   const [openId, setOpenId] = useState<number | null>(null);
 
-  const columns: TableColumn<ScheduleItem>[] = [
+  const columns: TableColumn<TimesheetSessionRow>[] = [
     {
       key: "date",
       title: "Ngày",
       render: (r) => (
         <span className="whitespace-nowrap text-slate-700">
-          {r.date ? moment(r.date).format("DD/MM/YYYY") : "—"}
+          {r.sessionDate ? moment(r.sessionDate).format("DD/MM/YYYY") : "—"}
         </span>
       ),
     },
-    { key: "weekday", title: "Thứ", render: (r) => weekdayLabel(r.date) },
+    { key: "weekday", title: "Thứ", render: (r) => weekdayLabel(r.sessionDate) },
     {
       key: "class",
       title: "Lớp học",
       render: (r) => (
         <div className="min-w-0">
-          <p className="truncate font-medium text-slate-800">{r.class_name || "—"}</p>
-          {r.level && <p className="truncate text-xs text-slate-400">{r.level}</p>}
+          <p className="truncate font-medium text-slate-800">{r.className || "—"}</p>
+          {r.roomName && <p className="truncate text-xs text-slate-400">{r.roomName}</p>}
         </div>
       ),
     },
     {
-      key: "students",
-      title: "Học viên",
-      // Endpoint timetable không trả student_count → để "—" thay vì 0 sai lệch.
-      render: (r) => (r.student_count ? r.student_count : <span className="text-slate-300">—</span>),
+      key: "attendance",
+      title: "Điểm danh",
+      render: (r) => (
+        <span className="whitespace-nowrap text-slate-600">
+          {r.presentCount}/{r.attendancesCount} có mặt
+        </span>
+      ),
     },
     {
       key: "type",
       title: "Hình thức",
-      // Chưa có learning_type trong payload timetable → chờ backend.
-      render: () => <span className="text-slate-300">—</span>,
+      render: (r) => (
+        <span className="whitespace-nowrap text-slate-600">
+          {r.learningType ? getLabel("class_learning_type", r.learningType) : "—"}
+        </span>
+      ),
     },
     {
       key: "time",
       title: "Thời gian",
-      render: (r) => (r.start_time ? `${r.start_time} - ${r.end_time}` : "—"),
+      render: (r) => (r.startTime ? `${r.startTime.slice(0, 5)} - ${r.endTime?.slice(0, 5)}` : "—"),
     },
     {
       key: "hours",
       title: "Giờ giảng",
       render: (r) => (
         <span className="whitespace-nowrap font-medium text-slate-700">
-          {formatDuration(sessionMinutes(r))}
+          {formatDuration(r.hours)}
         </span>
       ),
     },
     {
-      key: "status",
-      title: "Trạng thái",
-      render: (r) => <StatusBadge name="class_session_status" value={r.status} />,
+      key: "rating",
+      title: "Đánh giá",
+      render: (r) =>
+        r.averageRating === null ? (
+          <span className="text-slate-300">—</span>
+        ) : (
+          <span className="flex items-center gap-1 whitespace-nowrap text-amber-500">
+            <StarSolid className="h-3.5 w-3.5" />
+            {r.averageRating}
+          </span>
+        ),
     },
     {
-      key: "note",
-      title: "Ghi chú",
-      // Chưa có field ghi chú buổi trong payload → chờ backend.
-      render: () => <span className="text-slate-300">—</span>,
+      key: "status",
+      title: "Trạng thái",
+      render: () => (
+        <Badge className="whitespace-nowrap bg-emerald-50 px-2.5 py-0.5 text-[11px] text-emerald-600">
+          Đã điểm danh
+        </Badge>
+      ),
     },
     {
       key: "action",
@@ -119,8 +138,8 @@ const TeachingSessionTable = ({
         isLoading={loading}
         isError={isError}
         onRetry={onRetry}
-        emptyText="Không có buổi dạy trong khoảng thời gian này"
-        minWidthClassName="min-w-[1040px]"
+        emptyText="Không có buổi dạy nào đã điểm danh trong khoảng thời gian này"
+        minWidthClassName="min-w-[1080px]"
       />
       <TablePagination
         total={total}

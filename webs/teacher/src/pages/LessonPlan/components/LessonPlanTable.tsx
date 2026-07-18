@@ -1,6 +1,7 @@
 import moment from "moment";
 import {
   ArchiveBoxOutlined,
+  CheckBadgeOutlined,
   DocumentTextOutlined,
   Dropdown,
   EllipsisVerticalOutlined,
@@ -25,6 +26,7 @@ interface LessonPlanTableProps {
   onView: (plan: LessonPlan) => void;
   onEdit: (plan: LessonPlan) => void;
   onArchive: (plan: LessonPlan) => void;
+  onPublish: (plan: LessonPlan) => void;
 }
 
 const LessonPlanTable = ({
@@ -36,6 +38,7 @@ const LessonPlanTable = ({
   onView,
   onEdit,
   onArchive,
+  onPublish,
 }: LessonPlanTableProps) => {
   if (isError)
     return (
@@ -138,6 +141,16 @@ const LessonPlanTable = ({
                         icon: <EyeOutlined />,
                         onClick: () => onView(plan),
                       },
+                      ...(plan.status === "draft" || plan.status === "reviewing"
+                        ? [
+                            {
+                              key: "publish",
+                              label: "Xuất bản",
+                              icon: <CheckBadgeOutlined />,
+                              onClick: () => onPublish(plan),
+                            },
+                          ]
+                        : []),
                       ...(plan.status !== "archived"
                         ? [
                             {

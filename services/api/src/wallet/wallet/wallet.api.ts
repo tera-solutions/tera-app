@@ -7,6 +7,8 @@ import {
   UpdatePayload,
 } from "@tera/api/_interface";
 
+type SummaryPayload = { params?: { wallet_id?: number | string } };
+
 /**
  * Ví số dư trả trước nội bộ (KHÔNG phải ví ngân hàng rút được).
  *
@@ -38,6 +40,12 @@ export const WalletAPI = {
   getTransactions: async ({ params }: ListPayload) =>
     await api
       .get(`${endpoint}/fin/wallet/transactions`, { ...params, ...params?.filters })
+      .then((result) => result.data),
+
+  // Thống kê tổng in/out + so sánh tháng trước — query: wallet_id (optional, bỏ trống = toàn bộ).
+  getSummary: async ({ params }: SummaryPayload = {}) =>
+    await api
+      .get(`${endpoint}/fin/wallet/summary`, { ...params })
       .then((result) => result.data),
 
   // ===== Action ledger — mỗi call ghi 1 giao dịch bất biến =====

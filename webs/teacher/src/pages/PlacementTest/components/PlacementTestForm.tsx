@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Modal, notification, Select } from "tera-dls";
+import { notification, Select } from "tera-dls";
 
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+import FormScaff from "@tera/components/dof/FormScaff";
 import Input from "@tera/components/dof/Control/Input";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import InputNumber from "@tera/components/dof/Control/InputNumber";
@@ -81,15 +82,15 @@ const PlacementTestForm = ({ open, editing, onClose }: PlacementTestFormProps) =
   };
 
   return (
-    <Modal
-      title={editing ? "Sửa bài kiểm tra" : "Tạo bài kiểm tra mới"}
+    <FormScaff
       open={open}
+      onClose={handleClose}
+      isEdit={!!editing}
+      titleCreate="Tạo bài kiểm tra mới"
+      titleEdit="Sửa bài kiểm tra"
       className="!w-[95%] xmd:!w-[560px]"
       okText="Lưu"
-      cancelText="Hủy"
-      onCancel={handleClose}
       onOk={() => form.handleSubmit(handleSubmit)()}
-      destroyOnClose
       confirmLoading={isSubmitting}
     >
       <FormTera form={form} onSubmit={form.handleSubmit(handleSubmit)}>
@@ -128,7 +129,7 @@ const PlacementTestForm = ({ open, editing, onClose }: PlacementTestFormProps) =
           <TextArea placeholder="Mô tả bài kiểm tra..." rows={3} />
         </FormTeraItem>
       </FormTera>
-    </Modal>
+    </FormScaff>
   );
 };
 

@@ -1,10 +1,4 @@
-import { toTransaction } from "../Wallet/_utils";
-import {
-  DEPOSIT_METHODS,
-  MAX_AMOUNT,
-  MIN_AMOUNT,
-  TRANSACTION_FEE,
-} from "./constants";
+import { DEPOSIT_METHODS, MAX_AMOUNT, MIN_AMOUNT } from "./constants";
 import type { DepositHistoryRow } from "./_interface";
 
 export const formatAmountInput = (value: number | null) =>
@@ -25,33 +19,28 @@ export const validateAmount = (amount: number | null): string | null => {
   return null;
 };
 
-export const isSubmittable = (amount: number | null, methodKey: string) =>
-  amount !== null && !validateAmount(amount) && !!methodKey;
+/**
+ * BR: giáo viên phải có tài khoản ngân hàng đã lưu trong hồ sơ (`fin/bank-account/me`)
+ * mới được tạo yêu cầu ví (nạp lẫn rút) — xem `WalletRequestService::resolveBankAccountId`.
+ */
+export const isSubmittable = (amount: number | null, methodKey: string, hasBankAccount: boolean) =>
+  amount !== null && !validateAmount(amount) && !!methodKey && hasBankAccount;
 
+/** BE `fin_wallet_requests` không có cột phương thức thanh toán — gấp tên phương
+ * thức vào `note` để admin biết cách người dùng đã/định chuyển tiền. */
 export const buildDepositNote = (methodKey: string) => {
   const method = DEPOSIT_METHODS.find((m) => m.key === methodKey);
   return `Nạp tiền qua ${method?.name ?? "cổng thanh toán"}`;
 };
 
-export const methodFromDescription = (description: string): string | null => {
-  const found = DEPOSIT_METHODS.find((m) =>
-    description.toLowerCase().includes(m.name.toLowerCase()),
-  );
-  return found?.key ?? null;
-};
-
-/** Giao dịch ví → dòng bảng "Lịch sử nạp tiền". */
+/** ✅ Khớp `WalletRequestResource` (`fin/wallet-request/list`). */
 export const toDepositHistory = (raw: any): DepositHistoryRow[] =>
-  (raw?.data?.items ?? []).map((item: any) => {
-    const txn = toTransaction(item);
-    return {
-      id: txn.id,
-      code: txn.code,
-      createdAt: txn.createdAt,
-      methodKey: methodFromDescription(txn.description),
-      amount: txn.amount,
-      fee: TRANSACTION_FEE,
-      received: txn.amount - TRANSACTION_FEE,
-      status: txn.status,
-    };
-  });
+  (raw?.data?.items ?? []).map((item: any) => ({
+    id: item.id,
+    code: item.code,
+    createdAt: item.created_at ? new Date(String(item.created_at).replace(" ", "T")) : null,
+    amount: Number(item.amount ?? 0) || 0,
+    note: item.note ?? null,
+    status: item.status,
+    rejectReason: item.reject_reason ?? null,
+  }));

@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Modal, notification } from "tera-dls";
+import { notification } from "tera-dls";
 
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+import FormScaff from "@tera/components/dof/FormScaff";
 import InputNumber from "@tera/components/dof/Control/InputNumber";
 
 import type { ExamGradeFormValues, ExamResultRow } from "../_interface";
@@ -50,16 +51,18 @@ const GradeResultForm = ({ open, onClose, row, onGraded }: GradeResultFormProps)
     );
   };
 
+  const title = `Chấm điểm${row ? ` — ${row.student_name}` : ""}`;
+
   return (
-    <Modal
-      title={`Chấm điểm${row ? ` — ${row.student_name}` : ""}`}
+    <FormScaff
       open={open}
+      onClose={onClose}
+      isEdit={false}
+      titleCreate={title}
+      titleEdit={title}
       className="!w-[95%] xmd:!w-[480px]"
       okText="Lưu điểm"
-      cancelText="Hủy"
-      onCancel={onClose}
       onOk={() => form.handleSubmit(handleSubmit)()}
-      destroyOnClose
       confirmLoading={isPending}
     >
       <FormTera form={form} onSubmit={form.handleSubmit(handleSubmit)}>
@@ -71,7 +74,7 @@ const GradeResultForm = ({ open, onClose, row, onGraded }: GradeResultFormProps)
           ))}
         </div>
       </FormTera>
-    </Modal>
+    </FormScaff>
   );
 };
 

@@ -1,4 +1,4 @@
-import type { PayrollStatus } from "./_interface";
+import type { ClassIncomeRow, PayrollDetail, PayrollRow } from "./_interface";
 
 export const formatVnd = (value: number) =>
   `${Math.round(Math.abs(value)).toLocaleString("en-US")}đ`;
@@ -6,27 +6,52 @@ export const formatVnd = (value: number) =>
 export const formatNumber = (value: number) =>
   Math.round(Math.abs(value)).toLocaleString("en-US");
 
-export const PAYROLL_STATUS_META: Record<PayrollStatus, { label: string; className: string }> = {
-  paid: { label: "Đã thanh toán", className: "bg-emerald-50 text-emerald-600" },
-  pending: { label: "Chưa đến hạn", className: "bg-slate-100 text-slate-500" },
-  processing: { label: "Đang xử lý", className: "bg-amber-50 text-amber-600" },
+export const periodLabel = (month: number, year: number) =>
+  `${String(month).padStart(2, "0")}/${year}`;
+
+/** ✅ Khớp `PayrollResource` (`v1/hr/payroll/list`). */
+export const toPayrollRow = (raw: any): PayrollRow => ({
+  id: raw.id,
+  month: raw.month,
+  year: raw.year,
+  totalHours: Number(raw.total_hours ?? 0) || 0,
+  baseSalary: Number(raw.base_salary ?? 0) || 0,
+  bonus: Number(raw.bonus ?? 0) || 0,
+  penalty: Number(raw.penalty ?? 0) || 0,
+  totalSalary: Number(raw.total_salary ?? 0) || 0,
+});
+
+export const toPayrollRows = (raw: any): PayrollRow[] =>
+  (raw?.data?.items ?? []).map(toPayrollRow);
+
+/** ✅ Khớp `PayrollController::detail` (`data.payroll` + `data.teacher` + `data.class_income`). */
+export const toPayrollDetail = (raw: any): PayrollDetail | null => {
+  const data = raw?.data;
+  if (!data?.payroll) return null;
+
+  const classIncome: ClassIncomeRow[] = (data.class_income ?? []).map((c: any) => ({
+    classId: c.class_id ?? null,
+    className: c.class_name ?? "—",
+    sessionCount: Number(c.session_count ?? 0) || 0,
+    hours: Number(c.hours ?? 0) || 0,
+    unitPrice: Number(c.unit_price ?? 0) || 0,
+    total: Number(c.total ?? 0) || 0,
+  }));
+
+  return {
+    payroll: toPayrollRow(data.payroll),
+    teacherName: data.teacher?.full_name ?? "—",
+    teacherCode: data.teacher?.code ?? "—",
+    hourlyRate: Number(data.teacher?.hourly_rate ?? 0) || 0,
+    classIncome,
+  };
 };
 
-// "Tất cả ..." = placeholder khi value rỗng (CompactSelect), KHÔNG là 1 option trong menu.
-export const STATUS_FILTER_OPTIONS = [
-  { value: "paid", label: "Đã thanh toán" },
-  { value: "pending", label: "Chưa đến hạn" },
-  { value: "processing", label: "Đang xử lý" },
-];
-
-export const INCOME_TYPE_FILTER_OPTIONS = [{ value: "Lương tháng", label: "Lương tháng" }];
-
-// ─── Đọc số tiền thành chữ (tiếng Việt) — card "Thực nhận" ở chi tiết ─────────
+// ─── Đọc số tiền thành chữ (tiếng Việt) — card "Thực lãnh" ở chi tiết ─────────
 
 const DIGITS = ["không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"];
 const SCALES = ["", "nghìn", "triệu", "tỷ"];
 
-// `full` = đọc đủ hàng trăm dù trăm = 0 (áp cho nhóm không phải nhóm cao nhất).
 const readGroup = (n: number, full: boolean): string => {
   const tram = Math.floor(n / 100);
   const chuc = Math.floor((n % 100) / 10);
@@ -79,11 +104,4 @@ export const amountToWords = (amount: number): string => {
 export const pct = (value: number, total: number): string => {
   if (total <= 0) return "0";
   return ((value / total) * 100).toFixed(1).replace(/\.0$/, "");
-};
-
-export const parseDmy = (s: string): Date | null => {
-  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s.trim());
-  if (!m) return null;
-  const d = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
-  return Number.isNaN(d.getTime()) ? null : d;
 };

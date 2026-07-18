@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Modal, notification, Select } from "tera-dls";
+import { notification, Select } from "tera-dls";
 
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+import FormScaff from "@tera/components/dof/FormScaff";
 import Input from "@tera/components/dof/Control/Input";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import UploadFiles from "@tera/components/dof/UploadFiles";
@@ -72,15 +73,15 @@ const UploadMaterialModal = ({ open, onClose }: UploadMaterialModalProps) => {
   };
 
   return (
-    <Modal
-      title="Tải tài liệu lên"
+    <FormScaff
       open={open}
+      onClose={handleClose}
+      isEdit={false}
+      titleCreate="Tải tài liệu lên"
+      titleEdit="Tải tài liệu lên"
       className="!w-[95%] xmd:!w-[520px]"
       okText="Tải lên"
-      cancelText="Hủy"
-      onCancel={handleClose}
       onOk={() => form.handleSubmit(handleSubmit)()}
-      destroyOnClose
       confirmLoading={isPending}
     >
       <FormTera form={form} onSubmit={form.handleSubmit(handleSubmit)}>
@@ -131,7 +132,7 @@ const UploadMaterialModal = ({ open, onClose }: UploadMaterialModalProps) => {
           />
         </div>
       </FormTera>
-    </Modal>
+    </FormScaff>
   );
 };
 
