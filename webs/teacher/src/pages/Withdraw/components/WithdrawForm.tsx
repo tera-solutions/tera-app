@@ -17,8 +17,8 @@ interface WithdrawFormProps {
   onAmountChange: (amount: number | null) => void;
   note: string;
   onNoteChange: (note: string) => void;
+  hasBankAccount: boolean;
   balance: number;
-  bankAccountId: string;
   submitting?: boolean;
   onSubmit: () => void;
 }
@@ -38,21 +38,24 @@ const Row = ({
   </div>
 );
 
-/** "Nhập thông tin rút tiền" — số tiền + nội dung + tổng kết + nút xác nhận. */
+const inputClass =
+  "mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 outline-none transition-colors focus:border-blue-700 placeholder:text-slate-400";
+
+/** "Nhập thông tin rút tiền" — số tiền + nội dung + nút xác nhận (tài khoản nhận tiền
+ * chọn/thiết lập ở `BankAccountPicker` bên cạnh, không nhập lại ở đây). */
 const WithdrawForm = ({
   amount,
   onAmountChange,
   note,
   onNoteChange,
+  hasBankAccount,
   balance,
-  bankAccountId,
   submitting,
   onSubmit,
 }: WithdrawFormProps) => {
   const error = validateAmount(amount, balance);
-  const ready = isSubmittable(amount, balance, bankAccountId);
+  const ready = isSubmittable(amount, balance, hasBankAccount);
 
-  // Số ngoài hạn mức thì coi như chưa nhập — đừng khẳng định "nhận được 123đ" cho giá trị đang lỗi.
   const validAmount = amount !== null && !error ? amount : null;
   const received = validAmount === null ? 0 : validAmount - TRANSACTION_FEE;
 
@@ -134,8 +137,14 @@ const WithdrawForm = ({
         onChange={(e) => onNoteChange(e.target.value)}
         placeholder='Nhập nội dung (nếu có)'
         maxLength={255}
-        className='mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 outline-none transition-colors focus:border-blue-700 placeholder:text-slate-400'
+        className={inputClass}
       />
+
+      {!hasBankAccount && (
+        <p className='mt-3 text-xs font-medium text-amber-600'>
+          Vui lòng thiết lập tài khoản ngân hàng nhận tiền trước khi gửi yêu cầu.
+        </p>
+      )}
 
       <Button
         className='mt-4 w-full! justify-center! rounded-xl!'
@@ -143,15 +152,12 @@ const WithdrawForm = ({
         loading={submitting}
         onClick={onSubmit}
       >
-        Rút tiền
+        Gửi yêu cầu rút tiền
       </Button>
 
-      {!WITHDRAW_ENABLED && (
-        /* Nói thật thay vì để người dùng bấm một nút không bao giờ chạy. Xem `constants.ts`. */
-        <p className='mt-2.5 rounded-lg bg-amber-50 px-3 py-2 text-center text-xs font-medium text-amber-700'>
-          Chờ backend hỗ trợ rút tiền
-        </p>
-      )}
+      <p className='mt-2.5 text-center text-xs text-slate-400'>
+        Yêu cầu sẽ chờ quản trị viên duyệt và chuyển khoản thủ công.
+      </p>
     </Card>
   );
 };

@@ -1,8 +1,9 @@
 import { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Modal, notification, Select } from "tera-dls";
+import { notification, Select } from "tera-dls";
 
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+import FormScaff from "@tera/components/dof/FormScaff";
 import InputNumber from "@tera/components/dof/Control/InputNumber";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import { EvaluationService, StudentService } from "@tera/modules/education";
@@ -93,15 +94,15 @@ const SkillEvaluationForm = ({ open, onClose, classId, lessonId }: SkillEvaluati
   };
 
   return (
-    <Modal
-      title="Đánh giá kỹ năng theo bài học"
+    <FormScaff
       open={open}
+      onClose={handleClose}
+      isEdit={false}
+      titleCreate="Đánh giá kỹ năng theo bài học"
+      titleEdit="Đánh giá kỹ năng theo bài học"
       className="!w-[95%] xmd:!w-[520px]"
       okText="Lưu đánh giá"
-      cancelText="Hủy"
-      onCancel={handleClose}
       onOk={() => form.handleSubmit(handleSubmit)()}
-      destroyOnClose
       confirmLoading={isPending}
     >
       <FormTera form={form} onSubmit={form.handleSubmit(handleSubmit)}>
@@ -149,7 +150,7 @@ const SkillEvaluationForm = ({ open, onClose, classId, lessonId }: SkillEvaluati
           <TextArea placeholder="Nhận xét thêm về kỹ năng của học viên..." rows={3} />
         </FormTeraItem>
       </FormTera>
-    </Modal>
+    </FormScaff>
   );
 };
 

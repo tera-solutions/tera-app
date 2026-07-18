@@ -10,10 +10,10 @@ import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import Input from "@tera/components/dof/Control/Input";
 import DatePicker from "@tera/components/dof/Control/DatePicker";
 import { StudentService } from "@tera/modules/education";
+import StudentSelect from "_common/components/StudentSelect";
 
 import type { EnrollmentDraftStudent, EnrollmentDraftStudentNew } from "../_interface";
 import { GENDER_OPTIONS } from "../constants";
-import StudentSelect from "./StudentSelect";
 
 interface StepStudentsProps {
   classroomName: string;

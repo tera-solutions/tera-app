@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Modal, notification } from "tera-dls";
+import { notification } from "tera-dls";
 
 import { CourseService, LevelService } from "@tera/modules/education";
+import FormScaff from "@tera/components/dof/FormScaff";
 
 const inputClass =
   "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none";
@@ -100,16 +101,15 @@ const LevelFormModal = ({ open, level, onClose }: Props) => {
   };
 
   return (
-    <Modal
-      title={isEdit ? "Sửa trình độ" : "Tạo trình độ"}
+    <FormScaff
       open={open}
+      onClose={onClose}
+      isEdit={isEdit}
+      titleCreate="Tạo trình độ"
+      titleEdit="Sửa trình độ"
       className="!w-[95%] xmd:!w-[520px]"
-      okText={isEdit ? "Lưu" : "Tạo"}
-      cancelText="Hủy"
       confirmLoading={creating || updating}
       onOk={handleSubmit}
-      onCancel={onClose}
-      destroyOnClose
     >
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
@@ -187,7 +187,7 @@ const LevelFormModal = ({ open, level, onClose }: Props) => {
           </select>
         </div>
       </div>
-    </Modal>
+    </FormScaff>
   );
 };
 

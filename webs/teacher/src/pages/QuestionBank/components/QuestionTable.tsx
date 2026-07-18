@@ -1,5 +1,6 @@
 import moment from "moment";
-import { EyeOutlined, PencilSquareOutlined, TrashOutlined } from "tera-dls";
+import { ArchiveBoxOutlined, DocumentDuplicateOutlined, EyeOutlined, PaperAirplaneOutlined, PencilSquareOutlined, TrashOutlined } from "tera-dls";
+import StatusBadge from "@tera/components/dof/StatusBadge";
 
 import Badge from "_common/components/Badge";
 import Table, { TableColumn } from "_common/components/Table";
@@ -21,9 +22,23 @@ interface QuestionTableProps {
   onView: (row: QuestionRow) => void;
   onEdit: (row: QuestionRow) => void;
   onDelete: (row: QuestionRow) => void;
+  onClone: (row: QuestionRow) => void;
+  onSubmitReview: (row: QuestionRow) => void;
+  onArchive: (row: QuestionRow) => void;
 }
 
-const QuestionTable = ({ items, loading, isError, onRetry, onView, onEdit, onDelete }: QuestionTableProps) => {
+const QuestionTable = ({
+  items,
+  loading,
+  isError,
+  onRetry,
+  onView,
+  onEdit,
+  onDelete,
+  onClone,
+  onSubmitReview,
+  onArchive,
+}: QuestionTableProps) => {
   const columns: TableColumn<QuestionRow>[] = [
     {
       key: "content",
@@ -48,6 +63,11 @@ const QuestionTable = ({ items, loading, isError, onRetry, onView, onEdit, onDel
     },
     { key: "answers", title: "Đáp án", render: (row) => row.answersCount || "—" },
     {
+      key: "status",
+      title: "Trạng thái",
+      render: (row) => <StatusBadge name="question_status" value={row.status} />,
+    },
+    {
       key: "created",
       title: "Ngày tạo",
       render: (row) => (row.createdAt ? moment(row.createdAt).format("DD/MM/YYYY") : "—"),
@@ -56,17 +76,27 @@ const QuestionTable = ({ items, loading, isError, onRetry, onView, onEdit, onDel
       key: "actions",
       title: "",
       headerClassName: "w-24",
-      render: (row) => (
-        <TableRowActions
-          buttons={[
-            { title: "Xem", icon: <EyeOutlined />, onClick: () => onView(row) },
-            { title: "Sửa", icon: <PencilSquareOutlined />, onClick: () => onEdit(row) },
-          ]}
-          menuItems={[
-            { key: "delete", label: "Xóa câu hỏi", icon: <TrashOutlined />, onClick: () => onDelete(row) },
-          ]}
-        />
-      ),
+      render: (row) => {
+        const menuItems = [
+          { key: "clone", label: "Nhân bản", icon: <DocumentDuplicateOutlined />, onClick: () => onClone(row) },
+          ...(row.status === "draft"
+            ? [{ key: "review", label: "Gửi duyệt", icon: <PaperAirplaneOutlined />, onClick: () => onSubmitReview(row) }]
+            : []),
+          ...(row.status !== "archived"
+            ? [{ key: "archive", label: "Lưu trữ", icon: <ArchiveBoxOutlined />, onClick: () => onArchive(row) }]
+            : []),
+          { key: "delete", label: "Xóa câu hỏi", icon: <TrashOutlined />, onClick: () => onDelete(row) },
+        ];
+        return (
+          <TableRowActions
+            buttons={[
+              { title: "Xem", icon: <EyeOutlined />, onClick: () => onView(row) },
+              { title: "Sửa", icon: <PencilSquareOutlined />, onClick: () => onEdit(row) },
+            ]}
+            menuItems={menuItems}
+          />
+        );
+      },
     },
   ];
 

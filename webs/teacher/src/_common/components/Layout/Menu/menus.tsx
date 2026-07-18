@@ -264,6 +264,7 @@ export const PATHS = {
   notifications: "/notifications",
   timesheet: "/timesheet",
   payroll: "/payroll",
+  teachers: "/teachers",
   leaveRequest: "/leave-request",
   leaveRequestAll: "/leave-request/all",
   subscription: "/subscription",
@@ -296,6 +297,9 @@ export interface MenuItem {
   feature?: string;
 }
 
+// Ordered to mirror the teaching workflow: Course → Classroom → Timetable
+// (incl. generating class sessions) → Attendance → Lesson (via lesson plans)
+// → Evaluation, then the remaining catalog/admin pages.
 export const MENU: MenuItem[] = [
   {
     key: "dashboard",
@@ -304,16 +308,22 @@ export const MENU: MenuItem[] = [
     icon: <HomeOutlined />,
   },
   {
-    key: "schedule",
-    title: "Lịch dạy",
-    path: PATHS.schedule,
-    icon: <CalendarDaysOutlined />,
+    key: "courses",
+    title: "Khóa học",
+    path: PATHS.courses,
+    icon: <BookOpenOutlined />,
   },
   {
     key: "classes",
     title: "Lớp học",
     path: PATHS.classroom,
     icon: <UsersOutlined />,
+  },
+  {
+    key: "schedule",
+    title: "Lịch dạy",
+    path: PATHS.schedule,
+    icon: <CalendarDaysOutlined />,
   },
   {
     key: "attendance",
@@ -326,6 +336,12 @@ export const MENU: MenuItem[] = [
     title: "Giáo án",
     path: PATHS.lessonPlans,
     icon: <BookOpenOutlined />,
+  },
+  {
+    key: "evaluation",
+    title: "Đánh giá",
+    path: PATHS.evaluation,
+    icon: <ChatBubbleLeftRightOutlined />,
   },
   {
     key: "materials",
@@ -359,51 +375,16 @@ export const MENU: MenuItem[] = [
     icon: <ClipboardDocumentListOutlined />,
   },
   {
-    key: "evaluation",
-    title: "Đánh giá",
-    path: PATHS.evaluation,
-    icon: <ChatBubbleLeftRightOutlined />,
-  },
-  {
     key: "students",
     title: "Học viên",
     path: PATHS.students,
     icon: <AcademicCapOutlined />,
   },
   {
-    key: "more",
-    title: "Khác",
-    path: PATHS.more,
-    icon: <SquaresPlusOutlined />,
-  },
-];
-
-// Secondary items, reached via the "Khác" entry above instead of the pinned
-// sidebar (webs/teacher/src/pages/More).
-export const MORE_MENU_ITEMS: MenuItem[] = [
-  {
-    key: "courses",
-    title: "Khóa học",
-    path: PATHS.courses,
-    icon: <BookOpenOutlined />,
-  },
-  {
     key: "levels",
     title: "Trình độ",
     path: PATHS.levels,
     icon: <AcademicCapOutlined />,
-  },
-  {
-    key: "achievement",
-    title: "Thành tích",
-    path: PATHS.achievement,
-    icon: <StarOutlined />,
-  },
-  {
-    key: "ranking",
-    title: "Xếp hạng",
-    path: PATHS.ranking,
-    icon: <TrophyOutlined />,
   },
   {
     key: "parents",
@@ -418,61 +399,117 @@ export const MORE_MENU_ITEMS: MenuItem[] = [
     icon: <HomeModernOutlined />,
   },
   {
-    key: "reports",
-    title: "Báo cáo",
-    path: PATHS.reports,
-    icon: <ChartBarOutlined />,
-    feature: "advanced_reports",
-  },
-  {
-    key: "timesheet",
-    title: "Bảng công",
-    path: PATHS.timesheet,
-    icon: <ClipboardDocumentCheckOutlined />,
-  },
-  {
-    key: "payroll",
-    title: "Bảng lương",
-    path: PATHS.payroll,
-    icon: <BanknotesOutlined />,
-  },
-  {
-    key: "leave-request",
-    title: "Đơn xin nghỉ",
-    path: PATHS.leaveRequest,
-    icon: <CalendarDaysOutlined />,
-  },
-  {
-    key: "subscription",
-    title: "Gói đăng ký",
-    path: PATHS.subscription,
-    icon: <RectangleGroupOutlined />,
-  },
-  {
-    key: "wallet",
-    title: "Ví cá nhân",
-    path: PATHS.wallet,
-    icon: <WalletOutlined />,
-  },
-  {
-    key: "invoices",
-    title: "Hóa đơn",
-    path: PATHS.invoices,
-    icon: <ReceiptPercentOutlined />,
-  },
-  {
-    key: "package-management",
-    title: "Gói đã đăng ký",
-    path: PATHS.packageManagement,
-    icon: <GiftOutlined />,
-  },
-  {
-    key: "settings",
-    title: "Cài đặt",
-    path: PATHS.settings,
-    icon: <Cog6ToothOutlined />,
+    key: "more",
+    title: "Khác",
+    path: PATHS.more,
+    icon: <SquaresPlusOutlined />,
   },
 ];
+
+export interface MoreMenuSection {
+  key: string;
+  title: string;
+  items: MenuItem[];
+}
+
+// Secondary items, reached via the "Khác" entry above instead of the pinned
+// sidebar (webs/teacher/src/pages/More). Grouped by domain so the flat list
+// of 14 items doesn't read as an undifferentiated dump.
+export const MORE_MENU_SECTIONS: MoreMenuSection[] = [
+  {
+    key: "academic",
+    title: "Học vụ",
+    items: [
+      {
+        key: "achievement",
+        title: "Thành tích",
+        path: PATHS.achievement,
+        icon: <StarOutlined />,
+      },
+      {
+        key: "ranking",
+        title: "Xếp hạng",
+        path: PATHS.ranking,
+        icon: <TrophyOutlined />,
+      },
+    ],
+  },
+  {
+    key: "hr",
+    title: "Nhân sự",
+    items: [
+      {
+        key: "teachers",
+        title: "Giáo viên",
+        path: PATHS.teachers,
+        icon: <UserOutlined />,
+      },
+      {
+        key: "timesheet",
+        title: "Bảng công",
+        path: PATHS.timesheet,
+        icon: <ClipboardDocumentCheckOutlined />,
+      },
+      {
+        key: "payroll",
+        title: "Bảng lương",
+        path: PATHS.payroll,
+        icon: <BanknotesOutlined />,
+      },
+      {
+        key: "leave-request",
+        title: "Đơn xin nghỉ",
+        path: PATHS.leaveRequestAll,
+        icon: <CalendarDaysOutlined />,
+      },
+    ],
+  },
+  {
+    key: "finance",
+    title: "Tài chính",
+    items: [
+      {
+        key: "wallet",
+        title: "Ví cá nhân",
+        path: PATHS.wallet,
+        icon: <WalletOutlined />,
+      },
+      {
+        key: "invoices",
+        title: "Hóa đơn",
+        path: PATHS.invoices,
+        icon: <ReceiptPercentOutlined />,
+      },
+      {
+        key: "package-management",
+        title: "Gói đã đăng ký",
+        path: PATHS.packageManagement,
+        icon: <GiftOutlined />,
+      },
+    ],
+  },
+  {
+    key: "other",
+    title: "Khác",
+    items: [
+      {
+        key: "reports",
+        title: "Báo cáo",
+        path: PATHS.reports,
+        icon: <ChartBarOutlined />,
+        feature: "advanced_reports",
+      },
+      {
+        key: "settings",
+        title: "Cài đặt",
+        path: PATHS.settings,
+        icon: <Cog6ToothOutlined />,
+      },
+    ],
+  },
+];
+
+export const MORE_MENU_ITEMS: MenuItem[] = MORE_MENU_SECTIONS.flatMap((section) => section.items);
 
 export const BOTTOM_NAV: MenuItem[] = [
   {

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Modal, notification } from "tera-dls";
+import { notification } from "tera-dls";
 
 import { SuperadminService } from "@tera/modules/system";
+import FormScaff from "@tera/components/dof/FormScaff";
 
 const inputClass =
   "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none";
@@ -135,16 +136,16 @@ const PackageFormModal = ({ open, pkg, onClose }: Props) => {
   };
 
   return (
-    <Modal
-      title={isEdit ? "Sửa gói dịch vụ" : "Tạo gói dịch vụ"}
+    <FormScaff
       open={open}
+      onClose={onClose}
+      isEdit={isEdit}
+      titleCreate="Tạo gói dịch vụ"
+      titleEdit="Sửa gói dịch vụ"
       className="!w-[95%] xmd:!w-[600px]"
       okText={isEdit ? "Lưu" : "Tạo gói"}
-      cancelText="Hủy"
       confirmLoading={creating || updating}
       onOk={handleSubmit}
-      onCancel={onClose}
-      destroyOnClose
     >
       <div className="max-h-[70vh] space-y-3 overflow-y-auto pr-1">
         {!isEdit && (
@@ -248,7 +249,7 @@ const PackageFormModal = ({ open, pkg, onClose }: Props) => {
           />
         </div>
       </div>
-    </Modal>
+    </FormScaff>
   );
 };
 

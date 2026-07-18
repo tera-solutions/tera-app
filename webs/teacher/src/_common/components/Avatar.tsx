@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { UserOutlined } from "tera-dls";
 import classNames from "classnames";
 
@@ -26,11 +26,15 @@ const Avatar = ({
   fallbackIcon = <UserOutlined />,
   shrink = true,
 }: AvatarProps) => {
-  if (src) {
+  const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [src]);
+
+  if (src && !failed) {
     return (
       <img
         src={src}
         alt={alt}
+        onError={() => setFailed(true)}
         className={classNames(sizeClassName, shrink && "shrink-0", "rounded-full object-cover")}
       />
     );

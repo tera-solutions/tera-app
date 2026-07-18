@@ -44,6 +44,7 @@ import Wallet from "pages/Wallet";
 import Deposit from "pages/Deposit";
 import Withdraw from "pages/Withdraw";
 import Timesheet from "pages/Timesheet";
+import TeacherPage from "pages/Teacher";
 import Payroll from "pages/Payroll";
 import PayrollDetail from "pages/Payroll/PayrollDetailPage";
 import LeaveRequest from "pages/LeaveRequest";
@@ -55,7 +56,6 @@ import Settings from "pages/Settings";
 import Report from "pages/Report";
 import PlacementTest from "pages/PlacementTest";
 import PackageManagement from "pages/PackageManagement";
-import Subscription from "pages/Subscription";
 import Placeholder from "pages/Placeholder";
 import More from "pages/More";
 import Courses from "pages/Courses";
@@ -180,6 +180,7 @@ export const Routers = () => {
         <Route path={PATHS.walletDeposit} element={<Deposit />} />
         <Route path={PATHS.walletWithdraw} element={<Withdraw />} />
         <Route path={PATHS.timesheet} element={<Timesheet />} />
+        <Route path={PATHS.teachers} element={<TeacherPage />} />
         <Route path={PATHS.payroll} element={<Payroll />} />
         <Route path={`${PATHS.payroll}/:id`} element={<PayrollDetail />} />
         <Route path={PATHS.leaveRequest} element={<LeaveRequest />} />
@@ -233,7 +234,9 @@ export const Routers = () => {
           }
         />
 
-        <Route path={PATHS.subscription} element={<Subscription />} />
+        {/* "Gói đăng ký" trùng chức năng với "Quản lý gói" (PackageManagement, dữ liệu
+            thật) — giữ route cũ chuyển hướng cho link/bookmark cũ, gỡ trang mock. */}
+        <Route path={PATHS.subscription} element={<Navigate to={PATHS.packageManagement} replace />} />
         <Route path={PATHS.profile} element={<MyInfo />} />
         <Route path={PATHS.more} element={<More />} />
         {PLACEHOLDER_PATHS.map((path) => (

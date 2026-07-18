@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Card from "_common/components/Card";
+import { CourseService } from "@tera/modules/education";
 import type { Classroom } from "pages/Classroom/_interface";
 import WizardSteps from "pages/LessonPlan/Wizard/components/WizardSteps";
 
@@ -17,7 +18,23 @@ const Enrollment = () => {
   const [maxStep, setMaxStep] = useState(1);
   const [selectedClass, setSelectedClass] = useState<Classroom | null>(null);
   const [pricing, setPricing] = useState<EnrollmentPricing>(DEFAULT_PRICING);
+  const [pricingConfirmed, setPricingConfirmed] = useState(false);
   const [students, setStudents] = useState<EnrollmentDraftStudent[]>([]);
+
+  // Seed the pricing step with the class's own course price instead of a
+  // generic default — the presets in StepPricing are local UI sugar with no
+  // backend catalog behind them, but `edu_courses.price_per_lesson` is real.
+  const courseQuery = CourseService.useCourseDetail(
+    { id: selectedClass?.course_id ?? "" },
+    { enabled: !!selectedClass?.course_id },
+  );
+  useEffect(() => {
+    const coursePrice = courseQuery.data?.data?.course?.price_per_lesson;
+    if (!pricingConfirmed && coursePrice != null) {
+      setPricing((prev) => ({ ...prev, price_per_lesson: Number(coursePrice) }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseQuery.data, selectedClass?.id]);
 
   const completedSteps = useMemo(
     () => Array.from({ length: Math.max(maxStep - 1, 0) }, (_, i) => i + 1),
@@ -70,6 +87,7 @@ const Enrollment = () => {
               onBack={() => setStep(1)}
               onNext={(values) => {
                 setPricing(values);
+                setPricingConfirmed(true);
                 advance(3);
               }}
             />
@@ -97,7 +115,7 @@ const Enrollment = () => {
 
         <EnrollmentSummarySidebar
           classroom={selectedClass}
-          pricing={pricing}
+          pricing={pricingConfirmed ? pricing : null}
           studentCount={students.length}
         />
       </div>

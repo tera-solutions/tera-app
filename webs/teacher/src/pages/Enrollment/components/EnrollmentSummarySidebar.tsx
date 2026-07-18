@@ -6,7 +6,9 @@ import { calcTuitionAmount, formatVnd } from "../_utils";
 
 interface EnrollmentSummarySidebarProps {
   classroom: Classroom | null;
-  pricing: EnrollmentPricing;
+  /** null = pricing step not confirmed yet — don't show computed numbers as
+   * if they were real, since they'd just be the unconfirmed form defaults. */
+  pricing: EnrollmentPricing | null;
   studentCount: number;
 }
 
@@ -18,8 +20,9 @@ const Row = ({ label, value }: { label: string; value: React.ReactNode }) => (
 );
 
 const EnrollmentSummarySidebar = ({ classroom, pricing, studentCount }: EnrollmentSummarySidebarProps) => {
-  const tuitionAmount = calcTuitionAmount(pricing);
-  const total = tuitionAmount * Math.max(studentCount, 1);
+  const tuitionAmount = pricing ? calcTuitionAmount(pricing) : 0;
+  // No phantom "assume 1 student" floor — 0 học viên really does mean 0đ.
+  const total = tuitionAmount * studentCount;
 
   return (
     <div className="flex flex-col gap-4">
@@ -27,7 +30,10 @@ const EnrollmentSummarySidebar = ({ classroom, pricing, studentCount }: Enrollme
         <p className="mb-3 text-sm font-semibold text-slate-700">Tóm tắt</p>
         <div className="flex flex-col gap-2">
           <Row label="Lớp" value={classroom?.name ?? "Chưa chọn"} />
-          <Row label="Học phí" value={`${formatVnd(pricing.price_per_lesson)}/buổi`} />
+          <Row
+            label="Học phí"
+            value={pricing ? `${formatVnd(pricing.price_per_lesson)}/buổi` : "Chưa thiết lập"}
+          />
           <Row label="Số HV" value={studentCount} />
         </div>
       </Card>
@@ -44,7 +50,9 @@ const EnrollmentSummarySidebar = ({ classroom, pricing, studentCount }: Enrollme
 
       <Card>
         <p className="mb-1 text-xs text-slate-400">Tổng thanh toán</p>
-        <p className="text-xl font-bold text-brand">{formatVnd(total)}</p>
+        <p className="text-xl font-bold text-brand">
+          {pricing && studentCount > 0 ? formatVnd(total) : "—"}
+        </p>
       </Card>
     </div>
   );

@@ -6,11 +6,11 @@ import moment from "moment";
 import {
   BookOpenOutlined,
   DocumentTextOutlined,
-  Modal,
   notification,
   Spin,
 } from "tera-dls";
 
+import FormScaff from "@tera/components/dof/FormScaff";
 import Breadcrumb from "_common/components/Breadcrumb";
 import Card from "_common/components/Card";
 import ClassroomInfoCard from "_common/components/ClassroomInfoCard";
@@ -356,16 +356,17 @@ const PlanLessons = observer(() => {
         )
       )}
 
-      <Modal
-        title="Hủy buổi học"
+      <FormScaff
         open={!!cancelling}
+        onClose={() => setCancelling(null)}
+        isEdit={false}
+        titleCreate="Hủy buổi học"
+        titleEdit="Hủy buổi học"
         okText="Xác nhận hủy"
         cancelText="Đóng"
         confirmLoading={isCancelling}
         okButtonProps={{ disabled: !reason.trim() }}
         onOk={submitCancel}
-        onCancel={() => setCancelling(null)}
-        destroyOnClose
       >
         <p className="mb-2 text-sm text-slate-600">
           Nhập lý do hủy buổi học <b>{cancelling?.lesson_title}</b>:
@@ -378,7 +379,7 @@ const PlanLessons = observer(() => {
           placeholder="Lý do hủy..."
           className="w-full resize-none rounded-xl border border-slate-200 p-3 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:border-brand"
         />
-      </Modal>
+      </FormScaff>
     </div>
   );
 });

@@ -1,5 +1,8 @@
+import { useState } from "react";
 import moment from "moment";
-import { DocumentOutlined, EyeOutlined, TrashOutlined } from "tera-dls";
+import { ArrowDownTrayOutlined, DocumentOutlined, EyeOutlined, notification, Spin, TrashOutlined } from "tera-dls";
+
+import { FileAPI } from "@tera/api/common/FileAPI";
 
 import IconBox from "_common/components/IconBox";
 import Table, { TableColumn } from "_common/components/Table";
@@ -19,6 +22,26 @@ interface MaterialTableProps {
 }
 
 const MaterialTable = ({ items, loading, isError, onRetry, onView, onDelete }: MaterialTableProps) => {
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
+
+  const handleDownload = async (row: MaterialRow) => {
+    if (!row.fileId) return;
+    setDownloadingId(row.id);
+    try {
+      const file = await FileAPI.download(row.fileId);
+      const link = document.createElement("a");
+      link.href = file.src;
+      link.download = file.name || row.name;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err: any) {
+      notification.error({ message: err?.msg ?? err?.message ?? "Tải tài liệu thất bại" });
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   const columns: TableColumn<MaterialRow>[] = [
     {
       key: "name",
@@ -63,15 +86,28 @@ const MaterialTable = ({ items, loading, isError, onRetry, onView, onDelete }: M
     {
       key: "actions",
       title: "",
-      headerClassName: "w-20",
-      render: (row) => (
-        <TableRowActions
-          buttons={[{ title: "Xem", icon: <EyeOutlined />, onClick: () => onView(row) }]}
-          menuItems={[
-            { key: "delete", label: "Xóa tài liệu", icon: <TrashOutlined />, onClick: () => onDelete(row) },
-          ]}
-        />
-      ),
+      headerClassName: "w-28",
+      render: (row) =>
+        downloadingId === row.id ? (
+          <span className="flex h-8 w-8 items-center justify-center [&_svg]:h-4 [&_svg]:w-4">
+            <Spin spinning size="small" />
+          </span>
+        ) : (
+          <TableRowActions
+            buttons={[
+              { title: "Xem", icon: <EyeOutlined />, onClick: () => onView(row) },
+              {
+                title: "Tải xuống",
+                icon: <ArrowDownTrayOutlined />,
+                onClick: () => handleDownload(row),
+                disabled: !row.fileId,
+              },
+            ]}
+            menuItems={[
+              { key: "delete", label: "Xóa tài liệu", icon: <TrashOutlined />, onClick: () => onDelete(row) },
+            ]}
+          />
+        ),
     },
   ];
 

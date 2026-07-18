@@ -3,11 +3,8 @@ import { ReactNode, useMemo, useState } from "react";
 import { observer } from "mobx-react";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import moment from "moment";
 import {
-  BoltOutlined,
   Button,
-  DatePicker,
   DropdownItem,
   LockClosedOutlined,
   Modal,
@@ -94,9 +91,6 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
     session?: IClassSession | null;
   }>({ open: false, type: "create", session: null });
 
-  const [genOpen, setGenOpen] = useState(false);
-  const [gen, setGen] = useState({ from_date: "", to_date: "", override: false });
-
   const [pendingCancel, setPendingCancel] = useState<IClassSession | null>(null);
   const [reason, setReason] = useState("");
 
@@ -124,8 +118,6 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
     { params: listParams },
     { enabled: !!classId },
   );
-  const { mutate: onGenerate, isPending: generating } =
-    ClassSessionService.useClassSessionGenerate();
   const { mutate: onCancel, isPending: canceling } =
     ClassSessionService.useClassSessionCancel();
   const { mutate: onDelete } = ClassSessionService.useClassSessionDelete();
@@ -164,24 +156,6 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
   const perPage = Number(pagination?.per_page || params?.per_page || 20);
 
   const resetPage = () => setParams((p: any) => ({ ...p, page: 1 }));
-
-  const handleGenerate = () => {
-    if (!classId) return;
-    onGenerate(
-      { params: { class_id: classId, ...gen } },
-      {
-        onSuccess: () => {
-          invalidate();
-          notification.success({ message: t("classroom.generate_success") });
-          setGenOpen(false);
-        },
-        onError: (e: any) =>
-          notification.error({
-            message: e?.message || t("common.error_message"),
-          }),
-      },
-    );
-  };
 
   const handleDelete = (id?: number) => {
     if (!id) return;
@@ -486,19 +460,6 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
           </div>
           <div className="flex items-center gap-2 ml-auto">
             <Button
-              onClick={() => {
-                setGen({ from_date: "", to_date: "", override: false });
-                setGenOpen(true);
-              }}
-              title={t("classroom.generate_sessions")}
-              className="rounded-xsm! bg-white! border! border-blue-500! text-blue-600! hover:bg-blue-50! whitespace-nowrap px-2! xmd:px-3!"
-            >
-              <BoltOutlined className="w-4 h-4" />
-              <span className="hidden xmd:inline ml-1.5">
-                {t("classroom.generate_sessions")}
-              </span>
-            </Button>
-            <Button
               onClick={() =>
                 setModalData({ open: true, type: "create", session: null })
               }
@@ -624,97 +585,6 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
           }
         />
       )}
-
-      {/* Generate modal */}
-      <Modal
-        title={t("classroom.generate_sessions")}
-        open={genOpen}
-        onCancel={() => setGenOpen(false)}
-        closeIcon={false}
-        centered
-        width="92%"
-        className="max-w-[460px]!"
-        footer={
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => setGenOpen(false)}
-              className="px-4 py-1.5 text-[13px] border border-gray-300 rounded hover:bg-gray-50"
-            >
-              {t("button.cancel")}
-            </button>
-            <button
-              type="button"
-              onClick={handleGenerate}
-              disabled={generating || !gen.from_date || !gen.to_date}
-              className="px-4 py-1.5 text-[13px] bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-            >
-              {generating ? t("common.processing") : t("classroom.generate_sessions")}
-            </button>
-          </div>
-        }
-      >
-        <div className="flex flex-col gap-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[12px] text-gray-500 mb-1">
-                {t("common.from")}
-              </label>
-              <DatePicker
-                className="w-full"
-                value={gen.from_date ? moment(gen.from_date, "YYYY-MM-DD") : undefined}
-                format="DD/MM/YYYY"
-                placeholder="DD/MM/YYYY"
-                allowClear
-                onChange={(date: any) =>
-                  setGen((p) => ({
-                    ...p,
-                    from_date: date ? moment(date).format("YYYY-MM-DD") : "",
-                  }))
-                }
-              />
-            </div>
-            <div>
-              <label className="block text-[12px] text-gray-500 mb-1">
-                {t("common.to")}
-              </label>
-              <DatePicker
-                className="w-full"
-                value={gen.to_date ? moment(gen.to_date, "YYYY-MM-DD") : undefined}
-                format="DD/MM/YYYY"
-                placeholder="DD/MM/YYYY"
-                allowClear
-                disabledDate={(d: any) =>
-                  !!gen.from_date && d && d.isBefore(moment(gen.from_date, "YYYY-MM-DD"), "day")
-                }
-                onChange={(date: any) =>
-                  setGen((p) => ({
-                    ...p,
-                    to_date: date ? moment(date).format("YYYY-MM-DD") : "",
-                  }))
-                }
-              />
-            </div>
-          </div>
-          <div>
-            <label className="flex items-center gap-2 text-[13px] text-gray-700 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={gen.override}
-                onChange={(e) =>
-                  setGen((p) => ({ ...p, override: e.target.checked }))
-                }
-              />
-              {t("classroom.generate_override")}
-            </label>
-            {gen.override && (
-              <p className="text-[12px] text-amber-600 mt-1 pl-6">
-                {t("classroom.generate_override_hint")}
-              </p>
-            )}
-          </div>
-        </div>
-      </Modal>
 
       {/* Cancel modal */}
       <Modal

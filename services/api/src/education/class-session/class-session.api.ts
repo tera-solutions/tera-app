@@ -9,7 +9,8 @@ import {
 } from "@tera/api/_interface";
 
 export const ClassSessionAPI = {
-  // List + Create + Generate lồng theo lớp: /edu/class-room/:classId/session/*
+  // List + Create lồng theo lớp: /edu/class-room/:classId/session/*
+  // (bulk "generate" đã bị gỡ — Timetable tự sinh session khi tạo, xem services/api/src/education/timetable)
   getList: async ({ params }: ListPayload) => {
     const { class_id, ...rest } = params ?? {};
     return await api
@@ -21,14 +22,6 @@ export const ClassSessionAPI = {
     const { class_id, ...rest } = params ?? {};
     return await api
       .post(`${endpoint}/edu/class-room/${class_id}/session/create`, rest)
-      .then((r) => r.data);
-  },
-
-  // Sinh buổi học tự động cho lớp
-  generate: async ({ params }: CreatePayload) => {
-    const { class_id, ...rest } = params ?? {};
-    return await api
-      .post(`${endpoint}/edu/class-room/${class_id}/session/generate`, rest)
       .then((r) => r.data);
   },
 

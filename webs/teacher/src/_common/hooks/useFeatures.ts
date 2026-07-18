@@ -12,9 +12,18 @@ import { ProfileService } from "@tera/modules/system";
  * Sourced from /api/auth/profile (loaded at app bootstrap, shared cache), which
  * embeds the current subscription — no extra request. While the profile is still
  * loading we optimistically grant features so guarded pages don't flash an upsell.
+ *
+ * staleTime/refetchOnWindowFocus are pinned here because the app's QueryClient
+ * has no defaultOptions (staleTime: 0) — without this, every window-focus event
+ * silently refetches the profile, and any inconsistency in the subscription
+ * payload between requests flips featureKeys between null (optimistic) and the
+ * real restricted list, making sidebar items repeatedly appear/disappear.
  */
 export const useFeatures = () => {
-  const query = ProfileService.useProfile();
+  const query = ProfileService.useProfile({
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
   const featureKeys = useMemo<string[] | null>(() => {
     const subscription = query.data?.data?.subscription;

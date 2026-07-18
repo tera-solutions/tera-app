@@ -58,7 +58,6 @@ export interface IClassRoomStatistics {
 export interface IClassSession {
   id?: number;
   class_id?: number;
-  schedule_id?: number | null;
   session_no?: number;
   code?: string;
   name?: string;
@@ -88,13 +87,6 @@ export interface IClassSessionForm {
   note?: string;
 }
 
-export interface IClassRoomScheduleForm {
-  id?: number;
-  weekday?: number | string;
-  start_time?: string;
-  end_time?: string;
-}
-
 export interface IClassRoomForm {
   // Tab 1: Thông tin cơ bản
   code: string;
@@ -114,6 +106,4 @@ export interface IClassRoomForm {
   min_capacity?: number | string;
   max_warning_capacity?: number | string;
   max_capacity?: number | string;
-  // Tab 3: Lịch học
-  schedules?: IClassRoomScheduleForm[];
 }

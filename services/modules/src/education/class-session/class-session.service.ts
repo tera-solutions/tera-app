@@ -54,20 +54,6 @@ export const useClassSessionCreate = () => {
   });
 };
 
-export const useClassSessionGenerate = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: CreatePayload) => ClassSessionAPI.generate(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["class-session", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
 export const useClassSessionUpdate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -150,7 +136,6 @@ export const ClassSessionService = {
   useClassSessionList,
   useClassSessionDetail,
   useClassSessionCreate,
-  useClassSessionGenerate,
   useClassSessionUpdate,
   useClassSessionCancel,
   useClassSessionStart,

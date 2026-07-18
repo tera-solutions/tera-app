@@ -6,6 +6,7 @@ import {
   CalendarDaysOutlined,
   Drawer,
   FunnelOutlined,
+  PlusOutlined,
   Spin,
   XMarkOutlined,
 } from "tera-dls";
@@ -25,6 +26,7 @@ import DayCalendar from "./components/DayCalendar";
 import ListCalendar from "./components/ListCalendar";
 import RangeView from "./components/RangeView";
 import ScheduleDetailDrawer from "./components/ScheduleDetailDrawer";
+import TimetableFormModal from "./components/TimetableFormModal";
 import FilterSidebar from "./components/FilterSidebar";
 import MonthStatsCard from "./components/MonthStatsCard";
 import { TimetableService } from "@tera/modules/education";
@@ -40,6 +42,7 @@ const Schedule = () => {
   >(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const [scheduleFilters, setScheduleFilters] = useUrlFilters(
     {
@@ -333,6 +336,13 @@ const Schedule = () => {
             Quản lý lịch dạy chi tiết theo tuần và tháng
           </p>
         </div>
+        <Button
+          icon={<PlusOutlined />}
+          onClick={() => setCreateOpen(true)}
+          className="whitespace-nowrap bg-brand hover:bg-brand/80"
+        >
+          Tạo thời khóa biểu
+        </Button>
       </div>
 
       <div className="mb-4">
@@ -445,6 +455,8 @@ const Schedule = () => {
         scheduleId={selectedId}
         onClose={() => setSelectedId(null)}
       />
+
+      <TimetableFormModal open={createOpen} onClose={() => setCreateOpen(false)} />
     </div>
   );
 };

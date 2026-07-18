@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Modal, notification } from "tera-dls";
+import { notification } from "tera-dls";
 
 import { useStores } from "@tera/stores/useStores";
 import { RoomService } from "@tera/modules/education";
+import FormScaff from "@tera/components/dof/FormScaff";
 
 import type { Room } from "../_interface";
 
@@ -81,16 +82,15 @@ const RoomFormModal = ({ open, room, onClose }: Props) => {
   };
 
   return (
-    <Modal
-      title={isEdit ? "Sửa phòng học" : "Thêm phòng học"}
+    <FormScaff
       open={open}
+      onClose={onClose}
+      isEdit={isEdit}
+      titleCreate="Thêm phòng học"
+      titleEdit="Sửa phòng học"
       className="!w-[95%] xmd:!w-[480px]"
-      okText={isEdit ? "Lưu" : "Tạo"}
-      cancelText="Hủy"
       confirmLoading={creating || updating}
       onOk={handleSubmit}
-      onCancel={onClose}
-      destroyOnClose
     >
       <div className="space-y-3">
         <div>
@@ -130,7 +130,7 @@ const RoomFormModal = ({ open, room, onClose }: Props) => {
           </select>
         </div>
       </div>
-    </Modal>
+    </FormScaff>
   );
 };
 

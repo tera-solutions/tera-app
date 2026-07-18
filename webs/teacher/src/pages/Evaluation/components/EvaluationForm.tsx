@@ -1,7 +1,8 @@
 import { Controller, useForm } from "react-hook-form";
-import { Modal, notification, Select } from "tera-dls";
+import { notification, Select } from "tera-dls";
 
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
+import FormScaff from "@tera/components/dof/FormScaff";
 import InputNumber from "@tera/components/dof/Control/InputNumber";
 import TextArea from "@tera/components/dof/Control/TextArea";
 
@@ -65,16 +66,18 @@ const EvaluationForm = ({ open, onClose, studentId, studentName, classId }: Eval
     );
   };
 
+  const title = `Thêm nhận xét${studentName ? ` — ${studentName}` : ""}`;
+
   return (
-    <Modal
-      title={`Thêm nhận xét${studentName ? ` — ${studentName}` : ""}`}
+    <FormScaff
       open={open}
+      onClose={handleClose}
+      isEdit={false}
+      titleCreate={title}
+      titleEdit={title}
       className="!w-[95%] xmd:!w-[560px]"
       okText="Lưu nhận xét"
-      cancelText="Hủy"
-      onCancel={handleClose}
       onOk={() => form.handleSubmit(handleSubmit)()}
-      destroyOnClose
       confirmLoading={isPending}
     >
       <FormTera form={form} onSubmit={form.handleSubmit(handleSubmit)}>
@@ -125,7 +128,7 @@ const EvaluationForm = ({ open, onClose, studentId, studentName, classId }: Eval
           <TextArea placeholder="Nhận xét về học viên..." rows={4} />
         </FormTeraItem>
       </FormTera>
-    </Modal>
+    </FormScaff>
   );
 };
 

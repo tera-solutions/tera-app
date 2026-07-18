@@ -3,6 +3,7 @@ import {
   BookOpenOutlined,
   Button,
   CheckBadgeOutlined,
+  FolderOpenOutlined,
   notification,
   PlusOutlined,
   StarOutlined,
@@ -28,6 +29,7 @@ import { summarizeQuestions, toQuestions } from "./_utils";
 import QuestionTable from "./components/QuestionTable";
 import QuestionBankFilterSidebar from "./components/QuestionBankFilterSidebar";
 import QuestionFormModal from "./components/QuestionFormModal";
+import CategoryTagManagerModal from "./components/CategoryTagManagerModal";
 
 const SUMMARY_FETCH_SIZE = 100;
 
@@ -35,6 +37,7 @@ const QuestionBank = () => {
   const confirm = useConfirm();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<QuestionRow | null>(null);
+  const [categoryTagOpen, setCategoryTagOpen] = useState(false);
 
   const [filters, setFilters] = useUrlFilters(
     {
@@ -90,6 +93,9 @@ const QuestionBank = () => {
   const perPage = listQuery.data?.data?.pagination?.per_page ?? filters.per_page;
 
   const { mutate: deleteQuestion } = QuestionService.useQuestionDelete();
+  const { mutate: cloneQuestion } = QuestionService.useQuestionClone();
+  const { mutate: reviewQuestion } = QuestionService.useQuestionReview();
+  const { mutate: archiveQuestion } = QuestionService.useQuestionArchive();
 
   const handleDelete = (row: QuestionRow) => {
     confirm.warning({
@@ -108,6 +114,33 @@ const QuestionBank = () => {
         ),
     });
   };
+
+  const handleClone = (row: QuestionRow) =>
+    cloneQuestion(
+      { id: row.id },
+      {
+        onSuccess: () => notification.success({ message: "Đã sao chép câu hỏi" }),
+        onError: (error: any) => notification.error({ message: error?.data?.msg ?? "Không thể sao chép câu hỏi" }),
+      },
+    );
+
+  const handleSubmitReview = (row: QuestionRow) =>
+    reviewQuestion(
+      { id: row.id },
+      {
+        onSuccess: () => notification.success({ message: "Đã gửi duyệt câu hỏi" }),
+        onError: (error: any) => notification.error({ message: error?.data?.msg ?? "Không thể gửi duyệt câu hỏi" }),
+      },
+    );
+
+  const handleArchive = (row: QuestionRow) =>
+    archiveQuestion(
+      { id: row.id },
+      {
+        onSuccess: () => notification.success({ message: "Đã lưu trữ câu hỏi" }),
+        onError: (error: any) => notification.error({ message: error?.data?.msg ?? "Không thể lưu trữ câu hỏi" }),
+      },
+    );
 
   const handleChangePage = (nextPage: number, nextSize: number) => {
     if (nextSize !== perPage) setFilters({ per_page: nextSize, page: 1 });
@@ -132,9 +165,19 @@ const QuestionBank = () => {
             Tạo, quản lý và sử dụng câu hỏi cho bài kiểm tra, bài tập và đánh giá.
           </p>
         </div>
-        <Button icon={<PlusOutlined />} onClick={openCreate} className="whitespace-nowrap bg-brand hover:bg-brand/80">
-          Thêm câu hỏi mới
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            outlined
+            icon={<FolderOpenOutlined />}
+            onClick={() => setCategoryTagOpen(true)}
+            className="whitespace-nowrap text-brand border-brand hover:bg-brand"
+          >
+            Danh mục & thẻ
+          </Button>
+          <Button icon={<PlusOutlined />} onClick={openCreate} className="whitespace-nowrap bg-brand hover:bg-brand/80">
+            Thêm câu hỏi mới
+          </Button>
+        </div>
       </div>
 
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -193,6 +236,9 @@ const QuestionBank = () => {
             onView={openEdit}
             onEdit={openEdit}
             onDelete={handleDelete}
+            onClone={handleClone}
+            onSubmitReview={handleSubmitReview}
+            onArchive={handleArchive}
           />
 
           <TablePagination
@@ -229,6 +275,7 @@ const QuestionBank = () => {
       </div>
 
       <QuestionFormModal open={formOpen} editing={editing} onClose={() => setFormOpen(false)} />
+      <CategoryTagManagerModal open={categoryTagOpen} onClose={() => setCategoryTagOpen(false)} />
     </div>
   );
 };

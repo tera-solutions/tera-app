@@ -1,54 +1,58 @@
 /**
- * [068] Đơn xin nghỉ (Leave Request) — TYPES = HỢP ĐỒNG DỮ LIỆU.
- *
- * ⚠️ UI-only: trang này CHƯA wire API. Đây là shape mà người làm API sẽ nối vào
- * (route thật `v1/edu/leave/*` — xem `docs/postman-structure.md` §5). Giữ tên field
- * khớp backend khi wire để không phải sửa lại UI. Nguồn data hiện tại = `_mock.ts`.
+ * [068] Đơn xin nghỉ — khớp `v1/edu/leave/*` (LeaveRequestResource, BE 2026-07-17).
+ * Đơn gắn với MỘT buổi học cụ thể (không phải quỹ phép năm): học viên xin nghỉ 1
+ * buổi (raise học bù) hoặc giáo viên xin nghỉ dạy 1 buổi.
  */
 
-export type LeaveStatus = "approved" | "pending" | "rejected";
+export type LeaveRequestType = "student_leave" | "teacher_leave";
 
-export type LeaveType = "annual" | "sick" | "personal" | "unpaid";
+export type LeaveReasonType = "sick" | "family" | "school_activity" | "vacation" | "personal" | "other";
 
-/** Số liệu tổng quan quỹ phép (4 thẻ đầu trang). */
-export interface LeaveStats {
-  /** Tổng ngày phép năm. */
-  totalDays: number;
-  /** Đã sử dụng (ngày). */
-  usedDays: number;
-  /** Còn lại (ngày). */
-  remainingDays: number;
-  /** Số đơn đang chờ duyệt. */
-  pendingCount: number;
-  /** Khoảng áp dụng quỹ phép, format hiển thị "DD/MM/YYYY". */
-  periodFrom: string;
-  periodTo: string;
+export type LeaveStatus = "pending" | "approved" | "rejected" | "cancelled" | "completed";
+
+export type MakeupStatus = "waiting" | "scheduled" | "completed" | "expired";
+
+export interface MakeupRow {
+  id: number;
+  status: MakeupStatus;
+  originalLessonLabel: string | null;
+  makeupLessonLabel: string | null;
 }
 
-/** Một đơn xin nghỉ (dùng cho lịch sử + tô lịch tháng). */
-export interface LeaveRequestItem {
-  id: string | number;
-  type: LeaveType;
-  /** Nhãn hiển thị của loại nghỉ (vd "Nghỉ phép năm"). */
-  typeLabel: string;
-  /** Ngày bắt đầu / kết thúc, ISO "YYYY-MM-DD". */
-  from: string;
-  to: string;
-  /** Tổng số ngày nghỉ của đơn. */
-  days: number;
-  reason: string;
+export interface LeaveRequestRow {
+  id: number;
+  code: string;
+  requestType: LeaveRequestType;
+  requesterId: number;
+  requesterName: string | null;
+  classRoomId: number | null;
+  lessonId: number | null;
+  lessonLabel: string | null;
+  leaveDate: string | null;
+  reasonType: LeaveReasonType;
+  reasonTypeLabel: string | null;
+  reason: string | null;
   status: LeaveStatus;
-  /** Ngày tạo đơn, ISO "YYYY-MM-DD" (hiển thị "Đơn ngày DD/MM/YYYY"). */
-  createdAt: string;
+  approvedAt: string | null;
+  rejectionReason: string | null;
+  makeups: MakeupRow[];
+  createdAt: string | null;
+  createdBy: number | null;
 }
 
-/** Body form tạo đơn (gửi lên khi wire API). */
-export interface CreateLeaveForm {
-  type: LeaveType | "";
-  /** Thời gian nghỉ: cả ngày / buổi sáng / buổi chiều / tùy chọn. */
-  duration: string;
-  from: string; // "YYYY-MM-DD"
-  to: string;
-  reason: string;
-  attachmentName?: string;
+export interface LeaveSummary {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+}
+
+/** Body form tạo đơn. */
+export interface CreateLeaveFormValues {
+  request_type: LeaveRequestType;
+  requester_id: number | string | undefined;
+  lesson_id: number | string | undefined;
+  leave_date: string;
+  reason_type: LeaveReasonType | "";
+  reason?: string;
 }

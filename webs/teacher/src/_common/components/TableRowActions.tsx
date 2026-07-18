@@ -10,7 +10,7 @@ export interface TableRowAction {
 
 interface TableRowActionsProps {
   /** Rendered as plain icon buttons before the overflow menu, e.g. view/edit. */
-  buttons?: { title: string; icon: ReactNode; onClick: () => void }[];
+  buttons?: { title: string; icon: ReactNode; onClick: () => void; disabled?: boolean }[];
   /** Rendered inside the "..." overflow dropdown, e.g. delete/publish. */
   menuItems?: TableRowAction[];
 }
@@ -26,7 +26,8 @@ const TableRowActions = ({ buttons = [], menuItems = [] }: TableRowActionsProps)
         type="button"
         title={btn.title}
         onClick={btn.onClick}
-        className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4.5 [&_svg]:w-4.5"
+        disabled={btn.disabled}
+        className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand disabled:cursor-not-allowed disabled:text-slate-200 disabled:hover:bg-transparent [&_svg]:h-4.5 [&_svg]:w-4.5"
       >
         {btn.icon}
       </button>

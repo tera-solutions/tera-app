@@ -1,10 +1,14 @@
 import { useMemo, useState } from "react";
-import moment from "moment";
 import { Button, CloudArrowUpOutlined, FolderPlusOutlined, notification } from "tera-dls";
 
+import { FileAPI } from "@tera/api/common/FileAPI";
+import ModalPreview from "@tera/components/dof/UploadFiles/ModalPreview";
+
 import Card from "_common/components/Card";
+import DonutStatsCard from "_common/components/DonutStatsCard";
 import SearchInput from "_common/components/SearchInput";
 import SortControl from "_common/components/SortControl";
+import StatusTabs from "_common/components/StatusTabs";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
@@ -13,19 +17,23 @@ import { MaterialService } from "@tera/modules/education";
 import useConfirm from "_common/hooks/useConfirm";
 
 import type { MaterialRow, MaterialSortBy, MaterialSortDir } from "./_interface";
-import { MATERIAL_SORT_OPTIONS, MATERIAL_STAT_SEGMENTS } from "./constants";
+import { MATERIAL_SORT_OPTIONS, MATERIAL_SUMMARY_SEGMENTS, MATERIAL_TYPE_TABS } from "./constants";
 import { summarizeMaterials, toMaterials } from "./_utils";
 import MaterialTable from "./components/MaterialTable";
+import MaterialStats from "./components/MaterialStats";
 import MaterialFilterSidebar from "./components/MaterialFilterSidebar";
 import UploadMaterialModal from "./components/UploadMaterialModal";
 
-/** Backend has no material summary endpoint — fetch a wide page to derive stat
- * cards + "recent materials" client-side, same pattern as Wallet's summary fetch. */
+/** Backend has no material summary endpoint — fetch a wide page to derive the
+ * stat cards + donut client-side, same pattern as Wallet's summary fetch. */
 const SUMMARY_FETCH_SIZE = 100;
 
 const Material = () => {
   const confirm = useConfirm();
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewFile, setPreviewFile] = useState<{ name: string; url: string } | null>(null);
 
   const [filters, setFilters] = useUrlFilters(
     {
@@ -45,9 +53,9 @@ const Material = () => {
   const summaryQuery = MaterialService.useMaterialList({
     params: { page: 1, per_page: SUMMARY_FETCH_SIZE, sort_by: "updated_at", sort_dir: "desc" },
   });
+  const isSummaryLoading = summaryQuery.isLoading;
   const summaryItems = useMemo(() => toMaterials(summaryQuery.data), [summaryQuery.data]);
   const summary = useMemo(() => summarizeMaterials(summaryItems), [summaryItems]);
-  const recentItems = useMemo(() => summaryItems.slice(0, 5), [summaryItems]);
 
   const listParams: Record<string, unknown> = {
     page: filters.page,
@@ -64,6 +72,25 @@ const Material = () => {
   const perPage = listQuery.data?.data?.pagination?.per_page ?? filters.per_page;
 
   const { mutate: deleteMaterial } = MaterialService.useMaterialDelete();
+
+  const handleView = async (row: MaterialRow) => {
+    if (!row.fileId) {
+      notification.warning({ message: "Tài liệu chưa có tệp đính kèm" });
+      return;
+    }
+    setPreviewFile(null);
+    setPreviewOpen(true);
+    setPreviewLoading(true);
+    try {
+      const file = await FileAPI.download(row.fileId);
+      setPreviewFile({ name: row.fileName ?? file.name, url: file.src });
+    } catch (err: any) {
+      notification.error({ message: err?.msg ?? err?.message ?? "Không thể xem tài liệu" });
+      setPreviewOpen(false);
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
 
   const handleDelete = (row: MaterialRow) => {
     confirm.warning({
@@ -88,8 +115,8 @@ const Material = () => {
     else setFilters({ page: nextPage });
   };
 
-  const handleSegmentClick = (types: string[] | null) =>
-    setFilters({ type: types?.length === 1 ? types[0] : "", page: 1 });
+  const handleTabChange = (key: string) =>
+    setFilters({ type: key === "all" ? "" : key, page: 1 });
 
   const toggleSortDir = () =>
     setFilters({ sort_dir: filters.sort_dir === "asc" ? "desc" : "asc" });
@@ -124,29 +151,20 @@ const Material = () => {
         </div>
       </div>
 
-      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
-        {MATERIAL_STAT_SEGMENTS.map((segment) => {
-          const count =
-            segment.types === null
-              ? summary.total
-              : segment.types.reduce((sum, t) => sum + (summary.byType[t] ?? 0), 0);
-          return (
-            <button
-              key={segment.key}
-              type="button"
-              onClick={() => handleSegmentClick(segment.types)}
-              className="rounded-2xl border border-slate-100 bg-white p-3 text-left shadow-sm transition-colors hover:border-brand/40"
-            >
-              <p className="text-lg font-bold text-slate-800">{count}</p>
-              <p className="text-xs font-medium text-slate-500">{segment.label}</p>
-            </button>
-          );
-        })}
+      <div className="mb-4">
+        <MaterialStats summary={summary} loading={isSummaryLoading} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_300px]">
         <Card>
-          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <StatusTabs
+            className="mb-3"
+            tabs={MATERIAL_TYPE_TABS}
+            activeKey={filters.type || "all"}
+            onChange={handleTabChange}
+          />
+
+          <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center">
             <SearchInput
               value={searchDraft}
               onChange={(e) => setSearchDraft(e.target.value)}
@@ -167,7 +185,7 @@ const Material = () => {
             loading={isLoading || isFetching}
             isError={isError}
             onRetry={() => refetch()}
-            onView={() => undefined}
+            onView={handleView}
             onDelete={handleDelete}
           />
 
@@ -187,26 +205,29 @@ const Material = () => {
             onReset={() => setFilters({ type: "", page: 1 })}
           />
 
-          <Card>
-            <p className="mb-3 text-sm font-semibold text-slate-700">Tài liệu gần đây</p>
-            <div className="flex flex-col gap-3">
-              {recentItems.length === 0 && (
-                <p className="text-xs text-slate-400">Chưa có tài liệu nào</p>
-              )}
-              {recentItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between gap-2">
-                  <p className="min-w-0 flex-1 truncate text-sm text-slate-700">{item.name}</p>
-                  <p className="shrink-0 text-xs text-slate-400">
-                    {item.updatedAt ? moment(item.updatedAt).format("DD/MM/YYYY") : "—"}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Card>
+          <DonutStatsCard
+            title="Phân loại tài liệu"
+            centerValue={String(summary.total)}
+            centerCaption="Tổng tài liệu"
+            loading={isSummaryLoading}
+            legend={MATERIAL_SUMMARY_SEGMENTS.map(({ key, label, color, value }) => ({
+              key,
+              label,
+              color,
+              value: value(summary),
+            }))}
+          />
         </div>
       </div>
 
       <UploadMaterialModal open={uploadOpen} onClose={() => setUploadOpen(false)} />
+
+      <ModalPreview
+        open={previewOpen}
+        file={previewFile}
+        loading={previewLoading}
+        handleClose={() => setPreviewOpen(false)}
+      />
     </div>
   );
 };

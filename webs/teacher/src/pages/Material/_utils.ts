@@ -11,6 +11,7 @@ export const toMaterials = (raw: any): MaterialRow[] =>
     description: item.description ?? null,
     accessType: item.access_type ?? "teacher",
     status: item.status ?? "draft",
+    fileId: item.current_file?.file_id ?? null,
     fileName: item.current_file?.file_name ?? null,
     fileSize: item.current_file?.file_size ?? null,
     mimeType: item.current_file?.mime_type ?? null,

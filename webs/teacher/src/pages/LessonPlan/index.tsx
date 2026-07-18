@@ -58,6 +58,7 @@ const LessonPlanPage = observer(() => {
 
   const confirm = useConfirm();
   const { mutate: archive } = LessonPlanService.useLessonPlanArchive();
+  const { mutate: publish } = LessonPlanService.useLessonPlanPublish();
 
   const handleTabChange = (key: string) => setFilters({ status: key, page: 1 });
   const handleCourseChange = (courseId: number | string | undefined) =>
@@ -174,6 +175,41 @@ const LessonPlanPage = observer(() => {
     });
   };
 
+  const handlePublish = (plan: LessonPlan) => {
+    confirm.warning({
+      title: "Xuất bản giáo án",
+      content: (
+        <p>
+          Bạn có chắc muốn xuất bản giáo án <b>{plan.plan_name}</b>? Sau khi xuất bản, giáo án
+          sẽ không thể chỉnh sửa trực tiếp — cần nhân bản để tạo phiên bản mới.
+        </p>
+      ),
+      onOk: () =>
+        publish(
+          { id: plan.id, params: {} },
+          {
+            onSuccess: (res: any) => {
+              if (res?.success === false) {
+                notification.error({
+                  message: res?.msg ?? "Xuất bản giáo án thất bại",
+                });
+                return;
+              }
+              notification.success({
+                message: res?.msg ?? "Xuất bản giáo án thành công",
+              });
+              refetch();
+            },
+            onError: (err: any) => {
+              notification.error({
+                message: err?.msg ?? err?.message ?? "Xuất bản giáo án thất bại",
+              });
+            },
+          },
+        ),
+    });
+  };
+
   return (
     <div className="p-4 xmd:p-6">
       <div className="mb-4 flex items-center justify-between gap-3">
@@ -266,6 +302,7 @@ const LessonPlanPage = observer(() => {
             onView={handleView}
             onEdit={handleEdit}
             onArchive={handleArchive}
+            onPublish={handlePublish}
           />
 
           <TablePagination

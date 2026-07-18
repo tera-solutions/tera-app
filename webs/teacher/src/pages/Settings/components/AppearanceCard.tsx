@@ -36,6 +36,9 @@ const AppearanceCard = () => {
           </button>
         ))}
       </div>
+      <p className="-mt-3 mb-4 text-xs text-slate-400">
+        Chế độ tối đang được phát triển, lựa chọn hiện chỉ được lưu lại.
+      </p>
 
       <p className="mb-1.5 text-sm font-semibold text-slate-700">Màu chủ đạo</p>
       <div className="mb-4 flex gap-2">

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQueries } from "@tanstack/react-query";
 import {
+  ArrowDownTrayOutlined,
   BanknotesOutlined,
   Button,
   ChartBarOutlined,
@@ -18,20 +19,26 @@ import StatusTabs from "_common/components/StatusTabs";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
+import { useMeta } from "_common/hooks/useMeta";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 import { StudentAPI } from "@tera/api";
 import { ClassRoomService } from "@tera/modules/education";
 import { InvoiceService } from "@tera/modules/finance";
 
 import type { InvoiceRow, InvoiceTab } from "./_interface";
-import { INVOICE_TAB_OPTIONS, PAYMENT_METHOD_COLORS, PAYMENT_METHOD_LABELS } from "./constants";
+import { INVOICE_TAB_OPTIONS, PAYMENT_METHOD_COLORS } from "./constants";
+import { exportInvoicesCsv } from "./_export";
 import { filterByTab, formatCurrency, summarizeInvoices, toInvoices } from "./_utils";
 import InvoiceTable from "./components/InvoiceTable";
 import InvoiceFilterSidebar from "./components/InvoiceFilterSidebar";
+import InvoiceCreateForm from "./components/InvoiceCreateForm";
+import InvoiceDetailModal from "./components/InvoiceDetailModal";
 
 /** Invoice has no teacher/class link — scope to the teacher's own students by
  * resolving their classroom rosters, same fix as Students/StudentDetail. */
 const Invoice = () => {
+  const { getLabel } = useMeta();
+  const getStatusLabel = (value?: string | null) => getLabel("invoice_status", value);
   const [filters, setFilters] = useUrlFilters(
     {
       tab: { type: "string", default: "all" as InvoiceTab },
@@ -45,6 +52,8 @@ const Invoice = () => {
   const [searchDraft, setSearchDraft] = useDebouncedSearch(filters.search, (trimmed) =>
     setFilters({ search: trimmed, page: 1 }),
   );
+  const [createOpen, setCreateOpen] = useState(false);
+  const [viewingId, setViewingId] = useState<number | null>(null);
 
   const classesQuery = ClassRoomService.useClassRoomList({ params: { per_page: 50 } });
   const classes = useMemo(() => classesQuery.data?.data?.items ?? [], [classesQuery.data]);
@@ -103,7 +112,7 @@ const Invoice = () => {
 
   const paymentMethodLegend = Object.entries(summary.byPaymentMethod).map(([key, value]) => ({
     key,
-    label: PAYMENT_METHOD_LABELS[key] ?? key,
+    label: getLabel("payment_method", key),
     color: PAYMENT_METHOD_COLORS[key] ?? PAYMENT_METHOD_COLORS.other,
     value,
     displayValue: formatCurrency(value),
@@ -118,13 +127,24 @@ const Invoice = () => {
             Quản lý doanh thu, hóa đơn và thanh toán của học viên trong lớp bạn dạy.
           </p>
         </div>
-        <Button
-          icon={<DocumentPlusOutlined />}
-          onClick={() => undefined}
-          className="whitespace-nowrap bg-brand hover:bg-brand/80"
-        >
-          Tạo hóa đơn
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            outlined
+            icon={<ArrowDownTrayOutlined />}
+            onClick={() => exportInvoicesCsv(filteredInvoices, getStatusLabel)}
+            disabled={isLoading || filteredInvoices.length === 0}
+            className="whitespace-nowrap text-brand border-brand hover:bg-brand"
+          >
+            Xuất hóa đơn
+          </Button>
+          <Button
+            icon={<DocumentPlusOutlined />}
+            onClick={() => setCreateOpen(true)}
+            className="whitespace-nowrap bg-brand hover:bg-brand/80"
+          >
+            Tạo hóa đơn
+          </Button>
+        </div>
       </div>
 
       <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -185,7 +205,7 @@ const Invoice = () => {
             />
           </div>
 
-          <InvoiceTable items={items} loading={isLoading} onView={() => undefined} />
+          <InvoiceTable items={items} loading={isLoading} onView={(row) => setViewingId(row.id)} />
 
           <TablePagination
             total={total}
@@ -212,6 +232,9 @@ const Invoice = () => {
           />
         </div>
       </div>
+
+      <InvoiceCreateForm open={createOpen} onClose={() => setCreateOpen(false)} />
+      <InvoiceDetailModal invoiceId={viewingId} onClose={() => setViewingId(null)} />
     </div>
   );
 };

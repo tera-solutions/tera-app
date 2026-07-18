@@ -1,7 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AcademicCapOutlined,
+  ArrowsRightLeftOutlined,
   BookOpenOutlined,
   Button,
   CalendarDaysOutlined,
@@ -9,6 +10,7 @@ import {
   Drawer,
   MapPinOutlined,
   Spin,
+  XCircleOutlined,
   XMarkOutlined,
 } from "tera-dls";
 import moment from "moment";
@@ -20,6 +22,14 @@ import StatusBadge from "_common/components/StatusBadge";
 import { ClassSessionService } from "@tera/modules/education";
 
 import { toSessionDetail } from "../_utils";
+import {
+  CancelSessionModal,
+  ChangeRoomModal,
+  ChangeTeacherModal,
+  RescheduleModal,
+} from "./SessionActionModals";
+
+type SessionAction = "teacher" | "room" | "reschedule" | "cancel" | null;
 
 interface ScheduleDetailDrawerProps {
   scheduleId: number | null;
@@ -60,6 +70,11 @@ const ScheduleDetailDrawer = ({
   });
   const { isLoading } = query;
   const detail = useMemo(() => toSessionDetail(query.data), [query.data]);
+  const [action, setAction] = useState<SessionAction>(null);
+
+  // Session-level ops (đổi GV/phòng, dời lịch, hủy) chỉ áp dụng cho buổi thuộc 1
+  // thời khóa biểu và chưa hoàn thành (BR-04, timetable-management.md §X).
+  const canManage = !!detail && detail.timetable_id != null && detail.status !== "completed";
 
   return (
     <Drawer
@@ -141,6 +156,34 @@ const ScheduleDetailDrawer = ({
 
         {detail && (
           <div className="flex flex-col gap-2 border-t border-slate-100 px-5 py-4">
+            {canManage && (
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setAction("teacher")}
+                  className="flex flex-col items-center gap-1 rounded-lg border border-slate-200 py-2 text-xs font-medium text-slate-600 hover:border-brand hover:text-brand [&_svg]:h-4 [&_svg]:w-4"
+                >
+                  <AcademicCapOutlined />
+                  Đổi GV
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAction("room")}
+                  className="flex flex-col items-center gap-1 rounded-lg border border-slate-200 py-2 text-xs font-medium text-slate-600 hover:border-brand hover:text-brand [&_svg]:h-4 [&_svg]:w-4"
+                >
+                  <MapPinOutlined />
+                  Đổi phòng
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAction("reschedule")}
+                  className="flex flex-col items-center gap-1 rounded-lg border border-slate-200 py-2 text-xs font-medium text-slate-600 hover:border-brand hover:text-brand [&_svg]:h-4 [&_svg]:w-4"
+                >
+                  <ArrowsRightLeftOutlined />
+                  Dời lịch
+                </button>
+              </div>
+            )}
             <Button
               disabled={detail.status === "completed"}
               onClick={() => navigate(`${PATHS.session}/${detail.id}`)}
@@ -155,9 +198,40 @@ const ScheduleDetailDrawer = ({
             >
               Xem chi tiết lớp
             </Button>
+            {canManage && (
+              <Button
+                outlined
+                icon={<XCircleOutlined />}
+                onClick={() => setAction("cancel")}
+                className="text-rose-600 border-rose-200 hover:bg-rose-50"
+              >
+                Hủy buổi học
+              </Button>
+            )}
           </div>
         )}
       </div>
+
+      <ChangeTeacherModal
+        open={action === "teacher"}
+        session={detail}
+        onClose={() => setAction(null)}
+      />
+      <ChangeRoomModal
+        open={action === "room"}
+        session={detail}
+        onClose={() => setAction(null)}
+      />
+      <RescheduleModal
+        open={action === "reschedule"}
+        session={detail}
+        onClose={() => setAction(null)}
+      />
+      <CancelSessionModal
+        open={action === "cancel"}
+        session={detail}
+        onClose={() => setAction(null)}
+      />
     </Drawer>
   );
 };
