@@ -166,6 +166,10 @@ const TuitionManagementScreen = observer(() => {
       router.push('/setting/tuition-slip');
       return;
     }
+    if (id === 'report') {
+      router.push('/setting/tuition-report');
+      return;
+    }
     notImplemented();
   };
 

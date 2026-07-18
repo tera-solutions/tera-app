@@ -59,15 +59,11 @@ const TabLayout = observer(() => {
         }}
       />
       <Tabs.Screen
-        name="lesson-plan"
+        name="hoc-lieu"
         options={{
-          title: 'Giáo án',
+          title: 'Học liệu',
           tabBarIcon: ({ color }) => (
-            <Icon
-              source="book-open-page-variant"
-              size={ICON_SIZE}
-              color={color}
-            />
+            <Icon source="shopping-outline" size={ICON_SIZE} color={color} />
           ),
         }}
       />

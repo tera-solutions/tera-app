@@ -107,7 +107,7 @@ export default function LessonPlanScreen() {
             icon={({ size, color }) => <Icon source="chevron-left" size={size} color={color} />}
             iconColor="#FFF"
             size={32}
-            onPress={() => {}}
+            onPress={() => router.back()}
           />
           <Text style={styles.headerTitle}>Giáo án</Text>
           <IconButton

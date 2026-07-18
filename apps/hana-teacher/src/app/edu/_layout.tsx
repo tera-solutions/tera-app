@@ -8,6 +8,7 @@ export default function LessonLayout() {
       <Stack.Screen name="lesson" />
       <Stack.Screen name="lesson-create" />
       <Stack.Screen name="lesson-update" />
+      <Stack.Screen name="lesson-plan" />
       <Stack.Screen name="lesson-plan-create" />
       <Stack.Screen name="lesson-plan-detail" />
       <Stack.Screen name="assignment" />
@@ -25,6 +26,17 @@ export default function LessonLayout() {
       <Stack.Screen name="course" />
       <Stack.Screen name="course-create" />
       <Stack.Screen name="course-detail" />
+      <Stack.Screen name="vocabulary" />
+      <Stack.Screen name="vocabulary-detail" />
+      <Stack.Screen name="flashcard-create" />
+      <Stack.Screen name="vocabulary-video-create" />
+      <Stack.Screen name="vocabulary-video-design" />
+      <Stack.Screen name="vocabulary-video-voice" />
+      <Stack.Screen name="vocabulary-video-complete" />
+      <Stack.Screen name="mini-game-create" />
+      <Stack.Screen name="mini-game-content" />
+      <Stack.Screen name="mini-game-settings" />
+      <Stack.Screen name="mini-game-complete" />
     </Stack>
   );
 }

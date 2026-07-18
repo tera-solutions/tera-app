@@ -43,8 +43,9 @@ const actions: QuickAction[] = [
     icon: require('@tera/assets/app/element_60.png'),
   },
   {
-    key: 'report',
-    title: 'Báo cáo',
+    key: 'hoc-lieu',
+    title: 'Học Liệu',
+    link: '/(tabs)/hoc-lieu',
     icon: require('@tera/assets/app/element_61.png'),
   },
   {

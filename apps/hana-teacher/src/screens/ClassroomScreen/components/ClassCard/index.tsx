@@ -123,6 +123,7 @@ export default function ClassCard({ item }: Props) {
         <ActionButton
           icon={<BookOpen size={22} color="#F97316" />}
           label="Giáo án"
+          onPress={() => router.push('/edu/lesson-plan')}
         />
 
         <ActionButton

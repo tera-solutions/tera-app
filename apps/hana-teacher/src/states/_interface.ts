@@ -63,6 +63,14 @@ export interface IGeneralStore {
   setVersion: (ver: number) => void;
 }
 
+export interface ICartStore {
+  items: Record<string, number>;
+  readonly count: number;
+  clear: () => void;
+  addItem: (id: string, qty?: number) => void;
+  changeQty: (id: string, delta: number) => void;
+}
+
 export interface IAuthStore {
   authenticated: boolean;
   isHydrated: boolean;

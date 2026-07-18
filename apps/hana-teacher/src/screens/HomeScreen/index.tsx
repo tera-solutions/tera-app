@@ -7,6 +7,7 @@ import ClassOverviewCard from './components/ClassOverviewCard';
 import StudentOverviewCard from './components/StudentOverviewCard';
 import TodoSection from './components/TodoSection';
 import NotificationSection from './components/NotificationSection';
+import FeaturedMaterialsSection from './components/FeaturedMaterialsSection';
 
 import { styles } from './style';
 
@@ -40,6 +41,8 @@ export default function HomeScreen() {
         </View>
 
         <TodoSection />
+
+        <FeaturedMaterialsSection />
 
         <NotificationSection />
       </ScrollView>

@@ -26,6 +26,7 @@ export default function SettingLayout() {
       <Stack.Screen name="payment-history" />
       <Stack.Screen name="invoice-receipt" />
       <Stack.Screen name="tuition-management" />
+      <Stack.Screen name="tuition-report" />
       <Stack.Screen name="tuition-slip" />
     </Stack>
   );

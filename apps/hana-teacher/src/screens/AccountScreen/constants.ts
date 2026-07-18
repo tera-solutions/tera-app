@@ -7,6 +7,7 @@ import {
   CreditCard,
   Crown,
   Lock,
+  Package,
   Settings,
   Shield,
   Star,
@@ -93,6 +94,13 @@ export const MENUS = [
     icon: Award,
     color: '#EC4899',
     link: '/edu/course'
+  },
+  {
+    id: 'hoc-lieu-manage',
+    title: 'Quản lý học liệu',
+    icon: Package,
+    color: '#7C3AED',
+    link: '/hoc-lieu/quan-ly'
   },
   {
     id: 'security',
