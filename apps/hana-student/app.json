@@ -24,7 +24,8 @@
       "bundleIdentifier": "tera.app.hana.student",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleDisplayName": "Hana"
+        "CFBundleDisplayName": "Hana",
+        "NSLocalNetworkUsageDescription": "Ứng dụng cần quyền truy cập mạng nội bộ để kết nối với máy chủ phát triển Expo."
       }
     },
     "android": {
