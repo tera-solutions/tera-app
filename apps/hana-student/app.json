@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Hana Student",
-    "displayName": "Hana Student",
+    "name": "Hana",
+    "displayName": "Hana",
     "slug": "hana-student",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -24,11 +24,11 @@
       "bundleIdentifier": "tera.app.hana.student",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleDisplayName": "Hana Student"
+        "CFBundleDisplayName": "Hana"
       }
     },
     "android": {
-      "name": "Hana Student",
+      "name": "Hana",
       "adaptiveIcon": {
         "backgroundColor": "#0095d9",
         "foregroundImage": "./src/assets/images/android_launcher.png"

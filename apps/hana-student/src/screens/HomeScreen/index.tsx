@@ -35,7 +35,7 @@ const HomeScreen = observer(() => {
         <View style={styles.sectionCard}>
           <View style={styles.sectionTitleRow}>
             <Sparkles size={18} color="#0066cc" />
-            <Text style={styles.sectionTitle}>Chào mừng đến với Hana Student</Text>
+            <Text style={styles.sectionTitle}>Chào mừng đến với Hana</Text>
           </View>
           <Text style={styles.sectionBody}>
             Đây là khung dự án khởi tạo cho module "Học viên". Các màn hình học tập (lớp học,
