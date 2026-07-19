@@ -5,8 +5,8 @@ const isWeb =
   typeof window !== "undefined" && window.navigator?.product !== "ReactNative";
 const REMEMBER_ME_KEY = "tera_remember_me";
 
-const resolveAuthStorage = (): Storage | null => {
-  if (!isWeb) return null;
+const resolveAuthStorage = (): Storage | undefined => {
+  if (!isWeb) return undefined;
   return window.localStorage.getItem(REMEMBER_ME_KEY) === "0"
     ? window.sessionStorage
     : window.localStorage;

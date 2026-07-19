@@ -1,0 +1,49 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": ["src/app"],
+      "@tera/commons/*": ["../../packages/commons/src/*"],
+      "@tera/components/*": ["../../packages/components/src/*"],
+      "@tera/assets/*": ["../../packages/assets/src/*"],
+      "@tera/databases/*": ["../../services/databases/src/*"],
+      "@tera/modules/*": ["../../services/modules/src/*"],
+      "@tera/stores/*": ["../../services/stores/src/*"],
+      "@tera/api/*": ["../../services/api/src/*"],
+      "@provider/*": ["src/provider/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@components/*": ["src/components/*"],
+      "@types/*": ["src/types/*"],
+      "@assets/*": ["src/assets/*"],
+      "@navigation/*": ["src/navigation/*"],
+      "@screens/*": ["src/screens/*"],
+      "@states/*": ["src/states/*"],
+      "@hana/student/services/*": ["src/services/*"],
+      "@databases/*": ["src/databases/*"],
+      "@styles/*": ["src/styles/*"],
+      "@modules/*": ["src/modules/*"]
+    },
+    "jsx": "react-native",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "modules/**/*.ts",
+    "modules/**/*.tsx"
+  ]
+}
