@@ -1,4 +1,4 @@
-package terasolutions.hana.student
+package tera.app.hana.student
 
 import android.app.Application
 import android.content.res.Configuration

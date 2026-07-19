@@ -21,7 +21,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "terasolutions.hana.student",
+      "bundleIdentifier": "tera.app.hana.student",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleDisplayName": "Hana Student"
@@ -35,7 +35,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "terasolutions.hana.student"
+      "package": "tera.app.hana.student"
     },
     "web": {
       "output": "web",

@@ -1,4 +1,4 @@
-package terasolutions.hana.student
+package tera.app.hana.student
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

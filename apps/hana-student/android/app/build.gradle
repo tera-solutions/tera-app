@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'terasolutions.hana.student'
+    namespace 'tera.app.hana.student'
     defaultConfig {
-        applicationId 'terasolutions.hana.student'
+        applicationId 'tera.app.hana.student'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
