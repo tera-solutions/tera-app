@@ -20,6 +20,7 @@
 		13B07F961A680F5B00A75B9A /* Hana.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hana.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Hana/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Hana/Info.plist; sourceTree = "<group>"; };
+		2F362C0E300C8AB8003807B5 /* Hana copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Hana copy-Info.plist"; path = "/Users/Shared/Developer/tera-app/apps/hana-student/ios/Hana copy-Info.plist"; sourceTree = "<absolute>"; };
 		4093A21E4CCFD10CFC980852 /* libPods-Hana.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Hana.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CB2E86381626C468E3A2E5D /* Pods-Hana.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hana.debug.xcconfig"; path = "Target Support Files/Pods-Hana/Pods-Hana.debug.xcconfig"; sourceTree = "<group>"; };
 		591B85D823A40E24887BFE26 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Hana/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
@@ -108,6 +109,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				54B17A99A57609C2A10204AA /* Pods */,
 				274CE8319252983D2444CFB2 /* ExpoModulesProviders */,
+				2F362C0E300C8AB8003807B5 /* Hana copy-Info.plist */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
