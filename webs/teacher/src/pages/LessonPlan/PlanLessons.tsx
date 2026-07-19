@@ -8,12 +8,15 @@ import {
   DocumentTextOutlined,
   notification,
   Spin,
+  TextArea,
 } from "tera-dls";
 
 import FormScaff from "@tera/components/dof/FormScaff";
+import Avatar from "_common/components/Avatar";
 import Breadcrumb from "_common/components/Breadcrumb";
 import Card from "_common/components/Card";
 import ClassroomInfoCard from "_common/components/ClassroomInfoCard";
+import FieldLabel from "_common/components/FieldLabel";
 import SearchInput from "_common/components/SearchInput";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
@@ -215,21 +218,14 @@ const PlanLessons = observer(() => {
         <Spin spinning={planQuery.isLoading}>
           <Card animated={false}>
             <div className="flex items-center gap-3">
-              <div
-                className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-linear-to-br ${getCoverGradient(
-                  plan?.id ?? 0,
-                )} text-white [&_svg]:h-6 [&_svg]:w-6`}
-              >
-                {plan?.avatar ? (
-                  <img
-                    src={plan.avatar}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <DocumentTextOutlined />
-                )}
-              </div>
+              <Avatar
+                src={plan?.avatar}
+                alt={plan?.plan_name}
+                sizeClassName="h-14 w-14"
+                iconClassName={`bg-linear-to-br ${getCoverGradient(plan?.id ?? 0)} text-white`}
+                iconSizeClassName="[&_svg]:h-6 [&_svg]:w-6"
+                fallbackIcon={<DocumentTextOutlined />}
+              />
 
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -368,10 +364,10 @@ const PlanLessons = observer(() => {
         okButtonProps={{ disabled: !reason.trim() }}
         onOk={submitCancel}
       >
-        <p className="mb-2 text-sm text-slate-600">
+        <FieldLabel required>
           Nhập lý do hủy buổi học <b>{cancelling?.lesson_title}</b>:
-        </p>
-        <textarea
+        </FieldLabel>
+        <TextArea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           rows={3}

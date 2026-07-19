@@ -1,21 +1,47 @@
-import type { PlacementTestOverview, PlacementTestResultRow, PlacementTestRow } from "./_interface";
+import type {
+  PlacementTestOverview,
+  PlacementTestQuestionRow,
+  PlacementTestResultRow,
+  PlacementTestRow,
+} from "./_interface";
+
+const toPlacementTestQuestion = (raw: any): PlacementTestQuestionRow => ({
+  id: raw.id ?? 0,
+  content: raw.content ?? "",
+  questionType: raw.question_type ?? "",
+  skill: raw.skill ?? "",
+  difficulty: raw.difficulty ?? "",
+  score: Number(raw.score ?? 0),
+  cefrLevel: raw.cefr_level ?? null,
+});
+
+const toPlacementTestRow = (item: any): PlacementTestRow => ({
+  id: item.id,
+  code: item.test_code,
+  title: item.title,
+  description: item.description ?? null,
+  cefrLevel: item.cefr_level ?? null,
+  skills: item.skills ?? [],
+  questionCount: item.question_count ?? 0,
+  // Only present when the detail endpoint eager-loads it (list rows omit the
+  // key entirely rather than sending an empty array — Laravel's `whenLoaded`).
+  questions: Array.isArray(item.questions) ? item.questions.map(toPlacementTestQuestion) : [],
+  durationMinutes: item.duration_minutes ?? 0,
+  status: item.status ?? "draft",
+  attempts: item.stats?.attempts ?? item.results_count ?? 0,
+  avgScore: item.stats?.avg_score ?? null,
+  completionRate: item.stats?.completion_rate ?? 0,
+  createdAt: item.created_at ?? null,
+});
 
 export const toPlacementTests = (raw: any): PlacementTestRow[] =>
-  (raw?.data?.items ?? []).map((item: any) => ({
-    id: item.id,
-    code: item.test_code,
-    title: item.title,
-    description: item.description ?? null,
-    cefrLevel: item.cefr_level ?? null,
-    skills: item.skills ?? [],
-    questionCount: item.question_count ?? 0,
-    durationMinutes: item.duration_minutes ?? 0,
-    status: item.status ?? "draft",
-    attempts: item.stats?.attempts ?? item.results_count ?? 0,
-    avgScore: item.stats?.avg_score ?? null,
-    completionRate: item.stats?.completion_rate ?? 0,
-    createdAt: item.created_at ?? null,
-  }));
+  (raw?.data?.items ?? []).map(toPlacementTestRow);
+
+export const toPlacementTestDetail = (raw: any): PlacementTestRow | undefined => {
+  const item = raw?.data;
+  if (!item?.id) return undefined;
+  return toPlacementTestRow(item);
+};
 
 export const toPlacementTestResults = (raw: any): PlacementTestResultRow[] =>
   (raw?.data?.items ?? []).map((item: any) => ({

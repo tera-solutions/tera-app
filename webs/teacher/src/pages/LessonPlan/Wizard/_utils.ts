@@ -36,10 +36,8 @@ const toActivity = (raw: any): WizardActivity => ({
 });
 
 const toMaterial = (raw: any, index: number): WizardMaterial => ({
-  id: raw?.id ?? index,
-  file_id: raw?.file_id,
-  material_type: raw?.material_type ?? "worksheet",
-  name: raw?.name ?? `Tài liệu ${index + 1}`,
+  material_id: raw?.material_id ?? raw?.id ?? index,
+  name: raw?.name ?? raw?.material_name ?? `Tài liệu ${index + 1}`,
 });
 
 export const toWizardTemplate = (raw: any): WizardLessonTemplate => ({

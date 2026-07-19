@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CheckCircleOutlined } from "tera-dls";
+import { CheckCircleOutlined, TextArea } from "tera-dls";
 import { LessonService } from "@tera/modules/education";
 
 import { NOTE_AUTOSAVE_DELAY, NOTE_MAX_LENGTH } from "../constants";
@@ -51,7 +51,7 @@ const LessonNote = ({ lessonId, initialNote }: LessonNoteProps) => {
 
   return (
     <div>
-      <textarea
+      <TextArea
         value={note}
         maxLength={NOTE_MAX_LENGTH}
         onChange={(e) => setNote(e.target.value)}

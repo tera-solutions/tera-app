@@ -1,13 +1,11 @@
-import { useRef, useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
-import { notification, UserOutlined } from "tera-dls";
 
 import Input from "@tera/components/dof/Control/Input";
 import TextArea from "@tera/components/dof/Control/TextArea";
 import { FormTeraItem } from "@tera/components/dof/FormTera";
 import { REGEX } from "@tera/commons/constants/common";
-import { FileAPI, stripExtension } from "@tera/api/common/FileAPI";
 
+import AvatarUpload from "_common/components/AvatarUpload";
 import CourseSelect from "_common/components/CourseSelect";
 import LevelSelect from "_common/components/LevelSelect";
 
@@ -21,54 +19,16 @@ interface PlanInfoFieldsProps {
 
 /** Plan-info form body (code/name/avatar/course/level/description), shared by the create and edit wizards. */
 const PlanInfoFields = ({ form, disableImmutable }: PlanInfoFieldsProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const avatarValue = form.watch("avatar");
-
-  const handleUploadAvatar = async (file?: File) => {
-    if (!file) return;
-    setIsUploadingAvatar(true);
-    try {
-      const uploaded = await FileAPI.upload(file, {
-        title: `avatar-${stripExtension(file.name)}`,
-      });
-      form.setValue("avatar", uploaded.url, { shouldDirty: true });
-    } catch (err: any) {
-      notification.error({
-        message: err?.msg ?? err?.message ?? "Tải ảnh đại diện thất bại",
-      });
-    } finally {
-      setIsUploadingAvatar(false);
-      if (inputRef.current) inputRef.current.value = "";
-    }
-  };
 
   return (
     <>
       <div className="mb-3 flex flex-col items-center gap-2">
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => inputRef.current?.click()}
-          className="group relative h-20 w-20 cursor-pointer overflow-hidden rounded-full border border-slate-200 bg-slate-50"
-        >
-          {avatarValue ? (
-            <img src={avatarValue} alt="avatar" className="h-full w-full object-cover" />
-          ) : (
-            <span className="flex h-full w-full items-center justify-center text-slate-300 [&_svg]:h-8 [&_svg]:w-8">
-              <UserOutlined />
-            </span>
-          )}
-          <span className="absolute inset-0 flex items-center justify-center bg-black/45 text-center text-[11px] font-medium leading-tight text-white opacity-0 transition-opacity group-hover:opacity-100">
-            {isUploadingAvatar ? "Đang tải..." : "Đổi ảnh"}
-          </span>
-        </div>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => handleUploadAvatar(e.target.files?.[0])}
+        <AvatarUpload
+          src={avatarValue}
+          alt={form.watch("plan_name")}
+          uploadTitlePrefix="avatar"
+          onUploaded={(url) => form.setValue("avatar", url, { shouldDirty: true })}
         />
       </div>
 

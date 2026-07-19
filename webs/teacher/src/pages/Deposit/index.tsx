@@ -11,9 +11,7 @@ import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
 import type { DateRange } from "../Wallet/_interface";
 import { formatVnd, presetToRange } from "../Wallet/_utils";
 import BalanceCard from "../Wallet/components/BalanceCard";
-import BankAccountModal from "../Wallet/components/BankAccountModal";
 import useTeacherWallet from "../Wallet/useTeacherWallet";
-import useTeacherBankAccount from "../Wallet/useTeacherBankAccount";
 
 import AmountSelector from "./components/AmountSelector";
 import DepositHistory from "./components/DepositHistory";
@@ -39,7 +37,6 @@ const Deposit = () => {
   );
   const [amount, setAmount] = useState<number | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [bankAccountModalOpen, setBankAccountModalOpen] = useState(false);
 
   const [range, setRange] = useState<DateRange>(() => presetToRange("month"));
   const [statusFilter, setStatusFilter] = useState("");
@@ -48,7 +45,6 @@ const Deposit = () => {
 
   const confirm = useConfirm();
   const { wallet, isLoading: walletLoading } = useTeacherWallet();
-  const { bankAccount, hasBankAccount } = useTeacherBankAccount();
 
   const historyParams: Record<string, unknown> = {
     page,
@@ -70,7 +66,7 @@ const Deposit = () => {
   const { mutate: cancelRequest } = WalletRequestService.useWalletRequestCancel();
 
   const handleConfirm = () => {
-    if (!isSubmittable(amount, methodKey, hasBankAccount) || amount === null) return;
+    if (!isSubmittable(amount, methodKey) || amount === null) return;
 
     depositMutation.mutate(
       {
@@ -156,8 +152,6 @@ const Deposit = () => {
           <DepositSummary
             amount={amount}
             methodKey={methodKey}
-            hasBankAccount={hasBankAccount}
-            onManageBankAccount={() => setBankAccountModalOpen(true)}
             submitting={depositMutation.isPending}
             onSubmit={() => setConfirmOpen(true)}
           />
@@ -225,12 +219,6 @@ const Deposit = () => {
           </div>
         </div>
       </Modal>
-
-      <BankAccountModal
-        open={bankAccountModalOpen}
-        account={bankAccount}
-        onClose={() => setBankAccountModalOpen(false)}
-      />
     </div>
   );
 };

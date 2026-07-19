@@ -76,6 +76,7 @@ export type DetailTab =
   | "schedule"
   | "assignment"
   | "scores"
+  | "certificates"
   | "comments"
   | "documents";
 

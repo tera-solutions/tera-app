@@ -64,6 +64,7 @@ import SuperadminDashboard from "pages/Superadmin/Dashboard";
 import SuperadminTenants from "pages/Superadmin/Tenants";
 import SuperadminTenantDetail from "pages/Superadmin/TenantDetail";
 import SuperadminPackages from "pages/Superadmin/Packages";
+import CertificateVerify from "pages/CertificateVerify";
 
 import CheckAuth from "routers/CheckAuth";
 import MiddlewareRouter from "routers/MiddlewareRouter";
@@ -256,6 +257,9 @@ export const Routers = () => {
         <Route path='forgot-password' element={<ForgotPasswordPage />} />
         <Route path='register' element={<RegisterPage />} />
       </Route>
+
+      {/* Public QR verification — no auth, standalone page (BRD EDU-18). */}
+      <Route path='certificate/verify/:token' element={<CertificateVerify />} />
 
       <Route path='*' element={<PageNotfound />} />
       <Route path='/403' element={<PageNotPermission />} />

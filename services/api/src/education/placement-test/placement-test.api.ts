@@ -58,4 +58,11 @@ export const PlacementTestAPI = {
     await api
       .post(`${endpoint}/edu/placement-test/results/${id}`, params)
       .then((r) => r.data),
+
+  // Draws bank questions (by skill+difficulty) into the test's question set —
+  // appends, does not replace what's already attached.
+  generateQuestions: async ({ id, params }: RecordPlacementTestResultPayload) =>
+    await api
+      .post(`${endpoint}/edu/placement-test/generate-questions/${id}`, params)
+      .then((r) => r.data),
 };

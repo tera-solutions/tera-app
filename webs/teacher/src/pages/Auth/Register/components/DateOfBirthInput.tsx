@@ -1,4 +1,6 @@
 import classNames from "classnames";
+import moment from "moment";
+import { CalendarDaysOutlined, DatePicker } from "tera-dls";
 
 interface DateOfBirthInputProps {
   value: string;
@@ -8,15 +10,11 @@ interface DateOfBirthInputProps {
   disabled?: boolean;
 }
 
-const today = new Date().toISOString().slice(0, 10);
-// Keeps the native picker's range aligned with the min/max-age checks in
+const DATE_FORMAT = "YYYY-MM-DD";
+// Keeps the picker's range aligned with the min/max-age checks in
 // `_common/validations/register.ts` (18–100 years old).
-const maxBirthDate = today;
-const minBirthDate = new Date(
-  new Date().setFullYear(new Date().getFullYear() - 100),
-)
-  .toISOString()
-  .slice(0, 10);
+const maxBirthDate = moment();
+const minBirthDate = moment().subtract(100, "years");
 
 const DateOfBirthInput = ({
   value,
@@ -27,16 +25,19 @@ const DateOfBirthInput = ({
 }: DateOfBirthInputProps) => {
   return (
     <div>
-      <input
-        type="date"
-        value={value}
-        max={maxBirthDate}
-        min={minBirthDate}
+      <DatePicker
+        format={DATE_FORMAT}
+        value={value ? moment(value, DATE_FORMAT) : undefined}
+        minDate={minBirthDate}
+        maxDate={maxBirthDate}
         disabled={disabled}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(v: any) => onChange(v ? moment(v).format(DATE_FORMAT) : "")}
         onBlur={onBlur}
-        className={classNames(
-          "h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none focus:border-brand disabled:opacity-60",
+        placeholder="Chọn ngày sinh"
+        prefixIcon={<CalendarDaysOutlined className="h-5 w-5 text-slate-400" />}
+        className="w-full"
+        inputClassName={classNames(
+          "h-11 rounded-xl bg-slate-50 pl-11",
           error && "border-red-500!",
         )}
       />

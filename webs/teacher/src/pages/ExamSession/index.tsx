@@ -52,10 +52,12 @@ import ScoreCharts from "./components/ScoreCharts";
 import ExamInfoCard from "./components/ExamInfoCard";
 import ExamSessionTable from "./components/ExamSessionTable";
 import ExamSessionFilterSidebar from "./components/ExamSessionFilterSidebar";
+import GenerateExamModal from "../ExamDetail/components/GenerateExamModal";
 
 const ExamSessionList = () => {
   const navigate = useNavigate();
   const { getTabs } = useMeta();
+  const [generateOpen, setGenerateOpen] = useState(false);
 
   const [filters, setFilters] = useUrlFilters(
     {
@@ -125,13 +127,22 @@ const ExamSessionList = () => {
             Quản lý lịch kiểm tra và kết quả các lớp bạn phụ trách
           </p>
         </div>
-        <Button
-          icon={<PlusOutlined />}
-          onClick={() => navigate(`${PATHS.exam}/new`)}
-          className="whitespace-nowrap bg-brand hover:bg-brand/80"
-        >
-          Tạo bài kiểm tra
-        </Button>
+        <div className="flex shrink-0 flex-wrap gap-2">
+          <Button
+            outlined
+            onClick={() => setGenerateOpen(true)}
+            className="whitespace-nowrap text-brand border-brand hover:bg-brand"
+          >
+            Sinh đề từ ngân hàng câu hỏi
+          </Button>
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => navigate(`${PATHS.exam}/new`)}
+            className="whitespace-nowrap bg-brand hover:bg-brand/80"
+          >
+            Tạo bài kiểm tra
+          </Button>
+        </div>
       </div>
 
       <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -207,6 +218,8 @@ const ExamSessionList = () => {
           />
         </div>
       </div>
+
+      <GenerateExamModal open={generateOpen} onClose={() => setGenerateOpen(false)} />
     </div>
   );
 };

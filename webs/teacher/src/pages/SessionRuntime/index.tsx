@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import moment from "moment";
 import { notification, Spin } from "tera-dls";
 
 import Breadcrumb from "_common/components/Breadcrumb";
@@ -10,22 +11,37 @@ import { PATHS } from "_common/components/Layout/Menu/menus";
 import {
   ClassRoomService,
   ClassSessionService,
+  LessonActivityService,
   LessonPlanService,
   LessonService,
 } from "@tera/modules/education";
 import { toSessionDetail } from "pages/Schedule/_utils";
 import { toClassroomDetail } from "pages/ClassroomDetail/_utils";
 import { toLessonPlan } from "pages/LessonPlan/_utils";
+import { toLessonDetail } from "pages/Lesson/_utils";
 import { useAttendanceSession } from "pages/Attendance/hooks/useAttendanceSession";
 import AttendanceEditor from "pages/Attendance/components/AttendanceEditor";
-import StudentNotes from "pages/Lesson/components/StudentNotes";
+import type { AttendanceRow } from "pages/Attendance/_interface";
+import SkillEvaluationForm from "pages/Lesson/components/SkillEvaluationForm";
+import WizardSteps from "pages/LessonPlan/Wizard/components/WizardSteps";
 
+import type { SessionWizardStep } from "./_interface";
+import { SESSION_STEP_LABELS } from "./constants";
 import SessionSummaryCard from "./components/SessionSummaryCard";
-import ClassroomCard from "./components/ClassroomCard";
-import LessonPlanCard from "./components/LessonPlanCard";
-import SessionTabs from "./components/SessionTabs";
-import type { SessionRuntimeTab } from "./components/SessionTabs";
-import SessionActionBar from "./components/SessionActionBar";
+import StepOverview from "./components/StepOverview";
+import StepPlan from "./components/StepPlan";
+import StepLesson from "./components/StepLesson";
+import StepEvaluation from "./components/StepEvaluation";
+import SessionFinishedCard from "./components/SessionFinishedCard";
+import SessionFooterNav from "./components/SessionFooterNav";
+
+interface NextStepConfig {
+  label: string;
+  onClick: () => void;
+  loading?: boolean;
+  disabled?: boolean;
+  hint?: string;
+}
 
 const SessionRuntime = () => {
   const navigate = useNavigate();
@@ -33,7 +49,9 @@ const SessionRuntime = () => {
   const { id } = useParams<{ id: string }>();
   const sessionId = id ? Number(id) : null;
 
-  const [tab, setTab] = useState<SessionRuntimeTab>("attendance");
+  const [step, setStep] = useState<SessionWizardStep>(1);
+  const [finished, setFinished] = useState(false);
+  const [evalStudent, setEvalStudent] = useState<AttendanceRow | null>(null);
 
   const detailQuery = ClassSessionService.useClassSessionDetail({
     id: sessionId ?? "",
@@ -68,6 +86,10 @@ const SessionRuntime = () => {
     sessionId: detail?.id ?? null,
   });
   const hasAttendance = attendanceSession.hasSavedAttendance;
+  const attendingRows = useMemo(
+    () => attendanceSession.rows.filter((r) => r.status === "present" || r.status === "late"),
+    [attendanceSession.rows],
+  );
 
   const sessionLessonQuery = LessonService.useLessonList(
     {
@@ -81,7 +103,43 @@ const SessionRuntime = () => {
     },
     { enabled: !!detail?.class_id && !!detail?.date },
   );
-  const hasLesson = (sessionLessonQuery.data?.data?.items?.length ?? 0) > 0;
+  const sessionLessonId = sessionLessonQuery.data?.data?.items?.[0]?.id ?? null;
+  const hasLesson = !!sessionLessonId;
+
+  const lessonDetailQuery = LessonService.useLessonDetail(
+    { id: sessionLessonId ?? "" },
+    { enabled: !!sessionLessonId },
+  );
+  const lessonDetail = useMemo(() => {
+    const payload = lessonDetailQuery.data?.data;
+    if (!payload) return undefined;
+    return toLessonDetail(payload.lesson ?? payload);
+  }, [lessonDetailQuery.data]);
+  const activities = lessonDetail?.activities ?? [];
+
+  // The API only exposes a pending/in_progress/completed status per activity,
+  // not a start timestamp, so the running timer anchors to the moment this
+  // client first observes the activity as in_progress.
+  const activeIdRef = useRef<number | string | null>(null);
+  const [activeActivityStartedAt, setActiveActivityStartedAt] = useState<moment.Moment | null>(
+    null,
+  );
+  useEffect(() => {
+    const inProgress = activities.find((a) => a.status === "in_progress") ?? null;
+    const newId = inProgress?.id ?? null;
+    if (newId !== activeIdRef.current) {
+      activeIdRef.current = newId;
+      setActiveActivityStartedAt(newId ? moment() : null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activities]);
+
+  const { mutate: updateActivityStatus, isPending: isActivityUpdating } =
+    LessonActivityService.useLessonActivityUpdateStatus();
+  const handleStartActivity = (activityId: number | string) =>
+    updateActivityStatus({ id: activityId, status: "in_progress" });
+  const handleCompleteActivity = (activityId: number | string) =>
+    updateActivityStatus({ id: activityId, status: "completed" });
 
   const { mutate: startSession, isPending: isStarting } =
     ClassSessionService.useClassSessionStart();
@@ -94,6 +152,7 @@ const SessionRuntime = () => {
           notification.success({
             message: res?.msg ?? "Đã bắt đầu buổi học",
           });
+          setStep(4);
         },
         onError: (err: any) => {
           notification.error({
@@ -119,6 +178,7 @@ const SessionRuntime = () => {
               notification.success({
                 message: res?.msg ?? "Đã kết thúc buổi học",
               });
+              setFinished(true);
             },
             onError: (err: any) => {
               notification.error({
@@ -132,14 +192,76 @@ const SessionRuntime = () => {
   };
 
   const notFound = !isLoading && (isError || !detail?.id);
+  const isSessionFinished = finished || detail?.status === "completed";
 
-  const renderTab = () => {
-    if (!detail) return null;
-    switch (tab) {
-      case "notes":
-        return <StudentNotes classId={detail.class_id} sessionId={detail.id} />;
-      default:
+  const doneActivities = activities.filter((a) => a.status === "completed").length;
+
+  const nextConfig: NextStepConfig = (() => {
+    if (step === 3) {
+      if (detail?.status === "upcoming") {
+        return {
+          label: "Bắt đầu buổi học",
+          loading: isStarting,
+          disabled: !hasAttendance || attendanceSession.loading || !hasLesson,
+          onClick: handleStart,
+          hint: !hasAttendance
+            ? "Cần điểm danh trước khi bắt đầu buổi học."
+            : !hasLesson
+              ? "Chưa có bài học được sinh cho buổi học này."
+              : undefined,
+        };
+      }
+      return { label: "Tiếp theo →", onClick: () => setStep(4) };
+    }
+    if (step === 5) {
+      return { label: "⚑ Kết thúc buổi học", loading: isEnding, onClick: handleEnd };
+    }
+    return {
+      label: "Tiếp theo →",
+      onClick: () => setStep((s) => Math.min(5, s + 1) as SessionWizardStep),
+    };
+  })();
+
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return (
+          <StepOverview
+            classId={detail?.class_id}
+            classRoomLoading={classRoomQuery.isLoading}
+            classRoom={classRoom}
+            onViewClassroom={() => navigate(`${PATHS.classroom}/${detail?.class_id}`)}
+            lessonPlanId={classRoom?.lesson_plan_id}
+            lessonPlanLoading={lessonPlanQuery.isLoading}
+            lessonPlan={lessonPlan}
+            onViewLessonPlan={() =>
+              classRoom?.lesson_plan_id &&
+              navigate(`${PATHS.lessonPlans}/${classRoom.lesson_plan_id}`)
+            }
+            objectives={lessonDetail?.objectives ?? []}
+          />
+        );
+      case 2:
+        return <StepPlan loading={lessonDetailQuery.isLoading} activities={activities} />;
+      case 3:
         return <AttendanceEditor session={attendanceSession} />;
+      case 4:
+        return (
+          <StepLesson
+            loading={lessonDetailQuery.isLoading}
+            activities={activities}
+            onStart={handleStartActivity}
+            onComplete={handleCompleteActivity}
+            activeActivityStartedAt={activeActivityStartedAt}
+            activityUpdating={isActivityUpdating}
+            lessonId={lessonDetail?.id ?? null}
+            lessonNote={lessonDetail?.lesson_note ?? ""}
+          />
+        );
+      case 5:
+        return <StepEvaluation students={attendingRows} onEvaluate={setEvalStudent} />;
+      default:
+        return null;
     }
   };
 
@@ -171,41 +293,48 @@ const SessionRuntime = () => {
             <div className="flex flex-col gap-4">
               <SessionSummaryCard detail={detail} />
 
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <ClassroomCard
-                  loading={classRoomQuery.isLoading}
-                  classId={detail.class_id}
-                  classRoom={classRoom}
-                  onViewDetail={() => navigate(`${PATHS.classroom}/${detail.class_id}`)}
-                />
-                <LessonPlanCard
-                  loading={lessonPlanQuery.isLoading}
-                  lessonPlanId={classRoom?.lesson_plan_id}
-                  lessonPlan={lessonPlan}
-                  onView={() =>
-                    classRoom?.lesson_plan_id &&
-                    navigate(`${PATHS.lessonPlans}/${classRoom.lesson_plan_id}`)
+              {isSessionFinished ? (
+                <SessionFinishedCard
+                  className={detail.class_name}
+                  attendanceRate={
+                    attendanceSession.counts.total
+                      ? Math.round(
+                          ((attendanceSession.counts.present + attendanceSession.counts.late) /
+                            attendanceSession.counts.total) *
+                            100,
+                        )
+                      : 0
                   }
+                  attendingCount={
+                    attendanceSession.counts.present + attendanceSession.counts.late
+                  }
+                  totalStudents={attendanceSession.counts.total}
+                  activitiesDone={doneActivities}
+                  activitiesTotal={activities.length}
+                  onBack={() => setFinished(false)}
                 />
-              </div>
+              ) : (
+                <div className={`${CARD} p-4`}>
+                  <WizardSteps
+                    currentStep={step}
+                    steps={SESSION_STEP_LABELS}
+                    completedSteps={Array.from({ length: step - 1 }, (_, i) => i + 1)}
+                    onStepClick={(s) => setStep(s as SessionWizardStep)}
+                  />
 
-              <div className={`${CARD} p-4`}>
-                <SessionTabs tab={tab} onChange={setTab} />
+                  {renderStep()}
 
-                {renderTab()}
-
-                <SessionActionBar
-                  status={detail.status}
-                  isStarting={isStarting}
-                  isEnding={isEnding}
-                  onStart={handleStart}
-                  onEnd={handleEnd}
-                  hasAttendance={hasAttendance}
-                  attendanceLoading={attendanceSession.loading}
-                  hasLesson={hasLesson}
-                  lessonLoading={sessionLessonQuery.isLoading}
-                />
-              </div>
+                  <SessionFooterNav
+                    step={step}
+                    onPrev={() => setStep((s) => (Math.max(1, s - 1) as SessionWizardStep))}
+                    onNext={nextConfig.onClick}
+                    nextLabel={nextConfig.label}
+                    nextLoading={nextConfig.loading}
+                    nextDisabled={nextConfig.disabled}
+                    hint={nextConfig.hint}
+                  />
+                </div>
+              )}
             </div>
           ) : isLoading ? (
             <div className="h-[50vh]" />
@@ -216,6 +345,14 @@ const SessionRuntime = () => {
           )}
         </Spin>
       )}
+
+      <SkillEvaluationForm
+        open={!!evalStudent}
+        onClose={() => setEvalStudent(null)}
+        classId={detail?.class_id ?? null}
+        lessonId={lessonDetail?.id ?? 0}
+        presetStudentId={evalStudent?.student_id ?? null}
+      />
     </div>
   );
 };

@@ -48,3 +48,17 @@ const CLASS_PALETTE = [
 
 export const getClassColor = (classId: number) =>
   CLASS_PALETTE[Math.abs(classId) % CLASS_PALETTE.length];
+
+/** Hex twin of `CLASS_PALETTE` (same order/index) for contexts that need inline
+ * style colors instead of Tailwind classes — e.g. the shared `CalendarCard`. */
+const CLASS_PALETTE_HEX = [
+  { color: "#0369a1", backgroundColor: "#f0f9ff" },
+  { color: "#047857", backgroundColor: "#ecfdf5" },
+  { color: "#6d28d9", backgroundColor: "#f5f3ff" },
+  { color: "#b45309", backgroundColor: "#fffbeb" },
+  { color: "#be123c", backgroundColor: "#fff1f2" },
+  { color: "#0e7490", backgroundColor: "#ecfeff" },
+];
+
+export const getClassColorHex = (classId: number) =>
+  CLASS_PALETTE_HEX[Math.abs(classId) % CLASS_PALETTE_HEX.length];

@@ -28,6 +28,8 @@ import {
   XMarkOutlined,
   notification,
 } from "tera-dls";
+import Avatar from "_common/components/Avatar";
+
 import HeaderModalMoreView from "./Header";
 import NotificationApi from "./_api";
 import ErrorToast from "@tera/components/web/ToastCustom/ErrorsToast";
@@ -96,9 +98,7 @@ const ModalViewMoreNotification = ({
       ? data.map((data) => ({
           ...data,
           time: getTimeRender(data?.created_at),
-          avatar: data?.created_by
-            ? data?.created_by?.avatar_url
-            : "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/1200px-Heart_coraz%C3%B3n.svg.png",
+          avatar: data?.created_by?.avatar_url,
         }))
       : [];
   };
@@ -292,9 +292,10 @@ const ModalViewMoreNotification = ({
                     </Col>
                   )}
                   <Col className="col-span-1 w-8 flex-shrink-0">
-                    <img
-                      className="w-8 h-8  rounded-full border-gray-200 border-[1px]"
+                    <Avatar
                       src={item?.avatar}
+                      alt={item?.title}
+                      sizeClassName="w-8 h-8 border border-gray-200"
                     />
                   </Col>
                   <Col className="col-span-8 w-full break-words">

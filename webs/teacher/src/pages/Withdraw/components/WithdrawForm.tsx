@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { Button } from "tera-dls";
+import { Button, Input } from "tera-dls";
 
 import Card from "_common/components/Card";
 
@@ -37,9 +37,6 @@ const Row = ({
     <span className={`text-sm font-semibold ${valueClassName}`}>{value}</span>
   </div>
 );
-
-const inputClass =
-  "mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 outline-none transition-colors focus:border-blue-700 placeholder:text-slate-400";
 
 /** "Nhập thông tin rút tiền" — số tiền + nội dung + nút xác nhận (tài khoản nhận tiền
  * chọn/thiết lập ở `BankAccountPicker` bên cạnh, không nhập lại ở đây). */
@@ -82,24 +79,20 @@ const WithdrawForm = ({
         </button>
       </div>
 
-      <div
+      <Input
+        id='withdraw-amount'
+        type='text'
+        inputMode='numeric'
+        value={formatAmountInput(amount)}
+        onChange={(e) => onAmountChange(parseAmountInput(e.target.value))}
+        placeholder='0'
+        aria-label='Số tiền rút'
+        suffix={<span className='text-sm font-medium text-slate-400'>đ</span>}
         className={classNames(
-          "flex items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors focus-within:border-blue-700",
-          error ? "border-rose-300" : "border-slate-200",
+          "rounded-xl",
+          error && "border-rose-300!",
         )}
-      >
-        <input
-          id='withdraw-amount'
-          type='text'
-          inputMode='numeric'
-          value={formatAmountInput(amount)}
-          onChange={(e) => onAmountChange(parseAmountInput(e.target.value))}
-          placeholder='0'
-          aria-label='Số tiền rút'
-          className='min-w-0 flex-1 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400'
-        />
-        <span className='shrink-0 text-sm font-medium text-slate-400'>đ</span>
-      </div>
+      />
 
       {error ? (
         <p className='mt-2 text-xs font-medium text-rose-500'>{error}</p>
@@ -130,14 +123,14 @@ const WithdrawForm = ({
       >
         Nội dung (không bắt buộc)
       </label>
-      <input
+      <Input
         id='withdraw-note'
         type='text'
         value={note}
         onChange={(e) => onNoteChange(e.target.value)}
         placeholder='Nhập nội dung (nếu có)'
         maxLength={255}
-        className={inputClass}
+        className='mt-1 rounded-xl'
       />
 
       {!hasBankAccount && (

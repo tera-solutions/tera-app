@@ -1,3 +1,5 @@
+import { Input, InputNumber, TextArea } from "tera-dls";
+
 import type { WizardLessonTemplate } from "../_interface";
 import ActivityListEditor from "./ActivityListEditor";
 import ActivityListEditorServer from "./ActivityListEditorServer";
@@ -29,7 +31,7 @@ const LessonTemplateFields = ({
         <label className="mb-1 block text-xs font-semibold text-slate-500">
           Tiêu đề buổi học
         </label>
-        <input
+        <Input
           value={form.lesson_title}
           onChange={(e) => onChange({ lesson_title: e.target.value })}
           placeholder="Ví dụ: My Family"
@@ -41,12 +43,11 @@ const LessonTemplateFields = ({
         <label className="mb-1 block text-xs font-semibold text-slate-500">
           Thời lượng (phút)
         </label>
-        <input
-          type="number"
+        <InputNumber
           min={1}
-          value={form.duration ?? ""}
-          onChange={(e) =>
-            onChange({ duration: e.target.value ? Number(e.target.value) : undefined })
+          value={form.duration ?? undefined}
+          onChange={(v) =>
+            onChange({ duration: typeof v === "number" ? v : undefined })
           }
           className={templateInputClass}
         />
@@ -57,7 +58,7 @@ const LessonTemplateFields = ({
       <label className="mb-1 block text-xs font-semibold text-slate-500">
         Mục tiêu bài học (mỗi dòng một mục tiêu)
       </label>
-      <textarea
+      <TextArea
         value={form.objective}
         onChange={(e) => onChange({ objective: e.target.value })}
         placeholder={"Giới thiệu bản thân\nSử dụng từ vựng cơ bản"}
@@ -72,7 +73,7 @@ const LessonTemplateFields = ({
         <label className="mb-1 block text-xs font-semibold text-slate-500">
           Từ vựng
         </label>
-        <input
+        <Input
           value={form.vocabulary}
           onChange={(e) => onChange({ vocabulary: e.target.value })}
           maxLength={5000}
@@ -83,7 +84,7 @@ const LessonTemplateFields = ({
         <label className="mb-1 block text-xs font-semibold text-slate-500">
           Ngữ pháp
         </label>
-        <input
+        <Input
           value={form.grammar}
           onChange={(e) => onChange({ grammar: e.target.value })}
           maxLength={5000}
@@ -94,7 +95,7 @@ const LessonTemplateFields = ({
         <label className="mb-1 block text-xs font-semibold text-slate-500">
           Bài tập về nhà
         </label>
-        <input
+        <Input
           value={form.homework}
           onChange={(e) => onChange({ homework: e.target.value })}
           maxLength={5000}

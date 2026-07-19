@@ -24,13 +24,25 @@ import TeacherProfileCard from "./components/TeacherProfileCard";
 import ProgressChart from "./components/ProgressChart";
 import StudentReviewList from "./components/StudentReviewList";
 
+// The app's QueryClient has no defaultOptions (staleTime: 0), so without this,
+// every window-focus event silently refetches all four queries below — on a
+// page this data-heavy that reads as "reloading" every time the tab regains
+// focus (see `_common/hooks/useFeatures.ts` for the same workaround/rationale).
+const STALE_TIME = 5 * 60 * 1000;
+
 const Achievement = () => {
   const [period, setPeriod] = useState<ChartPeriod>("month");
 
-  const profileQuery = ProfileService.useProfile();
+  const profileQuery = ProfileService.useProfile({
+    staleTime: STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
   const profile = useMemo(() => toTeacherProfile(profileQuery.data?.data), [profileQuery.data]);
 
-  const summaryQuery = AchievementService.useAchievementSummary();
+  const summaryQuery = AchievementService.useAchievementSummary({
+    staleTime: STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
   const careerStats = useMemo(
     () => toCareerStats(summaryQuery.data?.data?.career_stats),
     [summaryQuery.data],
@@ -40,13 +52,19 @@ const Achievement = () => {
     [summaryQuery.data],
   );
 
-  const progressQuery = AchievementService.useAchievementProgress(period);
+  const progressQuery = AchievementService.useAchievementProgress(period, {
+    staleTime: STALE_TIME,
+    refetchOnWindowFocus: false,
+  });
   const progressPoints = useMemo(
     () => toProgressPoints(progressQuery.data?.data?.chart_data),
     [progressQuery.data],
   );
 
-  const reviewsQuery = AchievementService.useTeacherReviewList({ params: { per_page: 20 } });
+  const reviewsQuery = AchievementService.useTeacherReviewList(
+    { params: { per_page: 20 } },
+    { staleTime: STALE_TIME, refetchOnWindowFocus: false },
+  );
   const reviews = useMemo(
     () => toTeacherReviews(reviewsQuery.data?.data?.items),
     [reviewsQuery.data],

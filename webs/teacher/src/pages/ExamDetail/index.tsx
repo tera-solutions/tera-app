@@ -15,6 +15,7 @@ import { ExamSessionAPI } from "@tera/api";
 import { toExamBank, toExamSessionSummaries, toSiblingExams } from "./_utils";
 import ExamCoverCard from "./components/ExamCoverCard";
 import ExamStatGrid from "./components/ExamStatGrid";
+import ExamQuestionList from "./components/ExamQuestionList";
 import ScoreDistributionChart from "./components/ScoreDistributionChart";
 import ExamTypeSidebar from "./components/ExamTypeSidebar";
 
@@ -154,6 +155,13 @@ const ExamDetail = () => {
                   failRate={stats.totalCount ? 100 - stats.passRate : 0}
                   loading={sessionsQuery.isLoading || isAggregating}
                 />
+
+                <Card>
+                  <p className="mb-3 text-sm font-semibold text-slate-700">
+                    Danh sách câu hỏi ({exam.questions.length})
+                  </p>
+                  <ExamQuestionList questions={exam.questions} loading={examQuery.isLoading} />
+                </Card>
 
                 <Card>
                   <p className="mb-3 text-sm font-semibold text-slate-700">Kết quả học viên</p>

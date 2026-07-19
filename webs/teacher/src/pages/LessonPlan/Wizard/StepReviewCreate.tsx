@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Button, DocumentTextOutlined, notification } from "tera-dls";
 
 import {
-  LessonMaterialService,
   LessonPlanLessonService,
   LessonPlanService,
+  MaterialService,
 } from "@tera/modules/education";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 
@@ -38,7 +38,7 @@ const StepReviewCreate = ({
 
   const { mutateAsync: upsertPlan } = LessonPlanService.useUpsertLessonPlan();
   const { mutateAsync: createLesson } = LessonPlanLessonService.useLessonPlanLessonCreate();
-  const { mutateAsync: attachMaterial } = LessonMaterialService.useLessonMaterialAttach();
+  const { mutateAsync: attachMaterial } = MaterialService.useMaterialAttach();
 
   const totalDuration = templates.reduce((sum, t) => sum + (t.duration ?? 0), 0);
   const totalActivities = templates.reduce((sum, t) => sum + t.activities.length, 0);
@@ -69,9 +69,9 @@ const StepReviewCreate = ({
 
         for (const material of template.materials) {
           await attachMaterial({
-            lessonId,
-            file_id: material.file_id,
-            material_type: material.material_type as any,
+            id: material.material_id,
+            entity_type: "lesson",
+            entity_id: lessonId,
           });
         }
       }

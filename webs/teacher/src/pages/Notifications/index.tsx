@@ -1,16 +1,20 @@
 import { useMemo, useState } from "react";
-import { CheckOutlined, Button } from "tera-dls";
+import { CheckOutlined, Button, Spin } from "tera-dls";
+import { NotificationService } from "@tera/modules";
 
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 
 import type { NotificationCategory, NotificationItem, NotificationStatus } from "./_interface";
-import { MOCK_NOTIFICATIONS } from "./_mock";
-import { countByCategory, countByStatus, filterNotifications } from "./_utils";
+import { countByCategory, countByStatus, filterNotifications, toNotificationItem } from "./_utils";
 import NotificationFilterPanel from "./components/NotificationFilterPanel";
 import NotificationList from "./components/NotificationList";
 import NotificationDetailPanel from "./components/NotificationDetailPanel";
 
 const PAGE_SIZE = 20;
+/** No server pagination on this screen — filter/counts need the full set, so
+ * fetch a generously large page once and window it client-side (existing UI
+ * pattern via `visibleCount`). A single teacher's notification feed is small. */
+const FETCH_SIZE = 200;
 
 const Notifications = () => {
   const [filters, setFilters] = useUrlFilters({
@@ -20,9 +24,20 @@ const Notifications = () => {
     date_to: { type: "string", default: "" },
   }, { syncDefaultsOnMount: true });
 
-  const [items, setItems] = useState<NotificationItem[]>(MOCK_NOTIFICATIONS);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [optimisticReadIds, setOptimisticReadIds] = useState<Set<number>>(new Set());
+
+  const listQuery = NotificationService.useNotificationList({ params: { per_page: FETCH_SIZE } });
+  const { mutate: markRead } = NotificationService.useNotificationRead();
+  const { mutate: deleteNotification } = NotificationService.useNotificationDelete();
+
+  const items = useMemo<NotificationItem[]>(() => {
+    const raw = listQuery.data?.data?.items ?? [];
+    return raw.map(toNotificationItem).map((item) =>
+      optimisticReadIds.has(item.id) ? { ...item, is_read: true } : item,
+    );
+  }, [listQuery.data, optimisticReadIds]);
 
   const filtered = useMemo(() => filterNotifications(items, filters), [items, filters]);
   const categoryCounts = useMemo(() => countByCategory(items), [items]);
@@ -35,14 +50,20 @@ const Notifications = () => {
   const handleSelect = (item: NotificationItem) => {
     setSelectedId(item.id);
     if (!item.is_read) {
-      setItems((prev) =>
-        prev.map((i) => (i.id === item.id ? { ...i, is_read: true } : i)),
-      );
+      setOptimisticReadIds((prev) => new Set(prev).add(item.id));
+      markRead({ id: item.id });
     }
   };
 
   const handleMarkAllRead = () => {
-    setItems((prev) => prev.map((item) => ({ ...item, is_read: true })));
+    const unreadIds = items.filter((item) => !item.is_read).map((item) => item.id);
+    setOptimisticReadIds((prev) => new Set([...prev, ...unreadIds]));
+    unreadIds.forEach((id) => markRead({ id }));
+  };
+
+  const handleDelete = (item: NotificationItem) => {
+    deleteNotification({ id: item.id });
+    if (selectedId === item.id) setSelectedId(null);
   };
 
   const handleResetFilters = () =>
@@ -67,25 +88,27 @@ const Notifications = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_2fr_2fr]">
-        <NotificationFilterPanel
-          filters={filters}
-          onChange={(patch) => setFilters(patch)}
-          categoryCounts={categoryCounts}
-          statusCounts={statusCounts}
-          onReset={handleResetFilters}
-        />
+      <Spin spinning={listQuery.isLoading}>
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_2fr_2fr]">
+          <NotificationFilterPanel
+            filters={filters}
+            onChange={(patch) => setFilters(patch)}
+            categoryCounts={categoryCounts}
+            statusCounts={statusCounts}
+            onReset={handleResetFilters}
+          />
 
-        <NotificationList
-          items={filtered}
-          visibleCount={visibleCount}
-          selectedId={selectedId}
-          onSelect={handleSelect}
-          onLoadMore={() => setVisibleCount((c) => c + PAGE_SIZE)}
-        />
+          <NotificationList
+            items={filtered}
+            visibleCount={visibleCount}
+            selectedId={selectedId}
+            onSelect={handleSelect}
+            onLoadMore={() => setVisibleCount((c) => c + PAGE_SIZE)}
+          />
 
-        <NotificationDetailPanel item={selected} />
-      </div>
+          <NotificationDetailPanel item={selected} onDelete={handleDelete} />
+        </div>
+      </Spin>
     </div>
   );
 };

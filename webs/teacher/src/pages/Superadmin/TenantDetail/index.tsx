@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeftOutlined, Button, notification, Spin } from "tera-dls";
+import { ArrowLeftOutlined, Button, InputNumber, notification, Select, Spin } from "tera-dls";
 
 import Card from "_common/components/Card";
 import { PATHS } from "_common/components/Layout/Menu/menus";
@@ -15,9 +15,6 @@ import {
   SUBSCRIPTION_STATUS_META,
   TENANT_STATUS_META,
 } from "../_utils";
-
-const inputClass =
-  "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none";
 
 const StatTile = ({ label, value }: { label: string; value: string }) => (
   <div className="rounded-xl bg-slate-50 p-3">
@@ -212,26 +209,26 @@ const SuperadminTenantDetail = () => {
 
             <Card className="space-y-3">
               <p className="text-sm font-semibold text-slate-700">Gán / đổi gói</p>
-              <select
+              <Select
                 value={packageId}
-                onChange={(e) => setPackageId(e.target.value ? Number(e.target.value) : "")}
-                className={inputClass}
-              >
-                <option value="">— Chọn gói —</option>
-                {packages.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} ({formatVnd(p.price)})
-                  </option>
-                ))}
-              </select>
-              <select
+                onChange={(v) => setPackageId(v ? Number(v) : "")}
+                placeholder="— Chọn gói —"
+                allowClear
+                options={packages.map((p) => ({
+                  value: p.id,
+                  label: `${p.name} (${formatVnd(p.price)})`,
+                }))}
+                className="w-full"
+              />
+              <Select
                 value={billingCycle}
-                onChange={(e) => setBillingCycle(e.target.value as "month" | "year")}
-                className={inputClass}
-              >
-                <option value="month">Theo tháng</option>
-                <option value="year">Theo năm</option>
-              </select>
+                onChange={(v) => setBillingCycle(v as "month" | "year")}
+                options={[
+                  { value: "month", label: "Theo tháng" },
+                  { value: "year", label: "Theo năm" },
+                ]}
+                className="w-full"
+              />
               <Button
                 onClick={handleAssign}
                 loading={assigning}
@@ -244,13 +241,12 @@ const SuperadminTenantDetail = () => {
             <Card className="space-y-3">
               <p className="text-sm font-semibold text-slate-700">Gia hạn</p>
               <div className="flex items-center gap-2">
-                <input
-                  type="number"
+                <InputNumber
                   min={1}
                   max={36}
                   value={months}
-                  onChange={(e) => setMonths(Math.max(1, Number(e.target.value)))}
-                  className={inputClass}
+                  onChange={(v) => setMonths(Math.max(1, typeof v === "number" ? v : 1))}
+                  className="w-full"
                 />
                 <span className="shrink-0 text-sm text-slate-500">tháng</span>
               </div>

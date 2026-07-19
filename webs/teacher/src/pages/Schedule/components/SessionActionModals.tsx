@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import moment from "moment";
-import { notification, Select } from "tera-dls";
+import { notification, Select, TimePicker } from "tera-dls";
 
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import FormScaff from "@tera/components/dof/FormScaff";
@@ -262,11 +262,15 @@ export const RescheduleModal = ({ open, session, onClose }: BaseProps) => {
             name="start_time"
             rules={[{ required: "Bắt buộc" }]}
           >
-            <input
-              type="time"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none"
-              value={form.watch("start_time")}
-              onChange={(e) => form.setValue("start_time", e.target.value, { shouldValidate: true })}
+            <TimePicker
+              className="w-full"
+              format="HH:mm"
+              value={form.watch("start_time") ? moment(form.watch("start_time"), "HH:mm") : undefined}
+              onChange={(value: any) =>
+                form.setValue("start_time", value ? moment(value).format("HH:mm") : "", {
+                  shouldValidate: true,
+                })
+              }
             />
           </FormTeraItem>
           <FormTeraItem
@@ -274,11 +278,15 @@ export const RescheduleModal = ({ open, session, onClose }: BaseProps) => {
             name="end_time"
             rules={[{ required: "Bắt buộc" }]}
           >
-            <input
-              type="time"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none"
-              value={form.watch("end_time")}
-              onChange={(e) => form.setValue("end_time", e.target.value, { shouldValidate: true })}
+            <TimePicker
+              className="w-full"
+              format="HH:mm"
+              value={form.watch("end_time") ? moment(form.watch("end_time"), "HH:mm") : undefined}
+              onChange={(value: any) =>
+                form.setValue("end_time", value ? moment(value).format("HH:mm") : "", {
+                  shouldValidate: true,
+                })
+              }
             />
           </FormTeraItem>
         </div>

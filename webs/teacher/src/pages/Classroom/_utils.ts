@@ -50,6 +50,7 @@ export const toClassroom = (raw: any): Classroom => {
     schedule_days: scheduleDays(schedules),
     start_time: toTime(firstSlot.start_time),
     end_time: toTime(firstSlot.end_time),
+    end_date: raw.end_date ?? "",
     student_count: raw.total_students ?? 0,
     max_students: raw.max_capacity ?? 0,
     min_capacity: raw.min_capacity ?? null,

@@ -25,3 +25,5 @@ export * from "./room";
 export * from "./dashboard";
 export * from "./timetable";
 export * from "./leave-request";
+export * from "./score";
+export * from "./certificate";

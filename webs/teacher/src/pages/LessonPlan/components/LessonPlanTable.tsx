@@ -10,6 +10,7 @@ import {
   Spin,
 } from "tera-dls";
 
+import Avatar from "_common/components/Avatar";
 import EmptyState from "_common/components/EmptyState";
 import ErrorRetry from "_common/components/ErrorRetry";
 import StatusBadge from "_common/components/StatusBadge";
@@ -76,17 +77,12 @@ const LessonPlanTable = ({
               onKeyDown={(e) => e.key === "Enter" && onView(plan)}
               className="flex cursor-pointer items-center gap-3 py-3 hover:bg-slate-50"
             >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-sky-50 text-brand [&_svg]:h-5 [&_svg]:w-5">
-                {plan.avatar ? (
-                  <img
-                    src={plan.avatar}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <DocumentTextOutlined />
-                )}
-              </span>
+              <Avatar
+                src={plan.avatar}
+                alt={plan.plan_name}
+                sizeClassName="h-11 w-11"
+                fallbackIcon={<DocumentTextOutlined />}
+              />
 
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-slate-800">

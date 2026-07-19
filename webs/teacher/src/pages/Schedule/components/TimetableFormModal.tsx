@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { notification, PlusOutlined, Select, TrashOutlined } from "tera-dls";
+import moment from "moment";
+import { DatePicker, Input, notification, PlusOutlined, Select, TrashOutlined } from "tera-dls";
 
 import FormScaff from "@tera/components/dof/FormScaff";
 import { RoomService, TimetableService } from "@tera/modules/education";
@@ -7,12 +8,16 @@ import { TeacherService } from "@tera/modules/hr";
 
 import ClassroomSelect from "_common/components/ClassroomSelect";
 import CourseSelect from "_common/components/CourseSelect";
+import FieldLabel from "_common/components/FieldLabel";
 import { WEEKDAY_LABEL } from "pages/Classroom/_utils";
 
 const inputBaseClass =
   "rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none";
-const inputClass = `w-full ${inputBaseClass}`;
-const labelClass = "mb-1 block text-xs font-medium text-slate-500";
+const DATE_FORMAT = "YYYY-MM-DD";
+const WEEKDAY_OPTIONS = Object.entries(WEEKDAY_LABEL).map(([value, label]) => ({
+  value: Number(value),
+  label,
+}));
 
 interface RuleRow {
   day_of_week: number;
@@ -156,34 +161,32 @@ const TimetableFormModal = ({ open, onClose }: Props) => {
     >
       <div className="max-h-[70vh] space-y-3 overflow-y-auto pr-1">
         <div>
-          <label className={labelClass}>Tên thời khóa biểu *</label>
-          <input className={inputClass} value={form.name} onChange={(e) => set({ name: e.target.value })} />
+          <FieldLabel required>Tên thời khóa biểu</FieldLabel>
+          <Input value={form.name} onChange={(e) => set({ name: e.target.value })} />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>Khóa học</label>
+            <FieldLabel>Khóa học</FieldLabel>
             <CourseSelect
               value={form.course_id || undefined}
               onChange={(v) => set({ course_id: v != null ? Number(v) : "" })}
               allowClear
-              className={inputBaseClass}
             />
           </div>
           <div>
-            <label className={labelClass}>Lớp học *</label>
+            <FieldLabel required>Lớp học</FieldLabel>
             <ClassroomSelect
               value={form.class_room_id || undefined}
               onChange={(v) => set({ class_room_id: v != null ? Number(v) : "" })}
               courseId={form.course_id || undefined}
-              className={inputBaseClass}
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>Giáo viên</label>
+            <FieldLabel>Giáo viên</FieldLabel>
             <Select
               value={form.teacher_id || undefined}
               onChange={(v: any) => set({ teacher_id: v != null ? Number(v) : "" })}
@@ -194,7 +197,7 @@ const TimetableFormModal = ({ open, onClose }: Props) => {
             />
           </div>
           <div>
-            <label className={labelClass}>Phòng học</label>
+            <FieldLabel>Phòng học</FieldLabel>
             <Select
               value={form.room_id || undefined}
               onChange={(v: any) => set({ room_id: v != null ? Number(v) : "" })}
@@ -208,27 +211,27 @@ const TimetableFormModal = ({ open, onClose }: Props) => {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>Ngày bắt đầu *</label>
-            <input
-              type="date"
-              className={inputClass}
-              value={form.start_date}
-              onChange={(e) => set({ start_date: e.target.value })}
+            <FieldLabel required>Ngày bắt đầu</FieldLabel>
+            <DatePicker
+              className="w-full"
+              format={DATE_FORMAT}
+              value={form.start_date ? moment(form.start_date, DATE_FORMAT) : undefined}
+              onChange={(v: any) => set({ start_date: v ? moment(v).format(DATE_FORMAT) : "" })}
             />
           </div>
           <div>
-            <label className={labelClass}>Ngày kết thúc *</label>
-            <input
-              type="date"
-              className={inputClass}
-              value={form.end_date}
-              onChange={(e) => set({ end_date: e.target.value })}
+            <FieldLabel required>Ngày kết thúc</FieldLabel>
+            <DatePicker
+              className="w-full"
+              format={DATE_FORMAT}
+              value={form.end_date ? moment(form.end_date, DATE_FORMAT) : undefined}
+              onChange={(v: any) => set({ end_date: v ? moment(v).format(DATE_FORMAT) : "" })}
             />
           </div>
         </div>
 
         <div>
-          <label className={labelClass}>Cấu hình lịch học</label>
+          <FieldLabel>Cấu hình lịch học</FieldLabel>
           <div className="mb-2 flex gap-2">
             <button
               type="button"

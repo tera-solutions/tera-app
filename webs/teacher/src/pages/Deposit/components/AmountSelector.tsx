@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { CheckCircleSolid } from "tera-dls";
+import { CheckCircleSolid, Input } from "tera-dls";
 
 import Card from "_common/components/Card";
 
@@ -43,23 +43,19 @@ const AmountSelector = ({ amount, onChange }: AmountSelectorProps) => {
         })}
       </div>
 
-      <div
+      <Input
+        type="text"
+        inputMode="numeric"
+        value={formatAmountInput(amount)}
+        onChange={(e) => onChange(parseAmountInput(e.target.value))}
+        placeholder="Nhập số tiền khác"
+        aria-label="Số tiền nạp"
+        suffix={<span className="text-sm font-medium text-slate-400">đ</span>}
         className={classNames(
-          "mt-3 flex items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors focus-within:border-brand",
-          error ? "border-rose-300" : "border-slate-200",
+          "mt-3 rounded-xl",
+          error && "border-rose-300!",
         )}
-      >
-        <input
-          type="text"
-          inputMode="numeric"
-          value={formatAmountInput(amount)}
-          onChange={(e) => onChange(parseAmountInput(e.target.value))}
-          placeholder="Nhập số tiền khác"
-          aria-label="Số tiền nạp"
-          className="min-w-0 flex-1 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
-        />
-        <span className="shrink-0 text-sm font-medium text-slate-400">đ</span>
-      </div>
+      />
 
       {error ? (
         <p className="mt-2 text-xs font-medium text-rose-500">{error}</p>

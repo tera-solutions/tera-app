@@ -60,6 +60,14 @@ export const QuestionAPI = {
     await api
       .post(`${endpoint}/edu/question/archive/${id}`, {})
       .then((r) => r.data),
+
+  // Auto-draw ACTIVE bank questions by skill/level/difficulty into a brand-new
+  // exam (`GenerateExamService`) — snapshots content into edu_exam_questions
+  // and records the edu_exam_question pivot for traceability.
+  generateExam: async ({ params }: CreatePayload) =>
+    await api
+      .post(`${endpoint}/edu/question/generate-exam`, params)
+      .then((r) => r.data),
 };
 
 /** `edu/question-category/*` — reuses `question.*` permission codes (BE convention). */

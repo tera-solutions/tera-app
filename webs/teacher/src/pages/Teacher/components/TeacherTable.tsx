@@ -1,7 +1,6 @@
 import {
   ArrowPathOutlined,
   ArchiveBoxOutlined,
-  DocumentTextOutlined,
   Dropdown,
   EllipsisVerticalOutlined,
   EyeOutlined,
@@ -9,6 +8,7 @@ import {
   Spin,
 } from "tera-dls";
 
+import Avatar from "_common/components/Avatar";
 import EmptyState from "_common/components/EmptyState";
 import ErrorRetry from "_common/components/ErrorRetry";
 import StatusBadge from "_common/components/StatusBadge";
@@ -72,13 +72,7 @@ const TeacherTable = ({
             onKeyDown={(e) => e.key === "Enter" && onView(teacher)}
             className="flex cursor-pointer items-center gap-3 py-3 hover:bg-slate-50"
           >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-sky-50 text-brand [&_svg]:h-5 [&_svg]:w-5">
-              {teacher.avatar ? (
-                <img src={teacher.avatar} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <DocumentTextOutlined />
-              )}
-            </span>
+            <Avatar src={teacher.avatar} alt={teacher.fullName} sizeClassName="h-11 w-11" />
 
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-slate-800">{teacher.fullName || "—"}</p>

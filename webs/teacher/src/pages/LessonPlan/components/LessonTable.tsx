@@ -1,4 +1,3 @@
-import { useState } from "react";
 import moment from "moment";
 import {
   BookOpenOutlined,
@@ -10,31 +9,13 @@ import {
   TrashOutlined,
 } from "tera-dls";
 
+import Avatar from "_common/components/Avatar";
 import EmptyState from "_common/components/EmptyState";
 import ErrorRetry from "_common/components/ErrorRetry";
-import IconBox from "_common/components/IconBox";
 import StatusBadge from "_common/components/StatusBadge";
 
 import type { Lesson } from "../_interface";
 import { LESSON_STATUS_META } from "../constants";
-
-/** Falls back to the icon box if `src` is missing or fails to load. */
-const LessonAvatar = ({ src }: { src?: string }) => {
-  const [failed, setFailed] = useState(false);
-
-  if (!src || failed) {
-    return <IconBox icon={<BookOpenOutlined />} sizeClassName="h-11 w-11" />;
-  }
-
-  return (
-    <img
-      src={src}
-      alt=""
-      className="h-11 w-11 shrink-0 rounded-xl object-cover"
-      onError={() => setFailed(true)}
-    />
-  );
-};
 
 interface LessonTableProps {
   lessons: Lesson[];
@@ -98,7 +79,12 @@ const LessonTable = ({
                 {String(lesson.lesson_no).padStart(2, "0")}
               </span>
 
-              <LessonAvatar src={avatarUrl} />
+              <Avatar
+                src={avatarUrl}
+                alt={lesson.lesson_title}
+                sizeClassName="h-11 w-11"
+                fallbackIcon={<BookOpenOutlined />}
+              />
 
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-1.5 truncate text-sm font-medium text-slate-800">

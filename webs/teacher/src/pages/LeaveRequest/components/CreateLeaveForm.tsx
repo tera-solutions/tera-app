@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import moment from "moment";
-import { Button, notification, Select } from "tera-dls";
+import { Button, notification, Select, TextArea } from "tera-dls";
 
 import Card from "_common/components/Card";
 import ClassroomSelect from "_common/components/ClassroomSelect";
@@ -202,13 +202,13 @@ const CreateLeaveForm = () => {
         <div>
           <label className="mb-1.5 block text-sm font-medium text-slate-600">Mô tả lý do (tùy chọn)</label>
           <div className="relative">
-            <textarea
+            <TextArea
               value={reason}
               maxLength={REASON_MAX}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Nhập mô tả chi tiết..."
               rows={3}
-              className="w-full resize-none rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-300"
+              className="w-full resize-none rounded-xl"
             />
             <span className="pointer-events-none absolute bottom-2 right-3 text-[11px] text-slate-300">
               {reason.length}/{REASON_MAX}

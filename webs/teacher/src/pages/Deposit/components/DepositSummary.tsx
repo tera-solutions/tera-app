@@ -9,8 +9,6 @@ import { isSubmittable, validateAmount } from "../_utils";
 interface DepositSummaryProps {
   amount: number | null;
   methodKey: string;
-  hasBankAccount: boolean;
-  onManageBankAccount: () => void;
   submitting?: boolean;
   onSubmit: () => void;
 }
@@ -34,12 +32,10 @@ const Row = ({
 const DepositSummary = ({
   amount,
   methodKey,
-  hasBankAccount,
-  onManageBankAccount,
   submitting,
   onSubmit,
 }: DepositSummaryProps) => {
-  const ready = isSubmittable(amount, methodKey, hasBankAccount);
+  const ready = isSubmittable(amount, methodKey);
 
   // Số tiền ngoài hạn mức thì coi như chưa nhập: đừng hiển thị "nhận được 123đ" cho một
   // giá trị mà form đang báo lỗi.
@@ -72,16 +68,6 @@ const DepositSummary = ({
           {validAmount === null ? "—" : formatVnd(received)}
         </span>
       </div>
-
-      {!hasBankAccount && (
-        <p className="mt-3 text-xs font-medium text-amber-600">
-          Vui lòng{" "}
-          <button type="button" onClick={onManageBankAccount} className="underline underline-offset-2">
-            thiết lập tài khoản ngân hàng
-          </button>{" "}
-          trong hồ sơ giáo viên trước khi nạp tiền.
-        </p>
-      )}
 
       <Button
         className="mt-4 w-full! justify-center! gap-2 rounded-xl!"

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { notification } from "tera-dls";
+import { notification, TextArea } from "tera-dls";
 
 import FormScaff from "@tera/components/dof/FormScaff";
+import FieldLabel from "_common/components/FieldLabel";
 
 interface SuspendTeacherModalProps {
   open: boolean;
@@ -39,15 +40,13 @@ const SuspendTeacherModal = ({ open, isPending, onSubmit, onClose }: SuspendTeac
       onOk={handleSubmit}
     >
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-slate-600">
-          Lý do <span className="text-rose-500">*</span>
-        </label>
-        <textarea
+        <FieldLabel required>Lý do</FieldLabel>
+        <TextArea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="Nhập lý do tạm ngưng..."
           rows={3}
-          className="w-full resize-none rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none"
+          className="w-full resize-none"
         />
       </div>
     </FormScaff>

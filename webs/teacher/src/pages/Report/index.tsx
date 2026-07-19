@@ -49,6 +49,7 @@ const Report = () => {
 
   const attendanceLegend = [
     { key: "present", label: "Có mặt", color: "#10b981", value: report.attendanceBreakdown.present },
+    { key: "late", label: "Đi muộn", color: "#38bdf8", value: report.attendanceBreakdown.late },
     { key: "excused", label: "Nghỉ có phép", color: "#0ea5e9", value: report.attendanceBreakdown.excused },
     { key: "absent", label: "Nghỉ không phép", color: "#ef4444", value: report.attendanceBreakdown.absent },
   ];
@@ -59,10 +60,12 @@ const Report = () => {
     { key: "overdue", label: "Quá hạn", color: "#ef4444", value: report.homeworkStatus.overdue },
   ];
 
+  // Khớp ngưỡng phân loại của `TeacherReportService::scoreDistribution()` (BE):
+  // excellent >= 8.5, good >= 6.5, average >= 5.0, weak < 5.0.
   const scoreLegend = [
-    { key: "excellent", label: "Xuất sắc (9 - 10)", color: "#10b981", value: report.scoreDistribution.excellent },
-    { key: "good", label: "Khá (7 - 8.9)", color: "#0ea5e9", value: report.scoreDistribution.good },
-    { key: "average", label: "Trung bình (5 - 6.9)", color: "#f59e0b", value: report.scoreDistribution.average },
+    { key: "excellent", label: "Xuất sắc (8.5 - 10)", color: "#10b981", value: report.scoreDistribution.excellent },
+    { key: "good", label: "Khá (6.5 - 8.4)", color: "#0ea5e9", value: report.scoreDistribution.good },
+    { key: "average", label: "Trung bình (5 - 6.4)", color: "#f59e0b", value: report.scoreDistribution.average },
     { key: "weak", label: "Yếu (< 5)", color: "#ef4444", value: report.scoreDistribution.weak },
   ];
   const totalScored = Object.values(report.scoreDistribution).reduce((a, b) => a + b, 0);

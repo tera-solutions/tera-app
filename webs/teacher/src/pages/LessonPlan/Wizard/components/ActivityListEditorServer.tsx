@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { CheckCircleOutlined, PlusOutlined, TrashOutlined } from "tera-dls";
+import {
+  CheckCircleOutlined,
+  Input,
+  InputNumber,
+  PlusOutlined,
+  Select,
+  TextArea,
+  TrashOutlined,
+} from "tera-dls";
 
 import { useMeta } from "_common/hooks/useMeta";
 import { LessonPlanLessonActivityService } from "@tera/modules/education";
@@ -90,34 +98,26 @@ const ActivityRow = ({
   return (
     <div className="grid grid-cols-1 gap-2 rounded-lg border border-slate-100 p-2.5 sm:grid-cols-[1fr_90px_120px_auto]">
       <div className="flex flex-col gap-1.5 sm:col-span-4 sm:grid sm:grid-cols-[1fr_90px_120px_auto] sm:gap-2">
-        <input
+        <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Tên hoạt động (vd: Warm-up)"
           maxLength={255}
           className={inputClass}
         />
-        <input
-          type="number"
+        <InputNumber
           min={1}
-          value={duration ?? ""}
-          onChange={(e) =>
-            setDuration(e.target.value ? Number(e.target.value) : undefined)
-          }
+          value={duration ?? undefined}
+          onChange={(v) => setDuration(typeof v === "number" ? v : undefined)}
           placeholder="Phút"
           className={inputClass}
         />
-        <select
+        <Select
           value={status}
-          onChange={(e) => setStatus(e.target.value as WizardActivityStatus)}
+          options={statusOptions}
+          onChange={(v) => setStatus(v as WizardActivityStatus)}
           className={inputClass}
-        >
-          {statusOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+        />
         <button
           type="button"
           onClick={() => remove({ id: activity.id }, { onSuccess: onDeleted })}
@@ -128,7 +128,7 @@ const ActivityRow = ({
           <TrashOutlined />
         </button>
       </div>
-      <textarea
+      <TextArea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Mô tả hoạt động"

@@ -16,9 +16,10 @@ import { CATEGORY_META, formatFullDateTime } from "../_utils";
 
 interface NotificationDetailPanelProps {
   item: NotificationItem | null;
+  onDelete?: (item: NotificationItem) => void;
 }
 
-const NotificationDetailPanel = ({ item }: NotificationDetailPanelProps) => {
+const NotificationDetailPanel = ({ item, onDelete }: NotificationDetailPanelProps) => {
   const navigate = useNavigate();
 
   if (!item) {
@@ -54,7 +55,7 @@ const NotificationDetailPanel = ({ item }: NotificationDetailPanelProps) => {
           <button
             type="button"
             title="Xóa"
-            onClick={todo}
+            onClick={() => onDelete?.(item)}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-red-500 [&_svg]:h-4.5 [&_svg]:w-4.5"
           >
             <TrashOutlined />
@@ -92,15 +93,11 @@ const NotificationDetailPanel = ({ item }: NotificationDetailPanelProps) => {
         />
       )}
 
-      {/*
-        Content is authored mock data (see ../_mock.ts), not user/API input,
-        so it's safe to render as-is here. A real API integration must
-        sanitize this HTML (e.g. DOMPurify) before using dangerouslySetInnerHTML.
-      */}
-      <div
-        className="prose prose-sm mt-4 max-w-none text-slate-600"
-        dangerouslySetInnerHTML={{ __html: item.content }}
-      />
+      {/* `content` is authored by other users (Teacher notifications) via the
+        API, not sanitized HTML — render as plain text to avoid stored XSS. */}
+      <div className="prose prose-sm mt-4 max-w-none whitespace-pre-wrap text-slate-600">
+        {item.content.replace(/<[^>]+>/g, " ").trim()}
+      </div>
 
       {item.action_label && (
         <button

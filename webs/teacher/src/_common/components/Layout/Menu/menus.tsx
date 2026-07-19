@@ -266,7 +266,7 @@ export const PATHS = {
   payroll: "/payroll",
   teachers: "/teachers",
   leaveRequest: "/leave-request",
-  leaveRequestAll: "/leave-request/all",
+  leaveRequestAll: "/leave-requests",
   subscription: "/subscription",
   wallet: "/wallet",
   walletDeposit: "/wallet/deposit",

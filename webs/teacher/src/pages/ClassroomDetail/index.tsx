@@ -23,6 +23,7 @@ import SessionListPanel from "./components/SessionListPanel";
 import MaterialsPanel from "./components/MaterialsPanel";
 import ClassAssignmentPanel from "./components/ClassAssignmentPanel";
 import ClassScoresPanel from "./components/ClassScoresPanel";
+import ClassCertificatePanel from "./components/ClassCertificatePanel";
 import ClassCommentsPanel from "./components/ClassCommentsPanel";
 import { toClassroomDetail, toClassSessions } from "./_utils";
 import {
@@ -124,6 +125,8 @@ const ClassroomDetail = () => {
         return <ClassAssignmentPanel classId={classId} />;
       case "scores":
         return <ClassScoresPanel classId={classId} />;
+      case "certificates":
+        return <ClassCertificatePanel classId={classId} />;
       case "comments":
         return <ClassCommentsPanel classId={classId} />;
       default:

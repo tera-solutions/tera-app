@@ -80,6 +80,20 @@ export const useUpsertNotification = () => {
   });
 };
 
+export const useNotificationRead = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: DetailPayload) => NotificationAPI.read(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notification", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const useNotificationDelete = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -116,6 +130,7 @@ export const NotificationService = {
   useNotificationCreate,
   useNotificationUpdate,
   useUpsertNotification,
+  useNotificationRead,
   useNotificationDelete,
   useNotificationExport,
 };

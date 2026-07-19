@@ -1,4 +1,4 @@
-import { PlusOutlined, TrashOutlined } from "tera-dls";
+import { Input, InputNumber, PlusOutlined, Select, TextArea, TrashOutlined } from "tera-dls";
 
 import { useMeta } from "_common/hooks/useMeta";
 
@@ -48,40 +48,34 @@ const ActivityListEditor = ({ activities, onChange }: ActivityListEditorProps) =
           className="grid grid-cols-1 gap-2 rounded-lg border border-slate-100 p-2.5 sm:grid-cols-[1fr_90px_120px_auto]"
         >
           <div className="flex flex-col gap-1.5 sm:col-span-4 sm:grid sm:grid-cols-[1fr_90px_120px_auto] sm:gap-2">
-            <input
+            <Input
               value={activity.title}
               onChange={(e) => updateAt(index, { title: e.target.value })}
               placeholder="Tên hoạt động (vd: Warm-up)"
               maxLength={255}
               className={inputClass}
             />
-            <input
-              type="number"
+            <InputNumber
               min={1}
-              value={activity.duration ?? ""}
-              onChange={(e) =>
+              value={activity.duration ?? undefined}
+              onChange={(v) =>
                 updateAt(index, {
-                  duration: e.target.value ? Number(e.target.value) : undefined,
+                  duration: typeof v === "number" ? v : undefined,
                 })
               }
               placeholder="Phút"
               className={inputClass}
             />
-            <select
+            <Select
               value={activity.status}
-              onChange={(e) =>
+              options={statusOptions}
+              onChange={(v) =>
                 updateAt(index, {
-                  status: e.target.value as WizardActivity["status"],
+                  status: v as WizardActivity["status"],
                 })
               }
               className={inputClass}
-            >
-              {statusOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            />
             <button
               type="button"
               onClick={() => removeAt(index)}
@@ -91,7 +85,7 @@ const ActivityListEditor = ({ activities, onChange }: ActivityListEditorProps) =
               <TrashOutlined />
             </button>
           </div>
-          <textarea
+          <TextArea
             value={activity.description}
             onChange={(e) => updateAt(index, { description: e.target.value })}
             placeholder="Mô tả hoạt động"

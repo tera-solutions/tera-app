@@ -6,7 +6,7 @@ import {
   QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { MaterialAPI } from "@tera/api";
-import type { AttachMaterialToEntityPayload } from "@tera/api";
+import type { AttachMaterialToEntityPayload, DetachMaterialMappingPayload } from "@tera/api";
 import {
   CreatePayload,
   DeletePayload,
@@ -96,6 +96,20 @@ export const useMaterialAttach = () => {
   });
 };
 
+export const useMaterialDetachMapping = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter<any, Error, DetachMaterialMappingPayload>({
+    mutationFn: (payload) => MaterialAPI.detachMapping(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["material", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const useMaterialDelete = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -103,6 +117,21 @@ export const useMaterialDelete = () => {
     mutationFn: (payload: DeletePayload) => MaterialAPI.delete(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["material", "list"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useMaterialPublish = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: DetailPayload) => MaterialAPI.publish(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["material", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["material", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -132,6 +161,8 @@ export const MaterialService = {
   useMaterialUpdate,
   useUpsertMaterial,
   useMaterialAttach,
+  useMaterialDetachMapping,
   useMaterialDelete,
+  useMaterialPublish,
   useMaterialExport,
 };

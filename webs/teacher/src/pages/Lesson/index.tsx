@@ -6,20 +6,18 @@ import { Button, notification, Spin, StarOutlined } from "tera-dls";
 import Breadcrumb from "_common/components/Breadcrumb";
 import { CARD } from "_common/constants/dashboard";
 import ErrorRetry from "_common/components/ErrorRetry";
-import useConfirm from "_common/hooks/useConfirm";
+import EntityMaterialManager from "_common/components/EntityMaterialManager";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 import { todo } from "_common/utils/todo";
-import { LessonMaterialService, LessonPlanService, LessonService } from "@tera/modules/education";
+import { LessonPlanService, LessonService } from "@tera/modules/education";
 import { toLessonPlan } from "pages/LessonPlan/_utils";
 
-import type { LessonDetailTab, LessonMaterial } from "./_interface";
+import type { LessonDetailTab } from "./_interface";
 import { DETAIL_TABS } from "./constants";
 import { toLessonDetail } from "./_utils";
 import LessonHeader from "./components/LessonHeader";
 import LessonStatRow from "./components/LessonStatRow";
 import ObjectiveList from "./components/ObjectiveList";
-import MaterialList from "./components/MaterialList";
-import MaterialUploader from "./components/MaterialUploader";
 import ActivityTimeline from "./components/ActivityTimeline";
 import LessonSidebar from "./components/LessonSidebar";
 import LessonHomework from "./components/LessonHomework";
@@ -35,10 +33,7 @@ const Lesson = () => {
   const lessonId = id ? Number(id) : null;
 
   const [tab, setTab] = useState<LessonDetailTab>("overview");
-  const [deletingId, setDeletingId] = useState<number | string | null>(null);
   const [skillEvalOpen, setSkillEvalOpen] = useState(false);
-
-  const confirm = useConfirm();
 
   const detailQuery = LessonService.useLessonDetail({ id: lessonId ?? "" });
   const { isLoading, isError, refetch } = detailQuery;
@@ -48,8 +43,6 @@ const Lesson = () => {
     if (!payload) return undefined;
     return toLessonDetail(payload.lesson ?? payload);
   }, [detailQuery.data]);
-
-  const materials = detail?.materials ?? [];
 
   const lessonPlanQuery = LessonPlanService.useLessonPlanDetail(
     { id: detail?.lesson_plan_id ?? "" },
@@ -61,38 +54,6 @@ const Lesson = () => {
     return toLessonPlan(payload.plan ?? payload);
   }, [lessonPlanQuery.data]);
 
-  const { mutate: detachMaterial } = LessonMaterialService.useLessonMaterialDetach();
-
-  const handleDeleteMaterial = (material: LessonMaterial) => {
-    confirm.warning({
-      title: "Xóa tài liệu",
-      content: (
-        <p>
-          Bạn có chắc muốn xóa tài liệu <b>{material.name}</b>?
-        </p>
-      ),
-      onOk: () => {
-        setDeletingId(material.id);
-        detachMaterial(
-          { id: material.id },
-          {
-            onSuccess: (res: any) => {
-              notification.success({
-                message: res?.msg ?? "Xóa tài liệu thành công",
-              });
-            },
-            onError: (err: any) => {
-              notification.error({
-                message: err?.msg ?? err?.message ?? "Xóa tài liệu thất bại",
-              });
-            },
-            onSettled: () => setDeletingId(null),
-          },
-        );
-      },
-    });
-  };
-
   const notFound = !isLoading && (isError || !detail?.id);
 
   const renderTab = () => {
@@ -102,14 +63,7 @@ const Lesson = () => {
         return (
           <div>
             <SectionTitle>Tài liệu sử dụng</SectionTitle>
-            <div className="mb-4">
-              <MaterialUploader lessonId={detail.id} />
-            </div>
-            <MaterialList
-              materials={materials}
-              onDelete={handleDeleteMaterial}
-              deletingId={deletingId}
-            />
+            <EntityMaterialManager entityType="lesson" entityId={detail.id} />
           </div>
         );
       case "homework":
@@ -124,7 +78,7 @@ const Lesson = () => {
               </div>
               <div>
                 <SectionTitle>Tài liệu sử dụng</SectionTitle>
-                <MaterialList materials={materials} />
+                <EntityMaterialManager entityType="lesson" entityId={detail.id} readOnly />
               </div>
             </div>
             <div>

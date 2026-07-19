@@ -49,6 +49,16 @@ export const useClassRoomSummary = (
 };
 
 // MUTATION
+// A class carries its own `room_id` and factors into the room's computed
+// "in use"/"active classes" stats (`RoomService::classesInUse/summary` query
+// live off `edu_classes.room_id`+`status`, no cached field on the room
+// itself) — so anything that can change either must also invalidate the
+// Room queries, or a Room page already mounted keeps showing stale usage.
+const ROOM_QUERY_KEYS = [["room", "list"], ["room", "detail"], ["room", "summary"]] as const;
+const invalidateRoomQueries = (queryClient: ReturnType<typeof useQueryClient>) => {
+  ROOM_QUERY_KEYS.forEach((queryKey) => queryClient.invalidateQueries({ queryKey }));
+};
+
 export const useClassRoomCreate = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -56,6 +66,7 @@ export const useClassRoomCreate = () => {
     mutationFn: (payload: CreatePayload) => ClassRoomAPI.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
+      invalidateRoomQueries(queryClient);
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -70,6 +81,8 @@ export const useClassRoomUpdate = () => {
     mutationFn: (payload: UpdatePayload) => ClassRoomAPI.update(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["class-room", "detail"] });
+      invalidateRoomQueries(queryClient);
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -88,6 +101,7 @@ export const useUpsertClassRoom = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
       queryClient.invalidateQueries({ queryKey: ["class-room", "detail"] });
+      invalidateRoomQueries(queryClient);
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -102,6 +116,7 @@ export const useClassRoomDelete = () => {
     mutationFn: (payload: DeletePayload) => ClassRoomAPI.delete(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
+      invalidateRoomQueries(queryClient);
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -117,6 +132,7 @@ export const useClassRoomSuspend = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
       queryClient.invalidateQueries({ queryKey: ["class-room", "detail"] });
+      invalidateRoomQueries(queryClient);
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -132,6 +148,7 @@ export const useClassRoomRestore = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["class-room", "list"] });
       queryClient.invalidateQueries({ queryKey: ["class-room", "detail"] });
+      invalidateRoomQueries(queryClient);
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);

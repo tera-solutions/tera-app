@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
-import { notification, PencilSquareOutlined } from "tera-dls";
+import moment from "moment";
+import { DatePicker, Input, InputNumber, notification, Select, TextArea } from "tera-dls";
 
 import { TeacherService } from "@tera/modules/hr";
-import { FileAPI } from "@tera/api/common/FileAPI";
 import FormScaff from "@tera/components/dof/FormScaff";
 
-import Avatar from "_common/components/Avatar";
+import AvatarUpload from "_common/components/AvatarUpload";
 import BranchSelect from "_common/components/BranchSelect";
+import FieldLabel from "_common/components/FieldLabel";
 import { useMeta } from "_common/hooks/useMeta";
 
 import type { Teacher } from "../_interface";
 import { EMPLOYMENT_TYPES, TEACHER_TYPE_META } from "../constants";
 
-const inputBaseClass =
-  "rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none";
-const inputClass = `w-full ${inputBaseClass}`;
-const labelClass = "mb-1 block text-xs font-medium text-slate-500";
+const DATE_FORMAT = "YYYY-MM-DD";
+const GENDER_OPTIONS = [
+  { value: "male", label: "Nam" },
+  { value: "female", label: "Nữ" },
+  { value: "other", label: "Khác" },
+];
 
 const SKILL_LEVELS = [
   { value: "beginner", label: "Mới bắt đầu" },
@@ -65,7 +68,6 @@ const TeacherFormModal = ({ open, teacher, onClose }: Props) => {
 
   const [form, setForm] = useState(empty);
   const set = (patch: Partial<typeof form>) => setForm((prev) => ({ ...prev, ...patch }));
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -95,21 +97,6 @@ const TeacherFormModal = ({ open, teacher, onClose }: Props) => {
       setForm(empty);
     }
   }, [open, teacher]);
-
-  const handleAvatarSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    setUploadingAvatar(true);
-    try {
-      const uploaded = await FileAPI.upload(file);
-      set({ avatar: uploaded.url });
-    } catch {
-      notification.error({ message: "Tải ảnh lên thất bại" });
-    } finally {
-      setUploadingAvatar(false);
-    }
-  };
 
   const bankAccount =
     form.bank_name.trim() || form.bank_account_number.trim() || form.bank_account_holder.trim()
@@ -210,39 +197,31 @@ const TeacherFormModal = ({ open, teacher, onClose }: Props) => {
     >
       <div className="max-h-[70vh] space-y-3 overflow-y-auto pr-1">
         <div className="flex justify-center">
-          <div className="relative">
-            <Avatar src={form.avatar} alt={form.full_name} sizeClassName="h-20 w-20" />
-            <label className="absolute bottom-0 right-0 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-brand text-white [&_svg]:h-3.5 [&_svg]:w-3.5">
-              <PencilSquareOutlined />
-              <input
-                type="file"
-                accept="image/png,image/jpeg"
-                className="hidden"
-                onChange={handleAvatarSelect}
-                disabled={uploadingAvatar}
-              />
-            </label>
-          </div>
+          <AvatarUpload
+            src={form.avatar}
+            alt={form.full_name}
+            onUploaded={(url) => set({ avatar: url })}
+          />
         </div>
 
         <div>
-          <label className={labelClass}>Họ tên *</label>
-          <input className={inputClass} value={form.full_name} onChange={(e) => set({ full_name: e.target.value })} />
+          <FieldLabel required>Họ tên</FieldLabel>
+          <Input value={form.full_name} onChange={(e) => set({ full_name: e.target.value })} />
         </div>
 
         {!isEdit && (
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelClass}>Mã giáo viên *</label>
-              <input className={inputClass} value={form.code} onChange={(e) => set({ code: e.target.value })} />
+              <FieldLabel required>Mã giáo viên</FieldLabel>
+              <Input value={form.code} onChange={(e) => set({ code: e.target.value })} />
             </div>
             <div>
-              <label className={labelClass}>Ngày vào làm *</label>
-              <input
-                type="date"
-                className={inputClass}
-                value={form.joined_at}
-                onChange={(e) => set({ joined_at: e.target.value })}
+              <FieldLabel required>Ngày vào làm</FieldLabel>
+              <DatePicker
+                className="w-full"
+                format={DATE_FORMAT}
+                value={form.joined_at ? moment(form.joined_at, DATE_FORMAT) : undefined}
+                onChange={(v: any) => set({ joined_at: v ? moment(v).format(DATE_FORMAT) : "" })}
               />
             </div>
           </div>
@@ -250,104 +229,90 @@ const TeacherFormModal = ({ open, teacher, onClose }: Props) => {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>Giới tính</label>
-            <select className={inputClass} value={form.gender} onChange={(e) => set({ gender: e.target.value })}>
-              <option value="male">Nam</option>
-              <option value="female">Nữ</option>
-              <option value="other">Khác</option>
-            </select>
-          </div>
-          <div>
-            <label className={labelClass}>Ngày sinh</label>
-            <input type="date" className={inputClass} value={form.dob} onChange={(e) => set({ dob: e.target.value })} />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={labelClass}>Email {!isEdit && "*"}</label>
-            <input className={inputClass} value={form.email} onChange={(e) => set({ email: e.target.value })} />
-          </div>
-          <div>
-            <label className={labelClass}>Số điện thoại {!isEdit && "*"}</label>
-            <input className={inputClass} value={form.phone} onChange={(e) => set({ phone: e.target.value })} />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={labelClass}>CMND/CCCD</label>
-            <input
-              className={inputClass}
-              value={form.identity_no}
-              onChange={(e) => set({ identity_no: e.target.value })}
+            <FieldLabel>Giới tính</FieldLabel>
+            <Select
+              value={form.gender}
+              options={GENDER_OPTIONS}
+              onChange={(v) => set({ gender: v as string })}
             />
           </div>
           <div>
-            <label className={labelClass}>Địa chỉ</label>
-            <input className={inputClass} value={form.address} onChange={(e) => set({ address: e.target.value })} />
+            <FieldLabel>Ngày sinh</FieldLabel>
+            <DatePicker
+              className="w-full"
+              format={DATE_FORMAT}
+              value={form.dob ? moment(form.dob, DATE_FORMAT) : undefined}
+              onChange={(v: any) => set({ dob: v ? moment(v).format(DATE_FORMAT) : "" })}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <FieldLabel required={!isEdit}>Email</FieldLabel>
+            <Input value={form.email} onChange={(e) => set({ email: e.target.value })} />
+          </div>
+          <div>
+            <FieldLabel required={!isEdit}>Số điện thoại</FieldLabel>
+            <Input value={form.phone} onChange={(e) => set({ phone: e.target.value })} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <FieldLabel>CMND/CCCD</FieldLabel>
+            <Input value={form.identity_no} onChange={(e) => set({ identity_no: e.target.value })} />
+          </div>
+          <div>
+            <FieldLabel>Địa chỉ</FieldLabel>
+            <Input value={form.address} onChange={(e) => set({ address: e.target.value })} />
           </div>
         </div>
 
         <div>
-          <label className={labelClass}>Chi nhánh {!isEdit && "*"}</label>
+          <FieldLabel required={!isEdit}>Chi nhánh</FieldLabel>
           <BranchSelect
             value={form.branch_id}
             onChange={(v) => set({ branch_id: v != null ? Number(v) : "" })}
-            className={inputBaseClass}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3 border-t border-slate-100 pt-3">
           <div>
-            <label className={labelClass}>Hình thức làm việc</label>
-            <select
-              className={inputClass}
+            <FieldLabel>Hình thức làm việc</FieldLabel>
+            <Select
               value={form.teacher_type}
-              onChange={(e) => set({ teacher_type: e.target.value })}
-            >
-              {getOptions(TEACHER_TYPE_META).map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
+              options={getOptions(TEACHER_TYPE_META)}
+              onChange={(v) => set({ teacher_type: v as string })}
+            />
           </div>
           <div>
-            <label className={labelClass}>Loại hợp tác</label>
-            <select
-              className={inputClass}
+            <FieldLabel>Loại hợp tác</FieldLabel>
+            <Select
               value={form.employment_type}
-              onChange={(e) => set({ employment_type: e.target.value })}
-            >
-              {EMPLOYMENT_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
+              options={EMPLOYMENT_TYPES}
+              onChange={(v) => set({ employment_type: v as string })}
+            />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>Lương theo giờ (đ)</label>
-            <input
-              type="number"
+            <FieldLabel>Lương theo giờ (đ)</FieldLabel>
+            <InputNumber
               min={0}
-              className={inputClass}
-              value={form.hourly_rate}
-              onChange={(e) => set({ hourly_rate: e.target.value })}
+              className="w-full"
+              value={form.hourly_rate ? Number(form.hourly_rate) : undefined}
+              onChange={(v) => set({ hourly_rate: v == null ? "" : String(v) })}
             />
           </div>
           <div>
-            <label className={labelClass}>Lương tháng (đ)</label>
-            <input
-              type="number"
+            <FieldLabel>Lương tháng (đ)</FieldLabel>
+            <InputNumber
               min={0}
-              className={inputClass}
-              value={form.monthly_salary}
-              onChange={(e) => set({ monthly_salary: e.target.value })}
+              className="w-full"
+              value={form.monthly_salary ? Number(form.monthly_salary) : undefined}
+              onChange={(v) => set({ monthly_salary: v == null ? "" : String(v) })}
             />
           </div>
         </div>
@@ -355,40 +320,32 @@ const TeacherFormModal = ({ open, teacher, onClose }: Props) => {
         {!isEdit && (
           <div className="grid grid-cols-2 gap-3 border-t border-slate-100 pt-3">
             <div>
-              <label className={labelClass}>Chuyên môn *</label>
-              <input
+              <FieldLabel required>Chuyên môn</FieldLabel>
+              <Input
                 placeholder="VD: IELTS"
-                className={inputClass}
                 value={form.skill_name}
                 onChange={(e) => set({ skill_name: e.target.value })}
               />
             </div>
             <div>
-              <label className={labelClass}>Trình độ</label>
-              <select
-                className={inputClass}
+              <FieldLabel>Trình độ</FieldLabel>
+              <Select
                 value={form.skill_level}
-                onChange={(e) => set({ skill_level: e.target.value })}
-              >
-                {SKILL_LEVELS.map((l) => (
-                  <option key={l.value} value={l.value}>
-                    {l.label}
-                  </option>
-                ))}
-              </select>
+                options={SKILL_LEVELS}
+                onChange={(v) => set({ skill_level: v as string })}
+              />
             </div>
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-3 border-t border-slate-100 pt-3">
           <div>
-            <label className={labelClass}>Ngân hàng</label>
-            <input className={inputClass} value={form.bank_name} onChange={(e) => set({ bank_name: e.target.value })} />
+            <FieldLabel>Ngân hàng</FieldLabel>
+            <Input value={form.bank_name} onChange={(e) => set({ bank_name: e.target.value })} />
           </div>
           <div>
-            <label className={labelClass}>Số tài khoản</label>
-            <input
-              className={inputClass}
+            <FieldLabel>Số tài khoản</FieldLabel>
+            <Input
               value={form.bank_account_number}
               onChange={(e) => set({ bank_account_number: e.target.value })}
             />
@@ -396,28 +353,23 @@ const TeacherFormModal = ({ open, teacher, onClose }: Props) => {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>Chủ tài khoản</label>
-            <input
-              className={inputClass}
+            <FieldLabel>Chủ tài khoản</FieldLabel>
+            <Input
               value={form.bank_account_holder}
               onChange={(e) => set({ bank_account_holder: e.target.value })}
             />
           </div>
           <div>
-            <label className={labelClass}>Chi nhánh ngân hàng</label>
-            <input
-              className={inputClass}
-              value={form.bank_branch}
-              onChange={(e) => set({ bank_branch: e.target.value })}
-            />
+            <FieldLabel>Chi nhánh ngân hàng</FieldLabel>
+            <Input value={form.bank_branch} onChange={(e) => set({ bank_branch: e.target.value })} />
           </div>
         </div>
 
         <div>
-          <label className={labelClass}>Ghi chú</label>
-          <textarea
+          <FieldLabel>Ghi chú</FieldLabel>
+          <TextArea
             rows={2}
-            className={`${inputClass} resize-none`}
+            className="w-full resize-none"
             value={form.note}
             onChange={(e) => set({ note: e.target.value })}
           />

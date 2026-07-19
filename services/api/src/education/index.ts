@@ -29,6 +29,7 @@ export * from "./lesson-plan-lesson-activity";
 export * from "./lesson-progress";
 export * from "./progress-report";
 export * from "./score";
+export * from "./certificate";
 export * from "./skill-assessment";
 export * from "./room";
 export * from "./student";

@@ -1,5 +1,15 @@
 export type PlacementTestStatus = "draft" | "published";
 
+export interface PlacementTestQuestionRow {
+  id: number;
+  content: string;
+  questionType: string;
+  skill: string;
+  difficulty: string;
+  score: number;
+  cefrLevel: string | null;
+}
+
 export interface PlacementTestRow {
   id: number;
   code: string;
@@ -8,6 +18,7 @@ export interface PlacementTestRow {
   cefrLevel: string | null;
   skills: string[];
   questionCount: number;
+  questions: PlacementTestQuestionRow[];
   durationMinutes: number;
   status: PlacementTestStatus;
   attempts: number;

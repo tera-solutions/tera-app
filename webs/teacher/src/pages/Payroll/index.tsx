@@ -42,11 +42,9 @@ const Payroll = () => {
         </p>
       </div>
 
-      <div className='mb-4'>
-        <PayrollSummary latest={latest} loading={listQuery.isLoading} />
-      </div>
+      <PayrollSummary latest={latest} loading={listQuery.isLoading} />
 
-      <div className='grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start [&>*]:min-w-0'>
+      <div className='grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start *:min-w-0'>
         <div className='flex flex-col gap-4'>
           <div className='rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_2px_12px_rgba(15,23,42,0.05)] xmd:p-5'>
             <PayrollTable

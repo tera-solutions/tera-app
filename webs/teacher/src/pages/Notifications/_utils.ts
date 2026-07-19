@@ -13,6 +13,40 @@ import type {
   NotificationItem,
 } from "./_interface";
 
+interface RawNotification {
+  id: number;
+  title: string | null;
+  content: string | null;
+  type: string | null;
+  is_view: boolean;
+  created_at: string;
+}
+
+/** BE `type` is a free-text string (e.g. "assignment", "attendance_warning"); map
+ * it onto the fixed category set the UI groups/filters by. */
+export const mapNotificationCategory = (type: string | null): NotificationCategory => {
+  const value = (type ?? "").toLowerCase();
+  if (value.includes("attendance")) return "attendance";
+  if (value.includes("assignment") || value.includes("homework") || value.includes("grading"))
+    return "assignment";
+  if (value.includes("schedule") || value.includes("session") || value.includes("lesson"))
+    return "schedule";
+  if (value.includes("system")) return "system";
+  return "general";
+};
+
+export const toNotificationItem = (raw: RawNotification): NotificationItem => ({
+  id: raw.id,
+  title: raw.title ?? "",
+  content: raw.content ?? "",
+  category: mapNotificationCategory(raw.type),
+  is_read: !!raw.is_view,
+  image_url: null,
+  action_url: null,
+  action_label: null,
+  created_at: raw.created_at,
+});
+
 export const CATEGORY_META: Record<
   NotificationCategory,
   { label: string; icon: typeof MegaphoneOutlined; badge: string }

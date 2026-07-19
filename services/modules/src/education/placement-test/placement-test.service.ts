@@ -121,6 +121,21 @@ export const usePlacementTestRecordResult = () => {
   });
 };
 
+export const usePlacementTestGenerateQuestions = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: RecordPlacementTestResultPayload) => PlacementTestAPI.generateQuestions(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["placement-test", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["placement-test", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const PlacementTestService = {
   usePlacementTestList,
   usePlacementTestDetail,
@@ -130,4 +145,5 @@ export const PlacementTestService = {
   usePlacementTestPublish,
   usePlacementTestDelete,
   usePlacementTestRecordResult,
+  usePlacementTestGenerateQuestions,
 };

@@ -1,5 +1,15 @@
 import { scoreStats, toExamResultRows } from "../ExamSession/_utils";
-import type { ExamBank, ExamSessionSummary, SiblingExam } from "./_interface";
+import type { ExamBank, ExamQuestionRow, ExamSessionSummary, SiblingExam } from "./_interface";
+
+const toExamQuestionRow = (raw: any): ExamQuestionRow => ({
+  id: raw.id ?? 0,
+  skill: raw.skill ?? "",
+  question_type: raw.question_type ?? "",
+  content: raw.content ?? "",
+  answer_key: Array.isArray(raw.answer_key) ? raw.answer_key : [],
+  score: Number(raw.score ?? 0),
+  difficulty: raw.difficulty ?? "",
+});
 
 export const toExamBank = (raw: any): ExamBank | undefined => {
   if (!raw?.id) return undefined;
@@ -18,6 +28,7 @@ export const toExamBank = (raw: any): ExamBank | undefined => {
     passing_score: Number(raw.passing_score ?? 0),
     status: (raw.status ?? "draft") as ExamBank["status"],
     questions_count: Number(raw.questions_count ?? 0),
+    questions: Array.isArray(raw.questions) ? raw.questions.map(toExamQuestionRow) : [],
     course_id: raw.course_id ?? raw.course?.id ?? null,
     level_id: raw.level_id ?? null,
   };

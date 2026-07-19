@@ -18,6 +18,7 @@ export interface Classroom {
   schedule_days: string;
   start_time: string;
   end_time: string;
+  end_date: string;
   student_count: number;
   max_students: number;
   min_capacity: number | null;
