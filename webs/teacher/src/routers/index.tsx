@@ -50,6 +50,14 @@ import PayrollDetail from "pages/Payroll/PayrollDetailPage";
 import LeaveRequest from "pages/LeaveRequest";
 import LeaveRequestList from "pages/LeaveRequest/AllRequestsPage";
 import Material from "pages/Material";
+import LearningLibrary from "pages/LearningLibrary";
+import LearningLibraryDetail from "pages/LearningLibraryDetail";
+import LearningLibraryCreate from "pages/LearningLibraryCreate";
+import LearningLibraryCreateComic from "pages/LearningLibraryCreateComic";
+import LearningLibraryCreateDialogue from "pages/LearningLibraryCreateDialogue";
+import LearningLibraryCreateFlashcard from "pages/LearningLibraryCreateFlashcard";
+import LearningLibraryCreateAudio from "pages/LearningLibraryCreateAudio";
+import LearningLibraryCreateEbook from "pages/LearningLibraryCreateEbook";
 import QuestionBank from "pages/QuestionBank";
 import Invoice from "pages/Invoice";
 import Settings from "pages/Settings";
@@ -186,6 +194,14 @@ export const Routers = () => {
         <Route path={PATHS.leaveRequest} element={<LeaveRequest />} />
         <Route path={PATHS.leaveRequestAll} element={<LeaveRequestList />} />
         <Route path={PATHS.materials} element={<Material />} />
+        <Route path={PATHS.learningLibrary} element={<LearningLibrary />} />
+        <Route path={`${PATHS.learningLibrary}/create`} element={<LearningLibraryCreate />} />
+        <Route path={`${PATHS.learningLibrary}/create-comic`} element={<LearningLibraryCreateComic />} />
+        <Route path={`${PATHS.learningLibrary}/create-dialogue`} element={<LearningLibraryCreateDialogue />} />
+        <Route path={`${PATHS.learningLibrary}/create-flashcard`} element={<LearningLibraryCreateFlashcard />} />
+        <Route path={`${PATHS.learningLibrary}/create-audio`} element={<LearningLibraryCreateAudio />} />
+        <Route path={`${PATHS.learningLibrary}/create-ebook`} element={<LearningLibraryCreateEbook />} />
+        <Route path={`${PATHS.learningLibrary}/:id`} element={<LearningLibraryDetail />} />
         <Route path={PATHS.questionBank} element={<QuestionBank />} />
         <Route path={PATHS.invoices} element={<Invoice />} />
         <Route path={PATHS.settings} element={<Settings />} />
