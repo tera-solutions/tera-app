@@ -1,3 +1,66 @@
 @import "@tera/assets/styles/main.css";
 
 @source "./**/*.{ts,tsx}";
+
+/* Bảng màu + bo góc + đổ bóng của web học viên.
+   Lấy theo mockup agents/claude/student/screen/desktop/*.png — giao diện trẻ em,
+   nền xanh pastel, thẻ trắng bo tròn lớn, bóng rất nhẹ. */
+@theme {
+  --color-hana-blue: #1877f2;
+  --color-hana-blue-dark: #0f5ed6;
+  --color-hana-blue-soft: #e8f1ff;
+  --color-hana-navy: #16265c;
+  --color-hana-muted: #7a8aa8;
+  --color-hana-sky: #e9f2fd;
+  --color-hana-sky-soft: #f6faff;
+  --color-hana-mint: #22c55e;
+  --color-hana-sun: #fbbf24;
+
+  --radius-hana: 20px;
+  --radius-hana-lg: 28px;
+
+  --shadow-hana: 0 6px 24px rgba(23, 92, 211, 0.08);
+  /* Dùng cho khối lớn (banner trang chủ) để nổi rõ là một card */
+  --shadow-hana-lg: 0 12px 32px rgba(23, 92, 211, 0.16);
+  --shadow-hana-sm: 0 2px 10px rgba(23, 92, 211, 0.06);
+}
+
+@layer components {
+  .hana-card {
+    @apply rounded-hana bg-white shadow-hana;
+  }
+
+  /* Chip tròn ở topbar: streak, XP, ngôn ngữ */
+  .hana-chip {
+    @apply flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 shadow-hana-sm;
+  }
+}
+
+/* Mây trôi lững lờ ở nền các màn ngoài đăng nhập (xem CloudBackdrop).
+   Hai tốc độ + lệch pha để đám mây không trôi đều tăm tắp như nhau. */
+@keyframes hana-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(14px, -10px, 0);
+  }
+}
+
+@utility hana-float {
+  animation: hana-float 14s ease-in-out infinite;
+}
+
+@utility hana-float-slow {
+  animation: hana-float 22s ease-in-out infinite;
+  animation-delay: -6s;
+}
+
+/* Tôn trọng thiết lập giảm chuyển động của người dùng */
+@media (prefers-reduced-motion: reduce) {
+  .hana-float,
+  .hana-float-slow {
+    animation: none;
+  }
+}
