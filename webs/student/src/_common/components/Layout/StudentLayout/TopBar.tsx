@@ -1,8 +1,11 @@
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
-import { BellOutlined, FireSolid, StarSolid } from "tera-dls";
+import { BellOutlined, StarSolid } from "tera-dls";
 
 import { useStores } from "@tera/stores/useStores";
+
+import FlameIcon from "_common/components/FlameIcon";
+import { useCelebrate } from "_common/hooks/useCelebrate";
 
 import {
   useStudentHome,
@@ -33,31 +36,37 @@ const TopBar = observer(() => {
   const avatar = profile?.avatar_url || student?.avatar;
   const count = unread?.count ?? 0;
 
+  // Hiệu ứng chỉ bùng khi con số vừa đổi (hoặc lần đầu mở app), không chạy vô hạn
+  const streakCelebrating = useCelebrate(student?.streak);
+  const xpCelebrating = useCelebrate(student?.xp, 1400);
+
   return (
-    <header className='flex flex-wrap items-center justify-between gap-3 py-4'>
-      <div className='flex items-center gap-3'>
+    <header className="flex flex-wrap items-center justify-between gap-3 py-4">
+      <div className="flex items-center gap-3">
         {/* Logo chỉ hiện ở mobile vì desktop đã có trên sidebar */}
-        <HanaLogo className='xl:hidden' />
-        <div className='hidden items-center gap-3 xl:flex'>
-          <StudentAvatar name={fullName} src={avatar} className='h-11 w-11' />
-          <span className='text-lg font-bold text-hana-navy'>
+        <HanaLogo className="xl:hidden" />
+        <div className="hidden items-center gap-3 xl:flex">
+          <StudentAvatar name={fullName} src={avatar} className="h-11 w-11" />
+          <span className="text-xl font-bold text-hana-navy">
             {t("topbar.greeting", { name: displayName })}
           </span>
         </div>
       </div>
 
-      <div className='flex items-center gap-2'>
-        <div className='hana-chip' title={t("topbar.streak_tooltip")}>
-          <FireSolid className='h-5 w-5 text-orange-500' />
-          <span className='font-bold text-hana-navy'>
+      <div className="flex items-center gap-2">
+        <div className="hana-chip" title={t("topbar.streak_tooltip")}>
+          <FlameIcon className="h-7 w-7" active={streakCelebrating} />
+          <span className="font-bold text-hana-navy">
             {student?.streak ?? 0}
           </span>
         </div>
 
-        <div className='hana-chip' title={t("topbar.xp_tooltip")}>
-          <StarSolid className='h-5 w-5 text-amber-400' />
-          <span className='font-bold text-hana-navy'>{student?.xp ?? 0}</span>
-          <span className='text-xs font-semibold text-hana-muted'>
+        <div className="hana-chip" title={t("topbar.xp_tooltip")}>
+          <StarSolid
+            className={`h-6 w-6 text-amber-400 ${xpCelebrating ? "hana-twinkle-burst" : ""}`}
+          />
+          <span className="font-bold text-hana-navy">{student?.xp ?? 0}</span>
+          <span className="text-sm font-semibold text-hana-muted">
             {t("topbar.xp_unit")}
           </span>
         </div>
@@ -65,13 +74,13 @@ const TopBar = observer(() => {
         <LanguageSwitcher />
 
         <button
-          type='button'
-          className='relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white shadow-hana-sm'
+          type="button"
+          className="relative flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white shadow-hana-sm"
           title={t("topbar.notification_tooltip")}
         >
-          <BellOutlined className='h-5 w-5 text-hana-navy' />
+          <BellOutlined className="h-5 w-5 text-hana-navy" />
           {count > 0 && (
-            <span className='absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white'>
+            <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-xs font-bold text-white">
               {count > 9 ? "9+" : count}
             </span>
           )}
@@ -80,7 +89,7 @@ const TopBar = observer(() => {
         <StudentAvatar
           name={fullName}
           src={avatar}
-          className='h-10 w-10 cursor-pointer'
+          className="h-11 w-11 cursor-pointer"
         />
       </div>
     </header>

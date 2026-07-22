@@ -35,10 +35,10 @@ const HomePage = () => {
       <div className="grid gap-4 xl:grid-cols-12">
         <ContinueLearningCard
           lesson={data?.continue_lesson}
-          className="xl:col-span-5"
+          className="min-w-0 xl:col-span-5"
         />
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:col-span-3 xl:grid-cols-1">
+        <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:col-span-3 xl:grid-cols-1">
           <QuickLinkCard
             emoji="🎒"
             title={t("home.quick_class_title")}
@@ -54,14 +54,14 @@ const HomePage = () => {
         </div>
 
         {/* Cột phải chạy suốt 2 hàng như mockup desktop */}
-        <div className="flex flex-col gap-4 xl:col-span-4 xl:row-span-2">
+        <div className="flex min-w-0 flex-col gap-4 xl:col-span-4 xl:row-span-2">
           <LearningProgressCard progress={data?.weekly_progress} />
           <UpcomingLessonList lessons={data?.upcoming_lessons} />
         </div>
 
         <SuggestedLessonGrid
           lessons={data?.suggested_lessons}
-          className="xl:col-span-8"
+          className="min-w-0 xl:col-span-8"
         />
       </div>
     </div>

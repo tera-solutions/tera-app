@@ -64,3 +64,47 @@ export interface IHomeData {
   /** Bổ sung ngoài spec: chủ đề hôm nay để dựng lời chào ở banner */
   today_topic?: string;
 }
+
+/* ------------------------------------------------------------------ */
+/* [087] Danh sách lớp học                                             */
+/* ------------------------------------------------------------------ */
+
+/** Trạng thái lớp — khớp badge màu trong mockup screen/desktop/lop hoc.png */
+export type ClassStatus = "today" | "studying" | "upcoming" | "completed";
+
+export interface IClassTeacher {
+  name: string;
+  avatar: string | null;
+}
+
+export interface IStudentClass {
+  id: number;
+  name: string;
+  thumbnail: string | null;
+  /** Số bài đã học / tổng số bài */
+  lesson_done: number;
+  lesson_total: number;
+  teacher: IClassTeacher;
+  /** Y-m-d */
+  date: string;
+  /** vd "16:00 - 16:45" */
+  time: string;
+  completion_percent: number;
+  status: ClassStatus;
+  /** Bổ sung ngoài spec: chưa có ảnh thật nên vẽ ô gradient + emoji */
+  emoji?: string;
+  gradient?: string;
+}
+
+export interface IStudyStats {
+  lessons_completed: number;
+  lessons_total: number;
+  exercises_done: number;
+  study_time_minutes: number;
+  xp: number;
+}
+
+/** Các ngày có lịch học trong tháng, dạng Y-m-d */
+export interface IScheduleMonth {
+  days_with_class: string[];
+}

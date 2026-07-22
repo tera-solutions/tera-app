@@ -42,13 +42,13 @@ const UpcomingLessonList = ({ lessons = [], className = "" }: IProps) => {
   return (
     <section className={`hana-card p-5 ${className}`}>
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h2 className="flex items-center gap-2 text-base font-bold text-hana-navy">
+        <h2 className="flex items-center gap-2 text-lg font-bold text-hana-navy">
           <CalendarDaysOutlined className="h-5 w-5 text-hana-blue" />
           {t("home.upcoming_title")}
         </h2>
         <Link
           to={STUDENT_PAGE_URL.schedule}
-          className="flex items-center gap-0.5 text-sm font-semibold text-hana-blue"
+          className="-mr-2 flex h-12 items-center gap-0.5 px-2 text-base font-semibold text-hana-blue"
         >
           {t("common.see_all")}
           <ChevronRightOutlined className="h-4 w-4" />
@@ -56,7 +56,7 @@ const UpcomingLessonList = ({ lessons = [], className = "" }: IProps) => {
       </div>
 
       {lessons.length === 0 ? (
-        <p className="py-4 text-center text-sm text-hana-muted">
+        <p className="py-4 text-center text-base text-hana-muted">
           {t("home.upcoming_empty")}
         </p>
       ) : (
@@ -75,7 +75,7 @@ const UpcomingLessonList = ({ lessons = [], className = "" }: IProps) => {
                 <span className="block truncate font-semibold text-hana-navy">
                   {lesson.title}
                 </span>
-                <span className="block truncate text-xs text-hana-muted">
+                <span className="block truncate text-sm text-hana-muted">
                   {buildTimeLabel(lesson, t)}
                 </span>
               </span>

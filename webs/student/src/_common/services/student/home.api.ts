@@ -19,10 +19,10 @@ const env = (import.meta as any)?.env ?? {};
 
 export const USE_MOCK = env.VITE_STUDENT_USE_MOCK !== "false";
 
-const studentEndpoint = `${env.VITE_TERA_API ?? ""}/api/student`;
+export const studentEndpoint = `${env.VITE_TERA_API ?? ""}/api/student`;
 
 /** Giả lập độ trễ mạng để loading state hiển thị đúng như khi gọi API thật */
-const mocked = <T>(data: T, ms = 350): Promise<T> =>
+export const mocked = <T>(data: T, ms = 350): Promise<T> =>
   new Promise((resolve) => setTimeout(() => resolve(data), ms));
 
 export const StudentHomeAPI = {

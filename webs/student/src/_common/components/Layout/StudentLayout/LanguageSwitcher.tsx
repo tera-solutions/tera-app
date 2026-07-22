@@ -53,12 +53,10 @@ const LanguageSwitcher = () => {
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         className="hana-chip cursor-pointer"
-        title={t("topbar.language_tooltip")}
+        title={`${t("topbar.language_tooltip")}: ${current.label}`}
       >
+        {/* Chỉ hiện cờ — tên ngôn ngữ để dành cho lúc xổ menu ra */}
         <CurrentFlag />
-        <span className="text-sm font-bold text-hana-navy">
-          {current.label}
-        </span>
         <ChevronDownOutlined
           className={`h-4 w-4 text-hana-muted transition ${open ? "rotate-180" : ""}`}
         />
@@ -74,7 +72,7 @@ const LanguageSwitcher = () => {
                 changeLanguage(value);
                 setOpen(false);
               }}
-              className={`flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-sm font-semibold transition hover:bg-hana-blue-soft ${
+              className={`flex h-11 w-full cursor-pointer items-center gap-2 px-3.5 text-sm font-semibold transition hover:bg-hana-blue-soft ${
                 value === current.value ? "text-hana-blue" : "text-hana-navy"
               }`}
             >
