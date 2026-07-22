@@ -58,6 +58,7 @@ import LearningLibraryCreateDialogue from "pages/LearningLibraryCreateDialogue";
 import LearningLibraryCreateFlashcard from "pages/LearningLibraryCreateFlashcard";
 import LearningLibraryCreateAudio from "pages/LearningLibraryCreateAudio";
 import LearningLibraryCreateEbook from "pages/LearningLibraryCreateEbook";
+import Vocabulary from "pages/Vocabulary";
 import QuestionBank from "pages/QuestionBank";
 import Invoice from "pages/Invoice";
 import Settings from "pages/Settings";
@@ -201,6 +202,7 @@ export const Routers = () => {
         <Route path={`${PATHS.learningLibrary}/create-flashcard`} element={<LearningLibraryCreateFlashcard />} />
         <Route path={`${PATHS.learningLibrary}/create-audio`} element={<LearningLibraryCreateAudio />} />
         <Route path={`${PATHS.learningLibrary}/create-ebook`} element={<LearningLibraryCreateEbook />} />
+        <Route path={PATHS.vocabulary} element={<Vocabulary />} />
         <Route path={`${PATHS.learningLibrary}/:id`} element={<LearningLibraryDetail />} />
         <Route path={PATHS.questionBank} element={<QuestionBank />} />
         <Route path={PATHS.invoices} element={<Invoice />} />
