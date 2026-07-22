@@ -55,7 +55,7 @@ const TopBar = observer(() => {
 
       <div className="flex items-center gap-2">
         <div className="hana-chip" title={t("topbar.streak_tooltip")}>
-          <FlameIcon className="h-5 w-5" active={streakCelebrating} />
+          <FlameIcon className="h-7 w-7" active={streakCelebrating} />
           <span className="font-bold text-hana-navy">
             {student?.streak ?? 0}
           </span>
@@ -63,7 +63,7 @@ const TopBar = observer(() => {
 
         <div className="hana-chip" title={t("topbar.xp_tooltip")}>
           <StarSolid
-            className={`h-5 w-5 text-amber-400 ${xpCelebrating ? "hana-twinkle-burst" : ""}`}
+            className={`h-6 w-6 text-amber-400 ${xpCelebrating ? "hana-twinkle-burst" : ""}`}
           />
           <span className="font-bold text-hana-navy">{student?.xp ?? 0}</span>
           <span className="text-sm font-semibold text-hana-muted">
@@ -75,7 +75,7 @@ const TopBar = observer(() => {
 
         <button
           type="button"
-          className="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white shadow-hana-sm"
+          className="relative flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white shadow-hana-sm"
           title={t("topbar.notification_tooltip")}
         >
           <BellOutlined className="h-5 w-5 text-hana-navy" />
@@ -89,7 +89,7 @@ const TopBar = observer(() => {
         <StudentAvatar
           name={fullName}
           src={avatar}
-          className="h-10 w-10 cursor-pointer"
+          className="h-11 w-11 cursor-pointer"
         />
       </div>
     </header>

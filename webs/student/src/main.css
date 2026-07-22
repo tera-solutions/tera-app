@@ -27,9 +27,11 @@
     @apply rounded-hana bg-white shadow-hana;
   }
 
-  /* Chip tròn ở topbar: streak, XP, ngôn ngữ */
+  /* Chip tròn ở topbar: streak, XP, ngôn ngữ.
+     Cao cố định 44px — vừa để 3 chip bằng nhau dù icon bên trong khác cỡ,
+     vừa đạt ngưỡng vùng bấm tối thiểu 44px cho tay trẻ nhỏ. */
   .hana-chip {
-    @apply flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 shadow-hana-sm;
+    @apply flex h-11 items-center gap-1.5 rounded-full bg-white px-3.5 shadow-hana-sm;
   }
 }
 
