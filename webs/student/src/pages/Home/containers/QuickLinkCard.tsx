@@ -24,12 +24,14 @@ const QuickLinkCard = ({
       onClick={() => navigate(to)}
       className={`hana-card flex w-full cursor-pointer items-center gap-3 p-5 text-left transition hover:-translate-y-0.5 ${className}`}
     >
-      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-hana-sky text-2xl">
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-hana-sky text-3xl">
         {emoji}
       </span>
       <span className="min-w-0">
-        <span className="block truncate font-bold text-hana-blue">{title}</span>
-        <span className="block truncate text-sm text-hana-muted">
+        <span className="block truncate text-lg font-bold text-hana-blue">
+          {title}
+        </span>
+        <span className="block truncate text-base text-hana-muted">
           {description}
         </span>
       </span>

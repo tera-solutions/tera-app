@@ -13,7 +13,6 @@ import { AuthApi } from "@tera/api";
 import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 import { useStores } from "@tera/stores/useStores";
 
-import HanaFlower from "_common/components/HanaFlower";
 import rabbitImg from "@/assets/characters/rabbit.png";
 
 import HanaLogo from "./HanaLogo";
@@ -64,21 +63,20 @@ const Sidebar = observer(() => {
         collapsed ? "w-[88px] px-3" : "w-[236px] px-4"
       }`}
     >
-      {/* Logo + nút thu gọn: mở rộng thì nút nằm sát mép phải, thu gọn thì xuống dưới logo */}
+      {/* Mở rộng: logo trái + nút thu gọn sát mép phải.
+          Thu gọn: ẩn hẳn logo, chỉ còn nút mở rộng ở giữa. */}
       <div
         className={
           collapsed
-            ? "flex flex-col items-center gap-2"
+            ? "flex justify-center"
             : "flex items-center justify-between gap-2"
         }
       >
-        <Link to="/" title="Hana">
-          {collapsed ? (
-            <HanaFlower className="h-9 w-9" />
-          ) : (
+        {!collapsed && (
+          <Link to="/" title="Hana">
             <HanaLogo className="pl-2" />
-          )}
-        </Link>
+          </Link>
+        )}
         {toggleButton}
       </div>
 
@@ -91,7 +89,7 @@ const Sidebar = observer(() => {
               key={item.key}
               to={item.path}
               title={collapsed ? t(item.titleKey) : undefined}
-              className={`flex items-center gap-3 text-[15px] font-semibold transition ${
+              className={`flex items-center gap-3 text-base font-semibold transition ${
                 // Thu gọn: ô nền là hình TRÒN 48px căn giữa rail
                 collapsed
                   ? "mx-auto h-12 w-12 justify-center rounded-full p-0"
@@ -132,10 +130,10 @@ const Sidebar = observer(() => {
             className="mx-auto h-20 w-20 object-contain"
           />
           <p className="mt-1 font-bold text-hana-blue">{t("ai.name")}</p>
-          <p className="text-xs text-hana-muted">{t("ai.description")}</p>
+          <p className="text-sm text-hana-muted">{t("ai.description")}</p>
           <button
             type="button"
-            className="mt-2.5 flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-full bg-hana-blue py-2 text-xs font-semibold text-white transition hover:bg-hana-blue-dark"
+            className="mt-2.5 flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-full bg-hana-blue py-2 text-sm font-semibold text-white transition hover:bg-hana-blue-dark"
           >
             <ChatBubbleLeftRightOutlined className="h-4 w-4" />
             {t("ai.chat_now")}
@@ -147,7 +145,7 @@ const Sidebar = observer(() => {
         type="button"
         onClick={() => onLogout({})}
         title={collapsed ? t("menu.logout") : undefined}
-        className={`flex cursor-pointer items-center gap-3 text-[15px] font-semibold text-hana-muted transition hover:text-hana-navy ${
+        className={`flex cursor-pointer items-center gap-3 text-base font-semibold text-hana-muted transition hover:text-hana-navy ${
           collapsed
             ? "mx-auto h-12 w-12 justify-center rounded-full p-0 hover:bg-hana-blue-soft"
             : "px-4 py-2"

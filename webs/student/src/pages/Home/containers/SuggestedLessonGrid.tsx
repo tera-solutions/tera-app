@@ -20,13 +20,13 @@ const SuggestedLessonGrid = ({ lessons = [], className = "" }: IProps) => {
   return (
     <section className={`hana-card p-5 ${className}`}>
       <div className="mb-4 flex items-center justify-between gap-2">
-        <h2 className="flex items-center gap-2 text-base font-bold text-hana-navy">
+        <h2 className="flex items-center gap-2 text-lg font-bold text-hana-navy">
           <SparklesOutlined className="h-5 w-5 text-hana-blue" />
           {t("home.suggested_title")}
         </h2>
         <Link
           to={STUDENT_PAGE_URL.lessons}
-          className="flex items-center gap-0.5 text-sm font-semibold text-hana-blue"
+          className="-mr-2 flex h-12 items-center gap-0.5 px-2 text-base font-semibold text-hana-blue"
         >
           {t("common.see_all")}
           <ChevronRightOutlined className="h-4 w-4" />
@@ -34,7 +34,7 @@ const SuggestedLessonGrid = ({ lessons = [], className = "" }: IProps) => {
       </div>
 
       {lessons.length === 0 ? (
-        <p className="py-4 text-center text-sm text-hana-muted">
+        <p className="py-4 text-center text-base text-hana-muted">
           {t("home.suggested_empty")}
         </p>
       ) : (
@@ -54,15 +54,15 @@ const SuggestedLessonGrid = ({ lessons = [], className = "" }: IProps) => {
                   className="h-24 w-full transition group-hover:-translate-y-0.5"
                 />
                 {lesson.is_new && (
-                  <span className="absolute right-1.5 top-1.5 rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                  <span className="absolute right-1.5 top-1.5 rounded-full bg-red-600 px-2.5 py-1 text-xs font-bold text-white">
                     {t("home.badge_new")}
                   </span>
                 )}
               </div>
-              <p className="mt-2 truncate font-semibold text-hana-navy">
+              <p className="mt-2 truncate text-lg font-semibold text-hana-navy">
                 {lesson.title}
               </p>
-              <p className="flex items-center justify-between gap-2 text-xs text-hana-muted">
+              <p className="flex items-center justify-between gap-2 text-sm text-hana-muted">
                 {!!lesson.lesson_no && (
                   <span>{t("home.lesson_no", { no: lesson.lesson_no })}</span>
                 )}

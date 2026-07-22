@@ -8,6 +8,7 @@ import ForgotPasswordPage from "pages/Auth/ForgotPassword";
 import LoginPage from "pages/Auth/Login";
 import RegisterPage from "pages/Auth/Register";
 
+import ClassesPage from "pages/Classes";
 import ComingSoon from "pages/ComingSoon";
 import HomePage from "pages/Home";
 
@@ -36,12 +37,9 @@ export const Routers = () => {
         <Route index element={<Navigate to="/home" replace />} />
         <Route path="home" element={<HomePage />} />
 
+        <Route path="classes" element={<ClassesPage />} />
         <Route
-          path="classes"
-          element={<ComingSoon titleKey="screens.classes" />}
-        />
-        <Route
-          path="classes/:id"
+          path="class/:id"
           element={<ComingSoon titleKey="screens.class_detail" />}
         />
         <Route

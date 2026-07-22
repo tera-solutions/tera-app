@@ -28,7 +28,7 @@ const LoginIntro = ({ className = "" }: { className?: string }) => {
       <h1 className="max-w-[380px] text-[46px] font-extrabold leading-[1.15] text-hana-navy">
         {t("auth.welcome_title")}
       </h1>
-      <p className="mt-4 max-w-[420px] text-base leading-relaxed text-hana-navy/70">
+      <p className="mt-4 max-w-[420px] text-base leading-relaxed text-hana-navy/85">
         <Trans
           i18nKey="auth.welcome_subtitle"
           components={{ b: <span className="font-semibold text-hana-blue" /> }}
@@ -55,7 +55,7 @@ const LoginIntro = ({ className = "" }: { className?: string }) => {
           <p className="text-lg font-bold text-hana-navy">
             {t("auth.safe_title")}
           </p>
-          <p className="mt-1 max-w-[280px] text-sm leading-relaxed text-hana-navy/70">
+          <p className="mt-1 max-w-[280px] text-sm leading-relaxed text-hana-navy/85">
             {t("auth.safe_desc")}
           </p>
         </div>

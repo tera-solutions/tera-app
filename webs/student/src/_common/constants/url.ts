@@ -5,7 +5,7 @@
 export const STUDENT_PAGE_URL = {
   home: "/home",
   classes: "/classes",
-  classDetail: (id: number | string) => `/classes/${id}`,
+  classDetail: (id: number | string) => `/class/${id}`,
   lessons: "/lessons",
   lessonDetail: (id: number | string) => `/lesson/${id}`,
   exercises: "/exercises",

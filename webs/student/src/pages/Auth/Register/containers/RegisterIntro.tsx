@@ -51,7 +51,7 @@ const RegisterIntro = ({ className = "" }: { className?: string }) => {
       <h1 className="mt-8 max-w-[420px] text-[40px] font-extrabold leading-[1.15] text-hana-navy">
         {t("register.intro_title")}
       </h1>
-      <p className="mt-4 max-w-[380px] text-base leading-relaxed text-hana-navy/70">
+      <p className="mt-4 max-w-[380px] text-base leading-relaxed text-hana-navy/85">
         {t("register.intro_subtitle")}
       </p>
 
@@ -95,7 +95,7 @@ const RegisterIntro = ({ className = "" }: { className?: string }) => {
           <p className="text-lg font-bold text-hana-navy">
             {t("register.safe_title")}
           </p>
-          <p className="mt-1 max-w-[400px] text-sm leading-relaxed text-hana-navy/70">
+          <p className="mt-1 max-w-[400px] text-sm leading-relaxed text-hana-navy/85">
             {t("register.safe_desc")}
           </p>
         </div>

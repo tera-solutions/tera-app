@@ -87,7 +87,7 @@ const RegisterHero = () => {
           <h1 className="text-[23px] font-extrabold leading-snug text-hana-navy">
             {t("register.intro_title")}
           </h1>
-          <p className="mt-2 text-[13px] leading-relaxed text-hana-navy/70">
+          <p className="mt-2 text-[13px] leading-relaxed text-hana-navy/85">
             {t("register.intro_subtitle")}
           </p>
         </div>

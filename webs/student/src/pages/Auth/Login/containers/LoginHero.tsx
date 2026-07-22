@@ -76,7 +76,7 @@ const LoginHero = () => {
           <h1 className="text-[34px] font-extrabold leading-tight text-hana-navy">
             {t("banner.hello")}
           </h1>
-          <p className="mt-2 text-[13px] leading-relaxed text-hana-navy/70">
+          <p className="mt-2 text-[13px] leading-relaxed text-hana-navy/85">
             <Trans
               i18nKey="auth.welcome_subtitle"
               components={{

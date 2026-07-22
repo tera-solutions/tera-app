@@ -30,7 +30,7 @@ const WelcomeBanner = ({ topic }: IProps) => {
           <h1 className="text-3xl font-extrabold text-hana-navy xl:text-[40px]">
             {t("banner.hello")}
           </h1>
-          <p className="mt-2 text-base font-medium text-hana-navy/80 xl:text-lg">
+          <p className="mt-2 text-lg font-medium text-hana-navy/80 xl:text-xl">
             <Trans
               i18nKey="banner.intro"
               values={{ topic: topic ?? t("banner.default_topic") }}
@@ -50,7 +50,7 @@ const WelcomeBanner = ({ topic }: IProps) => {
               >
                 <CogOutlined className="h-6 w-6 text-hana-muted" />
               </button>
-              <p className="mt-1.5 text-xs font-semibold text-hana-muted">
+              <p className="mt-1.5 text-sm font-semibold text-hana-muted">
                 {t("banner.settings")}
               </p>
             </div>
@@ -63,7 +63,7 @@ const WelcomeBanner = ({ topic }: IProps) => {
               >
                 <MicrophoneOutlined className="h-6 w-6 text-hana-blue" />
               </button>
-              <p className="mt-1.5 text-xs font-semibold text-hana-blue">
+              <p className="mt-1.5 text-sm font-semibold text-hana-blue">
                 {t("banner.speak")}
               </p>
             </div>
@@ -81,7 +81,7 @@ const WelcomeBanner = ({ topic }: IProps) => {
                   className="h-full w-full object-contain"
                 />
               </button>
-              <p className="mt-1.5 text-xs font-semibold text-hana-muted">
+              <p className="mt-1.5 text-sm font-semibold text-hana-muted">
                 {t("banner.companion")}
               </p>
             </div>
