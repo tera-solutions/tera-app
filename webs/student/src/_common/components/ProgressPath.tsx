@@ -1,18 +1,12 @@
-import { CheckOutlined } from "tera-dls";
+import { CheckOutlined, StarSolid } from "tera-dls";
 
 interface IProps {
   done: number;
   total: number;
   className?: string;
-  /** Số chặng tối đa vẽ ra; nhiều bài hơn thì gộp lại cho khỏi rối */
   maxSteps?: number;
 }
 
-/**
- * Tiến độ dạng CON ĐƯỜNG CÓ CHẶNG thay cho con số phần trăm: chặng đã qua tô
- * xanh có dấu tích, chặng đang đứng là ngôi sao to, chặng chưa tới để mờ.
- * Trẻ nhìn là biết "mình đang ở đâu, còn bao xa" mà không cần đọc số.
- */
 const ProgressPath = ({
   done,
   total,
@@ -30,7 +24,7 @@ const ProgressPath = ({
         const current = i === currentStep;
 
         return (
-          <span key={i} className="flex flex-1 items-center gap-1">
+          <span key={i} className='flex flex-1 items-center gap-1'>
             <span
               className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition ${
                 passed
@@ -40,8 +34,8 @@ const ProgressPath = ({
                     : "bg-hana-sky"
               }`}
             >
-              {passed && <CheckOutlined className="h-3.5 w-3.5" />}
-              {current && <span className="text-[11px] leading-none">★</span>}
+              {passed && <CheckOutlined className='h-3.5 w-3.5' />}
+              {current && <StarSolid className='h-5 w-5' />}
             </span>
             {i < steps - 1 && (
               <span
