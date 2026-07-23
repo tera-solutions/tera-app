@@ -40,20 +40,20 @@ const UserFilter = ({
   const { t } = useTranslation();
 
   const sortOptions = [
-    { value: "user_id", label: t("user.user_id") },
+    { value: "code", label: t("user.user_id") },
     { value: "full_name", label: t("user.full_name") },
-    { value: "username", label: t("user.username") },
+    { value: "email", label: t("user.email") },
     { value: "created_at", label: t("user.created_at") },
     { value: "status", label: t("user.status") },
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-2 xmd:flex-nowrap">
+    <div className='flex flex-wrap items-center gap-2 xmd:flex-nowrap'>
       {/* Các select — CHỈ hiện desktop (mobile đưa vào modal "Lọc") */}
-      <div className="hidden xmd:contents">
+      <div className='hidden xmd:contents'>
         <FilterSelect
           allowClear
-          className="flex-1 min-w-[140px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
+          className='flex-1 min-w-[140px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]'
           value={role}
           placeholder={t("user.all_roles")}
           options={roleOptions}
@@ -61,7 +61,7 @@ const UserFilter = ({
         />
         <FilterSelect
           allowClear
-          className="flex-1 min-w-[140px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]"
+          className='flex-1 min-w-[140px] xmd:flex-none xmd:w-auto xmd:min-w-[150px]'
           value={branch}
           placeholder={t("user.all_branches")}
           options={branchOptions}
@@ -69,13 +69,13 @@ const UserFilter = ({
         />
       </div>
       {/* Sắp xếp — luôn hiện */}
-      <div className="shrink-0">
+      <div className='shrink-0'>
         <SortSelect
           options={sortOptions}
           sortBy={sortBy}
           sortDir={sortDir}
           placeholder={t("user.sort_by")}
-          defaultDir="asc"
+          defaultDir='asc'
           onChange={onSortChange}
         />
       </div>

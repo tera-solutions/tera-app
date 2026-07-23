@@ -45,8 +45,6 @@ import DateField from "_common/components/DateField";
 import { IParentForm } from "pages/CRM/parent/_interface";
 import { syncParentStudentLinks } from "_common/utils/parentStudentLinks";
 
-
-
 const defaultValues: IParentForm = {
   name: "",
   avatar: "",
@@ -147,8 +145,16 @@ const ParentForm = observer(
               .email(t("validate.email_format"))
               .max(255, t("validate.maxLength", { maxLength: 255 }))
               .optional(),
-            business_id: yup.string().required(t("validate.required")),
-            branch_id: yup.string().required(t("validate.required")),
+            business_id: yup
+              .string()
+              .test("business-required", t("validate.required"), (value) =>
+                isUpdateRef.current ? true : !!value,
+              ),
+            branch_id: yup
+              .string()
+              .test("branch-required", t("validate.required"), (value) =>
+                isUpdateRef.current ? true : !!value,
+              ),
           }),
         [t],
       );
@@ -225,9 +231,7 @@ const ParentForm = observer(
             is_pickup_authorized: !!s.is_pickup_authorized,
             note: s.note,
           }));
-        const originalLinkIds = linkItems
-          .map((l: any) => l.id)
-          .filter(Boolean);
+        const originalLinkIds = linkItems.map((l: any) => l.id).filter(Boolean);
 
         const params = {
           name: values.name?.trim() || undefined,
@@ -239,7 +243,9 @@ const ParentForm = observer(
           address: values.address?.trim() || undefined,
           province: values.province?.trim() || undefined,
           district: values.district?.trim() || undefined,
-          business_id: values.business_id ? Number(values.business_id) : undefined,
+          business_id: values.business_id
+            ? Number(values.business_id)
+            : undefined,
           branch_id: values.branch_id ? Number(values.branch_id) : undefined,
           occupation: values.occupation?.trim() || undefined,
           company: values.company?.trim() || undefined,
@@ -261,11 +267,15 @@ const ParentForm = observer(
                   });
                 }
                 queryClient.invalidateQueries({ queryKey: ["parent", "list"] });
-                queryClient.invalidateQueries({ queryKey: ["parent", "detail"] });
+                queryClient.invalidateQueries({
+                  queryKey: ["parent", "detail"],
+                });
                 queryClient.invalidateQueries({
                   queryKey: ["parent-student", "list"],
                 });
-                queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+                queryClient.invalidateQueries({
+                  queryKey: ["student", "list"],
+                });
                 notification.success({
                   message: isUpdate
                     ? t("common.update_success")
@@ -278,7 +288,9 @@ const ParentForm = observer(
                 queryClient.invalidateQueries({
                   queryKey: ["parent-student", "list"],
                 });
-                queryClient.invalidateQueries({ queryKey: ["parent", "detail"] });
+                queryClient.invalidateQueries({
+                  queryKey: ["parent", "detail"],
+                });
                 notification.error({
                   message: error?.message || t("common.error_message"),
                 });
@@ -321,11 +333,11 @@ const ParentForm = observer(
           isDisabled={isView}
         >
           {/* Tab bar */}
-          <div className="flex border-b border-gray-200 mb-4 overflow-x-auto overflow-y-hidden scrollbar-none">
+          <div className='flex border-b border-gray-200 mb-4 overflow-x-auto overflow-y-hidden scrollbar-none'>
             {tabs.map((tab) => (
               <button
                 key={tab.key}
-                type="button"
+                type='button'
                 onClick={() => setActiveTab(tab.key)}
                 className={`relative px-4 py-2 text-[13px] font-medium border-b-2 -mb-px transition-colors whitespace-nowrap flex items-center gap-1.5 ${
                   activeTab === tab.key
@@ -335,7 +347,7 @@ const ParentForm = observer(
               >
                 {tab.label}
                 {tabErrors[tab.key] && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                  <span className='w-1.5 h-1.5 rounded-full bg-red-500 shrink-0' />
                 )}
               </button>
             ))}
@@ -343,54 +355,62 @@ const ParentForm = observer(
 
           {/* Tab 1: Thông tin cá nhân */}
           <div className={activeTab === "personal" ? "block" : "hidden"}>
-            <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+            <Row className='grid grid-cols-1 sm:grid-cols-2 gap-x-4'>
               {!isView && (
-                <Col className="sm:col-span-2">
-                  <label className="text-[13px] text-gray-600 font-medium mb-2 block text-center">
+                <Col className='sm:col-span-2'>
+                  <label className='text-[13px] text-gray-600 font-medium mb-2 block text-center'>
                     {t("parent.avatar")}
                   </label>
-                  <div className="flex flex-col items-center gap-2 mb-3">
-                    <div className="relative group w-20 h-20">
-                      <div className="w-20 h-20 rounded-full overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center">
+                  <div className='flex flex-col items-center gap-2 mb-3'>
+                    <div className='relative group w-20 h-20'>
+                      <div className='w-20 h-20 rounded-full overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center'>
                         {avatarValue ? (
-                          <img src={avatarValue} alt="avatar" className="w-full h-full object-cover" />
+                          <img
+                            src={avatarValue}
+                            alt='avatar'
+                            className='w-full h-full object-cover'
+                          />
                         ) : (
-                          <UserOutlined className="w-8 h-8 text-gray-300" />
+                          <UserOutlined className='w-8 h-8 text-gray-300' />
                         )}
                       </div>
                       <UploadFiles
                         isSingle
                         maxSize={10}
-                        accept="image/*"
+                        accept='image/*'
                         onReceiveFiles={(file: IFileUpload) =>
                           form.setValue("avatar" as any, (file as any)?.url, {
                             shouldDirty: true,
                           })
                         }
                         onFailed={() =>
-                          notification.error({ message: t("common.error_message") })
+                          notification.error({
+                            message: t("common.error_message"),
+                          })
                         }
                       >
-                        <div className="absolute inset-0 rounded-full flex items-center justify-center text-center px-1 bg-black/45 text-white text-[11px] font-medium leading-tight opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                        <div className='absolute inset-0 rounded-full flex items-center justify-center text-center px-1 bg-black/45 text-white text-[11px] font-medium leading-tight opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer'>
                           {t("parent.upload_avatar")}
                         </div>
                       </UploadFiles>
                     </div>
                     {avatarValue && (
-                      <div className="flex items-center gap-3">
+                      <div className='flex items-center gap-3'>
                         <button
-                          type="button"
+                          type='button'
                           onClick={() => setShowAvatarPreview(true)}
-                          className="text-[13px] text-blue-500 hover:text-blue-600 transition-colors cursor-pointer"
+                          className='text-[13px] text-blue-500 hover:text-blue-600 transition-colors cursor-pointer'
                         >
                           {t("button.detail")}
                         </button>
                         <button
-                          type="button"
+                          type='button'
                           onClick={() =>
-                            form.setValue("avatar" as any, "", { shouldDirty: true })
+                            form.setValue("avatar" as any, "", {
+                              shouldDirty: true,
+                            })
                           }
-                          className="text-[13px] text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                          className='text-[13px] text-red-500 hover:text-red-600 transition-colors cursor-pointer'
                         >
                           {t("button.delete")}
                         </button>
@@ -402,26 +422,30 @@ const ParentForm = observer(
               <Col>
                 <FormTeraItem
                   label={t("parent.name")}
-                  name="name"
+                  name='name'
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Input
-                    placeholder={t("form.enter_value", { key: t("parent.name") })}
+                    placeholder={t("form.enter_value", {
+                      key: t("parent.name"),
+                    })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
               <Col>
-                <FormTeraItem label={t("parent.gender")} name="gender">
+                <FormTeraItem label={t("parent.gender")} name='gender'>
                   <Select
                     options={genderOptions}
-                    placeholder={t("form.enter_value", { key: t("parent.gender") })}
+                    placeholder={t("form.enter_value", {
+                      key: t("parent.gender"),
+                    })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
               <Col>
-                <FormTeraItem label={t("parent.dob")} name="dob">
+                <FormTeraItem label={t("parent.dob")} name='dob'>
                   <DateField disabled={isView} />
                 </FormTeraItem>
               </Col>
@@ -430,47 +454,57 @@ const ParentForm = observer(
 
           {/* Tab 2: Thông tin liên hệ */}
           <div className={activeTab === "contact" ? "block" : "hidden"}>
-            <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+            <Row className='grid grid-cols-1 sm:grid-cols-2 gap-x-4'>
               <Col>
                 <FormTeraItem
                   label={t("parent.phone")}
-                  name="phone"
+                  name='phone'
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Input
-                    placeholder={t("form.enter_value", { key: t("parent.phone") })}
+                    placeholder={t("form.enter_value", {
+                      key: t("parent.phone"),
+                    })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
               <Col>
-                <FormTeraItem label={t("parent.email")} name="email">
+                <FormTeraItem label={t("parent.email")} name='email'>
                   <Input
-                    placeholder={t("form.enter_value", { key: t("parent.email") })}
+                    placeholder={t("form.enter_value", {
+                      key: t("parent.email"),
+                    })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
               <Col>
-                <FormTeraItem label={t("parent.province")} name="province">
+                <FormTeraItem label={t("parent.province")} name='province'>
                   <Input
-                    placeholder={t("form.enter_value", { key: t("parent.province") })}
+                    placeholder={t("form.enter_value", {
+                      key: t("parent.province"),
+                    })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
               <Col>
-                <FormTeraItem label={t("parent.district")} name="district">
+                <FormTeraItem label={t("parent.district")} name='district'>
                   <Input
-                    placeholder={t("form.enter_value", { key: t("parent.district") })}
+                    placeholder={t("form.enter_value", {
+                      key: t("parent.district"),
+                    })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
-              <Col className="sm:col-span-2">
-                <FormTeraItem label={t("parent.address")} name="address">
+              <Col className='sm:col-span-2'>
+                <FormTeraItem label={t("parent.address")} name='address'>
                   <Input
-                    placeholder={t("form.enter_value", { key: t("parent.address") })}
+                    placeholder={t("form.enter_value", {
+                      key: t("parent.address"),
+                    })}
                     disabled={isView}
                   />
                 </FormTeraItem>
@@ -480,11 +514,11 @@ const ParentForm = observer(
 
           {/* Tab 3: Thông tin phụ huynh */}
           <div className={activeTab === "parent" ? "block" : "hidden"}>
-            <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+            <Row className='grid grid-cols-1 sm:grid-cols-2 gap-x-4'>
               <Col>
                 <FormTeraItem
                   label={t("parent.business")}
-                  name="business_id"
+                  name='business_id'
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Select
@@ -492,7 +526,9 @@ const ParentForm = observer(
                       value: String(business.id),
                       label: business.name,
                     }))}
-                    placeholder={t("form.enter_value", { key: t("parent.business") })}
+                    placeholder={t("form.enter_value", {
+                      key: t("parent.business"),
+                    })}
                     disabled={isView}
                   />
                 </FormTeraItem>
@@ -500,7 +536,7 @@ const ParentForm = observer(
               <Col>
                 <FormTeraItem
                   label={t("parent.branch")}
-                  name="branch_id"
+                  name='branch_id'
                   rules={[{ required: t("validate.required") }]}
                 >
                   <Select
@@ -510,29 +546,35 @@ const ParentForm = observer(
                         ? `${branch.name} (${branch.code})`
                         : branch.name,
                     }))}
-                    placeholder={t("form.enter_value", { key: t("parent.branch") })}
+                    placeholder={t("form.enter_value", {
+                      key: t("parent.branch"),
+                    })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
               <Col>
-                <FormTeraItem label={t("parent.occupation")} name="occupation">
+                <FormTeraItem label={t("parent.occupation")} name='occupation'>
                   <Input
-                    placeholder={t("form.enter_value", { key: t("parent.occupation") })}
+                    placeholder={t("form.enter_value", {
+                      key: t("parent.occupation"),
+                    })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
               <Col>
-                <FormTeraItem label={t("parent.company")} name="company">
+                <FormTeraItem label={t("parent.company")} name='company'>
                   <Input
-                    placeholder={t("form.enter_value", { key: t("parent.company") })}
+                    placeholder={t("form.enter_value", {
+                      key: t("parent.company"),
+                    })}
                     disabled={isView}
                   />
                 </FormTeraItem>
               </Col>
-              <Col className="sm:col-span-2">
-                <FormTeraItem label={t("parent.note")} name="note">
+              <Col className='sm:col-span-2'>
+                <FormTeraItem label={t("parent.note")} name='note'>
                   <TextArea
                     rows={3}
                     placeholder={t("parent.note_placeholder")}
@@ -545,23 +587,23 @@ const ParentForm = observer(
 
           {/* Tab 4: Thông tin học viên */}
           <div className={activeTab === "students" ? "block" : "hidden"}>
-            <div className="flex flex-col gap-3">
+            <div className='flex flex-col gap-3'>
               {studentFields.map((field, index) => {
                 return (
                   <div
                     key={field.id}
-                    className="relative rounded-lg border border-gray-200 p-3 pr-10 bg-gray-50"
+                    className='relative rounded-lg border border-gray-200 p-3 pr-10 bg-gray-50'
                   >
                     {!isView && (
                       <button
-                        type="button"
+                        type='button'
                         onClick={() => removeStudent(index)}
-                        className="absolute top-2 right-2 z-10 h-6 w-6 flex items-center justify-center rounded text-red-500 hover:bg-red-50 transition-colors text-lg leading-none"
+                        className='absolute top-2 right-2 z-10 h-6 w-6 flex items-center justify-center rounded text-red-500 hover:bg-red-50 transition-colors text-lg leading-none'
                       >
                         ×
                       </button>
                     )}
-                    <Row className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+                    <Row className='grid grid-cols-1 sm:grid-cols-2 gap-x-4'>
                       <Col>
                         <FormTeraItem
                           label={t("parent.student")}
@@ -599,20 +641,20 @@ const ParentForm = observer(
               })}
 
               {studentFields.length === 0 && (
-                <p className="text-[13px] text-gray-400 py-2">
+                <p className='text-[13px] text-gray-400 py-2'>
                   {t("parent.no_student")}
                 </p>
               )}
 
               {!isView && (
                 <button
-                  type="button"
+                  type='button'
                   onClick={() =>
                     appendStudent({ student_id: "", relation: "" })
                   }
-                  className="flex items-center gap-1.5 text-[13px] text-blue-500 hover:text-blue-600 w-fit transition-colors"
+                  className='flex items-center gap-1.5 text-[13px] text-blue-500 hover:text-blue-600 w-fit transition-colors'
                 >
-                  <PlusCircleOutlined className="w-4 h-4" />
+                  <PlusCircleOutlined className='w-4 h-4' />
                   <span>{t("parent.add_student")}</span>
                 </button>
               )}
@@ -628,8 +670,8 @@ const ParentForm = observer(
             >
               <img
                 src={avatarValue}
-                alt="avatar"
-                className="max-h-[70vh] max-w-full mx-auto rounded"
+                alt='avatar'
+                className='max-h-[70vh] max-w-full mx-auto rounded'
               />
             </Modal>
           )}

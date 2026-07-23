@@ -34,7 +34,7 @@ const UserListPage = observer(() => {
   const [keyword, setKeyword] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [branchFilter, setBranchFilter] = useState("");
-  const [sortBy, setSortBy] = useState("user_id");
+  const [sortBy, setSortBy] = useState("code");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
 
