@@ -30,6 +30,8 @@ export interface ParentFormValues {
   name: string;
   phone: string;
   email: string;
+  avatar: string;
+  branch_id: number | undefined;
   relation: string;
   student_id: number | undefined;
 }

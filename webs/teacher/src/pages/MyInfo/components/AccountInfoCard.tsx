@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import moment from "moment";
-import { notification, PencilSquareOutlined, Select } from "tera-dls";
+import { notification, Select } from "tera-dls";
 
 import FormTera, { FormTeraItem } from "@tera/components/dof/FormTera";
 import Input from "@tera/components/dof/Control/Input";
 import DatePicker from "@tera/components/dof/Control/DatePicker";
 
-import Avatar from "_common/components/Avatar";
+import AvatarUpload from "_common/components/AvatarUpload";
 import Card from "_common/components/Card";
 import WidgetState from "_common/components/WidgetState";
-import { FileAPI } from "@tera/api/common/FileAPI";
 import { ProfileService } from "@tera/modules/system";
 
 import type { ProfileData, ProfileFormValues } from "../_interface";
@@ -25,7 +24,6 @@ const DATE_FORMAT = "YYYY-MM-DD";
 
 const AccountInfoCard = ({ profile, loading }: AccountInfoCardProps) => {
   const [editing, setEditing] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(profile?.avatar_url);
 
   const form = useForm<ProfileFormValues>({ mode: "onChange" });
@@ -44,27 +42,16 @@ const AccountInfoCard = ({ profile, loading }: AccountInfoCardProps) => {
 
   const { mutate: updateProfile, isPending } = ProfileService.useProfileUpdate();
 
-  const handleAvatarSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    setUploading(true);
-    try {
-      const uploaded = await FileAPI.upload(file);
-      setAvatarUrl(uploaded.url);
-      updateProfile(
-        { avatar: uploaded.url },
-        {
-          onSuccess: () => notification.success({ message: "Cập nhật ảnh đại diện thành công" }),
-          onError: (error: any) =>
-            notification.error({ message: error?.data?.msg ?? "Không thể cập nhật ảnh đại diện" }),
-        },
-      );
-    } catch {
-      notification.error({ message: "Tải ảnh lên thất bại" });
-    } finally {
-      setUploading(false);
-    }
+  const handleAvatarUploaded = (url: string) => {
+    setAvatarUrl(url);
+    updateProfile(
+      { avatar: url },
+      {
+        onSuccess: () => notification.success({ message: "Cập nhật ảnh đại diện thành công" }),
+        onError: (error: any) =>
+          notification.error({ message: error?.data?.msg ?? "Không thể cập nhật ảnh đại diện" }),
+      },
+    );
   };
 
   const handleSubmit = (values: ProfileFormValues) => {
@@ -85,13 +72,7 @@ const AccountInfoCard = ({ profile, loading }: AccountInfoCardProps) => {
     <Card>
       <WidgetState isLoading={loading}>
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="relative">
-            <Avatar src={avatarUrl} alt={profile?.full_name} sizeClassName="h-20 w-20" />
-            <label className="absolute bottom-0 right-0 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-brand text-white [&_svg]:h-3.5 [&_svg]:w-3.5">
-              <PencilSquareOutlined />
-              <input type="file" accept="image/png,image/jpeg" className="hidden" onChange={handleAvatarSelect} disabled={uploading} />
-            </label>
-          </div>
+          <AvatarUpload src={avatarUrl} alt={profile?.full_name} onUploaded={handleAvatarUploaded} />
           <p className="font-semibold text-slate-800">{profile?.full_name}</p>
           <p className="flex items-center gap-1.5 text-xs text-slate-400">
             <span className={`h-2 w-2 rounded-full ${profile?.is_online ? "bg-emerald-400" : "bg-slate-300"}`} />

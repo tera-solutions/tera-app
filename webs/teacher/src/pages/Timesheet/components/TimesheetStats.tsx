@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   AcademicCapOutlined,
   BanknotesOutlined,
@@ -9,6 +10,8 @@ import {
 import Card from "_common/components/Card";
 import IconBox from "_common/components/IconBox";
 import WidgetState from "_common/components/WidgetState";
+import { PATHS } from "_common/components/Layout/Menu/menus";
+import { formatVnd } from "pages/Payroll/_utils";
 
 import type { TimesheetSummary } from "../_interface";
 import { formatDuration } from "../_utils";
@@ -16,6 +19,10 @@ import { formatDuration } from "../_utils";
 interface TimesheetStatsProps {
   summary: TimesheetSummary;
   loading?: boolean;
+  /** Lương kỳ khớp tháng đang xem (`null` nếu khoảng ngày không phải 1 tháng trọn vẹn
+   * hoặc chưa có kỳ lương tương ứng — BE chỉ backfill kỳ lương cho tháng đã dạy). */
+  estimatedIncome?: number | null;
+  incomeLoading?: boolean;
 }
 
 interface Tile {
@@ -25,9 +32,17 @@ interface Tile {
   soon?: boolean;
   icon: React.ReactNode;
   color: string;
+  onClick?: () => void;
+  loading?: boolean;
 }
 
-const TimesheetStats = ({ summary, loading }: TimesheetStatsProps) => {
+const TimesheetStats = ({
+  summary,
+  loading,
+  estimatedIncome,
+  incomeLoading,
+}: TimesheetStatsProps) => {
+  const navigate = useNavigate();
   const tiles: Tile[] = [
     {
       label: "Tổng số buổi",
@@ -55,30 +70,30 @@ const TimesheetStats = ({ summary, loading }: TimesheetStatsProps) => {
     },
     {
       label: "Thu nhập ước tính",
-      value: "—",
+      value: estimatedIncome === null || estimatedIncome === undefined ? "—" : formatVnd(estimatedIncome),
       sub: "Xem ở Bảng lương",
-      soon: true,
       icon: <BanknotesOutlined />,
       color: "bg-teal-50 text-teal-500",
+      onClick: () => navigate(PATHS.payroll),
+      loading: incomeLoading,
     },
   ];
 
   return (
     <div className="grid grid-cols-2 gap-3 xmd:grid-cols-3 2xl:grid-cols-5">
       {tiles.map((t) => (
-        <Card key={t.label} animated={false} className="flex items-center gap-3">
+        <Card
+          key={t.label}
+          animated={false}
+          className={`flex items-center gap-3 ${t.onClick ? "cursor-pointer transition-shadow hover:shadow-md" : ""}`}
+          onClick={t.onClick}
+        >
           <IconBox icon={t.icon} colorClassName={t.color} />
-          <WidgetState isLoading={loading} animated={false}>
+          <WidgetState isLoading={t.loading ?? loading} animated={false}>
             <div className="min-w-0">
               <p className="truncate text-xs text-slate-400">{t.label}</p>
               <p className="text-lg font-bold text-slate-800">{t.value}</p>
-              {t.sub && (
-                <p
-                  className={`truncate text-[11px] ${t.soon ? "italic text-slate-300" : "text-slate-400"}`}
-                >
-                  {t.sub}
-                </p>
-              )}
+              {t.sub && <p className="truncate text-[11px] text-slate-400">{t.sub}</p>}
             </div>
           </WidgetState>
         </Card>

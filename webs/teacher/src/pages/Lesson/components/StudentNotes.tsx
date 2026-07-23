@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CheckCircleOutlined, StarSolid, UserOutlined } from "tera-dls";
+import { CheckCircleOutlined, StarSolid, TextArea, UserOutlined } from "tera-dls";
 
 import Avatar from "_common/components/Avatar";
 import { StudentService, ClassSessionFeedbackService } from "@tera/modules/education";
@@ -97,7 +97,7 @@ const StudentNoteRow = ({
             ))}
           </div>
         </div>
-        <textarea
+        <TextArea
           value={comment}
           maxLength={NOTE_MAX_LENGTH}
           onChange={(e) => setComment(e.target.value)}

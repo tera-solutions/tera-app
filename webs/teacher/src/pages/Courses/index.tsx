@@ -141,7 +141,7 @@ const Courses = () => {
           value={searchDraft}
           onChange={(e) => setSearchDraft(e.target.value)}
           placeholder="Tìm khóa học..."
-          wrapperClassName="mb-3 sm:w-72"
+          wrapperClassName="flex-1 mb-3"
         />
         <Table
           columns={columns}

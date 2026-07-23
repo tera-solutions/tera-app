@@ -50,6 +50,7 @@ export const toClassroom = (raw: any): Classroom => {
     schedule_days: scheduleDays(schedules),
     start_time: toTime(firstSlot.start_time),
     end_time: toTime(firstSlot.end_time),
+    end_date: raw.end_date ?? "",
     student_count: raw.total_students ?? 0,
     max_students: raw.max_capacity ?? 0,
     min_capacity: raw.min_capacity ?? null,
@@ -60,6 +61,12 @@ export const toClassroom = (raw: any): Classroom => {
     cover_image: raw.avatar_url ?? raw.avatar ?? "",
     course_id: raw.course_id ?? raw.course?.id ?? null,
     lesson_plan_id: raw.lesson_plan_id ?? raw.lesson_plan?.id ?? null,
+    lesson_plans: (raw.lesson_plans ?? []).map((p: any) => ({
+      id: p.id ?? 0,
+      plan_code: p.plan_code ?? "",
+      plan_name: p.plan_name ?? "",
+      status: p.status ?? "",
+    })),
   };
 };
 

@@ -72,6 +72,23 @@ const Material = () => {
   const perPage = listQuery.data?.data?.pagination?.per_page ?? filters.per_page;
 
   const { mutate: deleteMaterial } = MaterialService.useMaterialDelete();
+  const { mutate: publishMaterial } = MaterialService.useMaterialPublish();
+  const [publishingId, setPublishingId] = useState<number | null>(null);
+
+  const handlePublish = (row: MaterialRow) => {
+    setPublishingId(row.id);
+    publishMaterial(
+      { id: row.id },
+      {
+        onSuccess: () => notification.success({ message: "Đã xuất bản tài liệu" }),
+        onError: (error: any) =>
+          notification.error({
+            message: error?.data?.msg ?? error?.message ?? "Không thể xuất bản tài liệu",
+          }),
+        onSettled: () => setPublishingId(null),
+      },
+    );
+  };
 
   const handleView = async (row: MaterialRow) => {
     if (!row.fileId) {
@@ -187,6 +204,8 @@ const Material = () => {
             onRetry={() => refetch()}
             onView={handleView}
             onDelete={handleDelete}
+            onPublish={handlePublish}
+            publishingId={publishingId}
           />
 
           <TablePagination

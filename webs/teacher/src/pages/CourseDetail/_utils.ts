@@ -21,6 +21,7 @@ export const toCourseDetail = (raw: any): CourseDetail | null => {
     description: raw.description ?? "",
     duration_minutes: raw.duration_minutes ?? 0,
     price_per_lesson: Number(raw.price_per_lesson ?? 0),
+    tuition_type: raw.tuition_type ?? "per_lesson",
     is_active: !!raw.is_active,
   };
 };

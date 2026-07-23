@@ -1,6 +1,6 @@
 import { endpoint } from "@tera/api/_endpoint";
 import api from "@tera/api/drivers";
-import { CreatePayload, UpdatePayload } from "@tera/api/_interface";
+import { CreatePayload, DetailPayload, ListPayload, UpdatePayload } from "@tera/api/_interface";
 
 export interface TimetableCalendarParams {
   date_from: string;
@@ -13,6 +13,16 @@ export interface TimetableCalendarParams {
 }
 
 export const TimetableAPI = {
+  getList: async ({ params }: ListPayload) =>
+    await api
+      .get(`${endpoint}/edu/timetable/list`, { ...params, ...params?.filters })
+      .then((result) => result.data),
+
+  getDetail: async ({ id }: DetailPayload) =>
+    await api
+      .get(`${endpoint}/edu/timetable/detail/${id}`)
+      .then((result) => result.data),
+
   create: async ({ params }: CreatePayload) =>
     await api.post(`${endpoint}/edu/timetable/create`, params).then((r) => r.data),
 

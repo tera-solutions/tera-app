@@ -35,7 +35,13 @@ export const NotificationAPI = {
     await api
       .delete(`${endpoint}/sys/notification/delete/${id}`)
       .then((result) => result.data),
-  
+
+  read: async ({ id }: DetailPayload) =>
+    await api
+      .post(`${endpoint}/sys/notification/read/${id}`)
+      .then((result) => result.data),
+
+
   export: async ({ params }: ExportPayload) =>
     await api
       .post(`${endpoint}/sys/notification/export`, params)

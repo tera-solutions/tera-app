@@ -1,11 +1,11 @@
 import { useMutationLegacy } from "@tera/commons/hooks/tanstack";
 
-import DefaultImage from "@tera/components/web/DefaultImage";
 import { useStores } from "@tera/stores/useStores";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { AuthApi } from "@tera/api";
 import IconExit from "@tera/themes/images/Icons/IconExit.svg?react";
+import Avatar from "_common/components/Avatar";
 import { useStates } from "_common/hooks/useStates";
 import { EnvelopeOutlined, Popover, notification } from "tera-dls";
 import ModalResetPassword from "./ModalResetPassword";
@@ -49,10 +49,10 @@ const User = observer(() => {
           <h3 className="text-blue-800">Tài khoản</h3>
           <div className="flex flex-col gap-y-[7px]">
             <div className="flex items-center gap-x-[7px]">
-              <DefaultImage
+              <Avatar
                 src={user?.avatar_url}
                 alt={user?.full_name}
-                className="w-10 h-10 rounded-full border shrink-0"
+                sizeClassName="w-10 h-10 border"
               />
               <div className="flex flex-col justify-center gap-x-[5px] w-full">
                 <span className="text-blue-500 line-clamp-1 break-word">
@@ -103,11 +103,7 @@ const User = observer(() => {
     <>
       <Popover trigger="click" content={<Content />} placement="bottom-end">
         <div>
-          <img
-            src={user?.avatar_url}
-            className="object-cover w-6 h-6 rounded-full"
-            alt="avatar-user"
-          />
+          <Avatar src={user?.avatar_url} alt="avatar-user" sizeClassName="w-6 h-6" />
         </div>
       </Popover>
       {modalResetPassword && (

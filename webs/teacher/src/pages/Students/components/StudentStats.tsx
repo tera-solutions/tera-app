@@ -1,5 +1,6 @@
 import {
   AcademicCapOutlined,
+  ExclamationTriangleOutlined,
   TrophyOutlined,
   UsersOutlined,
   XCircleOutlined,
@@ -15,7 +16,7 @@ interface StudentStatsProps {
 }
 
 const StudentStats = ({ summary, loading }: StudentStatsProps) => (
-  <div className="grid grid-cols-2 gap-4 xmd:grid-cols-4">
+  <div className="grid grid-cols-2 gap-4 xmd:grid-cols-3 xl:grid-cols-5">
     <StatisticCard
       icon={<UsersOutlined />}
       value={summary.total}
@@ -28,6 +29,13 @@ const StudentStats = ({ summary, loading }: StudentStatsProps) => (
       value={summary.active}
       label="Đang học"
       iconClassName="bg-emerald-50 text-emerald-500"
+      loading={loading}
+    />
+    <StatisticCard
+      icon={<ExclamationTriangleOutlined />}
+      value={summary.debt}
+      label="Nợ học phí"
+      iconClassName="bg-rose-50 text-rose-600"
       loading={loading}
     />
     <StatisticCard

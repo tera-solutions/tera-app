@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { notification } from "tera-dls";
+import { Input, InputNumber, notification, Select, TextArea } from "tera-dls";
 
 import { SuperadminService } from "@tera/modules/system";
 import FormScaff from "@tera/components/dof/FormScaff";
+import FieldLabel from "_common/components/FieldLabel";
 
-const inputClass =
-  "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none";
-const labelClass = "mb-1 block text-xs font-medium text-slate-500";
+const BILLING_CYCLE_OPTIONS = [
+  { value: "month", label: "Theo tháng" },
+  { value: "year", label: "Theo năm" },
+];
 
 const LIMIT_FIELDS: Array<{ key: string; label: string }> = [
   { key: "students", label: "Học viên" },
@@ -150,9 +152,8 @@ const PackageFormModal = ({ open, pkg, onClose }: Props) => {
       <div className="max-h-[70vh] space-y-3 overflow-y-auto pr-1">
         {!isEdit && (
           <div>
-            <label className={labelClass}>Mã gói *</label>
-            <input
-              className={inputClass}
+            <FieldLabel required>Mã gói</FieldLabel>
+            <Input
               value={form.package_code}
               onChange={(e) => set({ package_code: e.target.value })}
               placeholder="PKG-BASIC"
@@ -160,17 +161,13 @@ const PackageFormModal = ({ open, pkg, onClose }: Props) => {
           </div>
         )}
         <div>
-          <label className={labelClass}>Tên gói *</label>
-          <input
-            className={inputClass}
-            value={form.name}
-            onChange={(e) => set({ name: e.target.value })}
-          />
+          <FieldLabel required>Tên gói</FieldLabel>
+          <Input value={form.name} onChange={(e) => set({ name: e.target.value })} />
         </div>
         <div>
-          <label className={labelClass}>Mô tả</label>
-          <textarea
-            className={inputClass}
+          <FieldLabel>Mô tả</FieldLabel>
+          <TextArea
+            className="w-full"
             rows={2}
             value={form.description}
             onChange={(e) => set({ description: e.target.value })}
@@ -178,60 +175,55 @@ const PackageFormModal = ({ open, pkg, onClose }: Props) => {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>Giá (₫)</label>
-            <input
-              type="number"
+            <FieldLabel>Giá (₫)</FieldLabel>
+            <InputNumber
               min={0}
-              className={inputClass}
-              value={form.price}
-              onChange={(e) => set({ price: e.target.value })}
+              className="w-full"
+              value={form.price ? Number(form.price) : undefined}
+              onChange={(v) => set({ price: v == null ? "" : String(v) })}
             />
           </div>
           <div>
-            <label className={labelClass}>Chu kỳ</label>
-            <select
-              className={inputClass}
+            <FieldLabel>Chu kỳ</FieldLabel>
+            <Select
               value={form.billing_cycle}
-              onChange={(e) => set({ billing_cycle: e.target.value as "month" | "year" })}
-            >
-              <option value="month">Theo tháng</option>
-              <option value="year">Theo năm</option>
-            </select>
+              options={BILLING_CYCLE_OPTIONS}
+              onChange={(v) => set({ billing_cycle: v as "month" | "year" })}
+            />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>Nhãn (badge)</label>
-            <input
-              className={inputClass}
+            <FieldLabel>Nhãn (badge)</FieldLabel>
+            <Input
               value={form.badge}
               onChange={(e) => set({ badge: e.target.value })}
               placeholder="Phổ biến"
             />
           </div>
           <div>
-            <label className={labelClass}>Thứ tự</label>
-            <input
-              type="number"
+            <FieldLabel>Thứ tự</FieldLabel>
+            <InputNumber
               min={0}
-              className={inputClass}
-              value={form.sort_order}
-              onChange={(e) => set({ sort_order: e.target.value })}
+              className="w-full"
+              value={form.sort_order ? Number(form.sort_order) : undefined}
+              onChange={(v) => set({ sort_order: v == null ? "" : String(v) })}
             />
           </div>
         </div>
         <div>
-          <label className={labelClass}>Giới hạn (để trống = không giới hạn)</label>
+          <FieldLabel>Giới hạn (để trống = không giới hạn)</FieldLabel>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {LIMIT_FIELDS.map((f) => (
               <div key={f.key}>
                 <span className="mb-1 block text-[11px] text-slate-400">{f.label}</span>
-                <input
-                  type="number"
+                <InputNumber
                   min={0}
-                  className={inputClass}
-                  value={form.limits[f.key]}
-                  onChange={(e) => set({ limits: { ...form.limits, [f.key]: e.target.value } })}
+                  className="w-full"
+                  value={form.limits[f.key] ? Number(form.limits[f.key]) : undefined}
+                  onChange={(v) =>
+                    set({ limits: { ...form.limits, [f.key]: v == null ? "" : String(v) } })
+                  }
                   placeholder="∞"
                 />
               </div>
@@ -239,9 +231,9 @@ const PackageFormModal = ({ open, pkg, onClose }: Props) => {
           </div>
         </div>
         <div>
-          <label className={labelClass}>Tính năng (mỗi dòng một mục)</label>
-          <textarea
-            className={inputClass}
+          <FieldLabel>Tính năng (mỗi dòng một mục)</FieldLabel>
+          <TextArea
+            className="w-full"
             rows={4}
             value={form.features}
             onChange={(e) => set({ features: e.target.value })}

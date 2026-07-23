@@ -1,7 +1,13 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
-  "globalEnv": ["VITE_TERA_API", "VITE_TERA_SOCKET"],
+  "globalEnv": [
+    "VITE_TERA_API",
+    "VITE_TERA_SOCKET",
+    "VITE_GOOGLE_OAUTH_CLIENT_ID",
+    "VITE_MICROSOFT_OAUTH_CLIENT_ID",
+    "VITE_MICROSOFT_OAUTH_TENANT"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

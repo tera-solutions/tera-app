@@ -47,13 +47,22 @@ export const enrichStudentRows = (
     avg_score: item.avg_score ?? studentScoreMap.get(item.id) ?? null,
   }));
 
-/** Prefer the server-provided summary; fall back to counting the loaded page. */
+/**
+ * Prefer the server-provided summary (`StudentService::summary()` ->
+ * `{total, by_status, new_this_month}`, keyed by the real backend enum
+ * values e.g. "graduated" not "completed"); fall back to counting the
+ * loaded page.
+ */
 export const toStudentSummary = (
   raw: any,
   items: StudentListItem[],
-): StudentSummary => ({
-  total: raw?.total ?? items.length,
-  active: raw?.active ?? items.filter((i) => i.status === "active").length,
-  dropped: raw?.dropped ?? items.filter((i) => i.status === "dropped").length,
-  completed: raw?.completed ?? items.filter((i) => i.status === "completed").length,
-});
+): StudentSummary => {
+  const byStatus = raw?.by_status ?? {};
+  return {
+    total: raw?.total ?? items.length,
+    active: byStatus.active ?? items.filter((i) => i.status === "active").length,
+    debt: byStatus.debt ?? items.filter((i) => i.status === "debt").length,
+    dropped: byStatus.dropped ?? items.filter((i) => i.status === "dropped").length,
+    completed: byStatus.graduated ?? items.filter((i) => i.status === "graduated").length,
+  };
+};

@@ -8,7 +8,6 @@ import {
   IdentificationOutlined,
   MapPinOutlined,
   PhoneOutlined,
-  UserGroupOutlined,
 } from "tera-dls";
 
 import Avatar from "_common/components/Avatar";
@@ -38,7 +37,6 @@ const InfoRow = ({
 
 const StudentProfileCard = ({ detail }: { detail: StudentDetail }) => {
   const { getLabel } = useMeta();
-  const parent = detail.parents[0];
 
   return (
     <Card>
@@ -73,13 +71,6 @@ const StudentProfileCard = ({ detail }: { detail: StudentDetail }) => {
         <InfoRow icon={<PhoneOutlined />} label="SĐT" value={detail.phone || "—"} />
         <InfoRow icon={<EnvelopeOutlined />} label="Email" value={detail.email || "—"} />
         <InfoRow icon={<MapPinOutlined />} label="Địa chỉ" value={detail.address || "—"} />
-        {parent && (
-          <InfoRow
-            icon={<UserGroupOutlined />}
-            label="Phụ huynh"
-            value={`${parent.name}${parent.phone ? ` · ${parent.phone}` : ""}`}
-          />
-        )}
         <InfoRow
           icon={<CalendarDaysOutlined />}
           label="Ngày đăng ký"

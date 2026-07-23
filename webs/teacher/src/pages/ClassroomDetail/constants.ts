@@ -6,6 +6,7 @@ export const DETAIL_TABS: { key: DetailTab; label: string }[] = [
   { key: "schedule", label: "Lịch học" },
   { key: "assignment", label: "Bài tập" },
   { key: "scores", label: "Điểm số" },
+  { key: "certificates", label: "Chứng chỉ" },
   { key: "comments", label: "Nhận xét" },
   { key: "documents", label: "Tài liệu" },
 ];
@@ -18,6 +19,7 @@ export const SUPPORTED_TABS: DetailTab[] = [
   "documents",
   "assignment",
   "scores",
+  "certificates",
   "comments",
 ];
 

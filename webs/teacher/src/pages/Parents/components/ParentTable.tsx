@@ -11,7 +11,7 @@ import Badge from "_common/components/Badge";
 import Table, { TableColumn } from "_common/components/Table";
 
 import type { ParentRow } from "../_interface";
-import { RELATION_BADGE, RELATION_BADGE_DEFAULT } from "../constants";
+import { RELATION_BADGE, RELATION_BADGE_DEFAULT, RELATION_LABEL } from "../constants";
 
 interface ParentTableProps {
   items: ParentRow[];
@@ -54,7 +54,7 @@ const ParentTable = ({
       title: "Liên hệ",
       render: (parent) => (
         <Badge className={`px-2.5 py-0.5 text-[11px] ${RELATION_BADGE[parent.relation] ?? RELATION_BADGE_DEFAULT}`}>
-          {parent.relation || "Phụ huynh"}
+          {RELATION_LABEL[parent.relation] ?? parent.relation ?? "Phụ huynh"}
         </Badge>
       ),
     },

@@ -1,5 +1,6 @@
 import { Button, CheckOutlined, PlayOutlined } from "tera-dls";
 
+import Avatar from "_common/components/Avatar";
 import StatusBadge from "_common/components/StatusBadge";
 
 import type { LessonActivity } from "../_interface";
@@ -42,11 +43,7 @@ const ActivityTimeline = ({
             {index + 1}
           </span>
           {activity.avatar && (
-            <img
-              src={activity.avatar}
-              alt=""
-              className="h-7 w-7 shrink-0 rounded-full object-cover"
-            />
+            <Avatar src={activity.avatar} alt={activity.name} sizeClassName="h-7 w-7" />
           )}
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-slate-700">

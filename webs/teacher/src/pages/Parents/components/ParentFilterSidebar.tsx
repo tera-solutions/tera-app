@@ -4,6 +4,7 @@ import FilterCard from "_common/components/FilterCard";
 import FilterField from "_common/components/FilterField";
 
 import type { ParentRow } from "../_interface";
+import { RELATION_LABEL } from "../constants";
 
 interface ParentFilterSidebarProps {
   classId: number;
@@ -14,16 +15,21 @@ interface ParentFilterSidebarProps {
 }
 
 const RELATION_COLOR: Record<string, string> = {
-  Bố: "#0ea5e9",
-  Mẹ: "#ec4899",
-  "Người thân": "#8b5cf6",
+  father: "#0ea5e9",
+  mother: "#ec4899",
+  guardian: "#8b5cf6",
+  grandfather: "#f59e0b",
+  grandmother: "#f59e0b",
+  uncle: "#64748b",
+  aunt: "#64748b",
+  other: "#64748b",
 };
 const DEFAULT_COLOR = "#94a3b8";
 
 const ParentFilterSidebar = ({ classId, onChange, onReset, rows, loading }: ParentFilterSidebarProps) => {
   const byRelation = new Map<string, number>();
   rows.forEach((r) => {
-    const key = r.relation || "Khác";
+    const key = r.relation || "other";
     byRelation.set(key, (byRelation.get(key) ?? 0) + 1);
   });
 
@@ -47,7 +53,7 @@ const ParentFilterSidebar = ({ classId, onChange, onReset, rows, loading }: Pare
         loading={loading}
         legend={Array.from(byRelation.entries()).map(([key, value]) => ({
           key,
-          label: key,
+          label: RELATION_LABEL[key] ?? key,
           color: RELATION_COLOR[key] ?? DEFAULT_COLOR,
           value,
         }))}

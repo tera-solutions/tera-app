@@ -11,9 +11,39 @@ export const CRITERION_LABEL: Record<EvaluationCriterion, string> = {
   interaction: "Tương tác",
   discipline: "Kỷ luật",
   homework: "Bài tập",
+  listening: "Nghe",
+  speaking: "Nói",
+  reading: "Đọc",
+  writing: "Viết",
 };
 
 export const CRITERION_KEYS = Object.keys(CRITERION_LABEL) as EvaluationCriterion[];
+
+/** Vietnamese labels for `teacher`/`parent` evaluation criteria (EvaluationType::criteria()). */
+export const TEACHER_CRITERION_LABEL: Record<string, string> = {
+  expertise: "Chuyên môn",
+  teaching_method: "Phương pháp giảng dạy",
+  communication: "Giao tiếp",
+  interaction: "Tương tác",
+  attitude: "Thái độ",
+  punctuality: "Đúng giờ",
+};
+
+export const PARENT_CRITERION_LABEL: Record<string, string> = {
+  cooperation: "Phối hợp",
+  learning_follow_up: "Theo sát học tập",
+  on_time_payment: "Đóng học phí đúng hạn",
+  meeting_attendance: "Tham dự họp phụ huynh",
+  feedback: "Phản hồi",
+};
+
+/** Allowed criterion keys + VN labels per `evaluation_type`, mirroring EvaluationType::criteria() —
+ * the single source of truth EvaluationCriteriaTemplate options must stay within. */
+export const EVALUATION_CRITERIA_BY_TYPE: Record<string, Record<string, string>> = {
+  teacher: TEACHER_CRITERION_LABEL,
+  student: CRITERION_LABEL,
+  parent: PARENT_CRITERION_LABEL,
+};
 
 export const DEFAULT_CRITERIA_SCORE = 3;
 

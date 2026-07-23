@@ -19,6 +19,8 @@ export const toPayrollRow = (raw: any): PayrollRow => ({
   bonus: Number(raw.bonus ?? 0) || 0,
   penalty: Number(raw.penalty ?? 0) || 0,
   totalSalary: Number(raw.total_salary ?? 0) || 0,
+  status: raw.status ?? "draft",
+  paidAt: raw.paid_at ?? null,
 });
 
 export const toPayrollRows = (raw: any): PayrollRow[] =>

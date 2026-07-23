@@ -37,4 +37,14 @@ export const LeadAPI = {
     await api
       .post(`${endpoint}/crm/lead/restore/${id}`, params)
       .then((result) => result.data),
+
+  updateStatus: async ({ id, params }: UpdatePayload) =>
+    await api
+      .patch(`${endpoint}/crm/lead/status/${id}`, params)
+      .then((result) => result.data),
+
+  convert: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/crm/lead/convert/${id}`, params)
+      .then((result) => result.data),
 };

@@ -20,11 +20,12 @@ export const validateAmount = (amount: number | null): string | null => {
 };
 
 /**
- * BR: giáo viên phải có tài khoản ngân hàng đã lưu trong hồ sơ (`fin/bank-account/me`)
- * mới được tạo yêu cầu ví (nạp lẫn rút) — xem `WalletRequestService::resolveBankAccountId`.
+ * Deposit has no bank-account requirement — that's only a withdraw payout
+ * target (see `WalletRequestService::resolveBankAccountId`, backend only
+ * gates `withdraw`).
  */
-export const isSubmittable = (amount: number | null, methodKey: string, hasBankAccount: boolean) =>
-  amount !== null && !validateAmount(amount) && !!methodKey && hasBankAccount;
+export const isSubmittable = (amount: number | null, methodKey: string) =>
+  amount !== null && !validateAmount(amount) && !!methodKey;
 
 /** BE `fin_wallet_requests` không có cột phương thức thanh toán — gấp tên phương
  * thức vào `note` để admin biết cách người dùng đã/định chuyển tiền. */

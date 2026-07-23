@@ -27,9 +27,10 @@ const ParentDetail = () => {
   const parentId = id ? Number(id) : null;
   const [selectedChildId, setSelectedChildId] = useState<number | null>(null);
 
-  // `crm/parent/detail` has no teacher/class scoping, so the access guard and
-  // each child's class/course are resolved from the teacher's own roster —
-  // same fix used on the Parents list.
+  // `crm/parent/detail` returns children without class info, so classes are
+  // scanned purely to enrich each child with a class/course when known — same
+  // pattern as the Parents list. This is not an access guard: a parent may
+  // legitimately have no children, or children not yet in any class.
   const classesQuery = ClassRoomService.useClassRoomList({ params: { per_page: 50 } });
   const classes = useMemo(() => classesQuery.data?.data?.items ?? [], [classesQuery.data]);
 
@@ -61,7 +62,10 @@ const ParentDetail = () => {
   );
 
   const isLoading = rosterLoading || detailQuery.isLoading;
-  const notFound = !isLoading && (detailQuery.isError || !parent?.id || children.length === 0);
+  // A parent with no children (or none yet resolvable to a class) is a valid
+  // state — not an access/not-found error. Only the API call itself failing,
+  // or returning no parent, means that.
+  const notFound = !isLoading && (detailQuery.isError || !parent?.id);
 
   const selectedChild = children.find((c) => c.id === selectedChildId) ?? children[0] ?? null;
 
@@ -153,6 +157,15 @@ const ParentDetail = () => {
                   </div>
                 </div>
               </div>
+
+              {!isLoading && children.length === 0 && (
+                <Card>
+                  <EmptyState
+                    description="Phụ huynh này chưa liên kết với học viên nào. Thêm liên kết ở trang Học viên."
+                    className="py-8"
+                  />
+                </Card>
+              )}
 
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
                 <Card>

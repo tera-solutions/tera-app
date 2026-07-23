@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
-import { notification } from "tera-dls";
+import { Input, InputNumber, notification, Select } from "tera-dls";
 
 import { useStores } from "@tera/stores/useStores";
 import { RoomService } from "@tera/modules/education";
 import FormScaff from "@tera/components/dof/FormScaff";
+import FieldLabel from "_common/components/FieldLabel";
 
 import type { Room } from "../_interface";
-
-const inputClass =
-  "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none";
-const labelClass = "mb-1 block text-xs font-medium text-slate-500";
 
 const ROOM_TYPES = [
   { value: "classroom", label: "Phòng học" },
@@ -94,40 +91,37 @@ const RoomFormModal = ({ open, room, onClose }: Props) => {
     >
       <div className="space-y-3">
         <div>
-          <label className={labelClass}>Tên phòng *</label>
-          <input className={inputClass} value={form.room_name} onChange={(e) => set({ room_name: e.target.value })} />
+          <FieldLabel required>Tên phòng</FieldLabel>
+          <Input value={form.room_name} onChange={(e) => set({ room_name: e.target.value })} />
         </div>
         {!isEdit && (
           <div>
-            <label className={labelClass}>Mã phòng *</label>
-            <input className={inputClass} value={form.room_code} onChange={(e) => set({ room_code: e.target.value })} />
+            <FieldLabel required>Mã phòng</FieldLabel>
+            <Input value={form.room_code} onChange={(e) => set({ room_code: e.target.value })} />
           </div>
         )}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>Tầng</label>
-            <input className={inputClass} value={form.floor} onChange={(e) => set({ floor: e.target.value })} />
+            <FieldLabel>Tầng</FieldLabel>
+            <Input value={form.floor} onChange={(e) => set({ floor: e.target.value })} />
           </div>
           <div>
-            <label className={labelClass}>Sức chứa *</label>
-            <input
-              type="number"
+            <FieldLabel required>Sức chứa</FieldLabel>
+            <InputNumber
               min={1}
-              className={inputClass}
-              value={form.capacity}
-              onChange={(e) => set({ capacity: e.target.value })}
+              className="w-full"
+              value={form.capacity ? Number(form.capacity) : undefined}
+              onChange={(v) => set({ capacity: v == null ? "" : String(v) })}
             />
           </div>
         </div>
         <div>
-          <label className={labelClass}>Loại phòng</label>
-          <select className={inputClass} value={form.room_type} onChange={(e) => set({ room_type: e.target.value })}>
-            {ROOM_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>
-                {t.label}
-              </option>
-            ))}
-          </select>
+          <FieldLabel>Loại phòng</FieldLabel>
+          <Select
+            value={form.room_type}
+            options={ROOM_TYPES}
+            onChange={(v) => set({ room_type: v as string })}
+          />
         </div>
       </div>
     </FormScaff>

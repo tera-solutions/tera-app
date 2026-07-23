@@ -1,5 +1,18 @@
 export type ExamBankStatus = "draft" | "published" | "archived";
 
+export interface ExamQuestionRow {
+  id: number;
+  skill: string;
+  question_type: string;
+  content: string;
+  answer_key: string[];
+  file_id: number | null;
+  file_name: string | null;
+  file_url: string | null;
+  score: number;
+  difficulty: string;
+}
+
 export interface ExamBank {
   id: number;
   code: string;
@@ -12,6 +25,7 @@ export interface ExamBank {
   passing_score: number;
   status: ExamBankStatus;
   questions_count: number;
+  questions: ExamQuestionRow[];
   course_id: number | null;
   level_id: number | null;
 }

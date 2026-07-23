@@ -45,9 +45,12 @@ const Parents = () => {
     setFilters({ search: trimmed, page: 1 }),
   );
 
-  // `crm/parent/list` has no teacher/class scoping (unlike Student/ClassRoom),
-  // so the teacher's own roster is built by scanning their classes — same fix
-  // used in Feedback/StudentDetail/Ranking.
+  // `crm/parent/list` returns children without class info, so classes are
+  // scanned here purely to enrich each child with a class name/id for the
+  // "Lớp học" filter below — same pattern as `/students`' `studentClassMap`.
+  // Note this list itself is business-scoped, not teacher-scoped (no
+  // `teacher_id` filter is passed), matching every class in the business —
+  // it no longer gates which parents are shown, see `toParentRows`.
   const classesQuery = ClassRoomService.useClassRoomList({ params: { per_page: 50 } });
   const classes = useMemo(() => classesQuery.data?.data?.items ?? [], [classesQuery.data]);
 

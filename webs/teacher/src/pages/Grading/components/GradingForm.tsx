@@ -33,7 +33,26 @@ const GradingForm = ({ submission, maxScore, hasSelection, onGraded }: GradingFo
 
   const { mutate: gradeSubmission, isPending: isGrading } = SubmissionService.useSubmissionGrade();
   const { mutate: updateSubmission, isPending: isUpdating } = SubmissionService.useSubmissionUpdate();
+  const { mutate: publishResult, isPending: isPublishing } = SubmissionService.useSubmissionPublish();
   const isSubmitting = isGrading || isUpdating;
+
+  const handlePublish = () => {
+    if (!submission) return;
+    publishResult(
+      { id: submission.id },
+      {
+        onSuccess: () => {
+          notification.success({ message: "Đã công bố kết quả cho học viên" });
+          onGraded();
+        },
+        onError: (error: any) => {
+          notification.error({
+            message: error?.data?.msg ?? error?.message ?? "Không thể công bố kết quả",
+          });
+        },
+      },
+    );
+  };
 
   const handleSubmit = (values: GradeFormValues) => {
     if (!submission) return;
@@ -102,6 +121,25 @@ const GradingForm = ({ submission, maxScore, hasSelection, onGraded }: GradingFo
             Lưu điểm
           </button>
         </FormTera>
+
+        {isGraded(submission.status) && (
+          <div className="mt-3 border-t border-slate-100 pt-3">
+            {submission.resultPublished ? (
+              <p className="text-center text-xs font-medium text-emerald-600">
+                ✓ Đã công bố kết quả cho học viên
+              </p>
+            ) : (
+              <button
+                type="button"
+                disabled={isPublishing}
+                onClick={handlePublish}
+                className="w-full rounded-lg border border-brand py-2 text-sm font-medium text-brand transition-colors hover:bg-brand hover:text-white disabled:opacity-60"
+              >
+                {isPublishing ? "Đang công bố..." : "Công bố kết quả"}
+              </button>
+            )}
+          </div>
+        )}
       </Card>
 
       <AISummaryPanel answer={submission.answer} />

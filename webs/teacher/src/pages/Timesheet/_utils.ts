@@ -1,3 +1,7 @@
+import type { CalendarCardEvent } from "_common/components/CalendarCard";
+import { toDate } from "_common/utils/schedule";
+import { getClassColorHex } from "pages/Schedule/constants";
+
 import type { TimesheetSessionRow, TimesheetSummary, WeekBucket } from "./_interface";
 
 /** "YYYY-MM-DD" → Date theo giờ LOCAL (tránh lệch timezone của new Date("YYYY-MM-DD")). */
@@ -32,7 +36,10 @@ export const pct = (part: number, total: number): number =>
 export const toTimesheetSession = (raw: any): TimesheetSessionRow => ({
   id: raw.id,
   code: raw.code,
-  sessionDate: raw.session_date ?? null,
+  // BE trả `session_date` dạng ISO datetime (midnight local đã chuyển UTC) —
+  // chuẩn hóa về "YYYY-MM-DD" local ngay từ đây để mọi chỗ downstream (weekday,
+  // gom giờ theo tuần, event lịch tháng) đọc cùng một ngày, khớp với bảng/drawer.
+  sessionDate: toDate(raw.session_date) || null,
   startTime: raw.start_time ?? null,
   endTime: raw.end_time ?? null,
   hours: Number(raw.hours ?? 0) || 0,
@@ -117,6 +124,24 @@ export const groupHoursByWeek = (
   }
   return buckets;
 };
+
+/** Map buổi dạy → sự kiện cho `CalendarCard` dùng chung, màu theo lớp học (`getClassColorHex`). */
+export const toTimesheetCalendarCardEvents = (
+  items: TimesheetSessionRow[],
+): CalendarCardEvent<TimesheetSessionRow>[] =>
+  items
+    .filter((it) => it.sessionDate)
+    .map((it) => {
+      const color = getClassColorHex(it.classId ?? 0);
+      return {
+        id: it.id,
+        date: it.sessionDate as string,
+        title: `${it.startTime?.slice(0, 5) ?? ""} ${it.className ?? ""}`.trim(),
+        color: color.color,
+        backgroundColor: color.backgroundColor,
+        item: it,
+      };
+    });
 
 /** Tổng present/absent trong danh sách hiện tại — dùng cho donut "Tổng hợp tháng". */
 export const summarizeAttendance = (items: TimesheetSessionRow[]) => {

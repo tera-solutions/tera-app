@@ -39,7 +39,7 @@ const PayrollSummary = ({ latest, loading }: PayrollSummaryProps) => {
     : [];
 
   return (
-    <div className="grid grid-cols-2 gap-3 xmd:grid-cols-3 2xl:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 xmd:grid-cols-3 2xl:grid-cols-5 mb-4">
       {(loading ? Array.from({ length: 5 }) : tiles).map((t: Tile | undefined, i) => (
         <Card key={t?.label ?? i} animated={false} className="flex items-center gap-3">
           <IconBox icon={t?.icon ?? <BanknotesOutlined />} colorClassName={t?.color ?? "bg-slate-50 text-slate-400"} />

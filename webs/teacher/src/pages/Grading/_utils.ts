@@ -24,6 +24,7 @@ export const toSubmissionDetail = (raw: any): SubmissionDetail => ({
   score: raw.score ?? null,
   comment: raw.comment ?? "",
   status: (raw.status ?? "assigned") as SubmissionDetail["status"],
+  resultPublished: !!raw.result_published,
 });
 
 export const toAssignmentHeader = (raw: any): AssignmentHeader | undefined => {

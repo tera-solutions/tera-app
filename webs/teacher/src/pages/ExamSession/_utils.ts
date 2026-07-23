@@ -14,6 +14,9 @@ export const toExamSessionHeader = (raw: any): ExamSessionHeader | undefined => 
     exam_id: raw.exam?.id ?? raw.exam_id ?? null,
     exam_name: raw.exam?.exam_name ?? "",
     class_name: raw.class?.name ?? "",
+    session_name: raw.class_session
+      ? `Buổi ${raw.class_session.session_no ?? ""} — ${raw.class_session.session_date ?? ""}`.trim()
+      : "",
     room_name: raw.room?.room_name ?? "",
     teacher_name: raw.teacher?.full_name ?? "",
     exam_date: raw.exam_date ?? "",

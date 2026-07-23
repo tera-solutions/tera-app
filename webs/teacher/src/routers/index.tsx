@@ -37,6 +37,8 @@ import Messages from "pages/Messages";
 import MyInfo from "pages/MyInfo";
 import Parents from "pages/Parents";
 import ParentDetail from "pages/ParentDetail";
+import Leads from "pages/Leads";
+import LeadDetail from "pages/LeadDetail";
 import CourseDetail from "pages/CourseDetail";
 import Enrollment from "pages/Enrollment";
 import Transfer from "pages/Transfer";
@@ -73,6 +75,7 @@ import SuperadminDashboard from "pages/Superadmin/Dashboard";
 import SuperadminTenants from "pages/Superadmin/Tenants";
 import SuperadminTenantDetail from "pages/Superadmin/TenantDetail";
 import SuperadminPackages from "pages/Superadmin/Packages";
+import CertificateVerify from "pages/CertificateVerify";
 
 import CheckAuth from "routers/CheckAuth";
 import MiddlewareRouter from "routers/MiddlewareRouter";
@@ -175,6 +178,8 @@ export const Routers = () => {
         <Route path={PATHS.ranking} element={<Ranking />} />
         <Route path={PATHS.parents} element={<Parents />} />
         <Route path={`${PATHS.parentDetail}/:id`} element={<ParentDetail />} />
+        <Route path={PATHS.leads} element={<Leads />} />
+        <Route path={`${PATHS.leadDetail}/:id`} element={<LeadDetail />} />
         <Route path={PATHS.enrollmentNew} element={<Enrollment />} />
         <Route path={PATHS.transfer} element={<Transfer />} />
         <Route
@@ -274,6 +279,9 @@ export const Routers = () => {
         <Route path='forgot-password' element={<ForgotPasswordPage />} />
         <Route path='register' element={<RegisterPage />} />
       </Route>
+
+      {/* Public QR verification — no auth, standalone page (BRD EDU-18). */}
+      <Route path='certificate/verify/:token' element={<CertificateVerify />} />
 
       <Route path='*' element={<PageNotfound />} />
       <Route path='/403' element={<PageNotPermission />} />

@@ -11,6 +11,7 @@ import {
   ClipboardDocumentCheckOutlined,
   ClipboardDocumentListOutlined,
   EyeOutlined,
+  notification,
   PencilSquareOutlined,
   PlusOutlined,
   StarOutlined,
@@ -34,7 +35,7 @@ import { todo } from "_common/utils/todo";
 import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
 import { useMeta } from "_common/hooks/useMeta";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
-import { ExamService, ExamSessionService } from "@tera/modules/education";
+import { ExamResultService, ExamService, ExamSessionService } from "@tera/modules/education";
 
 import type { ExamResultRow, ExamSessionStatus } from "./_interface";
 import { EXAM_SESSION_STATUS_META, EXAM_TABS, ExamTabKey } from "./constants";
@@ -52,10 +53,13 @@ import ScoreCharts from "./components/ScoreCharts";
 import ExamInfoCard from "./components/ExamInfoCard";
 import ExamSessionTable from "./components/ExamSessionTable";
 import ExamSessionFilterSidebar from "./components/ExamSessionFilterSidebar";
+import GenerateExamModal from "../ExamDetail/components/GenerateExamModal";
+import RegisterStudentsModal from "./components/RegisterStudentsModal";
 
 const ExamSessionList = () => {
   const navigate = useNavigate();
   const { getTabs } = useMeta();
+  const [generateOpen, setGenerateOpen] = useState(false);
 
   const [filters, setFilters] = useUrlFilters(
     {
@@ -125,13 +129,22 @@ const ExamSessionList = () => {
             Quản lý lịch kiểm tra và kết quả các lớp bạn phụ trách
           </p>
         </div>
-        <Button
-          icon={<PlusOutlined />}
-          onClick={() => navigate(`${PATHS.exam}/new`)}
-          className="whitespace-nowrap bg-brand hover:bg-brand/80"
-        >
-          Tạo bài kiểm tra
-        </Button>
+        <div className="flex shrink-0 flex-wrap gap-2">
+          <Button
+            outlined
+            onClick={() => setGenerateOpen(true)}
+            className="whitespace-nowrap text-brand border-brand hover:bg-brand"
+          >
+            Sinh đề từ ngân hàng câu hỏi
+          </Button>
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => navigate(`${PATHS.exam}/new`)}
+            className="whitespace-nowrap bg-brand hover:bg-brand/80"
+          >
+            Tạo bài kiểm tra
+          </Button>
+        </div>
       </div>
 
       <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -207,6 +220,8 @@ const ExamSessionList = () => {
           />
         </div>
       </div>
+
+      <GenerateExamModal open={generateOpen} onClose={() => setGenerateOpen(false)} />
     </div>
   );
 };
@@ -215,10 +230,26 @@ const ExamSessionDetail = ({ sessionId }: { sessionId: number }) => {
   const navigate = useNavigate();
   const [tab, setTab] = useState<ExamTabKey>("results");
   const [gradingRow, setGradingRow] = useState<ExamResultRow | null>(null);
+  const [registerOpen, setRegisterOpen] = useState(false);
 
   const detailQuery = ExamSessionService.useExamSessionDetail({ id: sessionId });
   const header = useMemo(() => toExamSessionHeader(detailQuery.data?.data), [detailQuery.data]);
   const rows = useMemo(() => toExamResultRows(detailQuery.data?.data), [detailQuery.data]);
+  const registeredStudentIds = useMemo(() => rows.map((r) => r.student_id), [rows]);
+
+  const { mutate: publishResult } = ExamResultService.useExamResultPublish();
+  const handlePublish = (row: ExamResultRow) =>
+    publishResult(
+      { id: row.registration_id },
+      {
+        onSuccess: () => {
+          notification.success({ message: "Đã công bố kết quả cho học viên" });
+          detailQuery.refetch();
+        },
+        onError: (error: any) =>
+          notification.error({ message: error?.data?.msg ?? "Không thể công bố kết quả" }),
+      },
+    );
   const stats = useMemo(() => scoreStats(rows), [rows]);
   const summary = useMemo(() => sessionSummaryStats(rows), [rows]);
 
@@ -254,6 +285,7 @@ const ExamSessionDetail = ({ sessionId }: { sessionId: number }) => {
                 sessionId={header.id}
                 examName={header.exam_name}
                 classroomName={header.class_name}
+                sessionName={header.session_name}
                 status={header.status}
                 duration={exam?.duration ?? 0}
                 examDate={header.exam_date ? moment(header.exam_date).format("DD/MM/YYYY HH:mm") : ""}
@@ -299,22 +331,34 @@ const ExamSessionDetail = ({ sessionId }: { sessionId: number }) => {
               </div>
 
               <div className={`${CARD} p-4`}>
-                <div className="mb-4 flex gap-1 overflow-x-auto border-b border-slate-100 scrollbar-none">
-                  {EXAM_TABS.map((item) => (
-                    <button
-                      key={item.key}
-                      type="button"
-                      onClick={() => setTab(item.key)}
-                      className={classNames(
-                        "whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition-colors",
-                        tab === item.key
-                          ? "border-brand text-brand"
-                          : "border-transparent text-slate-500 hover:text-slate-700",
-                      )}
+                <div className="mb-4 flex items-center justify-between gap-3 border-b border-slate-100">
+                  <div className="flex gap-1 overflow-x-auto scrollbar-none">
+                    {EXAM_TABS.map((item) => (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => setTab(item.key)}
+                        className={classNames(
+                          "whitespace-nowrap border-b-2 px-3 py-2 text-sm font-medium transition-colors",
+                          tab === item.key
+                            ? "border-brand text-brand"
+                            : "border-transparent text-slate-500 hover:text-slate-700",
+                        )}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                  {tab === "results" && header?.status !== "closed" && (
+                    <Button
+                      outlined
+                      icon={<PlusOutlined />}
+                      onClick={() => setRegisterOpen(true)}
+                      className="mb-2 shrink-0 whitespace-nowrap text-brand border-brand hover:bg-brand"
                     >
-                      {item.label}
-                    </button>
-                  ))}
+                      Đăng ký học viên
+                    </Button>
+                  )}
                 </div>
 
                 {tab === "results" && (
@@ -325,6 +369,7 @@ const ExamSessionDetail = ({ sessionId }: { sessionId: number }) => {
                     isError={detailQuery.isError}
                     onRetry={() => detailQuery.refetch()}
                     onGrade={setGradingRow}
+                    onPublish={handlePublish}
                   />
                 )}
                 {tab === "analysis" && (
@@ -342,6 +387,14 @@ const ExamSessionDetail = ({ sessionId }: { sessionId: number }) => {
         onClose={() => setGradingRow(null)}
         row={gradingRow}
         onGraded={() => detailQuery.refetch()}
+      />
+
+      <RegisterStudentsModal
+        open={registerOpen}
+        sessionId={sessionId}
+        registeredStudentIds={registeredStudentIds}
+        onClose={() => setRegisterOpen(false)}
+        onRegistered={() => detailQuery.refetch()}
       />
     </div>
   );

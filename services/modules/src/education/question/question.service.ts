@@ -148,6 +148,21 @@ export const useQuestionArchive = () => {
   });
 };
 
+export const useGenerateExam = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: CreatePayload) => QuestionAPI.generateExam(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["exam", "list"] });
+      invalidateQuestions(queryClient);
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const QuestionService = {
   useQuestionList,
   useQuestionDetail,
@@ -160,6 +175,7 @@ export const QuestionService = {
   useQuestionApprove,
   useQuestionActivate,
   useQuestionArchive,
+  useGenerateExam,
 };
 
 // ===== Categories =====

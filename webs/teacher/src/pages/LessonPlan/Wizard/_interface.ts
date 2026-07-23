@@ -9,10 +9,10 @@ export interface WizardActivity {
   status: WizardActivityStatus;
 }
 
+/** A bank material (`/materials`) staged to be attached to this lesson once
+ * it's actually created — see StepReviewCreate's final-submit attach loop. */
 export interface WizardMaterial {
-  id: number | string;
-  file_id: number | string;
-  material_type: string;
+  material_id: number | string;
   name: string;
 }
 

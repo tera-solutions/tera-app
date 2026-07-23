@@ -1,18 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import { notification, PencilSquareOutlined } from "tera-dls";
+import { Checkbox, DatePicker, Input, InputNumber, notification, Select } from "tera-dls";
+import moment from "moment";
 
-import { ClassRoomService, CourseService, LessonPlanService } from "@tera/modules/education";
+import { ClassRoomService, CourseService, LessonPlanService, RoomService } from "@tera/modules/education";
 import FormScaff from "@tera/components/dof/FormScaff";
-import { FileAPI } from "@tera/api/common/FileAPI";
 
-import Avatar from "_common/components/Avatar";
+import AvatarUpload from "_common/components/AvatarUpload";
+import FieldLabel from "_common/components/FieldLabel";
 import useCurrentTeacher from "_common/hooks/useCurrentTeacher";
 
 import type { Classroom } from "../_interface";
 
-const inputClass =
-  "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none";
-const labelClass = "mb-1 block text-xs font-medium text-slate-500";
+const DATE_FORMAT = "YYYY-MM-DD";
 
 const LEARNING_TYPES = [
   { value: "scheduled", label: "Theo lịch cố định" },
@@ -30,9 +29,12 @@ const empty = {
   name: "",
   code: "",
   course_id: "" as number | "",
-  lesson_plan_id: "" as number | "",
+  use_course_curriculum: false,
+  lesson_plan_ids: [] as number[],
   learning_type: "scheduled",
   start_date: "",
+  end_date: "",
+  room_id: "" as number | "",
   avatar: "",
   min_warning_capacity: "",
   min_capacity: "",
@@ -51,6 +53,9 @@ const ClassFormModal = ({ open, classroom, onClose }: Props) => {
   const coursesQuery = CourseService.useCourseList({ params: { per_page: 100 } });
   const courses = useMemo(() => coursesQuery.data?.data?.items ?? [], [coursesQuery.data]);
 
+  const roomsQuery = RoomService.useRoomList({ params: { per_page: 100 } });
+  const rooms = useMemo(() => roomsQuery.data?.data?.items ?? [], [roomsQuery.data]);
+
   const [form, setForm] = useState(empty);
   // Chỉ giáo án đã xuất bản mới sinh được Lesson khi tạo Timetable (lesson.md §7).
   const lessonPlansQuery = LessonPlanService.useLessonPlanList({
@@ -64,7 +69,6 @@ const ClassFormModal = ({ open, classroom, onClose }: Props) => {
     [lessonPlansQuery.data],
   );
   const set = (patch: Partial<typeof form>) => setForm((prev) => ({ ...prev, ...patch }));
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -73,9 +77,16 @@ const ClassFormModal = ({ open, classroom, onClose }: Props) => {
         name: classroom.name ?? "",
         code: "",
         course_id: classroom.course_id ?? "",
-        lesson_plan_id: classroom.lesson_plan_id ?? "",
+        use_course_curriculum: false,
+        lesson_plan_ids: classroom.lesson_plans.length
+          ? classroom.lesson_plans.map((p) => p.id)
+          : classroom.lesson_plan_id
+            ? [classroom.lesson_plan_id]
+            : [],
         learning_type: "scheduled",
         start_date: "",
+        end_date: classroom.end_date ?? "",
+        room_id: classroom.room_id ?? "",
         avatar: classroom.cover_image ?? "",
         min_warning_capacity:
           classroom.min_warning_capacity != null ? String(classroom.min_warning_capacity) : "",
@@ -88,21 +99,6 @@ const ClassFormModal = ({ open, classroom, onClose }: Props) => {
       setForm(empty);
     }
   }, [open, classroom]);
-
-  const handleAvatarSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    setUploadingAvatar(true);
-    try {
-      const uploaded = await FileAPI.upload(file);
-      set({ avatar: uploaded.url });
-    } catch {
-      notification.error({ message: "Tải ảnh lên thất bại" });
-    } finally {
-      setUploadingAvatar(false);
-    }
-  };
 
   const handleSubmit = () => {
     if (!form.name.trim()) {
@@ -135,7 +131,10 @@ const ClassFormModal = ({ open, classroom, onClose }: Props) => {
           params: {
             name: form.name.trim(),
             avatar: form.avatar || undefined,
-            lesson_plan_id: form.lesson_plan_id ? Number(form.lesson_plan_id) : undefined,
+            lesson_plan_id: form.lesson_plan_ids[0] ?? undefined,
+            lesson_plan_ids: form.lesson_plan_ids,
+            room_id: form.room_id ? Number(form.room_id) : undefined,
+            end_date: form.end_date || undefined,
             ...capacityParams,
           },
         },
@@ -152,9 +151,13 @@ const ClassFormModal = ({ open, classroom, onClose }: Props) => {
             name: form.name.trim(),
             code: form.code.trim(),
             course_id: Number(form.course_id),
-            lesson_plan_id: form.lesson_plan_id ? Number(form.lesson_plan_id) : undefined,
+            use_course_curriculum: form.use_course_curriculum,
+            lesson_plan_id: form.lesson_plan_ids[0] ?? undefined,
+            lesson_plan_ids: form.lesson_plan_ids,
             learning_type: form.learning_type,
             start_date: form.start_date,
+            end_date: form.end_date || undefined,
+            room_id: form.room_id ? Number(form.room_id) : undefined,
             avatar: form.avatar || undefined,
             teacher_id: teacherId ?? undefined,
             ...capacityParams,
@@ -178,136 +181,138 @@ const ClassFormModal = ({ open, classroom, onClose }: Props) => {
     >
       <div className="space-y-3">
         <div className="flex justify-center">
-          <div className="relative">
-            <Avatar src={form.avatar} alt={form.name} sizeClassName="h-20 w-20" />
-            <label className="absolute bottom-0 right-0 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-brand text-white [&_svg]:h-3.5 [&_svg]:w-3.5">
-              <PencilSquareOutlined />
-              <input
-                type="file"
-                accept="image/png,image/jpeg"
-                className="hidden"
-                onChange={handleAvatarSelect}
-                disabled={uploadingAvatar}
-              />
-            </label>
-          </div>
+          <AvatarUpload
+            src={form.avatar}
+            alt={form.name}
+            onUploaded={(url) => set({ avatar: url })}
+          />
         </div>
         <div>
-          <label className={labelClass}>Tên lớp *</label>
-          <input className={inputClass} value={form.name} onChange={(e) => set({ name: e.target.value })} />
-        </div>
-        <div>
-          <label className={labelClass}>Giáo án</label>
-          <select
-            className={inputClass}
-            value={form.lesson_plan_id}
-            onChange={(e) => set({ lesson_plan_id: e.target.value ? Number(e.target.value) : "" })}
-          >
-            <option value="">— Chưa gắn giáo án —</option>
-            {lessonPlans.map((lp: any) => (
-              <option key={lp.id} value={lp.id}>
-                {lp.plan_name ?? lp.name} {lp.plan_code ? `(${lp.plan_code})` : ""}
-              </option>
-            ))}
-          </select>
-          <p className="mt-1 text-xs text-slate-400">
-            Chỉ hiện giáo án đã xuất bản. Gắn giáo án để hệ thống tự sinh bài học khi bạn tạo
-            thời khóa biểu cho lớp.
-          </p>
+          <FieldLabel required>Tên lớp</FieldLabel>
+          <Input value={form.name} onChange={(e) => set({ name: e.target.value })} />
         </div>
         {!isEdit && (
           <>
             <div>
-              <label className={labelClass}>Mã lớp *</label>
-              <input className={inputClass} value={form.code} onChange={(e) => set({ code: e.target.value })} />
+              <FieldLabel required>Mã lớp</FieldLabel>
+              <Input value={form.code} onChange={(e) => set({ code: e.target.value })} />
             </div>
             <div>
-              <label className={labelClass}>Khóa học *</label>
-              <select
-                className={inputClass}
+              <FieldLabel required>Khóa học</FieldLabel>
+              <Select
                 value={form.course_id}
-                onChange={(e) => set({ course_id: e.target.value ? Number(e.target.value) : "" })}
-              >
-                <option value="">— Chọn khóa học —</option>
-                {courses.map((c: any) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+                placeholder="— Chọn khóa học —"
+                options={courses.map((c: any) => ({ value: c.id, label: c.name }))}
+                onChange={(v) =>
+                  set({
+                    course_id: v != null ? Number(v) : "",
+                    use_course_curriculum: v != null ? form.use_course_curriculum : false,
+                  })
+                }
+              />
+              {!!form.course_id && (
+                <div className="mt-2">
+                  <Checkbox
+                    checked={form.use_course_curriculum}
+                    onChange={(e) => set({ use_course_curriculum: e.target.checked })}
+                  >
+                    <p className="block text-xs font-medium text-slate-500">Sao chép chương trình học từ khóa học vào lớp này</p>
+                  </Checkbox>
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelClass}>Hình thức</label>
-                <select
-                  className={inputClass}
+                <FieldLabel>Hình thức</FieldLabel>
+                <Select
                   value={form.learning_type}
-                  onChange={(e) => set({ learning_type: e.target.value })}
-                >
-                  {LEARNING_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
+                  options={LEARNING_TYPES}
+                  onChange={(v) => set({ learning_type: v as string })}
+                />
               </div>
               <div>
-                <label className={labelClass}>Ngày bắt đầu *</label>
-                <input
-                  type="date"
-                  className={inputClass}
-                  value={form.start_date}
-                  onChange={(e) => set({ start_date: e.target.value })}
+                <FieldLabel required>Ngày bắt đầu</FieldLabel>
+                <DatePicker
+                  className="w-full"
+                  format={DATE_FORMAT}
+                  value={form.start_date ? moment(form.start_date, DATE_FORMAT) : undefined}
+                  onChange={(v: any) => set({ start_date: v ? moment(v).format(DATE_FORMAT) : "" })}
                 />
               </div>
             </div>
-            {form.learning_type === "scheduled" && (
-              <p className="rounded-lg bg-sky-50 px-3 py-2 text-xs text-slate-500">
-                Lớp sẽ ở trạng thái "Chưa cập nhật" cho tới khi bạn tạo thời khóa biểu cho lớp
-                này ở trang Lịch dạy.
-              </p>
-            )}
           </>
         )}
+        <div>
+          <FieldLabel>Giáo án</FieldLabel>
+          <Select
+            mode="multiple"
+            value={form.lesson_plan_ids}
+            placeholder="— Chưa gắn giáo án —"
+            options={lessonPlans.map((lp: any) => ({
+              value: lp.id,
+              label: `${lp.plan_name ?? lp.name}${lp.plan_code ? ` (${lp.plan_code})` : ""}`,
+            }))}
+            onChange={(v: any) => set({ lesson_plan_ids: (v ?? []).map(Number) })}
+          />
+          <p className="mt-1 text-xs text-slate-400">
+            Có thể gắn nhiều giáo án — giáo viên sẽ chọn 1 trong số này khi bắt đầu từng buổi học.
+          </p>
+        </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>Sĩ số cảnh báo tối thiểu</label>
-            <input
-              type="number"
-              min={0}
-              className={inputClass}
-              value={form.min_warning_capacity}
-              onChange={(e) => set({ min_warning_capacity: e.target.value })}
+            <FieldLabel>Phòng học</FieldLabel>
+            <Select
+              value={form.room_id}
+              placeholder="— Chưa chọn phòng —"
+              options={rooms.map((r: any) => ({ value: r.id, label: r.room_name ?? r.name }))}
+              onChange={(v) => set({ room_id: v != null ? Number(v) : "" })}
             />
           </div>
           <div>
-            <label className={labelClass}>Sĩ số tối thiểu</label>
-            <input
-              type="number"
+            <FieldLabel>Ngày kết thúc</FieldLabel>
+            <DatePicker
+              className="w-full"
+              format={DATE_FORMAT}
+              value={form.end_date ? moment(form.end_date, DATE_FORMAT) : undefined}
+              onChange={(v: any) => set({ end_date: v ? moment(v).format(DATE_FORMAT) : "" })}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <FieldLabel>Sĩ số cảnh báo tối thiểu</FieldLabel>
+            <InputNumber
               min={0}
-              className={inputClass}
-              value={form.min_capacity}
-              onChange={(e) => set({ min_capacity: e.target.value })}
+              className="w-full"
+              value={form.min_warning_capacity ? Number(form.min_warning_capacity) : undefined}
+              onChange={(v) => set({ min_warning_capacity: v == null ? "" : String(v) })}
             />
           </div>
           <div>
-            <label className={labelClass}>Sĩ số cảnh báo tối đa</label>
-            <input
-              type="number"
+            <FieldLabel>Sĩ số tối thiểu</FieldLabel>
+            <InputNumber
               min={0}
-              className={inputClass}
-              value={form.max_warning_capacity}
-              onChange={(e) => set({ max_warning_capacity: e.target.value })}
+              className="w-full"
+              value={form.min_capacity ? Number(form.min_capacity) : undefined}
+              onChange={(v) => set({ min_capacity: v == null ? "" : String(v) })}
             />
           </div>
           <div>
-            <label className={labelClass}>Sĩ số tối đa *</label>
-            <input
-              type="number"
+            <FieldLabel>Sĩ số cảnh báo tối đa</FieldLabel>
+            <InputNumber
+              min={0}
+              className="w-full"
+              value={form.max_warning_capacity ? Number(form.max_warning_capacity) : undefined}
+              onChange={(v) => set({ max_warning_capacity: v == null ? "" : String(v) })}
+            />
+          </div>
+          <div>
+            <FieldLabel required>Sĩ số tối đa</FieldLabel>
+            <InputNumber
               min={1}
-              className={inputClass}
-              value={form.max_capacity}
-              onChange={(e) => set({ max_capacity: e.target.value })}
+              className="w-full"
+              value={form.max_capacity ? Number(form.max_capacity) : undefined}
+              onChange={(v) => set({ max_capacity: v == null ? "" : String(v) })}
             />
           </div>
         </div>

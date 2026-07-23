@@ -39,4 +39,19 @@ export const ExamAPI = {
     await api
       .post(`${endpoint}/edu/exam/export`, params)
       .then((r) => r.data),
+
+  addQuestion: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/edu/exam/question/create/${id}`, params)
+      .then((r) => r.data),
+
+  updateQuestion: async ({ id, params }: UpdatePayload) =>
+    await api
+      .put(`${endpoint}/edu/exam/question/update/${id}`, params)
+      .then((r) => r.data),
+
+  deleteQuestion: async ({ id }: DeletePayload) =>
+    await api
+      .delete(`${endpoint}/edu/exam/question/delete/${id}`)
+      .then((r) => r.data),
 };

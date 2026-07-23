@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { notification, Select } from "tera-dls";
 
@@ -38,13 +38,30 @@ interface SkillEvaluationFormProps {
   onClose: () => void;
   classId: number | null;
   lessonId: number;
+  /** Pre-selects a student (e.g. opened from their row) instead of leaving the picker empty. */
+  presetStudentId?: number | null;
 }
 
-const SkillEvaluationForm = ({ open, onClose, classId, lessonId }: SkillEvaluationFormProps) => {
+const SkillEvaluationForm = ({
+  open,
+  onClose,
+  classId,
+  lessonId,
+  presetStudentId,
+}: SkillEvaluationFormProps) => {
   const form = useForm<SkillEvaluationFormValues>({
     mode: "onChange",
-    defaultValues: { student_id: undefined, skills: defaultSkills, comment: "" },
+    defaultValues: {
+      student_id: presetStudentId ?? undefined,
+      skills: defaultSkills,
+      comment: "",
+    },
   });
+
+  useEffect(() => {
+    if (open) form.setValue("student_id", presetStudentId ?? undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, presetStudentId]);
 
   const rosterQuery = StudentService.useStudentList(
     { params: { class_id: classId ?? 0, per_page: 200 } },

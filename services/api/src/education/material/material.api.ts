@@ -11,8 +11,12 @@ import {
 
 export interface AttachMaterialToEntityPayload {
   id: number | string;
-  entity_type: "course" | "lesson_plan" | "lesson" | "assignment" | "evaluation";
+  entity_type: "course" | "lesson_plan" | "lesson" | "assignment" | "evaluation" | "exam";
   entity_id: number | string;
+}
+
+export interface DetachMaterialMappingPayload {
+  id: number | string;
 }
 
 export const MaterialAPI = {
@@ -24,6 +28,13 @@ export const MaterialAPI = {
   attach: async ({ id, entity_type, entity_id }: AttachMaterialToEntityPayload) =>
     await api
       .post(`${endpoint}/edu/material/attach/${id}`, { entity_type, entity_id })
+      .then((r) => r.data),
+
+  // `id` here is the mapping id (edu_material_mappings.id), not the material id —
+  // removes the link to one entity, the material itself stays in the bank.
+  detachMapping: async ({ id }: DetachMaterialMappingPayload) =>
+    await api
+      .delete(`${endpoint}/edu/material/mapping/delete/${id}`)
       .then((r) => r.data),
 
   getDetail: async ({ id }: DetailPayload) =>
@@ -49,5 +60,10 @@ export const MaterialAPI = {
   export: async ({ params }: ExportPayload) =>
     await api
       .post(`${endpoint}/edu/material/export`, params)
+      .then((r) => r.data),
+
+  publish: async ({ id }: DetailPayload) =>
+    await api
+      .post(`${endpoint}/edu/material/publish/${id}`, {})
       .then((r) => r.data),
 };

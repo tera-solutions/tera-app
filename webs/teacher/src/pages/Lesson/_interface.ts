@@ -24,6 +24,8 @@ export interface LessonDetail {
   id: number;
   class_room_id: number;
   lesson_plan_id: number | null;
+  teacher_id: number | null;
+  teacher_name: string;
   avatar: string;
   lesson_no: number;
   lesson_title: string;

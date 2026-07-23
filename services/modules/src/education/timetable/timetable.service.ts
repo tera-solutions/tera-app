@@ -6,9 +6,27 @@ import {
   QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { TimetableAPI, TimetableCalendarParams } from "@tera/api";
-import { CreatePayload, UpdatePayload } from "@tera/api/_interface";
+import { CreatePayload, DetailPayload, ListPayload, UpdatePayload } from "@tera/api/_interface";
 
 // QUERY
+export const useTimetableList = (payload: ListPayload, options?: QueryHookOptions) => {
+  return useQueryAdapter({
+    queryKey: ["timetable", "list", payload.params],
+    queryFn: () => TimetableAPI.getList(payload),
+    keepPreviousData: true,
+    ...options,
+  });
+};
+
+export const useTimetableDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
+  return useQueryAdapter({
+    queryKey: ["timetable", "detail", payload.id],
+    queryFn: () => TimetableAPI.getDetail(payload),
+    enabled: !!payload.id,
+    ...options,
+  });
+};
+
 export const useTimetableCalendar = (
   params: TimetableCalendarParams,
   options?: QueryHookOptions,
@@ -79,6 +97,8 @@ export const useTimetableCancelSession = () =>
   useTimetableSessionMutation(TimetableAPI.cancelSession);
 
 export const TimetableService = {
+  useTimetableList,
+  useTimetableDetail,
   useTimetableCalendar,
   useStudentSchedule,
   useTimetableCreate,

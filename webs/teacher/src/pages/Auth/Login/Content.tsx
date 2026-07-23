@@ -16,8 +16,10 @@ import {
 
 import AuthScene from "../_shared/AuthScene";
 
+import GoogleLoginButton from "./components/GoogleLoginButton";
 import InputEmail from "./components/InputEmail";
 import InputPassword from "./components/InputPassword";
+import MicrosoftLoginButton from "./components/MicrosoftLoginButton";
 import RememberMe from "./components/RememberMe";
 
 const ERROR_MESSAGES = {
@@ -55,36 +57,6 @@ const resolveErrorMessage = (error: any): string => {
   return ERROR_MESSAGES.invalidCredentials;
 };
 
-const GoogleIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-    <path
-      fill="#FFC107"
-      d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.4 1 7.4 2.8l5.7-5.7C33.6 6.5 29.1 4.5 24 4.5 13.2 4.5 4.5 13.2 4.5 24S13.2 43.5 24 43.5 43.5 34.8 43.5 24c0-1.2-.1-2.3-.3-3.5z"
-    />
-    <path
-      fill="#FF3D00"
-      d="m6.3 14.7 6.6 4.8C14.7 16 19 13 24 13c2.8 0 5.4 1 7.4 2.8l5.7-5.7C33.6 6.5 29.1 4.5 24 4.5 16.3 4.5 9.7 8.9 6.3 14.7z"
-    />
-    <path
-      fill="#4CAF50"
-      d="M24 43.5c5.2 0 9.6-2 13-5.2l-6-5.1C29 35 26.6 35.9 24 35.9c-5.3 0-9.7-3.6-11.3-8.4l-6.6 5.1C9.6 39 16.2 43.5 24 43.5z"
-    />
-    <path
-      fill="#1976D2"
-      d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.4l6 5.1c-.4.4 6.3-4.6 6.3-14.5 0-1.2-.1-2.3-.3-3.5z"
-    />
-  </svg>
-);
-
-const MicrosoftIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 23 23" aria-hidden="true">
-    <path fill="#F25022" d="M0 0h11v11H0z" />
-    <path fill="#7FBA00" d="M12 0h11v11H12z" />
-    <path fill="#00A4EF" d="M0 12h11v11H0z" />
-    <path fill="#FFB900" d="M12 12h11v11H12z" />
-  </svg>
-);
-
 const Content = observer(() => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -102,32 +74,46 @@ const Content = observer(() => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<LoginFieldErrors>({});
 
+  const handleAuthSuccess = async (data: any, remember: boolean) => {
+    persistRememberMe(remember);
+
+    data.access_id && updateAccessId(data.access_id);
+    updateUser(data);
+
+    try {
+      const profile = await AuthApi.getProfile();
+      const user = profile?.data?.user ?? profile?.data ?? profile;
+      updateUser({ user });
+    } catch {
+      // Profile is non-blocking for redirect; the store already holds the token.
+    }
+
+    const returnUrl = searchParams.get("returnUrl");
+    navigate(returnUrl || "/dashboard", { replace: true });
+  };
+
   const { mutate, isPending: isLoading } = useMutationLegacy({
     mutationFn: (variables: { username: string; password: string }) =>
       AuthApi.login(variables),
-    onSuccess: async (res: any) => {
-      const data = res?.data ?? {};
-
-      persistRememberMe(rememberMe);
-
-      data.access_id && updateAccessId(data.access_id);
-      updateUser(data);
-
-      try {
-        const profile = await AuthApi.getProfile();
-        const user = profile?.data?.user ?? profile?.data ?? profile;
-        updateUser({ user });
-      } catch {
-        // Profile is non-blocking for redirect; the store already holds the token.
-      }
-
-      const returnUrl = searchParams.get("returnUrl");
-      navigate(returnUrl || "/dashboard", { replace: true });
-    },
+    onSuccess: (res: any) => handleAuthSuccess(res?.data ?? {}, rememberMe),
     onError: (error: any) => {
       notification.error({ message: resolveErrorMessage(error) });
     },
   });
+
+  const { mutate: socialLogin, isPending: isSocialLoading } = useMutationLegacy({
+    mutationFn: (variables: { provider: "google" | "microsoft"; id_token: string }) =>
+      AuthApi.socialLogin(variables),
+    onSuccess: (res: any) => handleAuthSuccess(res?.data ?? {}, true),
+    onError: (error: any) => {
+      notification.error({ message: resolveErrorMessage(error) });
+    },
+  });
+
+  const handleSocialSuccess = (provider: "google" | "microsoft") => (idToken: string) =>
+    socialLogin({ provider, id_token: idToken });
+
+  const handleSocialError = (message: string) => notification.error({ message });
 
   const handleBlur = async (field: "identifier" | "password") => {
     const message = await validateLoginField(field, { identifier, password });
@@ -231,22 +217,16 @@ const Content = observer(() => {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              {/* TODO(OAuth): wire to Google OAuth route when implemented. */}
-              <button
-                type="button"
-                className="flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
-              >
-                <GoogleIcon />
-                Google
-              </button>
-              {/* TODO(OAuth): wire to Microsoft OAuth route when implemented. */}
-              <button
-                type="button"
-                className="flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
-              >
-                <MicrosoftIcon />
-                Microsoft
-              </button>
+              <GoogleLoginButton
+                onSuccess={handleSocialSuccess("google")}
+                onError={handleSocialError}
+                disabled={isSocialLoading}
+              />
+              <MicrosoftLoginButton
+                onSuccess={handleSocialSuccess("microsoft")}
+                onError={handleSocialError}
+                disabled={isSocialLoading}
+              />
             </div>
 
             <p className="mt-5 text-center text-sm text-slate-500 sm:mt-6">

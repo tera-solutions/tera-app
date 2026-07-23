@@ -21,6 +21,7 @@ interface ExamInfoCardProps {
   sessionId: number;
   examName: string;
   classroomName: string;
+  sessionName?: string;
   status: string;
   duration: number;
   examDate: string;
@@ -52,6 +53,7 @@ const ExamInfoCard = ({
   sessionId,
   examName,
   classroomName,
+  sessionName,
   status,
   duration,
   examDate,
@@ -90,6 +92,7 @@ const ExamInfoCard = ({
 
           <div className="grid grid-cols-1 gap-x-6 sm:grid-cols-2">
             <InfoRow icon={<UsersOutlined />} label="Lớp" value={classroomName || "—"} />
+            {sessionName && <InfoRow icon={<UsersOutlined />} label="Buổi học" value={sessionName} />}
             <InfoRow
               icon={<CalendarDaysOutlined />}
               label="Ngày kiểm tra"

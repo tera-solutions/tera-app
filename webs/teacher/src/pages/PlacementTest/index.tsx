@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   AcademicCapOutlined,
   Button,
@@ -7,30 +6,34 @@ import {
   ClipboardDocumentListOutlined,
   notification,
   PlusOutlined,
-  PuzzlePieceOutlined,
   Select,
   UsersOutlined,
 } from "tera-dls";
 
 import Card from "_common/components/Card";
 import DonutStatsCard from "_common/components/DonutStatsCard";
-import IconBox from "_common/components/IconBox";
 import StatisticCard from "_common/components/StatisticCard";
 import StatusTabs from "_common/components/StatusTabs";
 import TablePagination from "_common/components/TablePagination";
 import useConfirm from "_common/hooks/useConfirm";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
-import { PATHS } from "_common/components/Layout/Menu/menus";
 import { PlacementTestService } from "@tera/modules/education";
 
 import type { PlacementTestRow } from "./_interface";
 import { PLACEMENT_TEST_TABS } from "./constants";
-import { summarizePlacementTests, toPlacementTestResults, toPlacementTests } from "./_utils";
+import {
+  summarizePlacementTests,
+  toPlacementTestDetail,
+  toPlacementTestResults,
+  toPlacementTests,
+} from "./_utils";
 import PlacementTestTable from "./components/PlacementTestTable";
 import PlacementTestForm from "./components/PlacementTestForm";
 import TestResultTable from "./components/TestResultTable";
 import RecordResultForm from "./components/RecordResultForm";
+import PlacementTestQuestionList from "./components/PlacementTestQuestionList";
+import GeneratePlacementTestQuestionsModal from "./components/GeneratePlacementTestQuestionsModal";
 
 const CEFR_COLORS: Record<string, string> = {
   "Pre-A1": "#94a3b8",
@@ -42,16 +45,17 @@ const CEFR_COLORS: Record<string, string> = {
 };
 
 const PlacementTest = () => {
-  const navigate = useNavigate();
   const confirm = useConfirm();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<PlacementTestRow | null>(null);
   const [resultFormOpen, setResultFormOpen] = useState(false);
+  const [generateQuestionsOpen, setGenerateQuestionsOpen] = useState(false);
 
   const [filters, setFilters] = useUrlFilters(
     {
       tab: { type: "string", default: "tests" },
       resultTestId: { type: "number", default: undefined as number | undefined, param: "result_test_id" },
+      questionsTestId: { type: "number", default: undefined as number | undefined, param: "questions_test_id" },
       page: { type: "number", default: 1 },
       per_page: { type: "number", default: DEFAULT_PAGE_SIZE },
     },
@@ -72,6 +76,17 @@ const PlacementTest = () => {
     { enabled: !!resultTestId },
   );
   const results = useMemo(() => toPlacementTestResults(resultsQuery.data), [resultsQuery.data]);
+
+  const questionsTestId = filters.questionsTestId ?? items[0]?.id;
+  const questionsTest = items.find((t) => t.id === questionsTestId) ?? null;
+  const questionsDetailQuery = PlacementTestService.usePlacementTestDetail(
+    { id: questionsTestId ?? "" },
+    { enabled: !!questionsTestId },
+  );
+  const questionsDetail = useMemo(
+    () => toPlacementTestDetail(questionsDetailQuery.data),
+    [questionsDetailQuery.data],
+  );
 
   const { mutate: publishTest } = PlacementTestService.usePlacementTestPublish();
   const { mutate: deleteTest } = PlacementTestService.usePlacementTestDelete();
@@ -187,25 +202,29 @@ const PlacementTest = () => {
           )}
 
           {filters.tab === "questions" && (
-            <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
-              <IconBox
-                icon={<PuzzlePieceOutlined />}
-                sizeClassName="h-12 w-12"
-                roundedClassName="rounded-2xl"
-                iconSizeClassName="[&_svg]:h-6 [&_svg]:w-6"
+            <>
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <Select
+                  className="w-full sm:w-72"
+                  value={questionsTestId}
+                  onChange={(v: number) => setFilters({ questionsTestId: v })}
+                  options={items.map((t) => ({ value: t.id, label: t.title }))}
+                  placeholder="Chọn bài kiểm tra"
+                />
+                <Button
+                  outlined
+                  disabled={!questionsTest}
+                  onClick={() => setGenerateQuestionsOpen(true)}
+                  className="whitespace-nowrap text-brand border-brand hover:bg-brand"
+                >
+                  Thêm câu hỏi từ ngân hàng
+                </Button>
+              </div>
+              <PlacementTestQuestionList
+                questions={questionsDetail?.questions ?? []}
+                loading={questionsDetailQuery.isLoading}
               />
-              <p className="text-sm font-medium text-slate-600">Ngân hàng câu hỏi dùng chung</p>
-              <p className="max-w-sm text-xs text-slate-400">
-                Câu hỏi cho bài kiểm tra đầu vào được quản lý tập trung tại Ngân hàng câu hỏi.
-              </p>
-              <Button
-                outlined
-                onClick={() => navigate(PATHS.questionBank)}
-                className="text-brand border-brand hover:bg-brand"
-              >
-                Mở ngân hàng câu hỏi
-              </Button>
-            </div>
+            </>
           )}
 
           {filters.tab === "results" && (
@@ -255,6 +274,12 @@ const PlacementTest = () => {
 
       <PlacementTestForm open={formOpen} editing={editing} onClose={() => setFormOpen(false)} />
       <RecordResultForm open={resultFormOpen} test={resultTest} onClose={() => setResultFormOpen(false)} />
+      <GeneratePlacementTestQuestionsModal
+        open={generateQuestionsOpen}
+        testId={questionsTestId ?? null}
+        testTitle={questionsTest?.title}
+        onClose={() => setGenerateQuestionsOpen(false)}
+      />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import moment from "moment";
-import { ArrowDownTrayOutlined, DocumentOutlined, EyeOutlined, notification, Spin, TrashOutlined } from "tera-dls";
+import { ArrowDownTrayOutlined, DocumentOutlined, EyeOutlined, notification, PaperAirplaneOutlined, Spin, TrashOutlined } from "tera-dls";
+import StatusBadge from "@tera/components/dof/StatusBadge";
 
 import { FileAPI } from "@tera/api/common/FileAPI";
 
@@ -12,6 +13,8 @@ import type { MaterialRow } from "../_interface";
 import { MATERIAL_TYPE_BADGE, MATERIAL_TYPE_LABELS } from "../constants";
 import { formatFileSize } from "../_utils";
 
+const MATERIAL_STATUS_META = "material_status";
+
 interface MaterialTableProps {
   items: MaterialRow[];
   loading?: boolean;
@@ -19,9 +22,20 @@ interface MaterialTableProps {
   onRetry?: () => void;
   onView: (row: MaterialRow) => void;
   onDelete: (row: MaterialRow) => void;
+  onPublish: (row: MaterialRow) => void;
+  publishingId?: number | null;
 }
 
-const MaterialTable = ({ items, loading, isError, onRetry, onView, onDelete }: MaterialTableProps) => {
+const MaterialTable = ({
+  items,
+  loading,
+  isError,
+  onRetry,
+  onView,
+  onDelete,
+  onPublish,
+  publishingId,
+}: MaterialTableProps) => {
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
   const handleDownload = async (row: MaterialRow) => {
@@ -75,6 +89,11 @@ const MaterialTable = ({ items, loading, isError, onRetry, onView, onDelete }: M
       render: (row) => formatFileSize(row.fileSize),
     },
     {
+      key: "status",
+      title: "Trạng thái",
+      render: (row) => <StatusBadge name={MATERIAL_STATUS_META} value={row.status} />,
+    },
+    {
       key: "updated",
       title: "Cập nhật",
       render: (row) => (
@@ -88,7 +107,7 @@ const MaterialTable = ({ items, loading, isError, onRetry, onView, onDelete }: M
       title: "",
       headerClassName: "w-28",
       render: (row) =>
-        downloadingId === row.id ? (
+        downloadingId === row.id || publishingId === row.id ? (
           <span className="flex h-8 w-8 items-center justify-center [&_svg]:h-4 [&_svg]:w-4">
             <Spin spinning size="small" />
           </span>
@@ -104,6 +123,16 @@ const MaterialTable = ({ items, loading, isError, onRetry, onView, onDelete }: M
               },
             ]}
             menuItems={[
+              ...(row.status === "draft"
+                ? [
+                    {
+                      key: "publish",
+                      label: "Xuất bản",
+                      icon: <PaperAirplaneOutlined />,
+                      onClick: () => onPublish(row),
+                    },
+                  ]
+                : []),
               { key: "delete", label: "Xóa tài liệu", icon: <TrashOutlined />, onClick: () => onDelete(row) },
             ]}
           />

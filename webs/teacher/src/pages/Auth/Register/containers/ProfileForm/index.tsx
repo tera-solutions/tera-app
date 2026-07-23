@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import { TextArea } from "tera-dls";
 
 import {
   AVATAR_ACCEPT,
@@ -51,7 +52,7 @@ const ProfileForm = ({
 
       <div>
         <label className={labelClass}>Giới thiệu bản thân</label>
-        <textarea
+        <TextArea
           value={values.bio}
           disabled={disabled}
           maxLength={BIO_MAX_LENGTH}
@@ -59,7 +60,7 @@ const ProfileForm = ({
           placeholder="Chia sẻ đôi nét về bản thân..."
           onChange={(e) => onChange("bio", e.target.value)}
           className={classNames(
-            "w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-brand disabled:opacity-60",
+            "w-full resize-none rounded-xl bg-slate-50",
             errors.bio && "border-red-500!",
           )}
         />

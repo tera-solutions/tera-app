@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, notification, PlusOutlined, TrashOutlined } from "tera-dls";
+import { Input, Modal, notification, PlusOutlined, TrashOutlined } from "tera-dls";
 
 import useConfirm from "_common/hooks/useConfirm";
 import WidgetState from "_common/components/WidgetState";
@@ -142,17 +142,17 @@ const CategoryTagManagerModal = ({ open, onClose }: CategoryTagManagerModalProps
       {tab === "category" && (
         <div className="flex flex-col gap-3">
           <div className="flex gap-2">
-            <input
+            <Input
               value={draftCode}
               onChange={(e) => setDraftCode(e.target.value)}
               placeholder="Mã danh mục"
-              className="w-28 rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm"
+              className="w-28 text-sm"
             />
-            <input
+            <Input
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
               placeholder="Tên danh mục"
-              className="flex-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm"
+              className="flex-1 text-sm"
             />
             <button
               type="button"
@@ -189,11 +189,11 @@ const CategoryTagManagerModal = ({ open, onClose }: CategoryTagManagerModalProps
       {tab === "tag" && (
         <div className="flex flex-col gap-3">
           <div className="flex gap-2">
-            <input
+            <Input
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
               placeholder="Tên thẻ"
-              className="flex-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm"
+              className="flex-1 text-sm"
             />
             <button
               type="button"

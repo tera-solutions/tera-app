@@ -12,6 +12,8 @@ import { PATHS } from "_common/components/Layout/Menu/menus";
 import { ExamSessionService } from "@tera/modules/education";
 import { EXAM_SESSION_STATUS_META } from "pages/ExamSession/constants";
 
+import ScoreBoardPanel from "./ScoreBoardPanel";
+
 /** Exam sessions scoped to this class — `edu/exam-session/list` honours `class_room_id`. */
 const ClassScoresPanel = ({ classId }: { classId: number | null }) => {
   const navigate = useNavigate();
@@ -77,6 +79,9 @@ const ClassScoresPanel = ({ classId }: { classId: number | null }) => {
 
   return (
     <div>
+      <ScoreBoardPanel classId={classId} />
+
+      <p className="mb-3 mt-6 text-sm font-semibold text-slate-700">Bài kiểm tra</p>
       <div className="mb-3">
         <SearchInput
           value={searchDraft}

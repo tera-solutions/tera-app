@@ -11,6 +11,8 @@ export interface PayrollRow {
   bonus: number;
   penalty: number;
   totalSalary: number;
+  status: string;
+  paidAt: string | null;
 }
 
 export interface ClassIncomeRow {

@@ -1,18 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
-import { notification, PencilSquareOutlined } from "tera-dls";
+import moment from "moment";
+import { DatePicker, Input, notification, Select } from "tera-dls";
 
 import { LevelService, StudentService } from "@tera/modules/education";
 import { useStores } from "@tera/stores/useStores";
-import { FileAPI } from "@tera/api/common/FileAPI";
 import FormScaff from "@tera/components/dof/FormScaff";
 
-import Avatar from "_common/components/Avatar";
+import AvatarUpload from "_common/components/AvatarUpload";
 import BranchSelect from "_common/components/BranchSelect";
+import FieldLabel from "_common/components/FieldLabel";
+import ParentSelect from "_common/components/ParentSelect";
 
-const inputBaseClass =
-  "rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none";
-const inputClass = `w-full ${inputBaseClass}`;
-const labelClass = "mb-1 block text-xs font-medium text-slate-500";
+const sectionTitleClass = "mb-1.5 text-sm font-semibold text-slate-700";
+const DATE_FORMAT = "YYYY-MM-DD";
+
+const GENDER_OPTIONS = [
+  { value: "male", label: "Nam" },
+  { value: "female", label: "Nữ" },
+  { value: "other", label: "Khác" },
+];
 
 interface Props {
   open: boolean;
@@ -35,15 +41,18 @@ const emptyForm = {
   province: "",
   district: "",
   branch_id: "" as number | "",
+  parent_id: "" as number | "",
   parent_name: "",
   parent_phone: "",
   avatar: "",
 };
 
 /** Create or edit a student profile. Editing keeps the original fields only;
- * creating additionally needs a branch (tenant-required) and accepts an
- * optional parent/guardian contact, same shape as Enrollment's inline "Học
- * viên mới" tab. */
+ * creating additionally requires a branch (tenant-required) and a parent —
+ * business rule: a student cannot be created without one. The backend
+ * `parents` field itself is nullable, so this is enforced client-side; unlike
+ * the old flow, the parent can be an existing one (`parent_id`, avoiding
+ * duplicate records) instead of always creating a brand new parent inline. */
 const StudentFormModal = ({ open, studentId, isCreate = false, onClose }: Props) => {
   const { globalStore } = useStores();
   const isEdit = !isCreate && !!studentId;
@@ -63,7 +72,6 @@ const StudentFormModal = ({ open, studentId, isCreate = false, onClose }: Props)
 
   const [form, setForm] = useState(emptyForm);
   const set = (patch: Partial<typeof form>) => setForm((prev) => ({ ...prev, ...patch }));
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   useEffect(() => {
     if (!open) {
@@ -88,21 +96,6 @@ const StudentFormModal = ({ open, studentId, isCreate = false, onClose }: Props)
       });
     }
   }, [open, isEdit, student]);
-
-  const handleAvatarSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    setUploadingAvatar(true);
-    try {
-      const uploaded = await FileAPI.upload(file);
-      set({ avatar: uploaded.url });
-    } catch {
-      notification.error({ message: "Tải ảnh lên thất bại" });
-    } finally {
-      setUploadingAvatar(false);
-    }
-  };
 
   const handleSubmit = () => {
     if (!form.name.trim()) {
@@ -142,21 +135,30 @@ const StudentFormModal = ({ open, studentId, isCreate = false, onClose }: Props)
       return;
     }
 
-    if (!form.dob) {
-      notification.warning({ message: "Vui lòng nhập ngày sinh" });
-      return;
-    }
     if (!form.branch_id) {
       notification.warning({ message: "Vui lòng chọn chi nhánh" });
       return;
     }
+    if (!form.parent_id && !form.parent_name.trim()) {
+      notification.warning({ message: "Vui lòng chọn phụ huynh có sẵn hoặc nhập thông tin phụ huynh mới" });
+      return;
+    }
+    if (!form.parent_id && !form.parent_phone.trim()) {
+      notification.warning({ message: "Vui lòng nhập số điện thoại phụ huynh" });
+      return;
+    }
+
+    const parents: Array<Record<string, unknown>> = form.parent_id
+      ? [{ parent_id: Number(form.parent_id) }]
+      : [{ name: form.parent_name.trim(), phone: form.parent_phone.trim() }];
+
     const businessId = Number(globalStore.user?.business_id ?? globalStore.business_id);
     create(
       {
         params: {
           name: form.name.trim(),
           gender: form.gender,
-          dob: form.dob,
+          dob: form.dob || undefined,
           email: form.email.trim() || undefined,
           phone: form.phone.trim() || undefined,
           level_id: form.level_id === "" ? undefined : Number(form.level_id),
@@ -169,9 +171,7 @@ const StudentFormModal = ({ open, studentId, isCreate = false, onClose }: Props)
           business_id: businessId,
           branch_id: Number(form.branch_id),
           enrollment_date: new Date().toISOString().slice(0, 10),
-          parents: form.parent_name.trim()
-            ? [{ name: form.parent_name.trim(), phone: form.parent_phone.trim() || undefined }]
-            : undefined,
+          parents,
         },
       },
       {
@@ -196,121 +196,128 @@ const StudentFormModal = ({ open, studentId, isCreate = false, onClose }: Props)
       confirmLoading={isPending}
       onOk={handleSubmit}
     >
-      <div className="max-h-[70vh] space-y-3 overflow-y-auto pr-1">
-        <div className="flex justify-center">
-          <div className="relative">
-            <Avatar src={form.avatar} alt={form.name} sizeClassName="h-20 w-20" />
-            <label className="absolute bottom-0 right-0 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-brand text-white [&_svg]:h-3.5 [&_svg]:w-3.5">
-              <PencilSquareOutlined />
-              <input
-                type="file"
-                accept="image/png,image/jpeg"
-                className="hidden"
-                onChange={handleAvatarSelect}
-                disabled={uploadingAvatar}
+      <div className="max-h-[70vh] space-y-5 overflow-y-auto pr-1">
+        <section className="space-y-3">
+          <p className={sectionTitleClass}>Thông tin học viên</p>
+          <div className="flex justify-center">
+            <AvatarUpload
+              src={form.avatar}
+              alt={form.name}
+              onUploaded={(url) => set({ avatar: url })}
+            />
+          </div>
+          <div>
+            <FieldLabel required>Họ tên</FieldLabel>
+            <Input value={form.name} onChange={(e) => set({ name: e.target.value })} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <FieldLabel>Giới tính</FieldLabel>
+              <Select
+                value={form.gender}
+                options={GENDER_OPTIONS}
+                onChange={(v) => set({ gender: v as string })}
               />
-            </label>
+            </div>
+            <div>
+              <FieldLabel>Ngày sinh</FieldLabel>
+              <DatePicker
+                className="w-full"
+                format={DATE_FORMAT}
+                value={form.dob ? moment(form.dob, DATE_FORMAT) : undefined}
+                onChange={(v: any) => set({ dob: v ? moment(v).format(DATE_FORMAT) : "" })}
+              />
+            </div>
           </div>
-        </div>
-        <div>
-          <label className={labelClass}>Họ tên *</label>
-          <input className={inputClass} value={form.name} onChange={(e) => set({ name: e.target.value })} />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={labelClass}>Giới tính</label>
-            <select className={inputClass} value={form.gender} onChange={(e) => set({ gender: e.target.value })}>
-              <option value="male">Nam</option>
-              <option value="female">Nữ</option>
-              <option value="other">Khác</option>
-            </select>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <FieldLabel>Email</FieldLabel>
+              <Input value={form.email} onChange={(e) => set({ email: e.target.value })} />
+            </div>
+            <div>
+              <FieldLabel>Số điện thoại</FieldLabel>
+              <Input value={form.phone} onChange={(e) => set({ phone: e.target.value })} />
+            </div>
           </div>
-          <div>
-            <label className={labelClass}>Ngày sinh {!isEdit && "*"}</label>
-            <input type="date" className={inputClass} value={form.dob} onChange={(e) => set({ dob: e.target.value })} />
+        </section>
+
+        <section className="space-y-3 border-t border-slate-100 pt-3">
+          <p className={sectionTitleClass}>Học vấn &amp; Địa chỉ</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <FieldLabel>Trình độ</FieldLabel>
+              <Select
+                value={form.level_id}
+                placeholder="— Chọn —"
+                options={levels.map((l: any) => ({ value: l.id, label: l.level_name ?? l.name }))}
+                onChange={(v) => set({ level_id: v != null ? Number(v) : "" })}
+              />
+            </div>
+            <div>
+              <FieldLabel>Trường</FieldLabel>
+              <Input value={form.school} onChange={(e) => set({ school: e.target.value })} />
+            </div>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={labelClass}>Email</label>
-            <input className={inputClass} value={form.email} onChange={(e) => set({ email: e.target.value })} />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <FieldLabel>Khối/Lớp</FieldLabel>
+              <Input value={form.grade} onChange={(e) => set({ grade: e.target.value })} />
+            </div>
+            <div>
+              <FieldLabel>Tỉnh/Thành</FieldLabel>
+              <Input value={form.province} onChange={(e) => set({ province: e.target.value })} />
+            </div>
           </div>
-          <div>
-            <label className={labelClass}>Số điện thoại</label>
-            <input className={inputClass} value={form.phone} onChange={(e) => set({ phone: e.target.value })} />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <FieldLabel>Quận/Huyện</FieldLabel>
+              <Input value={form.district} onChange={(e) => set({ district: e.target.value })} />
+            </div>
+            <div>
+              <FieldLabel>Địa chỉ</FieldLabel>
+              <Input value={form.address} onChange={(e) => set({ address: e.target.value })} />
+            </div>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={labelClass}>Trình độ</label>
-            <select
-              className={inputClass}
-              value={form.level_id}
-              onChange={(e) => set({ level_id: e.target.value ? Number(e.target.value) : "" })}
-            >
-              <option value="">— Chọn —</option>
-              {levels.map((l: any) => (
-                <option key={l.id} value={l.id}>
-                  {l.level_name ?? l.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className={labelClass}>Trường</label>
-            <input className={inputClass} value={form.school} onChange={(e) => set({ school: e.target.value })} />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={labelClass}>Khối/Lớp</label>
-            <input className={inputClass} value={form.grade} onChange={(e) => set({ grade: e.target.value })} />
-          </div>
-          <div>
-            <label className={labelClass}>Tỉnh/Thành</label>
-            <input className={inputClass} value={form.province} onChange={(e) => set({ province: e.target.value })} />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={labelClass}>Quận/Huyện</label>
-            <input className={inputClass} value={form.district} onChange={(e) => set({ district: e.target.value })} />
-          </div>
-          <div>
-            <label className={labelClass}>Địa chỉ</label>
-            <input className={inputClass} value={form.address} onChange={(e) => set({ address: e.target.value })} />
-          </div>
-        </div>
+        </section>
 
         {!isEdit && (
-          <>
+          <section className="space-y-3 border-t border-slate-100 pt-3">
+            <p className={sectionTitleClass}>Chi nhánh &amp; Phụ huynh</p>
             <div>
-              <label className={labelClass}>Chi nhánh *</label>
+              <FieldLabel required>Chi nhánh</FieldLabel>
               <BranchSelect
                 value={form.branch_id}
                 onChange={(v) => set({ branch_id: v != null ? Number(v) : "" })}
-                className={inputBaseClass}
               />
             </div>
-            <div className="grid grid-cols-2 gap-3 border-t border-slate-100 pt-3">
+            <div>
+              <FieldLabel required>Phụ huynh có sẵn</FieldLabel>
+              <ParentSelect
+                value={form.parent_id}
+                onChange={(v) =>
+                  set({ parent_id: v != null ? Number(v) : "", parent_name: "", parent_phone: "" })
+                }
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelClass}>Tên phụ huynh</label>
-                <input
-                  className={inputClass}
+                <FieldLabel required={!form.parent_id}>Tên phụ huynh mới</FieldLabel>
+                <Input
                   value={form.parent_name}
+                  disabled={!!form.parent_id}
                   onChange={(e) => set({ parent_name: e.target.value })}
                 />
               </div>
               <div>
-                <label className={labelClass}>SĐT phụ huynh</label>
-                <input
-                  className={inputClass}
+                <FieldLabel required={!form.parent_id}>SĐT phụ huynh mới</FieldLabel>
+                <Input
                   value={form.parent_phone}
+                  disabled={!!form.parent_id}
                   onChange={(e) => set({ parent_phone: e.target.value })}
                 />
               </div>
             </div>
-          </>
+          </section>
         )}
       </div>
     </FormScaff>

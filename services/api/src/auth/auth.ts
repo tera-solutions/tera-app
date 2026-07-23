@@ -64,6 +64,12 @@ export const AuthApi = {
     await api
       .post(`${authEndpoint}/register-school`, params)
       .then((result) => result.data),
+  // "Login with Google/Microsoft" — id_token from the provider's own JS SDK,
+  // verified server-side. Same response shape as `login`.
+  socialLogin: async (params: { provider: "google" | "microsoft"; id_token: string }) =>
+    await api
+      .post(`${authEndpoint}/social-login`, params)
+      .then((result) => result.data),
   verifyOtp: async (params: any) =>
     await api
       .post(`${authEndpoint}/verify-otp`, params)

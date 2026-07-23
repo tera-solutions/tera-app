@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { notification } from "tera-dls";
+import { Input, InputNumber, notification, Select, TextArea } from "tera-dls";
 
 import { CourseService, LevelService } from "@tera/modules/education";
 import FormScaff from "@tera/components/dof/FormScaff";
+import FieldLabel from "_common/components/FieldLabel";
 
-const inputClass =
-  "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 focus:border-brand focus:outline-none";
-const labelClass = "mb-1 block text-xs font-medium text-slate-500";
+const STATUS_OPTIONS = [
+  { value: "active", label: "Đang áp dụng" },
+  { value: "inactive", label: "Ngừng" },
+];
 
 export interface LevelRow {
   id: number;
@@ -115,9 +117,8 @@ const LevelFormModal = ({ open, level, onClose }: Props) => {
         <div className="grid grid-cols-2 gap-3">
           {!isEdit && (
             <div>
-              <label className={labelClass}>Mã trình độ *</label>
-              <input
-                className={inputClass}
+              <FieldLabel required>Mã trình độ</FieldLabel>
+              <Input
                 value={form.level_code}
                 onChange={(e) => set({ level_code: e.target.value })}
                 placeholder="A1"
@@ -125,9 +126,8 @@ const LevelFormModal = ({ open, level, onClose }: Props) => {
             </div>
           )}
           <div className={isEdit ? "col-span-2" : ""}>
-            <label className={labelClass}>Tên trình độ *</label>
-            <input
-              className={inputClass}
+            <FieldLabel required>Tên trình độ</FieldLabel>
+            <Input
               value={form.level_name}
               onChange={(e) => set({ level_name: e.target.value })}
               placeholder="Sơ cấp A1"
@@ -135,35 +135,27 @@ const LevelFormModal = ({ open, level, onClose }: Props) => {
           </div>
         </div>
         <div>
-          <label className={labelClass}>Khóa học *</label>
-          <select
-            className={inputClass}
+          <FieldLabel required>Khóa học</FieldLabel>
+          <Select
             value={form.course_id}
-            onChange={(e) => set({ course_id: e.target.value ? Number(e.target.value) : "" })}
-          >
-            <option value="">— Chọn khóa học —</option>
-            {courses.map((c: any) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+            placeholder="— Chọn khóa học —"
+            options={courses.map((c: any) => ({ value: c.id, label: c.name }))}
+            onChange={(v) => set({ course_id: v != null ? Number(v) : "" })}
+          />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelClass}>Thứ tự *</label>
-            <input
-              type="number"
+            <FieldLabel required>Thứ tự</FieldLabel>
+            <InputNumber
               min={1}
-              className={inputClass}
-              value={form.level_order}
-              onChange={(e) => set({ level_order: e.target.value })}
+              className="w-full"
+              value={form.level_order ? Number(form.level_order) : undefined}
+              onChange={(v) => set({ level_order: v == null ? "" : String(v) })}
             />
           </div>
           <div>
-            <label className={labelClass}>CEFR</label>
-            <input
-              className={inputClass}
+            <FieldLabel>CEFR</FieldLabel>
+            <Input
               value={form.cefr_level}
               onChange={(e) => set({ cefr_level: e.target.value })}
               placeholder="A1 / B2 ..."
@@ -171,20 +163,21 @@ const LevelFormModal = ({ open, level, onClose }: Props) => {
           </div>
         </div>
         <div>
-          <label className={labelClass}>Mô tả</label>
-          <textarea
-            className={inputClass}
+          <FieldLabel>Mô tả</FieldLabel>
+          <TextArea
+            className="w-full"
             rows={2}
             value={form.description}
             onChange={(e) => set({ description: e.target.value })}
           />
         </div>
         <div>
-          <label className={labelClass}>Trạng thái</label>
-          <select className={inputClass} value={form.status} onChange={(e) => set({ status: e.target.value })}>
-            <option value="active">Đang áp dụng</option>
-            <option value="inactive">Ngừng</option>
-          </select>
+          <FieldLabel>Trạng thái</FieldLabel>
+          <Select
+            value={form.status}
+            options={STATUS_OPTIONS}
+            onChange={(v) => set({ status: v as string })}
+          />
         </div>
       </div>
     </FormScaff>

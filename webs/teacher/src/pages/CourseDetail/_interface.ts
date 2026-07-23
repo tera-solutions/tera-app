@@ -6,6 +6,7 @@ export interface CourseDetail {
   description: string;
   duration_minutes: number;
   price_per_lesson: number;
+  tuition_type: string;
   is_active: boolean;
 }
 

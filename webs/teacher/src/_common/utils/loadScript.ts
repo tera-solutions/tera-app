@@ -1,0 +1,21 @@
+const loadedScripts = new Map<string, Promise<void>>();
+
+/** Loads an external `<script src>` once per URL, sharing the promise across
+ * concurrent callers (e.g. Google/Microsoft SDKs used by multiple components). */
+export const loadScript = (src: string): Promise<void> => {
+  const existing = loadedScripts.get(src);
+  if (existing) return existing;
+
+  const promise = new Promise<void>((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+    document.head.appendChild(script);
+  });
+
+  loadedScripts.set(src, promise);
+  return promise;
+};

@@ -13,6 +13,9 @@ import { SETTINGS_TABS } from "./constants";
 import NotificationSettingsTab from "./components/NotificationSettingsTab";
 import GeneralSettingsTab from "./components/GeneralSettingsTab";
 import AppearanceCard from "./components/AppearanceCard";
+import BankAccountSettingsTab from "./components/BankAccountSettingsTab";
+import RecurringInvoiceSettingsTab from "./components/RecurringInvoiceSettingsTab";
+import EvaluationCriteriaSettingsTab from "./components/EvaluationCriteriaSettingsTab";
 
 const Settings = () => {
   const [tab, setTab] = useState<SettingsTabKey>("profile");
@@ -66,6 +69,9 @@ const Settings = () => {
           {tab === "notification" && <NotificationSettingsTab />}
           {tab === "general" && <GeneralSettingsTab />}
           {tab === "appearance" && <AppearanceCard />}
+          {tab === "bank_account" && <BankAccountSettingsTab />}
+          {tab === "recurring_invoice" && <RecurringInvoiceSettingsTab />}
+          {tab === "evaluation_criteria" && <EvaluationCriteriaSettingsTab />}
         </div>
       </div>
 

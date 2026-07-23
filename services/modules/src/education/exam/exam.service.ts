@@ -110,6 +110,48 @@ export const useExamExport = () => {
   });
 };
 
+export const useExamQuestionAdd = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => ExamAPI.addQuestion(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["exam", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useExamQuestionUpdate = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => ExamAPI.updateQuestion(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["exam", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
+export const useExamQuestionDelete = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: DeletePayload) => ExamAPI.deleteQuestion(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["exam", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const ExamService = {
   useExamList,
   useExamDetail,
@@ -118,4 +160,7 @@ export const ExamService = {
   useUpsertExam,
   useExamDelete,
   useExamExport,
+  useExamQuestionAdd,
+  useExamQuestionUpdate,
+  useExamQuestionDelete,
 };

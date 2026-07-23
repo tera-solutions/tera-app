@@ -1,43 +1,50 @@
-
 import { endpoint } from "@tera/api/_endpoint";
 import api from "@tera/api/drivers";
-import {
-  CreatePayload,
-  DeletePayload,
-  DetailPayload,
-  ExportPayload,
-  ListPayload,
-  UpdatePayload,
-} from "@tera/api/_interface";
+import { DetailPayload } from "@tera/api/_interface";
 
+export interface StudentLevelHistoryPayload {
+  /** The student_level record id (returned by `getDetail`), not the student id. */
+  id: string | number;
+}
+
+export interface PlacementPayload {
+  params: Record<string, any>;
+}
+
+export interface PromoteAdjustPayload {
+  /** The student_level record id, not the student id. */
+  id: string | number;
+  params: Record<string, any>;
+}
+
+/**
+ * Backend only exposes detail/history/placement/promote/adjust — matches
+ * `App\Modules\Education\StudentLevel\Router\api.php`. There is no
+ * list/create/update/delete/export route for this module.
+ */
 export const StudentLevelAPI = {
-  getList: async ({ params }: ListPayload) =>
-    await api
-      .get(`${endpoint}/edu/student-level/list`, {...params, ...params?.filters})
-      .then((result) => result.data),
-
   getDetail: async ({ id }: DetailPayload) =>
     await api
       .get(`${endpoint}/edu/student-level/detail/${id}`)
       .then((result) => result.data),
 
-  create: async ({ params }: CreatePayload) =>
+  getHistory: async ({ id }: StudentLevelHistoryPayload) =>
     await api
-      .post(`${endpoint}/edu/student-level/create`, params)
+      .get(`${endpoint}/edu/student-level/history/${id}`)
       .then((result) => result.data),
 
-  update: async ({ id, params }: UpdatePayload) =>
+  placement: async ({ params }: PlacementPayload) =>
     await api
-      .put(`${endpoint}/edu/student-level/update/${id}`, params)
+      .post(`${endpoint}/edu/student-level/placement`, params)
       .then((result) => result.data),
 
-  delete: async ({ id }: DeletePayload) =>
+  promote: async ({ id, params }: PromoteAdjustPayload) =>
     await api
-      .delete(`${endpoint}/edu/student-level/delete/${id}`)
+      .post(`${endpoint}/edu/student-level/promote/${id}`, params)
       .then((result) => result.data),
-  
-  export: async ({ params }: ExportPayload) =>
+
+  adjust: async ({ id, params }: PromoteAdjustPayload) =>
     await api
-      .post(`${endpoint}/edu/student-level/export`, params)
+      .post(`${endpoint}/edu/student-level/adjust/${id}`, params)
       .then((result) => result.data),
 };

@@ -25,6 +25,7 @@ export interface SubmissionDetail {
   score: number | null;
   comment: string;
   status: SubmissionStatus;
+  resultPublished: boolean;
 }
 
 export interface GradeFormValues {
