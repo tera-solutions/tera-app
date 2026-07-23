@@ -123,7 +123,7 @@ const ClassRoomForm = observer(
 
     const checkCodeRef = useRef(
       debounce((code: string, resolve: (valid: boolean) => void) => {
-        ClassRoomAPI.getList({ params: { keyword: code, per_page: 5 } })
+        ClassRoomAPI.getList({ params: { search: code, per_page: 5 } })
           .then((res) => {
             const items: any[] = res?.data?.items ?? [];
             resolve(

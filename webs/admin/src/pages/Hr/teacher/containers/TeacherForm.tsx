@@ -105,7 +105,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
 
     const checkCodeRef = useRef(
       debounce((code: string, resolve: (valid: boolean) => void) => {
-        TeacherAPI.getList({ params: { keyword: code, per_page: 5 } })
+        TeacherAPI.getList({ params: { search: code, per_page: 5 } })
           .then((res) => {
             const items: any[] = res?.data?.items ?? [];
             resolve(!items.some((item) => item.code === code));
@@ -119,7 +119,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
 
     const checkEmailRef = useRef(
       debounce((email: string, resolve: (valid: boolean) => void) => {
-        TeacherAPI.getList({ params: { keyword: email, per_page: 20 } })
+        TeacherAPI.getList({ params: { search: email, per_page: 20 } })
           .then((res) => {
             const items: any[] = res?.data?.items ?? [];
             const dup = items.some(
@@ -135,7 +135,7 @@ const TeacherForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
 
     const checkPhoneRef = useRef(
       debounce((phone: string, resolve: (valid: boolean) => void) => {
-        TeacherAPI.getList({ params: { keyword: phone, per_page: 20 } })
+        TeacherAPI.getList({ params: { search: phone, per_page: 20 } })
           .then((res) => {
             const items: any[] = res?.data?.items ?? [];
             const dup = items.some(

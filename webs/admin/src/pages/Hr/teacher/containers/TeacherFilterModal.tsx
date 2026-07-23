@@ -73,7 +73,7 @@ const TeacherFilterModal = ({
         teacher_type: draft.type || undefined,
         branch_id: draft.branch || undefined,
         manager_id: draft.manager || undefined,
-        skills: draft.skills.length ? draft.skills : undefined,
+        skill: draft.skills.length ? draft.skills : undefined,
         page: 1,
         per_page: 1,
       } as any,

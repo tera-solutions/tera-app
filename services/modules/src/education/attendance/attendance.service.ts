@@ -8,8 +8,6 @@ import {
 import { AttendanceAPI } from "@tera/api";
 import {
   CreatePayload,
-  DeletePayload,
-  DetailPayload,
   ExportPayload,
   ListPayload,
   UpdatePayload,
@@ -24,18 +22,6 @@ export const useAttendanceList = (
     queryKey: ["attendance", "list", payload.params],
     queryFn: () => AttendanceAPI.getList(payload),
     keepPreviousData: true,
-    ...options,
-  });
-};
-
-export const useAttendanceDetail = (
-  payload: DetailPayload,
-  options?: QueryHookOptions,
-) => {
-  return useQueryAdapter({
-    queryKey: ["attendance", "detail", payload.id],
-    queryFn: () => AttendanceAPI.getDetail(payload),
-    enabled: !!payload.id,
     ...options,
   });
 };
@@ -87,20 +73,6 @@ export const useUpsertAttendance = () => {
   });
 };
 
-export const useAttendanceDelete = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => AttendanceAPI.delete(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["attendance", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
 export const useAttendanceExport = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -119,10 +91,8 @@ export const useAttendanceExport = () => {
 
 export const AttendanceService = {
   useAttendanceList,
-  useAttendanceDetail,
   useAttendanceCreate,
   useAttendanceUpdate,
   useUpsertAttendance,
-  useAttendanceDelete,
   useAttendanceExport,
 };

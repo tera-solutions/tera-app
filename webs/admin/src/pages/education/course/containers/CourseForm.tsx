@@ -78,7 +78,7 @@ const CourseForm = forwardRef<
 
   const checkCodeRef = useRef(
     debounce((code: string, resolve: (valid: boolean) => void) => {
-      CourseAPI.getList({ params: { keyword: code, per_page: 5 } })
+      CourseAPI.getList({ params: { search: code, per_page: 5 } })
         .then((res) => {
           const items: any[] = res?.data?.items ?? [];
           resolve(

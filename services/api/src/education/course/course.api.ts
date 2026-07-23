@@ -5,7 +5,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -45,10 +44,5 @@ export const CourseAPI = {
   restore: async ({ id }: DetailPayload) =>
     await api
       .post(`${endpoint}/edu/course/restore/${id}`)
-      .then((result) => result.data),
-
-  export: async ({ params }: ExportPayload) =>
-    await api
-      .post(`${endpoint}/edu/course/export`, params)
       .then((result) => result.data),
 };

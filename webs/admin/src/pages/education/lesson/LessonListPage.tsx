@@ -106,8 +106,8 @@ const LessonListPage = () => {
     class_room_id: filters.classRoom || undefined,
     teacher_id: filters.teacher || undefined,
     room_id: filters.room || undefined,
-    from_date: filters.dateFrom || undefined,
-    to_date: filters.dateTo || undefined,
+    date_from: filters.dateFrom || undefined,
+    date_to: filters.dateTo || undefined,
     sort_by: sortBy || undefined,
     sort_dir: sortBy ? sortDir : undefined,
   };

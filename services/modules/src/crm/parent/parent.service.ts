@@ -10,7 +10,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -124,22 +123,6 @@ export const useParentRestore = () => {
   });
 };
 
-export const useParentExport = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => ParentAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
 export const ParentService = {
   useParentList,
   useParentDetail,
@@ -149,5 +132,4 @@ export const ParentService = {
   useParentDelete,
   useParentSuspend,
   useParentRestore,
-  useParentExport,
 };

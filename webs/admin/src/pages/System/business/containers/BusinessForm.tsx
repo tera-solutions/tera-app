@@ -74,7 +74,7 @@ const BusinessForm = observer(
 
       const checkCodeRef = useRef(
         debounce((code: string, resolve: (valid: boolean) => void) => {
-          BusinessAPI.getList({ params: { keyword: code, per_page: 20 } })
+          BusinessAPI.getList({ params: { search: code, per_page: 20 } })
             .then((res: any) => {
               const items: any[] = res?.data?.items ?? [];
               resolve(!items.some((item) => item.business_code === code));
@@ -85,7 +85,7 @@ const BusinessForm = observer(
 
       const checkEmailRef = useRef(
         debounce((email: string, resolve: (valid: boolean) => void) => {
-          BusinessAPI.getList({ params: { keyword: email, per_page: 20 } })
+          BusinessAPI.getList({ params: { search: email, per_page: 20 } })
             .then((res: any) => {
               const items: any[] = res?.data?.items ?? [];
               const dup = items.some(

@@ -10,7 +10,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -71,20 +70,6 @@ export const useUpsertTeacher = () => {
       if (payload?.id) return TeacherAPI.update(payload);
       return TeacherAPI.create(payload);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["teacher", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
-export const useTeacherDelete = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => TeacherAPI.delete(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teacher", "list"] });
     },
@@ -184,33 +169,15 @@ export const useTeacherCertificateDelete = () => {
   });
 };
 
-export const useTeacherExport = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => TeacherAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
 export const TeacherService = {
   useTeacherList,
   useTeacherDetail,
   useTeacherCreate,
   useTeacherUpdate,
   useUpsertTeacher,
-  useTeacherDelete,
   useTeacherSuspend,
   useTeacherRestore,
   useTeacherResign,
-  useTeacherExport,
   useTeacherCertificateList,
   useTeacherCertificateCreate,
   useTeacherCertificateUpdate,

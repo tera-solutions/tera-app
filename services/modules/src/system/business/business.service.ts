@@ -10,7 +10,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -94,22 +93,6 @@ export const useBusinessDelete = () => {
   });
 };
 
-export const useBusinessExport = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => BusinessAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
 export const BusinessService = {
   useBusinessList,
   useBusinessDetail,
@@ -117,5 +100,4 @@ export const BusinessService = {
   useBusinessUpdate,
   useUpsertBusiness,
   useBusinessDelete,
-  useBusinessExport,
 };
