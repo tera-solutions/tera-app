@@ -15,7 +15,7 @@ import ChipGroup from "@tera/components/dof/ChipGroup";
 import FilterModalShell from "@tera/components/dof/FilterModalShell";
 import DateRangeFilter from "_common/components/DateRangeFilter";
 import SearchSelect from "_common/components/SearchSelect";
-import UserSelect from "_common/components/UserSelect";
+import UserSelect, { TEACHER_ROLE_ID } from "_common/components/UserSelect";
 
 export interface EnrollmentFilterModalValue {
   student: string;
@@ -180,6 +180,7 @@ const EnrollmentFilterModal = ({
           selectedUser={draft.selectedSales}
           placeholder={t("enrollment.all_sales")}
           allowClear
+          extraParams={{ role_id: TEACHER_ROLE_ID }}
           onChange={(id, user) =>
             setDraft((d) => ({ ...d, sales: id, selectedSales: user ?? null }))
           }

@@ -13,7 +13,15 @@ interface UserSelectProps {
   disabled?: boolean;
   /** hiện nút xóa lựa chọn (dùng cho filter) */
   allowClear?: boolean;
+  /** param cố định thêm vào mỗi lần gọi sys/user/list, vd { role_id: TEACHER_ROLE_ID } để chỉ hiện GV */
+  extraParams?: Record<string, any>;
 }
+
+/**
+ * role_id của vai trò "Teacher" trong `sys/user`
+ * role là danh sách cố định (1=Administrator/2=Teacher/3=Student/4=Parent), nên hardcode.
+ */
+export const TEACHER_ROLE_ID = 2;
 
 /**
  * Chọn 1 user có tìm kiếm phía server — alias tiện dụng của `SearchSelect` cố định
@@ -28,6 +36,7 @@ const UserSelect = ({
   placeholder,
   disabled,
   allowClear,
+  extraParams,
 }: UserSelectProps) => (
   <SearchSelect
     value={value}
@@ -38,6 +47,7 @@ const UserSelect = ({
     placeholder={placeholder}
     disabled={disabled}
     allowClear={allowClear}
+    extraParams={extraParams}
   />
 );
 

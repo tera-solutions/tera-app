@@ -34,7 +34,7 @@ import {
 
 /* Import: pages */
 import DateField from "_common/components/DateField";
-import UserSelect from "_common/components/UserSelect";
+import UserSelect, { TEACHER_ROLE_ID } from "_common/components/UserSelect";
 import MultiSelect from "_common/components/MultiSelect";
 import { ILeadForm } from "pages/CRM/lead/_interface";
 
@@ -456,6 +456,7 @@ const LeadForm = observer(
                         : undefined
                     }
                     disabled={isView}
+                    extraParams={{ role_id: TEACHER_ROLE_ID }}
                     placeholder={t("form.enter_value", { key: t("lead.owner") })}
                     onChange={(id) =>
                       form.setValue("owner_id", id, {

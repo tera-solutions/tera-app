@@ -20,7 +20,7 @@ import SearchBar from "_common/components/SearchBar";
 import FilterButton from "@tera/components/dof/FilterButton";
 import FilterSelect from "_common/components/FilterSelect";
 import MultiSelect from "_common/components/MultiSelect";
-import UserSelect from "_common/components/UserSelect";
+import UserSelect, { TEACHER_ROLE_ID } from "_common/components/UserSelect";
 import LeadTable from "./containers/LeadTable";
 import LeadFilterModal from "./containers/LeadFilterModal";
 import LeadFormModal from "./LeadFormModal";
@@ -238,6 +238,7 @@ const LeadListPage = observer(() => {
                 value={ownerFilter}
                 selectedUser={ownerUser}
                 allowClear
+                extraParams={{ role_id: TEACHER_ROLE_ID }}
                 placeholder={t("lead.owner")}
                 onChange={(id, user) => {
                   setOwnerFilter(id ? String(id) : "");
