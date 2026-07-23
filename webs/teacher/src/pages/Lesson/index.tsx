@@ -8,7 +8,6 @@ import { CARD } from "_common/constants/dashboard";
 import ErrorRetry from "_common/components/ErrorRetry";
 import EntityMaterialManager from "_common/components/EntityMaterialManager";
 import { PATHS } from "_common/components/Layout/Menu/menus";
-import { todo } from "_common/utils/todo";
 import { LessonPlanService, LessonService } from "@tera/modules/education";
 import { toLessonPlan } from "pages/LessonPlan/_utils";
 
@@ -22,6 +21,7 @@ import ActivityTimeline from "./components/ActivityTimeline";
 import LessonSidebar from "./components/LessonSidebar";
 import LessonHomework from "./components/LessonHomework";
 import SkillEvaluationForm from "./components/SkillEvaluationForm";
+import EditLessonModal from "./components/EditLessonModal";
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   <p className="mb-3 text-sm font-semibold text-slate-700">{children}</p>
@@ -34,6 +34,7 @@ const Lesson = () => {
 
   const [tab, setTab] = useState<LessonDetailTab>("overview");
   const [skillEvalOpen, setSkillEvalOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
   const detailQuery = LessonService.useLessonDetail({ id: lessonId ?? "" });
   const { isLoading, isError, refetch } = detailQuery;
@@ -119,7 +120,7 @@ const Lesson = () => {
             <div className="flex flex-col gap-4">
               <LessonHeader
                 detail={detail}
-                onEdit={todo}
+                onEdit={() => setEditOpen(true)}
                 onMore={() =>
                   notification.open({
                     message: "Tính năng đang được phát triển",
@@ -192,6 +193,8 @@ const Lesson = () => {
           lessonId={detail.id}
         />
       )}
+
+      <EditLessonModal open={editOpen} lesson={detail ?? null} onClose={() => setEditOpen(false)} />
     </div>
   );
 };

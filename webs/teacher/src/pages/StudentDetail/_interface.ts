@@ -1,4 +1,12 @@
-export type DetailTab = "overview" | "scores" | "attendance" | "assignment" | "history";
+export type DetailTab =
+  | "overview"
+  | "scores"
+  | "attendance"
+  | "assignment"
+  | "exam"
+  | "history"
+  | "level-history"
+  | "certificates";
 
 export interface StudentParent {
   id: number;

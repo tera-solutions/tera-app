@@ -25,6 +25,7 @@ export interface StudentListResult {
 export interface StudentSummary {
   total: number;
   active: number;
+  debt: number;
   dropped: number;
   completed: number;
 }

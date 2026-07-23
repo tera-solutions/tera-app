@@ -26,6 +26,7 @@ import type { DetailTab } from "./_interface";
 import { DETAIL_TABS } from "./constants";
 import { toAttendanceHistory, toComments, toCurrentClass, toStudentDetail, toStudentStats } from "./_utils";
 import StudentProfileCard from "./components/StudentProfileCard";
+import StudentGuardiansCard from "./components/StudentGuardiansCard";
 import LearningProgressCard from "./components/LearningProgressCard";
 import ProgressChart from "./components/ProgressChart";
 import CurrentClassTable from "./components/CurrentClassTable";
@@ -34,6 +35,9 @@ import StudentMaterialsCard from "./components/StudentMaterialsCard";
 import StudentAttendanceTable from "./components/StudentAttendanceTable";
 import StudentScoresPanel from "./components/StudentScoresPanel";
 import StudentHistoryPanel from "./components/StudentHistoryPanel";
+import StudentLevelHistoryTab from "./components/StudentLevelHistoryTab";
+import StudentExamTab from "./components/StudentExamTab";
+import StudentCertificatesTab from "./components/StudentCertificatesTab";
 import ClassAssignmentPanel from "pages/ClassroomDetail/components/ClassAssignmentPanel";
 
 const StudentDetail = () => {
@@ -170,11 +174,35 @@ const StudentDetail = () => {
         </Card>
       );
 
+    if (tab === "exam")
+      return (
+        <Card>
+          <p className="mb-2 text-sm font-semibold text-slate-700">Bài kiểm tra</p>
+          <StudentExamTab studentId={studentId} />
+        </Card>
+      );
+
     if (tab === "history")
       return (
         <Card>
           <p className="mb-2 text-sm font-semibold text-slate-700">Lịch sử ghi danh</p>
           <StudentHistoryPanel studentId={studentId} />
+        </Card>
+      );
+
+    if (tab === "certificates")
+      return (
+        <Card>
+          <p className="mb-2 text-sm font-semibold text-slate-700">Chứng chỉ</p>
+          <StudentCertificatesTab studentId={studentId} />
+        </Card>
+      );
+
+    if (tab === "level-history")
+      return (
+        <Card>
+          <p className="mb-2 text-sm font-semibold text-slate-700">Lịch sử trình độ</p>
+          <StudentLevelHistoryTab studentId={studentId} />
         </Card>
       );
 
@@ -298,7 +326,7 @@ const StudentDetail = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                 <Card>
                   <p className="mb-2 text-sm font-semibold text-slate-700">Nhận xét gần đây</p>
                   <RecentComments comments={comments} />
@@ -307,6 +335,11 @@ const StudentDetail = () => {
                 <Card>
                   <p className="mb-2 text-sm font-semibold text-slate-700">Tài liệu học tập</p>
                   <StudentMaterialsCard courseId={currentClass?.course_id ?? null} />
+                </Card>
+
+                <Card>
+                  <p className="mb-2 text-sm font-semibold text-slate-700">Người giám hộ</p>
+                  <StudentGuardiansCard parents={detail.parents} />
                 </Card>
               </div>
             </div>

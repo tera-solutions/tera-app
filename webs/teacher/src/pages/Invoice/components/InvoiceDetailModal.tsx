@@ -10,6 +10,7 @@ import { INVOICE_STATUS_BADGE, INVOICE_STATUS_LABELS } from "../constants";
 import { formatCurrency, toInvoiceDetail } from "../_utils";
 import InvoiceReasonModal from "./InvoiceReasonModal";
 import RecordPaymentModal, { RecordPaymentFormValues } from "./RecordPaymentModal";
+import InvoicePaymentQR from "./InvoicePaymentQR";
 
 const TERMINAL_STATUSES = ["paid", "cancelled", "refunded", "closed"];
 const APPROVABLE_STATUSES = ["draft", "pending", "pending_payment"];
@@ -203,6 +204,10 @@ const InvoiceDetailModal = ({ invoiceId, onClose }: InvoiceDetailModalProps) => 
                   <span>{formatCurrency(invoice.balanceAmount)}</span>
                 </div>
               </div>
+
+              {canPay && invoice.invoiceType === "receivable" && (
+                <InvoicePaymentQR amount={invoice.balanceAmount} invoiceCode={invoice.code} />
+              )}
 
               {invoice.payments.length > 0 && (
                 <div>

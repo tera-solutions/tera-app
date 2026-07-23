@@ -2,7 +2,7 @@ import type { ScheduleStatus } from "_common/types/schedule";
 
 export type { ScheduleStatus, ScheduleItem } from "_common/types/schedule";
 
-export type ScheduleView = "week" | "month" | "day" | "list" | "range";
+export type ScheduleView = "week" | "month" | "day" | "list" | "range" | "timetables";
 
 export interface CalendarParams {
   date_from: string;

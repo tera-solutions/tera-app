@@ -30,10 +30,14 @@ export type EvaluationCriterion =
   | "diligence"
   | "interaction"
   | "discipline"
-  | "homework";
+  | "homework"
+  | "listening"
+  | "speaking"
+  | "reading"
+  | "writing";
 
 export interface EvaluationFormValues {
-  criteria: Record<EvaluationCriterion, number>;
+  criteria: Record<string, number>;
   comment: string;
   evaluation_period: string;
 }

@@ -8,6 +8,9 @@ export const CertificateAPI = {
   list: async (classId: number | string) =>
     await api.get(`${endpoint}/edu/certificate/${classId}/list`).then((r) => r.data),
 
+  listByStudent: async (studentId: number | string) =>
+    await api.get(`${endpoint}/edu/certificate/student/${studentId}/list`).then((r) => r.data),
+
   issue: async (classId: number | string, studentId: number | string) =>
     await api
       .post(`${endpoint}/edu/certificate/${classId}/issue`, { student_id: studentId })

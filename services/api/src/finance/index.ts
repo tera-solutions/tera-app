@@ -1,3 +1,4 @@
+export * from "./business-bank-account";
 export * from "./coupon";
 export * from "./debt";
 export * from "./debt-aging";
@@ -6,6 +7,7 @@ export * from "./discount";
 export * from "./discount-rule";
 export * from "./invoice";
 export * from "./invoice-adjustment";
+export * from "./invoice-config";
 export * from "./invoice-item";
 export * from "./invoice-status";
 export * from "./payment";

@@ -17,6 +17,7 @@ export const STUDENT_SUMMARY_SEGMENTS: {
   value: (summary: StudentSummary) => number;
 }[] = [
   { key: "active", metaValue: "active", fallbackLabel: "Đang học", fallbackColor: "#10b981", value: (s) => s.active },
+  { key: "debt", metaValue: "debt", fallbackLabel: "Nợ học phí", fallbackColor: "#dc2626", value: (s) => s.debt },
   { key: "dropped", metaValue: "dropped", fallbackLabel: "Đã nghỉ", fallbackColor: "#ef4444", value: (s) => s.dropped },
   { key: "completed", metaValue: "graduated", fallbackLabel: "Hoàn thành", fallbackColor: "#8b5cf6", value: (s) => s.completed },
 ];

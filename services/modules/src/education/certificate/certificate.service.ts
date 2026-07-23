@@ -30,6 +30,15 @@ export const useCertificateList = (classId: number | string, options?: QueryHook
   });
 };
 
+export const useCertificateListByStudent = (studentId: number | string, options?: QueryHookOptions) => {
+  return useQueryAdapter({
+    queryKey: ["certificate", "listByStudent", studentId],
+    queryFn: () => CertificateAPI.listByStudent(studentId),
+    enabled: !!studentId,
+    ...options,
+  });
+};
+
 export const useCertificateIssue = (classId: number | string) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -65,6 +74,7 @@ export const useCertificateVerify = (token: string, options?: QueryHookOptions) 
 export const CertificateService = {
   useCertificateEligibility,
   useCertificateList,
+  useCertificateListByStudent,
   useCertificateIssue,
   useCertificateRevoke,
   useCertificateVerify,

@@ -61,6 +61,12 @@ export const toClassroom = (raw: any): Classroom => {
     cover_image: raw.avatar_url ?? raw.avatar ?? "",
     course_id: raw.course_id ?? raw.course?.id ?? null,
     lesson_plan_id: raw.lesson_plan_id ?? raw.lesson_plan?.id ?? null,
+    lesson_plans: (raw.lesson_plans ?? []).map((p: any) => ({
+      id: p.id ?? 0,
+      plan_code: p.plan_code ?? "",
+      plan_name: p.plan_name ?? "",
+      status: p.status ?? "",
+    })),
   };
 };
 

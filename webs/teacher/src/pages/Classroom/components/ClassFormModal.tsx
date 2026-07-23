@@ -30,7 +30,7 @@ const empty = {
   code: "",
   course_id: "" as number | "",
   use_course_curriculum: false,
-  lesson_plan_id: "" as number | "",
+  lesson_plan_ids: [] as number[],
   learning_type: "scheduled",
   start_date: "",
   end_date: "",
@@ -78,7 +78,11 @@ const ClassFormModal = ({ open, classroom, onClose }: Props) => {
         code: "",
         course_id: classroom.course_id ?? "",
         use_course_curriculum: false,
-        lesson_plan_id: classroom.lesson_plan_id ?? "",
+        lesson_plan_ids: classroom.lesson_plans.length
+          ? classroom.lesson_plans.map((p) => p.id)
+          : classroom.lesson_plan_id
+            ? [classroom.lesson_plan_id]
+            : [],
         learning_type: "scheduled",
         start_date: "",
         end_date: classroom.end_date ?? "",
@@ -127,7 +131,8 @@ const ClassFormModal = ({ open, classroom, onClose }: Props) => {
           params: {
             name: form.name.trim(),
             avatar: form.avatar || undefined,
-            lesson_plan_id: form.lesson_plan_id ? Number(form.lesson_plan_id) : undefined,
+            lesson_plan_id: form.lesson_plan_ids[0] ?? undefined,
+            lesson_plan_ids: form.lesson_plan_ids,
             room_id: form.room_id ? Number(form.room_id) : undefined,
             end_date: form.end_date || undefined,
             ...capacityParams,
@@ -147,7 +152,8 @@ const ClassFormModal = ({ open, classroom, onClose }: Props) => {
             code: form.code.trim(),
             course_id: Number(form.course_id),
             use_course_curriculum: form.use_course_curriculum,
-            lesson_plan_id: form.lesson_plan_id ? Number(form.lesson_plan_id) : undefined,
+            lesson_plan_id: form.lesson_plan_ids[0] ?? undefined,
+            lesson_plan_ids: form.lesson_plan_ids,
             learning_type: form.learning_type,
             start_date: form.start_date,
             end_date: form.end_date || undefined,
@@ -239,14 +245,18 @@ const ClassFormModal = ({ open, classroom, onClose }: Props) => {
         <div>
           <FieldLabel>Giáo án</FieldLabel>
           <Select
-            value={form.lesson_plan_id}
+            mode="multiple"
+            value={form.lesson_plan_ids}
             placeholder="— Chưa gắn giáo án —"
             options={lessonPlans.map((lp: any) => ({
               value: lp.id,
               label: `${lp.plan_name ?? lp.name}${lp.plan_code ? ` (${lp.plan_code})` : ""}`,
             }))}
-            onChange={(v) => set({ lesson_plan_id: v != null ? Number(v) : "" })}
+            onChange={(v: any) => set({ lesson_plan_ids: (v ?? []).map(Number) })}
           />
+          <p className="mt-1 text-xs text-slate-400">
+            Có thể gắn nhiều giáo án — giáo viên sẽ chọn 1 trong số này khi bắt đầu từng buổi học.
+          </p>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>

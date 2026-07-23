@@ -6,25 +6,14 @@ import {
   QueryHookOptions,
 } from "@tera/commons/hooks/queryAdapter";
 import { StudentLevelAPI } from "@tera/api";
-import {
-  CreatePayload,
-  DeletePayload,
-  DetailPayload,
-  ExportPayload,
-  ListPayload,
-  UpdatePayload,
-} from "@tera/api/_interface";
+import type {
+  PlacementPayload,
+  PromoteAdjustPayload,
+  StudentLevelHistoryPayload,
+} from "@tera/api";
+import { DetailPayload } from "@tera/api/_interface";
 
 // QUERY
-export const useStudentLevelList = (payload: ListPayload, options?: QueryHookOptions) => {
-  return useQueryAdapter({
-    queryKey: ["student-level", "list", payload.params],
-    queryFn: () => StudentLevelAPI.getList(payload),
-    keepPreviousData: true,
-    ...options,
-  });
-};
-
 export const useStudentLevelDetail = (payload: DetailPayload, options?: QueryHookOptions) => {
   return useQueryAdapter({
     queryKey: ["student-level", "detail", payload.id],
@@ -34,14 +23,26 @@ export const useStudentLevelDetail = (payload: DetailPayload, options?: QueryHoo
   });
 };
 
+export const useStudentLevelHistory = (
+  payload: StudentLevelHistoryPayload,
+  options?: QueryHookOptions,
+) => {
+  return useQueryAdapter({
+    queryKey: ["student-level", "history", payload.id],
+    queryFn: () => StudentLevelAPI.getHistory(payload),
+    enabled: !!payload.id,
+    ...options,
+  });
+};
+
 // MUTATION
-export const useStudentLevelCreate = () => {
+export const useStudentLevelPlacement = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: CreatePayload) => StudentLevelAPI.create(payload),
+    mutationFn: (payload: PlacementPayload) => StudentLevelAPI.placement(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student-level", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["student-level", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -49,13 +50,13 @@ export const useStudentLevelCreate = () => {
   });
 };
 
-export const useStudentLevelUpdate = () => {
+export const useStudentLevelPromote = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => StudentLevelAPI.update(payload),
+    mutationFn: (payload: PromoteAdjustPayload) => StudentLevelAPI.promote(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student-level", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["student-level", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -63,46 +64,13 @@ export const useStudentLevelUpdate = () => {
   });
 };
 
-export const useUpsertStudentLevel = () => {
+export const useStudentLevelAdjust = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   return useMutationAdapter({
-    mutationFn: (payload: UpdatePayload) => {
-      if (payload?.id) return StudentLevelAPI.update(payload);
-      return StudentLevelAPI.create(payload);
-    },
+    mutationFn: (payload: PromoteAdjustPayload) => StudentLevelAPI.adjust(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
-export const useStudentLevelDelete = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: DeletePayload) => StudentLevelAPI.delete(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student-level", "list"] });
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
-export const useStudentLevelExport = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => StudentLevelAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
+      queryClient.invalidateQueries({ queryKey: ["student-level", "detail"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);
@@ -111,11 +79,9 @@ export const useStudentLevelExport = () => {
 };
 
 export const StudentLevelService = {
-  useStudentLevelList,
   useStudentLevelDetail,
-  useStudentLevelCreate,
-  useStudentLevelUpdate,
-  useUpsertStudentLevel,
-  useStudentLevelDelete,
-  useStudentLevelExport,
+  useStudentLevelHistory,
+  useStudentLevelPlacement,
+  useStudentLevelPromote,
+  useStudentLevelAdjust,
 };

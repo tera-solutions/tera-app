@@ -12,6 +12,8 @@ import {
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
+import { useLeadUpdateStatus } from "./lead-pipeline.service";
+import { useLeadConvert } from "./lead-activity.service";
 
 // QUERY
 export const useLeadList = (payload: ListPayload, options?: QueryHookOptions) => {
@@ -117,4 +119,6 @@ export const LeadService = {
   useUpsertLead,
   useLeadSuspend,
   useLeadRestore,
+  useLeadUpdateStatus,
+  useLeadConvert,
 };

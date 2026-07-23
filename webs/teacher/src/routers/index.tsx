@@ -37,6 +37,8 @@ import Messages from "pages/Messages";
 import MyInfo from "pages/MyInfo";
 import Parents from "pages/Parents";
 import ParentDetail from "pages/ParentDetail";
+import Leads from "pages/Leads";
+import LeadDetail from "pages/LeadDetail";
 import CourseDetail from "pages/CourseDetail";
 import Enrollment from "pages/Enrollment";
 import Transfer from "pages/Transfer";
@@ -176,6 +178,8 @@ export const Routers = () => {
         <Route path={PATHS.ranking} element={<Ranking />} />
         <Route path={PATHS.parents} element={<Parents />} />
         <Route path={`${PATHS.parentDetail}/:id`} element={<ParentDetail />} />
+        <Route path={PATHS.leads} element={<Leads />} />
+        <Route path={`${PATHS.leadDetail}/:id`} element={<LeadDetail />} />
         <Route path={PATHS.enrollmentNew} element={<Enrollment />} />
         <Route path={PATHS.transfer} element={<Transfer />} />
         <Route

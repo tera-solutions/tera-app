@@ -6,6 +6,9 @@ export interface ExamQuestionRow {
   question_type: string;
   content: string;
   answer_key: string[];
+  file_id: number | null;
+  file_name: string | null;
+  file_url: string | null;
   score: number;
   difficulty: string;
 }

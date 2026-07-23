@@ -35,8 +35,19 @@ export const usePayrollGenerate = () => {
   });
 };
 
+export const usePayrollPay = () => {
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (id: number | string) => PayrollAPI.pay(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payroll"] });
+    },
+  });
+};
+
 export const PayrollService = {
   usePayrollList,
   usePayrollDetail,
   usePayrollGenerate,
+  usePayrollPay,
 };

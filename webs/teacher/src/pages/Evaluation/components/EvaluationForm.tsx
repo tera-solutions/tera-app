@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { notification, Select } from "tera-dls";
 
@@ -6,15 +7,17 @@ import FormScaff from "@tera/components/dof/FormScaff";
 import InputNumber from "@tera/components/dof/Control/InputNumber";
 import TextArea from "@tera/components/dof/Control/TextArea";
 
-import { EvaluationService } from "@tera/modules/education";
+import { EvaluationCriteriaTemplateService, EvaluationService } from "@tera/modules/education";
 
 import type { EvaluationCriterion, EvaluationFormValues } from "../_interface";
 import { CRITERION_KEYS, CRITERION_LABEL, DEFAULT_CRITERIA_SCORE, EVALUATION_PERIOD_OPTIONS } from "../constants";
 
-const defaultCriteria = CRITERION_KEYS.reduce(
-  (acc, key) => ({ ...acc, [key]: DEFAULT_CRITERIA_SCORE }),
-  {} as Record<EvaluationCriterion, number>,
-);
+const DEFAULT_TEMPLATE_VALUE = "__default__";
+
+const buildDefaultCriteria = (keys: string[]) =>
+  keys.reduce((acc, key) => ({ ...acc, [key]: DEFAULT_CRITERIA_SCORE }), {} as Record<string, number>);
+
+const defaultCriteria = buildDefaultCriteria(CRITERION_KEYS);
 
 interface EvaluationFormProps {
   open: boolean;
@@ -25,6 +28,8 @@ interface EvaluationFormProps {
 }
 
 const EvaluationForm = ({ open, onClose, studentId, studentName, classId }: EvaluationFormProps) => {
+  const [templateId, setTemplateId] = useState<string>(DEFAULT_TEMPLATE_VALUE);
+
   const form = useForm<EvaluationFormValues>({
     mode: "onChange",
     defaultValues: { criteria: defaultCriteria, comment: "", evaluation_period: "session" },
@@ -32,7 +37,35 @@ const EvaluationForm = ({ open, onClose, studentId, studentName, classId }: Eval
 
   const { mutate: createEvaluation, isPending } = EvaluationService.useEvaluationCreate();
 
+  const templatesQuery = EvaluationCriteriaTemplateService.useEvaluationCriteriaTemplateList(
+    { params: { per_page: 50, filters: { evaluation_type: "student", status: "active" } } },
+    { enabled: open },
+  );
+  const templates = templatesQuery.data?.data?.items ?? [];
+
+  const templateOptions = useMemo(
+    () => [
+      { value: DEFAULT_TEMPLATE_VALUE, label: "Tiêu chí mặc định" },
+      ...templates.map((t: any) => ({ value: String(t.id), label: t.name })),
+    ],
+    [templates],
+  );
+
+  // Criteria fields track the picked template's keys (a validated subset of
+  // CRITERION_KEYS — EvaluationCriteriaTemplate can only contain keys
+  // EvaluationType::criteria() allows), falling back to the full default set.
+  const activeCriteria = useMemo<EvaluationCriterion[]>(() => {
+    if (templateId === DEFAULT_TEMPLATE_VALUE) return CRITERION_KEYS;
+    const template = templates.find((t: any) => String(t.id) === templateId);
+    return (template?.criteria ?? CRITERION_KEYS) as EvaluationCriterion[];
+  }, [templateId, templates]);
+
+  useEffect(() => {
+    form.setValue("criteria", buildDefaultCriteria(activeCriteria));
+  }, [activeCriteria]);
+
   const handleClose = () => {
+    setTemplateId(DEFAULT_TEMPLATE_VALUE);
     form.reset({ criteria: defaultCriteria, comment: "", evaluation_period: "session" });
     onClose();
   };
@@ -48,7 +81,7 @@ const EvaluationForm = ({ open, onClose, studentId, studentName, classId }: Eval
           evaluator_type: "teacher",
           class_room_id: classId,
           evaluation_period: values.evaluation_period,
-          criteria: CRITERION_KEYS.map((key) => ({ criterion: key, score: values.criteria[key] })),
+          criteria: activeCriteria.map((key) => ({ criterion: key, score: values.criteria[key] })),
           comment: values.comment,
         },
       },
@@ -80,10 +113,20 @@ const EvaluationForm = ({ open, onClose, studentId, studentName, classId }: Eval
       onOk={() => form.handleSubmit(handleSubmit)()}
       confirmLoading={isPending}
     >
+      <div className="mb-3">
+        <p className="mb-1 text-xs font-medium text-slate-500">Bảng tiêu chí</p>
+        <Select
+          value={templateId}
+          options={templateOptions}
+          loading={templatesQuery.isLoading}
+          onChange={(v: any) => setTemplateId(v)}
+        />
+      </div>
+
       <FormTera form={form} onSubmit={form.handleSubmit(handleSubmit)}>
         <p className="mb-2 text-sm font-semibold text-slate-700">Tiêu chí đánh giá (1-5)</p>
         <div className="grid grid-cols-2 gap-x-4 gap-y-1 sm:grid-cols-3">
-          {CRITERION_KEYS.map((key) => (
+          {activeCriteria.map((key) => (
             <FormTeraItem
               key={key}
               label={CRITERION_LABEL[key]}

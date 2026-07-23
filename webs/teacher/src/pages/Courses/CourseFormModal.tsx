@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Checkbox, Input, InputNumber, notification, PlusOutlined, TextArea, TrashOutlined } from "tera-dls";
+import { Checkbox, Input, InputNumber, notification, PlusOutlined, Select, TextArea, TrashOutlined } from "tera-dls";
 
 import { CourseCurriculumService, CourseService } from "@tera/modules/education";
 import FormScaff from "@tera/components/dof/FormScaff";
 import FieldLabel from "_common/components/FieldLabel";
+import { useMeta } from "_common/hooks/useMeta";
 
 interface CurriculumDraftRow {
   title: string;
@@ -16,8 +17,10 @@ export interface CourseRow {
   id: number;
   code: string;
   name: string;
+  title?: string | null;
   duration_minutes: number | string;
   price_per_lesson: number | string;
+  tuition_type?: string | null;
   description?: string | null;
   is_active?: boolean;
 }
@@ -30,15 +33,18 @@ interface Props {
 
 const empty = {
   name: "",
+  title: "",
   code: "",
   duration_minutes: "60",
   price_per_lesson: "0",
+  tuition_type: "per_lesson",
   description: "",
   is_active: true,
 };
 
 const CourseFormModal = ({ open, course, onClose }: Props) => {
   const isEdit = !!course;
+  const { getOptions } = useMeta();
   const { mutate: create, isPending: creating } = CourseService.useCourseCreate();
   const { mutate: update, isPending: updating } = CourseService.useCourseUpdate();
   const { mutateAsync: createCurriculum } = CourseCurriculumService.useCourseCurriculumCreate();
@@ -59,9 +65,11 @@ const CourseFormModal = ({ open, course, onClose }: Props) => {
     if (course) {
       setForm({
         name: course.name ?? "",
+        title: course.title ?? "",
         code: course.code ?? "",
         duration_minutes: String(course.duration_minutes ?? 60),
         price_per_lesson: String(course.price_per_lesson ?? 0),
+        tuition_type: course.tuition_type ?? "per_lesson",
         description: course.description ?? "",
         is_active: course.is_active ?? true,
       });
@@ -78,8 +86,10 @@ const CourseFormModal = ({ open, course, onClose }: Props) => {
     }
     const params: Record<string, unknown> = {
       name: form.name.trim(),
+      title: form.title.trim() || null,
       duration_minutes: Number(form.duration_minutes || 0),
       price_per_lesson: Number(form.price_per_lesson || 0),
+      tuition_type: form.tuition_type,
       description: form.description.trim() || null,
       is_active: form.is_active,
     };
@@ -99,14 +109,10 @@ const CourseFormModal = ({ open, course, onClose }: Props) => {
       return;
     }
 
-    if (!form.code.trim()) {
-      notification.warning({ message: "Vui lòng nhập mã khóa học" });
-      return;
-    }
     const curriculumRows = curriculum.filter((row) => row.title.trim());
 
     create(
-      { params: { ...params, code: form.code.trim().toUpperCase() } },
+      { params: { ...params, code: form.code.trim() ? form.code.trim().toUpperCase() : undefined } },
       {
         onSuccess: async (res: any) => {
           const newCourseId = res?.data?.id;
@@ -156,15 +162,21 @@ const CourseFormModal = ({ open, course, onClose }: Props) => {
           <FieldLabel required>Tên khóa học</FieldLabel>
           <Input value={form.name} onChange={(e) => set({ name: e.target.value })} />
         </div>
+        <div>
+          <FieldLabel>Tiêu đề hiển thị</FieldLabel>
+          <Input value={form.title} onChange={(e) => set({ title: e.target.value })} />
+        </div>
         {!isEdit && (
           <div>
-            <FieldLabel required>Mã khóa học</FieldLabel>
+            <FieldLabel>Mã khóa học</FieldLabel>
             <Input
               value={form.code}
               onChange={(e) => set({ code: e.target.value.toUpperCase() })}
-              placeholder="IELTS_FOUNDATION"
+              placeholder="Để trống để hệ thống tự sinh mã"
             />
-            <p className="mt-1 text-xs text-slate-400">Chỉ dùng chữ A-Z, số 0-9 và dấu gạch dưới.</p>
+            <p className="mt-1 text-xs text-slate-400">
+              Bỏ trống để hệ thống tự sinh mã, hoặc tự nhập (chỉ chữ A-Z, số 0-9 và dấu gạch dưới).
+            </p>
           </div>
         )}
         <div className="grid grid-cols-2 gap-3">
@@ -186,6 +198,14 @@ const CourseFormModal = ({ open, course, onClose }: Props) => {
               onChange={(v) => set({ price_per_lesson: v == null ? "" : String(v) })}
             />
           </div>
+        </div>
+        <div>
+          <FieldLabel>Loại học phí</FieldLabel>
+          <Select
+            value={form.tuition_type}
+            options={getOptions("course_tuition_type").map((o) => ({ value: o.value, label: o.label }))}
+            onChange={(v: any) => set({ tuition_type: v })}
+          />
         </div>
         <div>
           <FieldLabel>Mô tả</FieldLabel>

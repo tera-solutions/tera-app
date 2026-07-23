@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
-import { notification, Spin } from "tera-dls";
+import { notification, Select, Spin } from "tera-dls";
 
 import Breadcrumb from "_common/components/Breadcrumb";
 import { CARD } from "_common/constants/dashboard";
@@ -92,19 +92,16 @@ const SessionRuntime = () => {
   );
 
   const sessionLessonQuery = LessonService.useLessonList(
-    {
-      params: {
-        per_page: 1,
-        filters: {
-          class_room_id: detail?.class_id,
-          lesson_date: detail?.date,
-        },
-      },
-    },
-    { enabled: !!detail?.class_id && !!detail?.date },
+    { params: { per_page: 1, filters: { session_id: detail?.id } } },
+    { enabled: !!detail?.id },
   );
   const sessionLessonId = sessionLessonQuery.data?.data?.items?.[0]?.id ?? null;
   const hasLesson = !!sessionLessonId;
+
+  // A session doesn't require a plan (e.g. an exam day) — this only offers a
+  // choice among the class's published, linked plans when there's one to make.
+  const [selectedPlanId, setSelectedPlanId] = useState<number | undefined>(undefined);
+  const availablePlans = (classRoom?.lesson_plans ?? []).filter((p) => p.status === "published");
 
   const lessonDetailQuery = LessonService.useLessonDetail(
     { id: sessionLessonId ?? "" },
@@ -146,12 +143,15 @@ const SessionRuntime = () => {
   const handleStart = () => {
     if (!sessionId) return;
     startSession(
-      { id: sessionId, params: {} },
+      { id: sessionId, params: { lesson_plan_id: hasLesson ? undefined : selectedPlanId } },
       {
         onSuccess: (res: any) => {
           notification.success({
             message: res?.msg ?? "Đã bắt đầu buổi học",
           });
+          // The mutation may have just materialized a Lesson from the chosen
+          // plan — refetch so StepLesson (step 4) picks it up immediately.
+          sessionLessonQuery.refetch();
           setStep(4);
         },
         onError: (err: any) => {
@@ -202,13 +202,9 @@ const SessionRuntime = () => {
         return {
           label: "Bắt đầu buổi học",
           loading: isStarting,
-          disabled: !hasAttendance || attendanceSession.loading || !hasLesson,
+          disabled: !hasAttendance || attendanceSession.loading,
           onClick: handleStart,
-          hint: !hasAttendance
-            ? "Cần điểm danh trước khi bắt đầu buổi học."
-            : !hasLesson
-              ? "Chưa có bài học được sinh cho buổi học này."
-              : undefined,
+          hint: !hasAttendance ? "Cần điểm danh trước khi bắt đầu buổi học." : undefined,
         };
       }
       return { label: "Tiếp theo →", onClick: () => setStep(4) };
@@ -244,7 +240,23 @@ const SessionRuntime = () => {
       case 2:
         return <StepPlan loading={lessonDetailQuery.isLoading} activities={activities} />;
       case 3:
-        return <AttendanceEditor session={attendanceSession} />;
+        return (
+          <>
+            {!hasLesson && availablePlans.length > 0 && (
+              <div className="mb-4 rounded-xl border border-slate-100 p-3">
+                <p className="mb-1.5 text-sm font-semibold text-slate-700">Giáo án cho buổi học này</p>
+                <Select
+                  value={selectedPlanId}
+                  placeholder="Không dùng giáo án (VD: buổi kiểm tra)"
+                  allowClear
+                  options={availablePlans.map((p) => ({ value: p.id, label: p.plan_name }))}
+                  onChange={(v: any) => setSelectedPlanId(v ?? undefined)}
+                />
+              </div>
+            )}
+            <AttendanceEditor session={attendanceSession} />
+          </>
+        );
       case 4:
         return (
           <StepLesson

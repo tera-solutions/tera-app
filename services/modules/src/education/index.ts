@@ -6,6 +6,7 @@ export * from "./class-session";
 export * from "./course";
 export * from "./enrollment";
 export * from "./evaluation";
+export * from "./evaluation-criteria-template";
 export * from "./exam";
 export * from "./exam-session";
 export * from "./exam-result";

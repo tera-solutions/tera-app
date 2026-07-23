@@ -7,6 +7,9 @@ const toExamQuestionRow = (raw: any): ExamQuestionRow => ({
   question_type: raw.question_type ?? "",
   content: raw.content ?? "",
   answer_key: Array.isArray(raw.answer_key) ? raw.answer_key : [],
+  file_id: raw.file_id ?? null,
+  file_name: raw.file_name ?? null,
+  file_url: raw.file_url ?? null,
   score: Number(raw.score ?? 0),
   difficulty: raw.difficulty ?? "",
 });

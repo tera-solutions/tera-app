@@ -11,7 +11,7 @@ import {
 
 export interface AttachMaterialToEntityPayload {
   id: number | string;
-  entity_type: "course" | "lesson_plan" | "lesson" | "assignment" | "evaluation";
+  entity_type: "course" | "lesson_plan" | "lesson" | "assignment" | "evaluation" | "exam";
   entity_id: number | string;
 }
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { EyeOutlined } from "tera-dls";
+import { CheckBadgeOutlined, EyeOutlined } from "tera-dls";
 
 import Avatar from "_common/components/Avatar";
 import Badge from "_common/components/Badge";
@@ -18,6 +18,7 @@ interface StudentResultTableProps {
   isError?: boolean;
   onRetry?: () => void;
   onGrade?: (row: ExamResultRow) => void;
+  onPublish?: (row: ExamResultRow) => void;
   showSkillColumns?: boolean;
 }
 
@@ -28,6 +29,7 @@ const StudentResultTable = ({
   isError,
   onRetry,
   onGrade,
+  onPublish,
   showSkillColumns = true,
 }: StudentResultTableProps) => {
   const [search, setSearch] = useState("");
@@ -123,14 +125,26 @@ const StudentResultTable = ({
             headerClassName: "px-4 py-3",
             cellClassName: "px-4 py-3 text-right",
             render: (row: ExamResultRow) => (
-              <button
-                type="button"
-                title="Xem / chấm điểm"
-                onClick={() => onGrade(row)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4 [&_svg]:w-4"
-              >
-                <EyeOutlined />
-              </button>
+              <div className="flex items-center justify-end gap-1">
+                <button
+                  type="button"
+                  title="Xem / chấm điểm"
+                  onClick={() => onGrade(row)}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4 [&_svg]:w-4"
+                >
+                  <EyeOutlined />
+                </button>
+                {onPublish && row.registration_status === "graded" && (
+                  <button
+                    type="button"
+                    title="Công bố kết quả"
+                    onClick={() => onPublish(row)}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-emerald-50 hover:text-emerald-600 [&_svg]:h-4 [&_svg]:w-4"
+                  >
+                    <CheckBadgeOutlined />
+                  </button>
+                )}
+              </div>
             ),
           } as TableColumn<ExamResultRow>,
         ]

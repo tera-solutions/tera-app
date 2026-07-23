@@ -97,7 +97,7 @@ const ParentForm = ({ open, onClose, rosterOptions, parent }: ParentFormProps) =
           email: values.email,
           avatar: values.avatar || undefined,
           business_id: businessId,
-          branch_id: Number(values.branch_id),
+          branch_id: values.branch_id != null ? Number(values.branch_id) : undefined,
           students: values.student_id
             ? [{ student_id: values.student_id, relation: values.relation }]
             : undefined,
@@ -162,11 +162,7 @@ const ParentForm = ({ open, onClose, rosterOptions, parent }: ParentFormProps) =
 
         {!isEdit && (
           <>
-            <FormTeraItem
-              label="Chi nhánh"
-              name="branch_id"
-              rules={[{ required: "Vui lòng chọn chi nhánh" }]}
-            >
+            <FormTeraItem label="Chi nhánh" name="branch_id">
               <Controller
                 control={form.control}
                 name="branch_id"

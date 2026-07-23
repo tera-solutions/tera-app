@@ -25,8 +25,8 @@ interface StepReviewCreateProps {
 /**
  * Create wizard's final step: nothing has been saved yet — this submits the
  * plan, every lesson template (with its activities), and every uploaded
- * material in one go. Teachers can only save a draft; publishing is an admin
- * review step (see `lesson_plan.publish` in RolePermissionSeeder).
+ * material in one go. Teachers hold `lesson_plan.publish` (RolePermissionSeeder)
+ * so they may publish immediately instead of only saving a draft.
  */
 const StepReviewCreate = ({
   planValues,
@@ -34,18 +34,19 @@ const StepReviewCreate = ({
   onBack,
 }: StepReviewCreateProps) => {
   const navigate = useNavigate();
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState<"draft" | "publish" | null>(null);
 
   const { mutateAsync: upsertPlan } = LessonPlanService.useUpsertLessonPlan();
   const { mutateAsync: createLesson } = LessonPlanLessonService.useLessonPlanLessonCreate();
   const { mutateAsync: attachMaterial } = MaterialService.useMaterialAttach();
+  const { mutateAsync: publishPlan } = LessonPlanService.useLessonPlanPublish();
 
   const totalDuration = templates.reduce((sum, t) => sum + (t.duration ?? 0), 0);
   const totalActivities = templates.reduce((sum, t) => sum + t.activities.length, 0);
   const totalMaterials = templates.reduce((sum, t) => sum + t.materials.length, 0);
 
-  const handleSubmit = async () => {
-    setSubmitting(true);
+  const handleSubmit = async (publish: boolean) => {
+    setSubmitting(publish ? "publish" : "draft");
     try {
       const planRes: any = await upsertPlan({
         id: undefined,
@@ -76,16 +77,21 @@ const StepReviewCreate = ({
         }
       }
 
-      notification.success({
-        message: "Tạo giáo án thành công. Giáo án đang chờ quản trị viên xét duyệt và xuất bản.",
-      });
+      if (publish) {
+        await publishPlan({ id: planId, params: {} });
+        notification.success({ message: "Tạo và xuất bản giáo án thành công." });
+      } else {
+        notification.success({
+          message: "Đã lưu nháp giáo án. Bạn có thể xuất bản sau ở trang chi tiết.",
+        });
+      }
       navigate(`${PATHS.lessonPlans}/${planId}`);
     } catch (err: any) {
       notification.error({
         message: err?.msg ?? err?.message ?? "Tạo giáo án thất bại",
       });
     } finally {
-      setSubmitting(false);
+      setSubmitting(null);
     }
   };
 
@@ -174,26 +180,37 @@ const StepReviewCreate = ({
       </div>
 
       <p className="mt-4 text-xs text-slate-400">
-        Giáo án sẽ được lưu ở trạng thái nháp. Quản trị viên sẽ xem xét và xuất bản.
+        Lưu nháp để chỉnh sửa thêm sau, hoặc xuất bản ngay để áp dụng giáo án cho lớp học.
       </p>
 
       <div className="mt-2 flex justify-between gap-2 border-t border-slate-100 pt-4">
         <Button
           outlined
           onClick={onBack}
-          disabled={submitting}
+          disabled={!!submitting}
           className="text-brand border-brand hover:bg-brand"
         >
           Quay lại
         </Button>
-        <Button
-          onClick={handleSubmit}
-          loading={submitting}
-          disabled={submitting}
-          className="bg-brand hover:bg-brand/80"
-        >
-          Lưu nháp
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            outlined
+            onClick={() => handleSubmit(false)}
+            loading={submitting === "draft"}
+            disabled={!!submitting}
+            className="text-brand border-brand hover:bg-brand"
+          >
+            Lưu nháp
+          </Button>
+          <Button
+            onClick={() => handleSubmit(true)}
+            loading={submitting === "publish"}
+            disabled={!!submitting}
+            className="bg-brand hover:bg-brand/80"
+          >
+            Xuất bản
+          </Button>
+        </div>
       </div>
     </Card>
   );

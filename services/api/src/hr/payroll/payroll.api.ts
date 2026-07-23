@@ -9,10 +9,12 @@ export interface GeneratePayrollParams {
 }
 
 /**
- * Khớp `PayrollController` (`v1/hr/payroll/*`) — `list`/`detail` luôn scoped theo
- * giáo viên đang đăng nhập. `generate` là self-service (chỉ tính lại lương của
- * chính mình từ giờ dạy thực tế) — backend khóa `teacher_id`/bỏ qua `bonus`,
- * `penalty` với tài khoản không phải admin.
+ * Khớp `PayrollController` (`v1/hr/payroll/*`) — `list`/`detail` mặc định scoped
+ * theo giáo viên đang đăng nhập; tài khoản admin có thể truyền `teacher_id` để
+ * xem (và qua `pay`, chi trả) bảng lương của giáo viên khác. `generate` là
+ * self-service (chỉ tính lại lương của chính mình từ giờ dạy thực tế) — backend
+ * khóa `teacher_id`/bỏ qua `bonus`, `penalty` với tài khoản không phải admin.
+ * `pay` chỉ admin gọi được, và backend chặn tự trả lương cho chính mình.
  */
 export const PayrollAPI = {
   getList: async ({ params }: ListPayload) =>
@@ -28,5 +30,10 @@ export const PayrollAPI = {
   generate: async (params: GeneratePayrollParams) =>
     await api
       .post(`${endpoint}/hr/payroll/generate`, params)
+      .then((r) => r.data),
+
+  pay: async (id: number | string) =>
+    await api
+      .post(`${endpoint}/hr/payroll/pay/${id}`)
       .then((r) => r.data),
 };

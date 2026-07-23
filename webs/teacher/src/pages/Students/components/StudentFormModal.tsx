@@ -135,10 +135,6 @@ const StudentFormModal = ({ open, studentId, isCreate = false, onClose }: Props)
       return;
     }
 
-    if (!form.dob) {
-      notification.warning({ message: "Vui lòng nhập ngày sinh" });
-      return;
-    }
     if (!form.branch_id) {
       notification.warning({ message: "Vui lòng chọn chi nhánh" });
       return;
@@ -162,7 +158,7 @@ const StudentFormModal = ({ open, studentId, isCreate = false, onClose }: Props)
         params: {
           name: form.name.trim(),
           gender: form.gender,
-          dob: form.dob,
+          dob: form.dob || undefined,
           email: form.email.trim() || undefined,
           phone: form.phone.trim() || undefined,
           level_id: form.level_id === "" ? undefined : Number(form.level_id),
@@ -224,7 +220,7 @@ const StudentFormModal = ({ open, studentId, isCreate = false, onClose }: Props)
               />
             </div>
             <div>
-              <FieldLabel required={!isEdit}>Ngày sinh</FieldLabel>
+              <FieldLabel>Ngày sinh</FieldLabel>
               <DatePicker
                 className="w-full"
                 format={DATE_FORMAT}

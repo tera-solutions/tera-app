@@ -7,7 +7,7 @@ import { MaterialService } from "@tera/modules/education";
 import MaterialSelect from "_common/components/MaterialSelect";
 import { formatFileSize } from "pages/Material/_utils";
 
-type MaterialEntityType = "course" | "lesson_plan" | "lesson" | "assignment" | "evaluation";
+type MaterialEntityType = "course" | "lesson_plan" | "lesson" | "assignment" | "evaluation" | "exam";
 
 interface AttachedMaterial {
   id: number;

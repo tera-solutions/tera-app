@@ -22,6 +22,7 @@ export interface ExamSessionHeader {
   exam_id: number | null;
   exam_name: string;
   class_name: string;
+  session_name: string;
   room_name: string;
   teacher_name: string;
   exam_date: string;

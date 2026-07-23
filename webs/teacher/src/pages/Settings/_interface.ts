@@ -1,4 +1,12 @@
-export type SettingsTabKey = "profile" | "notification" | "general" | "appearance" | "password";
+export type SettingsTabKey =
+  | "profile"
+  | "notification"
+  | "general"
+  | "appearance"
+  | "password"
+  | "bank_account"
+  | "recurring_invoice"
+  | "evaluation_criteria";
 
 export interface SettingRow {
   id: number;

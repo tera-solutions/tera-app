@@ -25,6 +25,7 @@ import MonthCalendar from "./components/MonthCalendar";
 import DayCalendar from "./components/DayCalendar";
 import ListCalendar from "./components/ListCalendar";
 import RangeView from "./components/RangeView";
+import TimetableListPanel from "./components/TimetableListPanel";
 import ScheduleDetailDrawer from "./components/ScheduleDetailDrawer";
 import TimetableFormModal from "./components/TimetableFormModal";
 import FilterSidebar from "./components/FilterSidebar";
@@ -252,9 +253,12 @@ const Schedule = () => {
           ? "Ngày hiện tại"
           : effectiveView === "list"
             ? "Danh sách buổi học"
-            : "Tuần hiện tại";
+            : effectiveView === "timetables"
+              ? "Danh sách thời khóa biểu"
+              : "Tuần hiện tại";
 
   const renderMainView = () => {
+    if (effectiveView === "timetables") return <TimetableListPanel />;
     if (effectiveView === "range")
       return (
         <RangeView
@@ -345,18 +349,20 @@ const Schedule = () => {
         </Button>
       </div>
 
-      <div className="mb-4">
-        <ScheduleToolbar
-          view={effectiveView}
-          currentDate={currentDate}
-          range={rangeFilter ?? undefined}
-          onPrev={() => step(-1)}
-          onNext={() => step(1)}
-          onToday={handleToday}
-          onSelectDate={handleSelectDate}
-          onSelectRange={handleSelectRange}
-        />
-      </div>
+      {effectiveView !== "timetables" && (
+        <div className="mb-4">
+          <ScheduleToolbar
+            view={effectiveView}
+            currentDate={currentDate}
+            range={rangeFilter ?? undefined}
+            onPrev={() => step(-1)}
+            onNext={() => step(1)}
+            onToday={handleToday}
+            onSelectDate={handleSelectDate}
+            onSelectRange={handleSelectRange}
+          />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1fr_300px]">
         <Card>
@@ -367,13 +373,13 @@ const Schedule = () => {
             </p>
             {!isMobile && (
               <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">
-                {(["list", "day", "week", "month"] as const).map((key) => (
+                {(["list", "day", "week", "month", "timetables"] as const).map((key) => (
                   <button
                     key={key}
                     type="button"
                     onClick={() => handleSelectView(key)}
                     className={classNames(
-                      "rounded-md px-4 py-1 text-sm font-medium transition-colors",
+                      "whitespace-nowrap rounded-md px-4 py-1 text-sm font-medium transition-colors",
                       !rangeFilter && view === key
                         ? "bg-brand text-white shadow-sm"
                         : "text-slate-600 hover:text-slate-800",
@@ -385,7 +391,9 @@ const Schedule = () => {
                         ? "Tuần"
                         : key === "day"
                           ? "Ngày"
-                          : "Danh sách"}
+                          : key === "timetables"
+                            ? "Thời khóa biểu"
+                            : "Danh sách"}
                   </button>
                 ))}
               </div>

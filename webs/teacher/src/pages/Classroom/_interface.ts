@@ -29,6 +29,9 @@ export interface Classroom {
   cover_image: string;
   course_id: number | null;
   lesson_plan_id: number | null;
+  /** Plans available to pick from when starting one of this class's sessions
+   * (may hold more than one — see StartSessionRequest). */
+  lesson_plans: { id: number; plan_code: string; plan_name: string; status: string }[];
 }
 
 export interface ClassroomSummary {

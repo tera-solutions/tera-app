@@ -8,6 +8,7 @@ import {
 
 import Badge from "_common/components/Badge";
 import { CARD } from "_common/constants/dashboard";
+import { useMeta } from "_common/hooks/useMeta";
 import { getCoverGradient } from "pages/Classroom/constants";
 
 import type { CourseDetail } from "../_interface";
@@ -35,6 +36,7 @@ const InfoRow = ({
 );
 
 const CourseInfoCard = ({ detail }: CourseInfoCardProps) => {
+  const { getLabel } = useMeta();
   const statusLabel = detail.is_active ? "Đang mở" : "Ngừng hoạt động";
 
   return (
@@ -94,6 +96,11 @@ const CourseInfoCard = ({ detail }: CourseInfoCardProps) => {
               icon={<CurrencyDollarOutlined />}
               label="Học phí"
               value={`${detail.price_per_lesson.toLocaleString("en-US")}đ / buổi`}
+            />
+            <InfoRow
+              icon={<CurrencyDollarOutlined />}
+              label="Loại học phí"
+              value={getLabel("course_tuition_type", detail.tuition_type) || "—"}
             />
           </div>
 

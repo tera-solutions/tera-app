@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import { Button, PlusOutlined } from "tera-dls";
 
 import Badge from "_common/components/Badge";
 import SearchInput from "_common/components/SearchInput";
@@ -103,12 +104,21 @@ const ClassAssignmentPanel = ({ classId }: { classId: number | null }) => {
 
   return (
     <div>
-      <div className="mb-3">
+      <div className="mb-3 flex items-center justify-between gap-3">
         <SearchInput
           value={searchDraft}
           onChange={(e) => setSearchDraft(e.target.value)}
           placeholder="Tìm kiếm bài tập..."
+          wrapperClassName="flex-1"
         />
+        <Button
+          icon={<PlusOutlined />}
+          disabled={!classId}
+          onClick={() => navigate(`${PATHS.assignment}/new`, { state: { class_room_id: classId } })}
+          className="shrink-0 whitespace-nowrap bg-brand hover:bg-brand/80"
+        >
+          Giao bài tập
+        </Button>
       </div>
       <Table
         columns={columns}
@@ -120,7 +130,7 @@ const ClassAssignmentPanel = ({ classId }: { classId: number | null }) => {
         errorMessage="Không tải được danh sách bài tập"
         emptyText="Lớp học chưa có bài tập nào"
         minWidthClassName="min-w-200"
-        onRowClick={() => navigate(PATHS.assignment)}
+        onRowClick={(row) => navigate(`${PATHS.assignmentDetail}/${row.id}`)}
       />
       <TablePagination
         total={total}

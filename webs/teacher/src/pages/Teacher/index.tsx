@@ -19,6 +19,8 @@ import { toTeachers } from "./_utils";
 import TeacherTable from "./components/TeacherTable";
 import TeacherFormModal from "./components/TeacherFormModal";
 import SuspendTeacherModal from "./components/SuspendTeacherModal";
+import AdjustWalletModal from "./components/AdjustWalletModal";
+import PayTeacherPayrollModal from "./components/PayTeacherPayrollModal";
 
 const TeacherPage = () => {
   const confirm = useConfirm();
@@ -27,6 +29,8 @@ const TeacherPage = () => {
   const [editing, setEditing] = useState<Teacher | null>(null);
   const [creating, setCreating] = useState(false);
   const [suspending, setSuspending] = useState<Teacher | null>(null);
+  const [adjustingWallet, setAdjustingWallet] = useState<Teacher | null>(null);
+  const [viewingPayroll, setViewingPayroll] = useState<Teacher | null>(null);
 
   const [filters, setFilters] = useUrlFilters(
     {
@@ -156,6 +160,8 @@ const TeacherPage = () => {
           onEdit={(teacher) => setEditing(teacher)}
           onSuspend={(teacher) => setSuspending(teacher)}
           onRestore={handleRestore}
+          onAdjustWallet={(teacher) => setAdjustingWallet(teacher)}
+          onPayroll={(teacher) => setViewingPayroll(teacher)}
         />
 
         <TablePagination
@@ -178,6 +184,10 @@ const TeacherPage = () => {
         onSubmit={handleSuspend}
         onClose={() => setSuspending(null)}
       />
+
+      <AdjustWalletModal teacher={adjustingWallet} onClose={() => setAdjustingWallet(null)} />
+
+      <PayTeacherPayrollModal teacher={viewingPayroll} onClose={() => setViewingPayroll(null)} />
     </div>
   );
 };

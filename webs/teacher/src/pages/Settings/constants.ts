@@ -6,6 +6,24 @@ export const SETTINGS_TABS: { key: SettingsTabKey; label: string }[] = [
   { key: "notification", label: "Thông báo" },
   { key: "general", label: "Tùy chọn chung" },
   { key: "appearance", label: "Giao diện" },
+  { key: "bank_account", label: "Tài khoản nhận học phí" },
+  { key: "recurring_invoice", label: "Hóa đơn định kỳ" },
+  { key: "evaluation_criteria", label: "Bảng tiêu chí đánh giá" },
+];
+
+// VietQR bank identifiers (BIN) for the common list — https://api.vietqr.io/v2/banks.
+// Any bank_code value is accepted by the backend; this is just a convenience picker.
+export const VIETQR_BANKS = [
+  { value: "970422", label: "MB Bank" },
+  { value: "970436", label: "Vietcombank" },
+  { value: "970407", label: "Techcombank" },
+  { value: "970418", label: "BIDV" },
+  { value: "970415", label: "VietinBank" },
+  { value: "970405", label: "Agribank" },
+  { value: "970416", label: "ACB" },
+  { value: "970432", label: "VPBank" },
+  { value: "970423", label: "TPBank" },
+  { value: "970403", label: "Sacombank" },
 ];
 
 export const NOTIFICATION_SETTINGS = [

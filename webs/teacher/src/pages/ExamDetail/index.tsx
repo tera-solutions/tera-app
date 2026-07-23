@@ -1,13 +1,14 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQueries } from "@tanstack/react-query";
 import moment from "moment";
-import { Button, EyeOutlined, PencilSquareOutlined, Spin } from "tera-dls";
+import { Button, CalendarOutlined, EyeOutlined, PencilSquareOutlined, PlusOutlined, Spin } from "tera-dls";
 
 import Breadcrumb from "_common/components/Breadcrumb";
 import Card from "_common/components/Card";
 import ErrorRetry from "_common/components/ErrorRetry";
 import EmptyState from "_common/components/EmptyState";
+import EntityMaterialManager from "_common/components/EntityMaterialManager";
 import { PATHS } from "_common/components/Layout/Menu/menus";
 import { ExamService, ExamSessionService } from "@tera/modules/education";
 import { ExamSessionAPI } from "@tera/api";
@@ -18,6 +19,8 @@ import ExamStatGrid from "./components/ExamStatGrid";
 import ExamQuestionList from "./components/ExamQuestionList";
 import ScoreDistributionChart from "./components/ScoreDistributionChart";
 import ExamTypeSidebar from "./components/ExamTypeSidebar";
+import CreateExamSessionModal from "./components/CreateExamSessionModal";
+import AddExamQuestionModal from "./components/AddExamQuestionModal";
 
 import { scoreHistogram, scoreStats, toExamResultRows } from "../ExamSession/_utils";
 import StudentResultTable from "../ExamSession/components/StudentResultTable";
@@ -26,6 +29,8 @@ const ExamDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const examId = id ? Number(id) : null;
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [addQuestionOpen, setAddQuestionOpen] = useState(false);
 
   const examQuery = ExamService.useExamDetail({ id: examId ?? "" });
   const exam = useMemo(() => toExamBank(examQuery.data?.data), [examQuery.data]);
@@ -127,9 +132,29 @@ const ExamDetail = () => {
             >
               Xem đợt thi gần nhất
             </Button>
+            <Button
+              icon={<CalendarOutlined />}
+              onClick={() => setScheduleOpen(true)}
+              className="whitespace-nowrap bg-brand hover:bg-brand/80"
+            >
+              Lên lịch thi
+            </Button>
           </div>
         )}
       </div>
+
+      <CreateExamSessionModal
+        open={scheduleOpen}
+        examId={examId}
+        onClose={() => setScheduleOpen(false)}
+        onCreated={(sessionId) => navigate(`${PATHS.exam}/session/${sessionId}`)}
+      />
+
+      <AddExamQuestionModal
+        open={addQuestionOpen}
+        examId={examId}
+        onClose={() => setAddQuestionOpen(false)}
+      />
 
       {notFound ? (
         <div className="flex h-[50vh] items-center justify-center">
@@ -157,10 +182,29 @@ const ExamDetail = () => {
                 />
 
                 <Card>
-                  <p className="mb-3 text-sm font-semibold text-slate-700">
-                    Danh sách câu hỏi ({exam.questions.length})
-                  </p>
+                  <div className="mb-3 flex items-center justify-between">
+                    <p className="text-sm font-semibold text-slate-700">
+                      Danh sách câu hỏi ({exam.questions.length})
+                    </p>
+                    <Button
+                      outlined
+                      icon={<PlusOutlined />}
+                      onClick={() => setAddQuestionOpen(true)}
+                      className="text-brand border-brand hover:bg-brand"
+                    >
+                      Thêm câu hỏi
+                    </Button>
+                  </div>
                   <ExamQuestionList questions={exam.questions} loading={examQuery.isLoading} />
+                </Card>
+
+                <Card>
+                  <p className="mb-3 text-sm font-semibold text-slate-700">Đề giấy / tài liệu đính kèm</p>
+                  <EntityMaterialManager
+                    entityType="exam"
+                    entityId={exam.id}
+                    emptyText="Chưa đính kèm đề giấy hoặc tài liệu nào. Tải đề lên trong Ngân hàng tài liệu rồi chọn đính kèm ở đây."
+                  />
                 </Card>
 
                 <Card>
