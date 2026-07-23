@@ -10,7 +10,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -106,21 +105,6 @@ export const useRoomDelete = () => {
   });
 };
 
-export const useRoomExport = () => {
-  const { t } = useTranslation();
-  return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => RoomAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
 export const useRoomSuspend = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -159,7 +143,6 @@ export const RoomService = {
   useRoomUpdate,
   useUpsertRoom,
   useRoomDelete,
-  useRoomExport,
   useRoomSuspend,
   useRoomRestore,
 };

@@ -108,10 +108,10 @@ const ClassRoomListPage = observer(() => {
     course_id: filters.course || undefined,
     teacher_id: filters.teacher || undefined,
     assignee_id: filters.assignee || undefined,
-    day_of_week: filters.weekday || undefined,
+    weekday: filters.weekday || undefined,
     shift: filters.shift || undefined,
-    start_date_from: filters.startFrom || undefined,
-    start_date_to: filters.startTo || undefined,
+    start_from: filters.startFrom || undefined,
+    start_to: filters.startTo || undefined,
     sort_by: sortBy || undefined,
     sort_dir: sortBy ? sortDir : undefined,
   };

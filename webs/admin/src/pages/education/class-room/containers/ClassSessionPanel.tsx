@@ -107,8 +107,8 @@ const ClassSessionPanel = observer(({ classId }: { classId?: number }) => {
     teacher_id: teacher || undefined,
     room_id: room || undefined,
     tag_ids: tagIds.length ? tagIds.map(Number) : undefined,
-    from_date: fromDate || undefined,
-    to_date: toDate || undefined,
+    date_from: fromDate || undefined,
+    date_to: toDate || undefined,
     // Mặc định sắp xếp theo STT (session_no) tăng dần — buổi 1 ở trên
     sort_by: "session_no",
     sort_dir: "asc",

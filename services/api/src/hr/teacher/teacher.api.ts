@@ -5,7 +5,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -29,16 +28,6 @@ export const TeacherAPI = {
   update: async ({ id, params }: UpdatePayload) =>
     await api
       .put(`${endpoint}/hr/teacher/update/${id}`, params)
-      .then((result) => result.data),
-
-  delete: async ({ id }: DeletePayload) =>
-    await api
-      .delete(`${endpoint}/hr/teacher/delete/${id}`)
-      .then((result) => result.data),
-  
-  export: async ({ params }: ExportPayload) =>
-    await api
-      .post(`${endpoint}/hr/teacher/export`, params)
       .then((result) => result.data),
 
   suspend: async ({ id, params }: UpdatePayload) =>

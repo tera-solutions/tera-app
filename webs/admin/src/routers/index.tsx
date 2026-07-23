@@ -60,7 +60,6 @@ import ClassRoomDetailPage from "pages/education/class-room/ClassRoomDetailPage"
 
 /* IMPORT:Lesson */
 import LessonListPage from "pages/education/lesson/LessonListPage";
-import LessonCreatePage from "pages/education/lesson/LessonCreatePage";
 import LessonUpdatePage from "pages/education/lesson/LessonUpdatePage";
 import LessonDetailPage from "pages/education/lesson/LessonDetailPage";
 
@@ -186,7 +185,6 @@ export const Routers = () => {
 
         {/* BLOCK:Lesson */}
         <Route path='/course/lesson/list' element={<LessonListPage />} />
-        <Route path='/course/lesson/create' element={<LessonCreatePage />} />
         <Route
           path='/course/lesson/update/:id'
           element={<LessonUpdatePage />}

@@ -10,7 +10,6 @@ import {
   CreatePayload,
   DeletePayload,
   DetailPayload,
-  ExportPayload,
   ListPayload,
   UpdatePayload,
 } from "@tera/api/_interface";
@@ -156,22 +155,6 @@ export const useClassRoomRestore = () => {
   });
 };
 
-export const useClassRoomExport = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
-  return useMutationAdapter({
-    mutationFn: (payload: ExportPayload) => ClassRoomAPI.export(payload),
-    onSuccess: (res) => {
-      if (res?.data?.link) {
-        window.open(res?.data?.link, "_blank");
-      }
-    },
-    onError: (error) => {
-      console.error(t("common.error_message"), error);
-    },
-  });
-};
-
 export const ClassRoomService = {
   useClassRoomList,
   useClassRoomDetail,
@@ -180,7 +163,6 @@ export const ClassRoomService = {
   useClassRoomUpdate,
   useUpsertClassRoom,
   useClassRoomDelete,
-  useClassRoomExport,
   useClassRoomSuspend,
   useClassRoomRestore,
 };

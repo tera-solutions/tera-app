@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, PlusCircleOutlined } from "tera-dls";
 
 /* Import: packages */
 import HeaderViewList from "@tera/components/web/HeaderViewList";
@@ -18,7 +17,6 @@ import LessonFilter, { LessonFilterValue } from "./containers/LessonFilter";
 import LessonFilterModal from "./containers/LessonFilterModal";
 import LessonTable from "./containers/LessonTable";
 import LessonFormModal from "./LessonFormModal";
-import LessonGenerateModal from "./LessonGenerateModal";
 
 const defaultFilters: LessonFilterValue = {
   branch: "",
@@ -54,17 +52,12 @@ const LessonListPage = () => {
     type: "create",
     id: undefined,
   });
-  const [generateOpen, setGenerateOpen] = useState(false);
 
-  // Trang generate/update/detail (mobile) redirect về đây khi resize sang desktop.
-  // create → mở modal generate; update/detail → mở modal thường.
+  // Trang update/detail (mobile) redirect về đây khi resize sang desktop.
   const location = useLocation();
   useEffect(() => {
     const m = (location.state as any)?.openModal;
-    if (m?.type === "create") {
-      setGenerateOpen(true);
-      navigate(location.pathname, { replace: true, state: null });
-    } else if (m?.type) {
+    if (m?.type) {
       setModalData({ open: true, type: m.type, id: m.id });
       navigate(location.pathname, { replace: true, state: null });
     }
@@ -79,17 +72,8 @@ const LessonListPage = () => {
         navigate(LESSON_PAGE_URL.update.path(String(id)));
       else if (type === "detail" && id != null)
         navigate(LESSON_PAGE_URL.detail.path(String(id)));
-      else navigate(LESSON_PAGE_URL.create.path);
     }
   }, [isMobile, modalData, navigate]);
-
-  // Chiều ngược: desktop đang mở modal generate → resize xuống mobile.
-  useEffect(() => {
-    if (isMobile && generateOpen) {
-      setGenerateOpen(false);
-      navigate(LESSON_PAGE_URL.create.path);
-    }
-  }, [isMobile, generateOpen, navigate]);
 
   const resetPage = () => setParams((p: any) => ({ ...p, page: 1 }));
 
@@ -106,8 +90,8 @@ const LessonListPage = () => {
     class_room_id: filters.classRoom || undefined,
     teacher_id: filters.teacher || undefined,
     room_id: filters.room || undefined,
-    from_date: filters.dateFrom || undefined,
-    to_date: filters.dateTo || undefined,
+    date_from: filters.dateFrom || undefined,
+    date_to: filters.dateTo || undefined,
     sort_by: sortBy || undefined,
     sort_dir: sortBy ? sortDir : undefined,
   };
@@ -122,24 +106,7 @@ const LessonListPage = () => {
 
   return (
     <div className="p-2.5 max-xmd:pb-[60px]">
-      <HeaderViewList
-        title={t("lesson.title")}
-        buttonAddRender={() => (
-          <Button
-            onClick={() =>
-              isMobile
-                ? navigate(LESSON_PAGE_URL.create.path)
-                : setGenerateOpen(true)
-            }
-            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer"
-          >
-            <div className="flex items-center gap-1 shrink-0">
-              <PlusCircleOutlined className="w-5 h-5" />
-              <span>{t("lesson.generate")}</span>
-            </div>
-          </Button>
-        )}
-      >
+      <HeaderViewList title={t("lesson.title")}>
         {/* Status tabs */}
         <div className="flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent">
           {statusTabs.map((tab) => (
@@ -207,13 +174,6 @@ const LessonListPage = () => {
           onClose={() =>
             setModalData({ open: false, type: "create", id: undefined })
           }
-        />
-      )}
-
-      {generateOpen && (
-        <LessonGenerateModal
-          open={generateOpen}
-          onClose={() => setGenerateOpen(false)}
         />
       )}
 

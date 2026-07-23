@@ -131,8 +131,7 @@ const LeadListPage = observer(() => {
     course_ids: courseFilter.length ? courseFilter.map(Number) : undefined,
     tag_ids: tagFilter.length ? tagFilter.map(Number) : undefined,
     owner_id: ownerFilter || undefined,
-    // Mặc định sắp xếp tăng dần theo mã (id) khi mở màn
-    sort_by: "id",
+    sort_by: "code",
     sort_dir: "asc",
   };
 
@@ -142,7 +141,7 @@ const LeadListPage = observer(() => {
   };
 
   return (
-    <div className="p-2.5 max-xmd:pb-[60px]">
+    <div className='p-2.5 max-xmd:pb-[60px]'>
       <HeaderViewList
         title={t("lead.title")}
         buttonAddRender={() => (
@@ -152,10 +151,10 @@ const LeadListPage = observer(() => {
                 ? navigate(LEAD_PAGE_URL.create.path)
                 : setModalData({ open: true, type: "create" })
             }
-            className="rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer"
+            className='rounded-lg xmd:rounded-xsm shrink-0 px-2 py-1.5 xmd:py-1 cursor-pointer'
           >
-            <div className="flex items-center gap-1 shrink-0">
-              <PlusCircleOutlined className="w-5 h-5" />
+            <div className='flex items-center gap-1 shrink-0'>
+              <PlusCircleOutlined className='w-5 h-5' />
               <span>{t("button.create")}</span>
             </div>
           </Button>
@@ -163,11 +162,11 @@ const LeadListPage = observer(() => {
       >
         {/* Status tabs */}
         {statusTabs.length > 1 && (
-          <div className="flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent">
+          <div className='flex gap-1.5 mb-3 overflow-x-auto pb-0.5 mt-2 [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-track]:bg-transparent'>
             {statusTabs.map((tab) => (
               <button
                 key={tab.key}
-                type="button"
+                type='button'
                 onClick={() => handleStatusChange(tab.key)}
                 className={`px-3 py-1 text-[13px] rounded-md font-medium whitespace-nowrap transition-colors cursor-pointer ${
                   activeStatus === tab.key
@@ -182,10 +181,10 @@ const LeadListPage = observer(() => {
         )}
 
         {/* Search + filters */}
-        <div className="relative z-20 flex flex-wrap items-center gap-2 mb-3">
-          <div className="flex items-center gap-2 w-full xmd:contents">
+        <div className='relative z-20 flex flex-wrap items-center gap-2 mb-3'>
+          <div className='flex items-center gap-2 w-full xmd:contents'>
             <SearchBar
-              className="flex-1 min-w-0"
+              className='flex-1 min-w-0'
               value={keyword}
               placeholder={t("lead.search_placeholder")}
               onChange={(v) => {
@@ -199,10 +198,10 @@ const LeadListPage = observer(() => {
             />
           </div>
           {/* Các select lọc — CHỈ hiện desktop (mobile đưa vào modal "Lọc") */}
-          <div className="hidden gap-2 xmd:flex xmd:w-auto xmd:flex-wrap xmd:items-center xmd:ml-auto">
+          <div className='hidden gap-2 xmd:flex xmd:w-auto xmd:flex-wrap xmd:items-center xmd:ml-auto'>
             <FilterSelect
               allowClear
-              className="w-full xmd:w-[160px]"
+              className='w-full xmd:w-[160px]'
               options={sourceOptions}
               value={sourceFilter}
               placeholder={t("lead.source")}
@@ -211,7 +210,7 @@ const LeadListPage = observer(() => {
                 resetPage();
               }}
             />
-            <div className="w-full xmd:w-[180px]">
+            <div className='w-full xmd:w-[180px]'>
               <MultiSelect
                 options={courseOptions}
                 value={courseFilter}
@@ -222,7 +221,7 @@ const LeadListPage = observer(() => {
                 }}
               />
             </div>
-            <div className="w-full xmd:w-[160px]">
+            <div className='w-full xmd:w-[160px]'>
               <MultiSelect
                 options={tagOptions}
                 value={tagFilter}
@@ -233,7 +232,7 @@ const LeadListPage = observer(() => {
                 }}
               />
             </div>
-            <div className="w-full xmd:w-[180px]">
+            <div className='w-full xmd:w-[180px]'>
               <UserSelect
                 value={ownerFilter}
                 selectedUser={ownerUser}

@@ -347,11 +347,6 @@ export const LESSON_PAGE_URL = {
     path: "/course/lesson/list",
     shortenUrl: "/course/lesson/list",
   },
-  create: {
-    key: PAGE_KEY.LESSON_CREATE_VIEW,
-    path: "/course/lesson/create",
-    shortenUrl: "/course/lesson/create",
-  },
   detail: {
     key: PAGE_KEY.LESSON_DETAIL_VIEW,
     path: (id: string) => "/course/lesson/detail/" + id,

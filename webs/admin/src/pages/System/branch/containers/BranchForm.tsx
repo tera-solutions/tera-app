@@ -82,7 +82,7 @@ const BranchForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
 
     const checkCodeRef = useRef(
       debounce((code: string, resolve: (valid: boolean) => void) => {
-        BranchAPI.getList({ params: { keyword: code, per_page: 5 } })
+        BranchAPI.getList({ params: { search: code, per_page: 5 } })
           .then((res: any) => {
             const items: any[] = res?.data?.items ?? [];
             resolve(!items.some((item) => item.code === code));
@@ -93,7 +93,7 @@ const BranchForm = forwardRef<any, IFormProps & { onSuccess?: () => void }>(
 
     const checkEmailRef = useRef(
       debounce((email: string, resolve: (valid: boolean) => void) => {
-        BranchAPI.getList({ params: { keyword: email, per_page: 20 } })
+        BranchAPI.getList({ params: { search: email, per_page: 20 } })
           .then((res: any) => {
             const items: any[] = res?.data?.items ?? [];
             const dup = items.some(
