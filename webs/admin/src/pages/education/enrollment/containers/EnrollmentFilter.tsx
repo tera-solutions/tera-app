@@ -8,7 +8,7 @@ import { StudentService, ClassRoomService, CourseService } from "@tera/modules";
 import DateRangeFilter from "_common/components/DateRangeFilter";
 import FilterSelect from "_common/components/FilterSelect";
 import SearchSelect from "_common/components/SearchSelect";
-import UserSelect from "_common/components/UserSelect";
+import UserSelect, { TEACHER_ROLE_ID } from "_common/components/UserSelect";
 
 interface EnrollmentFilterProps {
   studentId: string;
@@ -105,6 +105,7 @@ const EnrollmentFilter = ({
             selectedUser={selectedSales}
             placeholder={t("enrollment.all_sales")}
             allowClear
+            extraParams={{ role_id: TEACHER_ROLE_ID }}
             onChange={onSalesChange}
           />
         </div>

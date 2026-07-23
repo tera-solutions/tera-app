@@ -8,7 +8,7 @@ import { LeadService } from "@tera/modules";
 /* Import: pages */
 import ChipGroup from "@tera/components/dof/ChipGroup";
 import FilterModalShell from "@tera/components/dof/FilterModalShell";
-import UserSelect from "_common/components/UserSelect";
+import UserSelect, { TEACHER_ROLE_ID } from "_common/components/UserSelect";
 
 interface Option {
   value: string;
@@ -123,6 +123,7 @@ const LeadFilterModal = ({
           selectedUser={draft.ownerUser}
           placeholder={t("lead.owner")}
           allowClear
+          extraParams={{ role_id: TEACHER_ROLE_ID }}
           onChange={(id, user) =>
             setDraft((d) => ({
               ...d,

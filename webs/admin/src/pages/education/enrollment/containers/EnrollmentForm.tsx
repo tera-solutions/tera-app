@@ -34,7 +34,7 @@ import {
 
 /* Import: pages */
 import DateField from "_common/components/DateField";
-import UserSelect from "_common/components/UserSelect";
+import UserSelect, { TEACHER_ROLE_ID } from "_common/components/UserSelect";
 import ClassCapacity from "./ClassCapacity";
 import { IEnrollmentForm } from "pages/education/enrollment/_interface";
 
@@ -374,6 +374,7 @@ const EnrollmentForm = observer(
                     value={salesValue}
                     selectedUser={dataDetail?.sales}
                     disabled={isView}
+                    extraParams={{ role_id: TEACHER_ROLE_ID }}
                     placeholder={t("form.enter_value", { key: t("enrollment.registrant") })}
                     onChange={(id) =>
                       form.setValue("sales_id", id, {
