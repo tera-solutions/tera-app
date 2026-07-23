@@ -6,7 +6,7 @@ export const AuthApi = {
     await api
       .post(`${auth2Endpoint}/device/init`)
       .then((result) => result.data?.data),
-  checkAuth: async (params) =>
+  checkAuth: async (params: any) =>
     await api
       .post(`${authEndpoint}/check-auth`, params)
       .then((result) => result.data),
@@ -25,21 +25,21 @@ export const AuthApi = {
     await api
       .get(`${authEndpoint}/get-permissions`)
       .then((result) => result.data),
-  getEpic: async (params) =>
+  getEpic: async (params: any) =>
     await api
       .get(`${authEndpoint}/get-epics`, params)
       .then((result) => result.data),
   disableWelcome: async () =>
     await api.post(`${authEndpoint}/auth/turn-off-welcome`),
-  resetPassword: async (params) =>
+  resetPassword: async (params: any) =>
     await api
       .post(`${authEndpoint}/auth/reset-direct-password`, params)
       .then((result) => result.data),
-  activeAccount: async (params) =>
+  activeAccount: async (params: any) =>
     await api
       .post(`${authEndpoint}/auth/send-mail-active-account`, params)
       .then((result) => result.data),
-  forgotPassword: async (params) =>
+  forgotPassword: async (params: any) =>
     await api
       .post(`${authEndpoint}/auth/forgot-password`, params)
       .then((result) => result.data),
@@ -51,16 +51,16 @@ export const AuthApi = {
     await api
       .post(`${auth2Endpoint}/refresh-token`, { refresh_token: refreshToken })
       .then((result) => result.data),
-  checkLogin: async (params) =>
+  checkLogin: async (params: any) =>
     await api
       .post(`${authEndpoint}/check-login`, params)
       .then((result) => result.data),
-  register: async (params) =>
+  register: async (params: any) =>
     await api
       .post(`${authEndpoint}/register`, params)
       .then((result) => result.data),
   // Teacher-app self-service: creates a business + owner account in one call.
-  registerSchool: async (params) =>
+  registerSchool: async (params: any) =>
     await api
       .post(`${authEndpoint}/register-school`, params)
       .then((result) => result.data),

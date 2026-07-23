@@ -12,11 +12,3 @@
 -keep class com.facebook.react.turbomodule.** { *; }
 
 # Add any project specific keep options here:
--keep class com.nozbe.watermelondb.** { *; }
-
--keepattributes Signature
--keepattributes *Annotation*
--keep class com.facebook.react.bridge.CatalystInstanceImpl { *; }
--keep class com.facebook.react.bridge.WritableNativeMap { *; }
--keep class com.facebook.react.bridge.ReadableNativeMap { *; }
--keep class * implements com.facebook.react.bridge.NativeModule

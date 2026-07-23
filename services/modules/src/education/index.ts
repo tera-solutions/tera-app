@@ -1,3 +1,4 @@
+export * from "./ai-generate";
 export * from "./attendance";
 export * from "./class-session-feedback";
 export * from "./class-room";

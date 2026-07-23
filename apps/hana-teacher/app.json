@@ -21,7 +21,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "terasolutions.app.fnb",
+      "bundleIdentifier": "tera.app.hana.teacher",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleDisplayName": "Hana Teacher",
@@ -47,7 +47,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "terasolutions.app.fnb",
+      "package": "tera.app.hana.teacher",
       "permissions": [
         "BLUETOOTH",
         "BLUETOOTH_ADMIN",
