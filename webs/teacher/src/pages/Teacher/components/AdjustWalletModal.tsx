@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { notification, Select } from "tera-dls";
+import { Input, InputNumber, notification, Select } from "tera-dls";
 
 import FormScaff from "@tera/components/dof/FormScaff";
 import FieldLabel from "_common/components/FieldLabel";
-import Input from "@tera/components/dof/Control/Input";
-import InputNumber from "@tera/components/dof/Control/InputNumber";
 import { WalletService } from "@tera/modules/wallet";
 
 import type { Teacher } from "../_interface";

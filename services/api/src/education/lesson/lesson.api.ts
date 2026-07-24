@@ -39,6 +39,12 @@ export const LessonAPI = {
       .post(`${endpoint}/edu/lesson/reschedule/${id}`, params)
       .then((result) => result.data),
 
+  // Đổi giáo án / bài học (lesson_plan_id, lesson_plan_lesson_id?) cho 1 buổi học đã sinh
+  changePlan: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/edu/lesson/change-plan/${id}`, params)
+      .then((result) => result.data),
+
   // Hủy buổi học (kèm lý do)
   cancel: async ({ id, params }: UpdatePayload) =>
     await api

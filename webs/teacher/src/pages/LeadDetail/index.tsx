@@ -86,7 +86,7 @@ const LeadDetail = () => {
 
               <Card>
                 <p className="mb-3 text-sm font-semibold text-slate-700">Lịch sử chăm sóc</p>
-                <CareHistoryTimeline histories={histories} loading={isLoading} />
+                <CareHistoryTimeline leadId={lead.id} histories={histories} loading={isLoading} />
               </Card>
             </div>
           )}

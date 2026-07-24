@@ -17,7 +17,7 @@ import {
 } from "@tera/modules/education";
 import { toSessionDetail } from "pages/Schedule/_utils";
 import { toClassroomDetail } from "pages/ClassroomDetail/_utils";
-import { toLessonPlan } from "pages/LessonPlan/_utils";
+import { toLessonPlan, toLessonTemplateSummaries } from "pages/LessonPlan/_utils";
 import { toLessonDetail } from "pages/Lesson/_utils";
 import { useAttendanceSession } from "pages/Attendance/hooks/useAttendanceSession";
 import AttendanceEditor from "pages/Attendance/components/AttendanceEditor";
@@ -34,6 +34,7 @@ import StepLesson from "./components/StepLesson";
 import StepEvaluation from "./components/StepEvaluation";
 import SessionFinishedCard from "./components/SessionFinishedCard";
 import SessionFooterNav from "./components/SessionFooterNav";
+import ChangeLessonPlanModal from "./components/ChangeLessonPlanModal";
 
 interface NextStepConfig {
   label: string;
@@ -52,6 +53,7 @@ const SessionRuntime = () => {
   const [step, setStep] = useState<SessionWizardStep>(1);
   const [finished, setFinished] = useState(false);
   const [evalStudent, setEvalStudent] = useState<AttendanceRow | null>(null);
+  const [changePlanOpen, setChangePlanOpen] = useState(false);
 
   const detailQuery = ClassSessionService.useClassSessionDetail({
     id: sessionId ?? "",
@@ -103,6 +105,25 @@ const SessionRuntime = () => {
   const [selectedPlanId, setSelectedPlanId] = useState<number | undefined>(undefined);
   const availablePlans = (classRoom?.lesson_plans ?? []).filter((p) => p.status === "published");
 
+  // Which specific "Bài học" (template) of the chosen plan to use — optional,
+  // the backend falls back to the next unused template (by lesson_no) when
+  // this is left unset.
+  const [selectedLessonPlanLessonId, setSelectedLessonPlanLessonId] = useState<
+    number | undefined
+  >(undefined);
+  const selectedPlanDetailQuery = LessonPlanService.useLessonPlanDetail(
+    { id: selectedPlanId ?? "" },
+    { enabled: !!selectedPlanId },
+  );
+  const selectedPlanTemplates = useMemo(() => {
+    const payload = selectedPlanDetailQuery.data?.data;
+    return toLessonTemplateSummaries((payload?.plan ?? payload)?.lessons);
+  }, [selectedPlanDetailQuery.data]);
+  const handleSelectPlan = (planId: number | undefined) => {
+    setSelectedPlanId(planId);
+    setSelectedLessonPlanLessonId(undefined);
+  };
+
   const lessonDetailQuery = LessonService.useLessonDetail(
     { id: sessionLessonId ?? "" },
     { enabled: !!sessionLessonId },
@@ -143,7 +164,13 @@ const SessionRuntime = () => {
   const handleStart = () => {
     if (!sessionId) return;
     startSession(
-      { id: sessionId, params: { lesson_plan_id: hasLesson ? undefined : selectedPlanId } },
+      {
+        id: sessionId,
+        params: {
+          lesson_plan_id: hasLesson ? undefined : selectedPlanId,
+          lesson_plan_lesson_id: hasLesson ? undefined : selectedLessonPlanLessonId,
+        },
+      },
       {
         onSuccess: (res: any) => {
           notification.success({
@@ -243,15 +270,33 @@ const SessionRuntime = () => {
         return (
           <>
             {!hasLesson && availablePlans.length > 0 && (
-              <div className="mb-4 rounded-xl border border-slate-100 p-3">
-                <p className="mb-1.5 text-sm font-semibold text-slate-700">Giáo án cho buổi học này</p>
-                <Select
-                  value={selectedPlanId}
-                  placeholder="Không dùng giáo án (VD: buổi kiểm tra)"
-                  allowClear
-                  options={availablePlans.map((p) => ({ value: p.id, label: p.plan_name }))}
-                  onChange={(v: any) => setSelectedPlanId(v ?? undefined)}
-                />
+              <div className="mb-4 flex flex-col gap-3 rounded-xl border border-slate-100 p-3 sm:flex-row">
+                <div className="flex-1">
+                  <p className="mb-1.5 text-sm font-semibold text-slate-700">Giáo án cho buổi học này</p>
+                  <Select
+                    value={selectedPlanId}
+                    placeholder="Không dùng giáo án (VD: buổi kiểm tra)"
+                    allowClear
+                    options={availablePlans.map((p) => ({ value: p.id, label: p.plan_name }))}
+                    onChange={(v: any) => handleSelectPlan(v ?? undefined)}
+                  />
+                </div>
+                {selectedPlanId && (
+                  <div className="flex-1">
+                    <p className="mb-1.5 text-sm font-semibold text-slate-700">Bài học</p>
+                    <Select
+                      value={selectedLessonPlanLessonId}
+                      loading={selectedPlanDetailQuery.isLoading}
+                      placeholder="Tự động — bài học kế tiếp chưa dùng"
+                      allowClear
+                      options={selectedPlanTemplates.map((t) => ({
+                        value: t.id,
+                        label: `Bài ${t.lesson_no} — ${t.lesson_title}`,
+                      }))}
+                      onChange={(v: any) => setSelectedLessonPlanLessonId(v ?? undefined)}
+                    />
+                  </div>
+                )}
               </div>
             )}
             <AttendanceEditor session={attendanceSession} />
@@ -268,6 +313,8 @@ const SessionRuntime = () => {
             activityUpdating={isActivityUpdating}
             lessonId={lessonDetail?.id ?? null}
             lessonNote={lessonDetail?.lesson_note ?? ""}
+            classRoomId={detail?.class_id ?? null}
+            onChangePlan={() => setChangePlanOpen(true)}
           />
         );
       case 5:
@@ -364,6 +411,16 @@ const SessionRuntime = () => {
         classId={detail?.class_id ?? null}
         lessonId={lessonDetail?.id ?? 0}
         presetStudentId={evalStudent?.student_id ?? null}
+      />
+
+      <ChangeLessonPlanModal
+        open={changePlanOpen}
+        onClose={() => setChangePlanOpen(false)}
+        lessonId={lessonDetail?.id ?? null}
+        currentPlanId={lessonDetail?.lesson_plan_id}
+        currentLessonPlanLessonId={lessonDetail?.lesson_plan_lesson_id}
+        availablePlans={availablePlans}
+        activities={activities}
       />
     </div>
   );

@@ -13,6 +13,7 @@ export const toLeadDetail = (raw: any): LeadDetail | null => {
     source: raw.source ?? "",
     status: raw.status ?? "",
     note: raw.note ?? "",
+    next_appointment: raw.next_appointment ?? "",
     owner_id: raw.owner_id ?? null,
     owner_name: raw.owner?.name ?? "",
     branch_id: raw.branch_id ?? null,
@@ -54,4 +55,7 @@ export const HISTORY_ACTION_LABEL: Record<string, string> = {
   suspended: "Ngừng theo dõi",
   restored: "Khôi phục theo dõi",
   converted: "Chuyển đổi thành học viên",
+  note: "Ghi chú",
+  call: "Gọi điện",
+  appointment: "Hẹn tư vấn",
 };

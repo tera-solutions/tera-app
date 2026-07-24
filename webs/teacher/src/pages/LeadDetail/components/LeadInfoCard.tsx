@@ -23,6 +23,7 @@ const InfoRow = ({ label, value }: { label: string; value: ReactNode }) => (
 );
 
 const fmtDate = (value: string) => (value ? moment(value).format("DD/MM/YYYY") : "—");
+const fmtDateTime = (value: string) => (value ? moment(value).format("DD/MM/YYYY - HH:mm") : "—");
 
 const LeadInfoCard = ({ lead, onStatusChange, statusChanging }: LeadInfoCardProps) => {
   const { getOptions } = useMeta();
@@ -50,6 +51,9 @@ const LeadInfoCard = ({ lead, onStatusChange, statusChanging }: LeadInfoCardProp
         label="Quan tâm"
         value={lead.courses.length ? lead.courses.map((c) => c.name).join(", ") : "—"}
       />
+      {lead.next_appointment && (
+        <InfoRow label="Hẹn tư vấn tiếp theo" value={fmtDateTime(lead.next_appointment)} />
+      )}
 
       {lead.status !== "inactive" && (
         <div className="mt-3 border-t border-slate-100 pt-3">
