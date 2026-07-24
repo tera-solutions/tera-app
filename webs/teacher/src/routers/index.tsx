@@ -67,9 +67,12 @@ import Settings from "pages/Settings";
 import Report from "pages/Report";
 import PlacementTest from "pages/PlacementTest";
 import PackageManagement from "pages/PackageManagement";
+import SubscriptionPackage from "pages/SubscriptionPackage";
+import SubscriptionPackageDetail from "pages/SubscriptionPackageDetail";
 import Placeholder from "pages/Placeholder";
 import More from "pages/More";
 import Courses from "pages/Courses";
+import CourseCreate from "pages/CourseCreate";
 import Levels from "pages/Levels";
 import SuperadminDashboard from "pages/Superadmin/Dashboard";
 import SuperadminTenants from "pages/Superadmin/Tenants";
@@ -117,6 +120,7 @@ export const Routers = () => {
         <Route path={`${PATHS.session}/:id`} element={<SessionRuntime />} />
         <Route path={`${PATHS.classroom}/:id`} element={<ClassroomDetail />} />
         <Route path={PATHS.courses} element={<Courses />} />
+        <Route path={`${PATHS.courses}/new`} element={<CourseCreate />} />
         <Route path={PATHS.levels} element={<Levels />} />
         <Route path={`${PATHS.courseDetail}/:id`} element={<CourseDetail />} />
         <Route path={PATHS.attendance} element={<Attendance />} />
@@ -222,6 +226,8 @@ export const Routers = () => {
         />
         <Route path={PATHS.placementTest} element={<PlacementTest />} />
         <Route path={PATHS.packageManagement} element={<PackageManagement />} />
+        <Route path={PATHS.subscriptionPackages} element={<SubscriptionPackage />} />
+        <Route path={`${PATHS.subscriptionPackages}/:id`} element={<SubscriptionPackageDetail />} />
 
         {/* Platform superadmin panel — gated to is_superadmin accounts. */}
         <Route

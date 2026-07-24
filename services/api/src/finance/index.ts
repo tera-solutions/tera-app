@@ -15,3 +15,4 @@ export * from "./payment-method";
 export * from "./payment-transaction";
 export * from "./promotion-campaign";
 export * from "./refund";
+export * from "./subscription-package";

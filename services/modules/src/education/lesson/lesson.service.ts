@@ -62,6 +62,9 @@ export const useLessonUpdate = () =>
 export const useLessonReschedule = () =>
   useLessonMutation((payload) => LessonAPI.reschedule(payload));
 
+export const useLessonChangePlan = () =>
+  useLessonMutation((payload) => LessonAPI.changePlan(payload));
+
 export const useLessonCancel = () =>
   useLessonMutation((payload) => LessonAPI.cancel(payload));
 
@@ -80,6 +83,7 @@ export const LessonService = {
   useLessonGenerate,
   useLessonUpdate,
   useLessonReschedule,
+  useLessonChangePlan,
   useLessonCancel,
   useLessonComplete,
   useLessonLock,

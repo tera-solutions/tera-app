@@ -22,6 +22,24 @@ export const useLeadConvert = () => {
   });
 };
 
+/** Manually log a care interaction (note/call/appointment) against a lead —
+ * distinct from the automatic history entries LeadService writes on
+ * create/update/status-change/suspend/restore/convert. */
+export const useLeadAddHistory = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  return useMutationAdapter({
+    mutationFn: (payload: UpdatePayload) => LeadAPI.addHistory(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lead", "detail"] });
+    },
+    onError: (error) => {
+      console.error(t("common.error_message"), error);
+    },
+  });
+};
+
 export const LeadActivityService = {
   useLeadConvert,
+  useLeadAddHistory,
 };

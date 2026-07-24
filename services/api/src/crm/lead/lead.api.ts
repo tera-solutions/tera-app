@@ -47,4 +47,9 @@ export const LeadAPI = {
     await api
       .post(`${endpoint}/crm/lead/convert/${id}`, params)
       .then((result) => result.data),
+
+  addHistory: async ({ id, params }: UpdatePayload) =>
+    await api
+      .post(`${endpoint}/crm/lead/history/${id}`, params)
+      .then((result) => result.data),
 };

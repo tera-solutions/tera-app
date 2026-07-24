@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Checkbox, notification, PlusOutlined, Select, TrashOutlined } from "tera-dls";
+import { Button, Checkbox, Input, notification, PlusOutlined, Select, TrashOutlined } from "tera-dls";
 
 import Badge from "_common/components/Badge";
 import Card from "_common/components/Card";
@@ -8,7 +8,6 @@ import FieldLabel from "_common/components/FieldLabel";
 import Table, { TableColumn } from "_common/components/Table";
 import useConfirm from "_common/hooks/useConfirm";
 import FormScaff from "@tera/components/dof/FormScaff";
-import Input from "@tera/components/dof/Control/Input";
 import { EvaluationCriteriaTemplateService } from "@tera/modules/education";
 
 import { EVALUATION_CRITERIA_BY_TYPE } from "pages/Evaluation/constants";

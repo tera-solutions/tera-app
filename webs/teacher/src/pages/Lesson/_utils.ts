@@ -161,6 +161,7 @@ export const toLessonDetail = (raw: any): LessonDetail => {
     id: data.id ?? 0,
     class_room_id: data.class_room_id ?? classRoom.id ?? 0,
     lesson_plan_id: data.lesson_plan_id ?? null,
+    lesson_plan_lesson_id: data.lesson_plan_lesson_id ?? null,
     teacher_id: data.teacher_id ?? data.teacher?.id ?? null,
     teacher_name: firstString(data.teacher?.name, data.teacher?.full_name),
     avatar: firstString(data.avatar, data.lesson_plan?.avatar, classRoom.avatar),

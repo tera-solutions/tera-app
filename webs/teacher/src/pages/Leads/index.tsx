@@ -41,6 +41,9 @@ const Leads = () => {
       search: { type: "string", default: "" },
       status: { type: "string", default: "" },
       source: { type: "string", default: "" },
+      owner_id: { type: "string", default: "" },
+      date_from: { type: "string", default: "" },
+      date_to: { type: "string", default: "" },
       page: { type: "number", default: 1 },
       per_page: { type: "number", default: DEFAULT_PAGE_SIZE },
     },
@@ -68,6 +71,9 @@ const Leads = () => {
       filters: {
         status: filters.status || undefined,
         source: filters.source || undefined,
+        owner_id: filters.owner_id || undefined,
+        contacted_from: filters.date_from || undefined,
+        contacted_to: filters.date_to || undefined,
       },
     },
   });
@@ -187,8 +193,29 @@ const Leads = () => {
           <LeadFilterSidebar
             status={filters.status}
             source={filters.source}
-            onChange={(patch) => setFilters({ ...patch, page: 1 })}
-            onReset={() => setFilters({ search: "", status: "", source: "", page: 1 })}
+            ownerId={filters.owner_id}
+            dateFrom={filters.date_from}
+            dateTo={filters.date_to}
+            onChange={(patch) => {
+              const next: Partial<typeof filters> = { page: 1 };
+              if ("status" in patch) next.status = patch.status;
+              if ("source" in patch) next.source = patch.source;
+              if ("ownerId" in patch) next.owner_id = patch.ownerId;
+              if ("dateFrom" in patch) next.date_from = patch.dateFrom;
+              if ("dateTo" in patch) next.date_to = patch.dateTo;
+              setFilters(next);
+            }}
+            onReset={() =>
+              setFilters({
+                search: "",
+                status: "",
+                source: "",
+                owner_id: "",
+                date_from: "",
+                date_to: "",
+                page: 1,
+              })
+            }
           />
         </div>
       </div>

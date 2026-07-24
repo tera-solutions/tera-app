@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, CheckBadgeOutlined, notification, PlusOutlined, Select, StarOutlined } from "tera-dls";
+import { Button, CheckBadgeOutlined, Input, notification, PlusOutlined, Select, StarOutlined } from "tera-dls";
 
 import Card from "_common/components/Card";
 import EmptyState from "_common/components/EmptyState";
@@ -7,7 +7,6 @@ import FieldLabel from "_common/components/FieldLabel";
 import Table, { TableColumn } from "_common/components/Table";
 import useConfirm from "_common/hooks/useConfirm";
 import FormScaff from "@tera/components/dof/FormScaff";
-import Input from "@tera/components/dof/Control/Input";
 import { BusinessBankAccountService } from "@tera/modules/finance";
 
 import { VIETQR_BANKS } from "../constants";

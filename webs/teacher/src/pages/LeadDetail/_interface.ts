@@ -9,6 +9,7 @@ export interface LeadDetail {
   source: string;
   status: string;
   note: string;
+  next_appointment: string;
   owner_id: number | null;
   owner_name: string;
   branch_id: number | null;

@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
-import { Button, notification, PlusOutlined } from "tera-dls";
+import { useNavigate } from "react-router-dom";
+import { Button, notification, PencilSquareOutlined, PlusOutlined, TrashOutlined } from "tera-dls";
 
 import Card from "_common/components/Card";
 import SearchInput from "_common/components/SearchInput";
 import Table, { TableColumn } from "_common/components/Table";
 import TablePagination from "_common/components/TablePagination";
 import { DEFAULT_PAGE_SIZE } from "_common/constants/pagination";
+import { PATHS } from "_common/components/Layout/Menu/menus";
 import useConfirm from "_common/hooks/useConfirm";
 import { useDebouncedSearch } from "_common/hooks/useDebouncedSearch";
 import { useUrlFilters } from "_common/hooks/useUrlFilters";
@@ -16,6 +18,7 @@ import CourseFormModal, { type CourseRow } from "./CourseFormModal";
 const formatVnd = (v: number | string) => `${Number(v ?? 0).toLocaleString("vi-VN")} ₫`;
 
 const Courses = () => {
+  const navigate = useNavigate();
   const confirm = useConfirm();
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<CourseRow | null>(null);
@@ -41,10 +44,6 @@ const Courses = () => {
 
   const { mutate: deleteCourse } = CourseService.useCourseDelete();
 
-  const openCreate = () => {
-    setEditing(null);
-    setModalOpen(true);
-  };
   const openEdit = (course: CourseRow) => {
     setEditing(course);
     setModalOpen(true);
@@ -104,20 +103,22 @@ const Courses = () => {
       headerClassName: "px-4 py-3 text-right",
       cellClassName: "px-4 py-3 text-right",
       render: (row) => (
-        <div className="flex justify-end gap-2">
+        <div className="flex items-center justify-end gap-1">
           <button
             type="button"
+            title="Sửa"
             onClick={() => openEdit(row)}
-            className="text-xs font-medium text-brand hover:underline"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-50 hover:text-brand [&_svg]:h-4.5 [&_svg]:w-4.5"
           >
-            Sửa
+            <PencilSquareOutlined />
           </button>
           <button
             type="button"
+            title="Xóa"
             onClick={() => handleDelete(row)}
-            className="text-xs font-medium text-rose-500 hover:underline"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-500 [&_svg]:h-4.5 [&_svg]:w-4.5"
           >
-            Xóa
+            <TrashOutlined />
           </button>
         </div>
       ),
@@ -131,7 +132,7 @@ const Courses = () => {
           <h1 className="text-xl font-bold text-slate-800">Khóa học</h1>
           <p className="mt-0.5 text-sm text-slate-400">Quản lý danh mục khóa học của trung tâm.</p>
         </div>
-        <Button icon={<PlusOutlined />} onClick={openCreate} className="bg-brand hover:bg-brand/80">
+        <Button icon={<PlusOutlined />} onClick={() => navigate(`${PATHS.courses}/new`)} className="bg-brand hover:bg-brand/80">
           Thêm khóa học
         </Button>
       </div>
