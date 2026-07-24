@@ -10,18 +10,20 @@ interface IProps {
   className?: string;
 }
 
-/** 390 phút -> "6h30m" */
-const formatStudyTime = (minutes = 0) => {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  if (!h) return `${m}m`;
-  return m ? `${h}h${String(m).padStart(2, "0")}m` : `${h}h`;
-};
-
 const percentOf = (done = 0, total = 0) =>
   total ? Math.round((done / total) * 100) : 0;
 const LearningProgressCard = ({ progress, className = "" }: IProps) => {
   const { t } = useTranslation();
+
+  /** 390 phút -> "6 giờ 30 phút" / "6 hours 30 minutes" theo locale */
+  const formatStudyTime = (minutes = 0) => {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    if (!h) return t("home.progress_time_minutes", { minutes: m });
+    return m
+      ? t("home.progress_time_hours_minutes", { hours: h, minutes: m })
+      : t("home.progress_time_hours", { hours: h });
+  };
 
   const lessonsDone = progress?.lessons_completed ?? 0;
   const lessonsTotal = progress?.lessons_total ?? 0;

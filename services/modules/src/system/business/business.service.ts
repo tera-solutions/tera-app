@@ -71,7 +71,7 @@ export const useUpsertBusiness = () => {
       return BusinessAPI.create(payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["student", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["business", "list"] });
     },
     onError: (error) => {
       console.error(t("common.error_message"), error);

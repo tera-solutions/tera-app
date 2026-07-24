@@ -26,7 +26,7 @@ const ProgressPath = ({
         return (
           <span key={i} className='flex flex-1 items-center gap-1'>
             <span
-              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition ${
+              className={`relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition ${
                 passed
                   ? "bg-hana-blue text-white"
                   : current
@@ -35,7 +35,26 @@ const ProgressPath = ({
               }`}
             >
               {passed && <CheckOutlined className='h-3.5 w-3.5' />}
-              {current && <StarSolid className='h-5 w-5' />}
+              {current && (
+                <>
+                  {/* Kim tuyến: mini sao vàng đứng NGOÀI viền ring (trên nền
+                      trắng của card) để không bị viền mờ nuốt mất; giữ đỉnh
+                      sáng lâu hơn (plateau trong keyframe) để mắt kịp thấy. */}
+                  <StarSolid
+                    className='hana-sparkle absolute -right-2 -top-2 h-2.5 w-2.5 text-hana-sun'
+                    style={{ animationDelay: "0s" }}
+                  />
+                  <StarSolid
+                    className='hana-sparkle absolute -bottom-2 -left-1.5 h-2 w-2 text-hana-sun'
+                    style={{ animationDelay: "0.6s" }}
+                  />
+                  <StarSolid
+                    className='hana-sparkle absolute -top-1.5 -left-2.5 h-2 w-2 text-hana-sun'
+                    style={{ animationDelay: "1.1s" }}
+                  />
+                  <StarSolid className='hana-star-pulse h-5 w-5' />
+                </>
+              )}
             </span>
             {i < steps - 1 && (
               <span
