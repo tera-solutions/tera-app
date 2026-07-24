@@ -152,6 +152,46 @@
   animation: hana-twinkle-burst 1.4s ease-in-out 1;
 }
 
+/* Ngôi sao "đang ở đây" trên ProgressPath — phập phồng nhẹ + kim tuyến
+   lấp lánh xung quanh, để trẻ dễ nhận ra vị trí hiện tại mà không giật mắt
+   như bounce (bounce gợi ý "đang di chuyển", sai với ý nghĩa đứng yên). */
+@keyframes hana-star-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(251, 191, 36, 0));
+  }
+  50% {
+    transform: scale(1.14);
+    filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.75));
+  }
+}
+
+@utility hana-star-pulse {
+  animation: hana-star-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes hana-sparkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.2) rotate(0deg);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1.1) rotate(70deg);
+  }
+  /* Giữ đỉnh sáng thêm 1 đoạn (thay vì chỉ chớp 1 khoảnh khắc) để mắt kịp thấy */
+  55% {
+    opacity: 1;
+    transform: scale(1) rotate(110deg);
+  }
+}
+
+@utility hana-sparkle {
+  animation: hana-sparkle 2s ease-in-out infinite;
+}
+
 /* Tôn trọng thiết lập giảm chuyển động của người dùng */
 @media (prefers-reduced-motion: reduce) {
   .hana-float,
@@ -159,7 +199,9 @@
   .hana-flame-burst-outer,
   .hana-flame-burst-inner,
   .hana-flame-burst-glow,
-  .hana-twinkle-burst {
+  .hana-twinkle-burst,
+  .hana-star-pulse,
+  .hana-sparkle {
     animation: none;
   }
 }
